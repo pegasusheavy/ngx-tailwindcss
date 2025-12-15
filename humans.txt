@@ -1,0 +1,25 @@
+/* TEAM */
+Company: Pegasus Heavy Industries LLC
+Site: https://pegasusheavy.com
+Location: United States
+
+/* THANKS */
+Angular Team: https://angular.dev
+Tailwind CSS Team: https://tailwindcss.com
+FontAwesome: https://fontawesome.com
+
+/* SITE */
+Last update: 2025/01/01
+Language: English
+Doctype: HTML5
+Standards: HTML5, CSS3, ECMAScript 2022
+Components: Angular 20, Tailwind CSS 4, TypeScript 5.8
+IDE: Cursor
+
+/* SOFTWARE */
+Framework: Angular 20+
+CSS: Tailwind CSS 4+
+Package Manager: pnpm
+Build: @angular/build
+Testing: Vitest
+
