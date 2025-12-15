@@ -1,13 +1,13 @@
-import { Component, ViewChild, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
-  TwAlertComponent,
-  TwAlertTitleComponent,
-  TwAlertDescriptionComponent,
-  AlertVariant,
   AlertStyle,
+  AlertVariant,
+  TwAlertComponent,
+  TwAlertDescriptionComponent,
+  TwAlertTitleComponent,
 } from './alert.component';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -22,7 +22,8 @@ import { TwClassService } from '../core/tw-class.service';
       [ariaLive]="ariaLive()"
       [classOverride]="classOverride()"
       (dismiss)="onDismiss()"
-      data-testid="test-alert">
+      data-testid="test-alert"
+    >
       {{ alertText() }}
     </tw-alert>
   `,
@@ -131,7 +132,7 @@ describe('TwAlertComponent', () => {
       component.dismissible.set(true);
       fixture.detectChanges();
 
-      const dismissBtn = alertEl.querySelector('button[aria-label="Dismiss"]') as HTMLButtonElement;
+      const dismissBtn = alertEl.querySelector('button[aria-label="Dismiss"]')!;
       dismissBtn.click();
       fixture.detectChanges();
 
@@ -142,7 +143,7 @@ describe('TwAlertComponent', () => {
       component.dismissible.set(true);
       fixture.detectChanges();
 
-      const dismissBtn = alertEl.querySelector('button[aria-label="Dismiss"]') as HTMLButtonElement;
+      const dismissBtn = alertEl.querySelector('button[aria-label="Dismiss"]')!;
       dismissBtn.click();
       fixture.detectChanges();
 
@@ -230,7 +231,9 @@ describe('Alert sub-components', () => {
   });
 
   it('should apply description classes', () => {
-    const desc = fixture.debugElement.query(By.directive(TwAlertDescriptionComponent)).nativeElement;
+    const desc = fixture.debugElement.query(
+      By.directive(TwAlertDescriptionComponent)
+    ).nativeElement;
     expect(desc.className).toContain('text-sm');
   });
 });

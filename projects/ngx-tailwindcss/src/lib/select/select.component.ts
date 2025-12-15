@@ -1,20 +1,20 @@
 import {
+  AfterViewInit,
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
-  Input,
-  Output,
+  computed,
+  ElementRef,
   EventEmitter,
   forwardRef,
-  ChangeDetectionStrategy,
-  computed,
-  signal,
-  booleanAttribute,
-  inject,
   HostListener,
-  ElementRef,
+  inject,
+  Input,
   OnDestroy,
-  AfterViewInit,
-  ViewChild,
+  Output,
   PLATFORM_ID,
+  signal,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -62,10 +62,10 @@ const SELECT_SIZES: Record<SelectSize, { trigger: string; text: string }> = {
   templateUrl: './select.component.html',
 })
 export class TwSelectComponent implements ControlValueAccessor, OnDestroy, AfterViewInit {
-  private twClass = inject(TwClassService);
-  private elementRef = inject(ElementRef);
-  private document = inject(DOCUMENT);
-  private platformId = inject(PLATFORM_ID);
+  private readonly twClass = inject(TwClassService);
+  private readonly elementRef = inject(ElementRef);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
 
   @ViewChild('triggerButton') triggerButton!: ElementRef<HTMLButtonElement>;
 
@@ -272,21 +272,24 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   onKeydown(event: KeyboardEvent): void {
     switch (event.key) {
       case 'Enter':
-      case ' ':
+      case ' ': {
         event.preventDefault();
         this.toggleDropdown();
         break;
-      case 'Escape':
+      }
+      case 'Escape': {
         this.isOpen.set(false);
         this.filterValue.set('');
         break;
-      case 'ArrowDown':
+      }
+      case 'ArrowDown': {
         event.preventDefault();
         if (!this.isOpen()) {
           this.isOpen.set(true);
           this.updateDropdownPosition();
         }
         break;
+      }
     }
   }
 

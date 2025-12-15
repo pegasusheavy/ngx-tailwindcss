@@ -1,4 +1,14 @@
-import { Component, Input, Output, EventEmitter, computed, signal, ContentChildren, QueryList, AfterContentInit } from '@angular/core';
+import {
+  AfterContentInit,
+  Component,
+  computed,
+  ContentChildren,
+  EventEmitter,
+  Input,
+  Output,
+  QueryList,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -8,10 +18,18 @@ import { CommonModule } from '@angular/common';
   templateUrl: './accordion-item.component.html',
 })
 export class TwAccordionItemComponent {
-  @Input() set itemTitle(value: string) { this._title.set(value); }
-  @Input() set open(value: boolean) { this._open.set(value); }
-  @Input() set itemDisabled(value: boolean) { this._disabled.set(value); }
-  @Input() set value(value: string) { this._value.set(value); }
+  @Input() set itemTitle(value: string) {
+    this._title.set(value);
+  }
+  @Input() set open(value: boolean) {
+    this._open.set(value);
+  }
+  @Input() set itemDisabled(value: boolean) {
+    this._disabled.set(value);
+  }
+  @Input() set value(value: string) {
+    this._value.set(value);
+  }
   @Input() variant: 'default' | 'bordered' | 'separated' = 'default';
 
   @Output() openChange = new EventEmitter<boolean>();
@@ -42,7 +60,7 @@ export class TwAccordionItemComponent {
   }
 
   protected itemClasses = computed(() => {
-    const variant = this.variant;
+    const {variant} = this;
 
     const variantClasses: Record<string, string> = {
       default: 'border-b border-slate-200 last:border-b-0',
@@ -78,9 +96,7 @@ export class TwAccordionItemComponent {
     ].join(' ');
   });
 
-  protected contentClasses = computed(() =>
-    'px-4 pb-4 text-slate-600'
-  );
+  protected contentClasses = computed(() => 'px-4 pb-4 text-slate-600');
 }
 
 @Component({
@@ -90,9 +106,15 @@ export class TwAccordionItemComponent {
   templateUrl: './accordion.component.html',
 })
 export class TwAccordionComponent implements AfterContentInit {
-  @Input() set allowMultiple(value: boolean) { this._allowMultiple.set(value); }
-  @Input() set variant(value: 'default' | 'bordered' | 'separated') { this._variant.set(value); }
-  @Input() set defaultValue(value: string | string[]) { this._defaultValue.set(value); }
+  @Input() set allowMultiple(value: boolean) {
+    this._allowMultiple.set(value);
+  }
+  @Input() set variant(value: 'default' | 'bordered' | 'separated') {
+    this._variant.set(value);
+  }
+  @Input() set defaultValue(value: string | string[]) {
+    this._defaultValue.set(value);
+  }
 
   @ContentChildren(TwAccordionItemComponent) items!: QueryList<TwAccordionItemComponent>;
 
@@ -111,7 +133,7 @@ export class TwAccordionComponent implements AfterContentInit {
         item.setOpen(true);
       }
 
-      item.openChange.subscribe((isOpen) => {
+      item.openChange.subscribe(isOpen => {
         if (isOpen && !this._allowMultiple()) {
           this.items.forEach(other => {
             if (other !== item) {
@@ -135,4 +157,3 @@ export class TwAccordionComponent implements AfterContentInit {
     return variantClasses[variant];
   });
 }
-

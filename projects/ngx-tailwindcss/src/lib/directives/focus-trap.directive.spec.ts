@@ -1,7 +1,7 @@
-import { Component, ViewChild, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TwFocusTrapDirective } from './focus-trap.directive';
 
 @Component({
@@ -11,10 +11,11 @@ import { TwFocusTrapDirective } from './focus-trap.directive';
       [focusTrapAutoFocus]="autoFocus()"
       [focusTrapRestoreFocus]="restoreFocus()"
       [focusTrapInitialFocus]="initialFocus()"
-      data-testid="focus-trap">
-      <input type="text" data-testid="first-input" placeholder="First">
+      data-testid="focus-trap"
+    >
+      <input type="text" data-testid="first-input" placeholder="First" />
       <button data-testid="middle-button">Middle</button>
-      <input type="text" data-testid="last-input" placeholder="Last">
+      <input type="text" data-testid="last-input" placeholder="Last" />
     </div>
   `,
   standalone: true,

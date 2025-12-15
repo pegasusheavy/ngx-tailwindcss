@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TwRippleDirective } from './ripple.directive';
 
 @Component({
@@ -12,7 +12,8 @@ import { TwRippleDirective } from './ripple.directive';
       [rippleDuration]="rippleDuration()"
       [rippleDisabled]="rippleDisabled()"
       [rippleCentered]="rippleCentered()"
-      data-testid="ripple-button">
+      data-testid="ripple-button"
+    >
       Click me
     </button>
   `,
@@ -38,7 +39,9 @@ describe('TwRippleDirective', () => {
 
     fixture = TestBed.createComponent(TestHostComponent);
     component = fixture.componentInstance;
-    buttonNative = fixture.debugElement.query(By.css('[data-testid="ripple-button"]')).nativeElement;
+    buttonNative = fixture.debugElement.query(
+      By.css('[data-testid="ripple-button"]')
+    ).nativeElement;
     fixture.detectChanges();
   });
 

@@ -1,11 +1,11 @@
 import {
-  Injectable,
-  InjectionToken,
-  inject,
-  signal,
   computed,
   effect,
+  inject,
+  Injectable,
+  InjectionToken,
   LOCALE_ID,
+  signal,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
@@ -385,10 +385,33 @@ export const TW_DEFAULT_TRANSLATIONS: TwTranslations = {
     previousYear: 'Previous year',
     nextYear: 'Next year',
     months: [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
     ],
-    monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    monthsShort: [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ],
     weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
     weekdaysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
@@ -533,17 +556,17 @@ export const TW_LOCALE = new InjectionToken<string>('TW_LOCALE');
 /**
  * RTL language codes.
  */
-const RTL_LANGUAGES = ['ar', 'he', 'fa', 'ur', 'ps', 'sd', 'yi', 'dv'];
+const RTL_LANGUAGES = new Set(['ar', 'he', 'fa', 'ur', 'ps', 'sd', 'yi', 'dv']);
 
 /**
  * Service for internationalization and localization.
  */
 @Injectable({ providedIn: 'root' })
 export class TwI18nService {
-  private document = inject(DOCUMENT);
-  private customTranslations = signal<Partial<TwTranslations> | null>(null);
-  private _locale = signal<string>('en');
-  private _direction = signal<'ltr' | 'rtl'>('ltr');
+  private readonly document = inject(DOCUMENT);
+  private readonly customTranslations = signal<Partial<TwTranslations> | null>(null);
+  private readonly _locale = signal<string>('en');
+  private readonly _direction = signal<'ltr' | 'rtl'>('ltr');
 
   /** Current locale */
   readonly locale = this._locale.asReadonly();
@@ -604,7 +627,7 @@ export class TwI18nService {
   setLocale(locale: string): void {
     this._locale.set(locale);
     const langCode = locale.split('-')[0].toLowerCase();
-    this._direction.set(RTL_LANGUAGES.includes(langCode) ? 'rtl' : 'ltr');
+    this._direction.set(RTL_LANGUAGES.has(langCode) ? 'rtl' : 'ltr');
   }
 
   /**
@@ -635,7 +658,7 @@ export class TwI18nService {
 
     // Interpolate parameters
     if (params) {
-      return value.replace(/\{(\w+)\}/g, (_, paramKey) => {
+      return value.replaceAll(/{(\w+)}/g, (_, paramKey) => {
         return params[paramKey]?.toString() ?? `{${paramKey}}`;
       });
     }
@@ -657,7 +680,10 @@ export class TwI18nService {
     return this.translations()[component];
   }
 
-  private deepMerge(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+  private deepMerge(
+    target: Record<string, unknown>,
+    source: Record<string, unknown>
+  ): Record<string, unknown> {
     const result = { ...target };
 
     for (const key of Object.keys(source)) {
@@ -704,4 +730,3 @@ export function provideTwLocale(locale: string) {
     useValue: locale,
   };
 }
-

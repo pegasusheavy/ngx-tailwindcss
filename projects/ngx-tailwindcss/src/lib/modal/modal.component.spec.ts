@@ -1,9 +1,9 @@
-import { Component, ViewChild, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { TwModalComponent, ModalSize } from './modal.component';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { ModalSize, TwModalComponent } from './modal.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
@@ -18,7 +18,8 @@ import { TwClassService } from '../core/tw-class.service';
       [centered]="centered()"
       (opened)="onOpened()"
       (closed)="onClosed()"
-      data-testid="test-modal">
+      data-testid="test-modal"
+    >
       <div data-testid="modal-content">Modal Content</div>
     </tw-modal>
   `,
@@ -96,16 +97,33 @@ describe('TwModalComponent', () => {
         fixture.detectChanges();
 
         const panel = fixture.debugElement.query(By.css('[role="dialog"]'));
-        if (size === 'sm') {
+        switch (size) {
+        case 'sm': {
           expect(panel.nativeElement.className).toContain('max-w-sm');
-        } else if (size === 'md') {
+        
+        break;
+        }
+        case 'md': {
           expect(panel.nativeElement.className).toContain('max-w-md');
-        } else if (size === 'lg') {
+        
+        break;
+        }
+        case 'lg': {
           expect(panel.nativeElement.className).toContain('max-w-lg');
-        } else if (size === 'xl') {
+        
+        break;
+        }
+        case 'xl': {
           expect(panel.nativeElement.className).toContain('max-w-xl');
-        } else if (size === 'full') {
+        
+        break;
+        }
+        case 'full': {
           expect(panel.nativeElement.className).toContain('max-w-full');
+        
+        break;
+        }
+        // No default
         }
       });
     });

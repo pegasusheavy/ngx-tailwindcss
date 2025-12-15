@@ -1,13 +1,13 @@
 import {
+  AfterViewInit,
+  booleanAttribute,
   Directive,
   ElementRef,
+  inject,
   Input,
+  NgZone,
   OnDestroy,
   OnInit,
-  AfterViewInit,
-  inject,
-  booleanAttribute,
-  NgZone,
 } from '@angular/core';
 
 const FOCUSABLE_SELECTOR = [
@@ -42,8 +42,8 @@ const FOCUSABLE_SELECTOR = [
   standalone: true,
 })
 export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
-  private el = inject(ElementRef);
-  private ngZone = inject(NgZone);
+  private readonly el = inject(ElementRef);
+  private readonly ngZone = inject(NgZone);
 
   /** Whether the focus trap is active */
   @Input({ alias: 'twFocusTrap', transform: booleanAttribute }) enabled = true;
@@ -73,7 +73,7 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
 
       if (this.focusTrapAutoFocus) {
         // Delay focus to ensure DOM is ready
-        setTimeout(() => this.focusInitial(), 0);
+        setTimeout(() => { this.focusInitial(); }, 0);
       }
     }
   }
@@ -86,7 +86,7 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
       if (focusableElements.length === 0) return;
 
       const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
+      const lastElement = focusableElements.at(-1);
 
       if (event.shiftKey) {
         // Shift+Tab: if on first element, go to last
@@ -110,7 +110,7 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
 
   private getFocusableElements(): HTMLElement[] {
     const elements = this.el.nativeElement.querySelectorAll(FOCUSABLE_SELECTOR);
-    return Array.from(elements).filter((el) => {
+    return [...elements].filter(el => {
       const htmlEl = el as HTMLElement;
       return (
         htmlEl.offsetWidth > 0 &&
@@ -152,7 +152,7 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
   focusLast(): void {
     const elements = this.getFocusableElements();
     if (elements.length > 0) {
-      elements[elements.length - 1].focus();
+      elements.at(-1).focus();
     }
   }
 
@@ -172,4 +172,3 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 }
-

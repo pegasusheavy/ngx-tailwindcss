@@ -1,5 +1,11 @@
 <div [class]="containerClasses()">
-  @for (event of events; track trackByFn(event); let first = $first; let last = $last; let i = $index) {
+  @for (
+    event of events;
+    track trackByFn(event);
+    let first = $first;
+    let last = $last;
+    let i = $index
+  ) {
     <div [class]="itemClasses(first, last)">
       <!-- Connector line -->
       @if (!last) {
@@ -35,4 +41,3 @@
     </div>
   }
 </div>
-

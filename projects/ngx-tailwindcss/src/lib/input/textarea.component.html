@@ -1,7 +1,5 @@
 @if (label) {
-  <label
-    [for]="inputId"
-    class="block text-sm font-medium text-slate-700 mb-1.5">
+  <label [for]="inputId" class="block text-sm font-medium text-slate-700 mb-1.5">
     {{ label }}
     @if (required) {
       <span class="text-rose-500 ml-0.5">*</span>
@@ -23,8 +21,8 @@
   [attr.maxlength]="maxlength"
   [value]="value"
   (input)="onInput($event)"
-  (blur)="onBlur()">
-</textarea>
+  (blur)="onBlur()"
+></textarea>
 
 @if (hint && !error) {
   <span class="block text-xs text-slate-500 mt-1.5">{{ hint }}</span>
@@ -39,4 +37,3 @@
     {{ value.length }} / {{ maxlength }}
   </span>
 }
-

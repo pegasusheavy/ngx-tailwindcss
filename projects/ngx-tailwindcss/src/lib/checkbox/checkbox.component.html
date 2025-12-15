@@ -9,7 +9,8 @@
     [indeterminate]="indeterminate()"
     (change)="onCheckboxChange($event)"
     (focus)="onFocus.emit($event)"
-    (blur)="onInputBlur($event)" />
+    (blur)="onInputBlur($event)"
+  />
   <span [class]="labelTextClasses()">
     <ng-content></ng-content>
   </span>

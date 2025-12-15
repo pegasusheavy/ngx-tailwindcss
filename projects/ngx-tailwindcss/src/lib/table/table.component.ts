@@ -1,16 +1,16 @@
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  computed,
-  signal,
   booleanAttribute,
-  numberAttribute,
-  inject,
-  TemplateRef,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
   ContentChild,
+  EventEmitter,
+  inject,
+  Input,
+  numberAttribute,
+  Output,
+  signal,
+  TemplateRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -44,7 +44,7 @@ const TABLE_SIZES: Record<TableSize, { cell: string; text: string }> = {
   templateUrl: './table.component.html',
 })
 export class TwTableComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() data: any[] = [];
   @Input() columns: TableColumn[] = [];
@@ -61,7 +61,7 @@ export class TwTableComponent {
   @Input() emptyMessage = 'No records found';
   @Input({ transform: booleanAttribute }) hoverable = true;
   @Input({ transform: booleanAttribute }) responsive = true;
-  @Input() trackByFn: (item: any) => any = (item) => item;
+  @Input() trackByFn: (item: any) => any = item => item;
   @Input() classOverride = '';
 
   @Output() selectionChange = new EventEmitter<any[]>();
@@ -134,10 +134,10 @@ export class TwTableComponent {
     return Math.min(this.currentPage() * this.rows, this.totalRecords());
   });
 
-  protected visiblePages = computed((): (number | string)[] => {
+  protected visiblePages = computed((): Array<number | string> => {
     const total = this.totalPages();
     const current = this.currentPage();
-    const pages: (number | string)[] = [];
+    const pages: Array<number | string> = [];
     if (total <= 7) {
       for (let i = 1; i <= total; i++) pages.push(i);
     } else {
@@ -170,23 +170,28 @@ export class TwTableComponent {
     );
   });
 
-  protected tableWrapperClasses = computed(() => this.responsive ? 'overflow-x-auto' : '');
+  protected tableWrapperClasses = computed(() => (this.responsive ? 'overflow-x-auto' : ''));
 
   protected tableClasses = computed(() => {
     const sizeClasses = TABLE_SIZES[this.size].text;
-    return this.twClass.merge('w-full', sizeClasses, this.variant === 'bordered' ? 'border-collapse' : '');
+    return this.twClass.merge(
+      'w-full',
+      sizeClasses,
+      this.variant === 'bordered' ? 'border-collapse' : ''
+    );
   });
 
   protected theadClasses = computed(() => 'bg-slate-50 border-b border-slate-200');
 
   protected thClasses(col: TableColumn) {
     const sizeClasses = TABLE_SIZES[this.size].cell;
-    const alignClasses = col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left';
+    const alignClasses =
+      col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left';
     return this.twClass.merge(
       'font-semibold text-slate-700 whitespace-nowrap',
       sizeClasses,
       alignClasses,
-      col.sortable !== false ? 'cursor-pointer hover:bg-slate-100 select-none' : ''
+      col.sortable === false ? '' : 'cursor-pointer hover:bg-slate-100 select-none'
     );
   }
 
@@ -205,7 +210,8 @@ export class TwTableComponent {
 
   protected tdClasses(col: TableColumn) {
     const sizeClasses = TABLE_SIZES[this.size].cell;
-    const alignClasses = col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left';
+    const alignClasses =
+      col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left';
     return this.twClass.merge(
       'text-slate-600',
       sizeClasses,
@@ -218,7 +224,9 @@ export class TwTableComponent {
     const isCurrent = page === this.currentPage();
     return this.twClass.merge(
       'w-8 h-8 text-sm font-medium rounded-lg transition-colors',
-      isCurrent ? 'bg-blue-600 text-white' : 'text-slate-600 bg-white border border-slate-300 hover:bg-slate-50'
+      isCurrent
+        ? 'bg-blue-600 text-white'
+        : 'text-slate-600 bg-white border border-slate-300 hover:bg-slate-50'
     );
   }
 
@@ -258,13 +266,11 @@ export class TwTableComponent {
     const index = current.indexOf(row);
     if (this.selectionMode === 'single') {
       this.selection.set(index === -1 ? [row] : []);
-    } else {
-      if (index === -1) {
+    } else if (index === -1) {
         this.selection.set([...current, row]);
       } else {
         this.selection.set(current.filter(r => r !== row));
       }
-    }
     this.selectionChange.emit(this.selection());
   }
 
@@ -300,4 +306,3 @@ export class TwTableComponent {
     this.clearSelection();
   }
 }
-

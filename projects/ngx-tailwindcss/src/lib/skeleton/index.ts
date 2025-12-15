@@ -1,2 +1,1 @@
 export * from './skeleton.component';
-

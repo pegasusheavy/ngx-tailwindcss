@@ -1,15 +1,15 @@
 import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
-  Input,
-  Output,
+  computed,
   EventEmitter,
   forwardRef,
-  ChangeDetectionStrategy,
-  computed,
-  signal,
-  booleanAttribute,
-  numberAttribute,
   inject,
+  Input,
+  numberAttribute,
+  Output,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -56,7 +56,7 @@ const RATING_SIZES: Record<RatingSize, string> = {
   templateUrl: './rating.component.html',
 })
 export class TwRatingComponent implements ControlValueAccessor {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Number of stars */
   @Input({ transform: numberAttribute }) stars = 5;
@@ -103,7 +103,7 @@ export class TwRatingComponent implements ControlValueAccessor {
   private onChangeFn: (value: number) => void = () => {};
   private onTouchedFn: () => void = () => {};
 
-  protected starsArray = computed(() => Array(this.stars).fill(0));
+  protected starsArray = computed(() => new Array(this.stars).fill(0));
 
   protected containerClasses = computed(() => {
     return this.twClass.merge(
@@ -189,4 +189,3 @@ export class TwRatingComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 }
-

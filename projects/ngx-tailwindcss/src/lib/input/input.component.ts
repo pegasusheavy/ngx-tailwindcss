@@ -1,26 +1,26 @@
 import {
+  AfterContentInit,
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
+  computed,
+  ContentChild,
+  Directive,
+  ElementRef,
+  EventEmitter,
+  forwardRef,
+  HostBinding,
+  inject,
   Input,
   Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  inject,
-  booleanAttribute,
-  computed,
-  forwardRef,
   signal,
-  ElementRef,
   ViewChild,
-  Directive,
-  HostBinding,
-  ContentChild,
-  AfterContentInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ControlValueAccessor,
-  NG_VALUE_ACCESSOR,
   FormsModule,
+  NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
 } from '@angular/forms';
 import { TwClassService } from '../core/tw-class.service';
@@ -38,8 +38,10 @@ const INPUT_BASE_CLASSES = `
 `;
 
 const INPUT_VARIANTS: Record<InputVariant, string> = {
-  default: 'bg-white border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
-  filled: 'bg-slate-100 border-2 border-transparent rounded-lg focus:bg-white focus:border-blue-500',
+  default:
+    'bg-white border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
+  filled:
+    'bg-slate-100 border-2 border-transparent rounded-lg focus:bg-white focus:border-blue-500',
   outlined: 'bg-transparent border-2 border-slate-300 rounded-lg focus:border-blue-500',
   underlined: 'bg-transparent border-b-2 border-slate-300 rounded-none px-0 focus:border-blue-500',
 };
@@ -60,17 +62,14 @@ const INPUT_ERROR_CLASSES = 'border-rose-500 focus:border-rose-500 focus:ring-ro
   standalone: true,
 })
 export class TwLabelDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
   @Input({ transform: booleanAttribute }) required = false;
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge(
-      'block text-sm font-medium text-slate-700 mb-1.5',
-      this.class
-    );
+    return this.twClass.merge('block text-sm font-medium text-slate-700 mb-1.5', this.class);
   }
 }
 
@@ -82,16 +81,13 @@ export class TwLabelDirective {
   standalone: true,
 })
 export class TwHintDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge(
-      'block text-xs text-slate-500 mt-1.5',
-      this.class
-    );
+    return this.twClass.merge('block text-xs text-slate-500 mt-1.5', this.class);
   }
 }
 
@@ -103,16 +99,13 @@ export class TwHintDirective {
   standalone: true,
 })
 export class TwErrorDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge(
-      'block text-xs text-rose-600 mt-1.5',
-      this.class
-    );
+    return this.twClass.merge('block text-xs text-rose-600 mt-1.5', this.class);
   }
 
   @HostBinding('attr.role')
@@ -129,16 +122,13 @@ export class TwErrorDirective {
   standalone: true,
 })
 export class TwInputAffixDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge(
-      'flex items-center text-slate-500',
-      this.class
-    );
+    return this.twClass.merge('flex items-center text-slate-500', this.class);
   }
 }
 
@@ -178,17 +168,17 @@ export class TwInputAffixDirective {
     },
   ],
   host: {
-    'class': 'block',
+    class: 'block',
   },
 })
 export class TwInputComponent implements ControlValueAccessor {
-  private twClass = inject(TwClassService);
-  private elementRef = inject(ElementRef);
+  private readonly twClass = inject(TwClassService);
+  private readonly elementRef = inject(ElementRef);
 
   @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement>;
 
   /** Input type */
-  @Input() type: string = 'text';
+  @Input() type = 'text';
 
   /** Visual variant */
   @Input() variant: InputVariant = 'default';
@@ -268,7 +258,9 @@ export class TwInputComponent implements ControlValueAccessor {
   }
 
   protected wrapperClasses = computed(() => {
-    const hasAffixes = this.elementRef.nativeElement.querySelector('[twInputPrefix], [twInputSuffix]');
+    const hasAffixes = this.elementRef.nativeElement.querySelector(
+      '[twInputPrefix], [twInputSuffix]'
+    );
 
     if (hasAffixes || this.clearable) {
       return this.twClass.merge(
@@ -289,7 +281,7 @@ export class TwInputComponent implements ControlValueAccessor {
       // When wrapped, input should be transparent
       return this.twClass.merge(
         'flex-1 min-w-0 bg-transparent border-none focus:ring-0 p-0',
-        INPUT_BASE_CLASSES.replace(/px-\d+/g, '').replace(/py-[\d.]+/g, ''),
+        INPUT_BASE_CLASSES.replaceAll(/px-\d+/g, '').replaceAll(/py-[\d.]+/g, ''),
         this.classOverride
       );
     }
@@ -365,11 +357,11 @@ export class TwInputComponent implements ControlValueAccessor {
     },
   ],
   host: {
-    'class': 'block',
+    class: 'block',
   },
 })
 export class TwTextareaComponent implements ControlValueAccessor {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @ViewChild('textareaElement') textareaElement!: ElementRef<HTMLTextAreaElement>;
 
@@ -412,7 +404,7 @@ export class TwTextareaComponent implements ControlValueAccessor {
   writeValue(value: string): void {
     this.value = value ?? '';
     if (this.autoResize) {
-      setTimeout(() => this.adjustHeight(), 0);
+      setTimeout(() => { this.adjustHeight(); }, 0);
     }
   }
 
@@ -454,4 +446,3 @@ export class TwTextareaComponent implements ControlValueAccessor {
     this.textareaElement?.nativeElement?.focus();
   }
 }
-

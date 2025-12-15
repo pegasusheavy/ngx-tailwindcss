@@ -1,25 +1,31 @@
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  inject,
   booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
   computed,
-  signal,
-  ElementRef,
   Directive,
+  effect,
+  ElementRef,
+  EventEmitter,
+  inject,
+  Input,
   OnDestroy,
+  Output,
   PLATFORM_ID,
   Renderer2,
-  effect,
+  signal,
   ViewChild,
 } from '@angular/core';
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
-export type DropdownPosition = 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end' | 'left' | 'right';
+export type DropdownPosition =
+  | 'bottom-start'
+  | 'bottom-end'
+  | 'top-start'
+  | 'top-end'
+  | 'left'
+  | 'right';
 
 /**
  * Dropdown item directive
@@ -28,8 +34,9 @@ export type DropdownPosition = 'bottom-start' | 'bottom-end' | 'top-start' | 'to
   selector: '[twDropdownItem]',
   standalone: true,
   host: {
-    'class': 'block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100 focus:text-slate-900 focus:outline-none disabled:opacity-50 disabled:pointer-events-none transition-colors cursor-pointer',
-    'role': 'menuitem',
+    class:
+      'block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100 focus:text-slate-900 focus:outline-none disabled:opacity-50 disabled:pointer-events-none transition-colors cursor-pointer',
+    role: 'menuitem',
     '[attr.tabindex]': 'disabled ? -1 : 0',
     '[attr.aria-disabled]': 'disabled',
   },
@@ -45,8 +52,8 @@ export class TwDropdownItemDirective {
   selector: 'tw-dropdown-divider',
   standalone: true,
   host: {
-    'class': 'block my-1 border-t border-slate-200',
-    'role': 'separator',
+    class: 'block my-1 border-t border-slate-200',
+    role: 'separator',
   },
   template: ``,
 })
@@ -59,7 +66,7 @@ export class TwDropdownDividerComponent {}
   selector: 'tw-dropdown-header',
   standalone: true,
   host: {
-    'class': 'block px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider',
+    class: 'block px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider',
   },
   template: `<ng-content></ng-content>`,
 })
@@ -89,15 +96,15 @@ export class TwDropdownHeaderComponent {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './dropdown.component.html',
   host: {
-    'class': 'inline-block text-left',
+    class: 'inline-block text-left',
   },
 })
 export class TwDropdownComponent implements OnDestroy {
-  private twClass = inject(TwClassService);
-  private elementRef = inject(ElementRef);
-  private document = inject(DOCUMENT);
-  private renderer = inject(Renderer2);
-  private platformId = inject(PLATFORM_ID);
+  private readonly twClass = inject(TwClassService);
+  private readonly elementRef = inject(ElementRef);
+  private readonly document = inject(DOCUMENT);
+  private readonly renderer = inject(Renderer2);
+  private readonly platformId = inject(PLATFORM_ID);
 
   @ViewChild('triggerContainer') triggerContainer!: ElementRef<HTMLElement>;
 
@@ -136,9 +143,7 @@ export class TwDropdownComponent implements OnDestroy {
   private keydownListener: (() => void) | null = null;
 
   protected menuClasses = computed(() => {
-    const widthClass = this.width === 'auto' ? 'min-w-[10rem]' :
-                       this.width === 'trigger' ? '' :
-                       '';
+    const widthClass = this.width === 'auto' ? 'min-w-[10rem]' : this.width === 'trigger' ? '' : '';
 
     return this.twClass.merge(
       'rounded-lg bg-white shadow-lg ring-1 ring-black/5 overflow-auto py-1',
@@ -210,7 +215,11 @@ export class TwDropdownComponent implements OnDestroy {
     // Add animation classes
     this.renderer.setStyle(this.portalElement, 'opacity', '0');
     this.renderer.setStyle(this.portalElement, 'transform', 'scale(0.95)');
-    this.renderer.setStyle(this.portalElement, 'transition', 'opacity 100ms ease-out, transform 100ms ease-out');
+    this.renderer.setStyle(
+      this.portalElement,
+      'transition',
+      'opacity 100ms ease-out, transform 100ms ease-out'
+    );
 
     // Set ARIA attributes
     this.renderer.setAttribute(this.portalElement, 'role', 'menu');
@@ -318,30 +327,36 @@ export class TwDropdownComponent implements OnDestroy {
     const gap = 4; // margin between trigger and dropdown
 
     switch (this.position) {
-      case 'bottom-start':
+      case 'bottom-start': {
         top = rect.bottom + gap;
         left = rect.left;
         break;
-      case 'bottom-end':
+      }
+      case 'bottom-end': {
         top = rect.bottom + gap;
         left = rect.right - portalRect.width;
         break;
-      case 'top-start':
+      }
+      case 'top-start': {
         top = rect.top - portalRect.height - gap;
         left = rect.left;
         break;
-      case 'top-end':
+      }
+      case 'top-end': {
         top = rect.top - portalRect.height - gap;
         left = rect.right - portalRect.width;
         break;
-      case 'left':
+      }
+      case 'left': {
         top = rect.top;
         left = rect.left - portalRect.width - gap;
         break;
-      case 'right':
+      }
+      case 'right': {
         top = rect.top;
         left = rect.right + gap;
         break;
+      }
     }
 
     // Ensure dropdown stays within viewport

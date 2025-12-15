@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 
 /**
@@ -7,12 +7,12 @@ import { DOCUMENT } from '@angular/common';
  */
 @Injectable({ providedIn: 'root' })
 export class TwAriaService {
-  private document = inject(DOCUMENT);
+  private readonly document = inject(DOCUMENT);
   private liveRegion: HTMLElement | null = null;
   private assertiveRegion: HTMLElement | null = null;
 
-  private announceQueue = signal<string[]>([]);
-  private isProcessing = signal(false);
+  private readonly announceQueue = signal<string[]>([]);
+  private readonly isProcessing = signal(false);
 
   /**
    * Announce a message to screen readers using a polite live region.
@@ -90,7 +90,7 @@ export class TwAriaService {
     this.liveRegion.setAttribute('aria-atomic', 'true');
     this.liveRegion.setAttribute('role', 'status');
     this.applyScreenReaderOnlyStyles(this.liveRegion);
-    this.document.body.appendChild(this.liveRegion);
+    this.document.body.append(this.liveRegion);
   }
 
   private ensureAssertiveRegion(): void {
@@ -101,7 +101,7 @@ export class TwAriaService {
     this.assertiveRegion.setAttribute('aria-atomic', 'true');
     this.assertiveRegion.setAttribute('role', 'alert');
     this.applyScreenReaderOnlyStyles(this.assertiveRegion);
-    this.document.body.appendChild(this.assertiveRegion);
+    this.document.body.append(this.assertiveRegion);
   }
 
   private applyScreenReaderOnlyStyles(element: HTMLElement): void {
@@ -127,13 +127,13 @@ export const AriaUtils = {
    * Generate a unique ID for ARIA relationships.
    */
   generateId(prefix = 'tw'): string {
-    return `${prefix}-${Math.random().toString(36).substring(2, 9)}`;
+    return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
   },
 
   /**
    * Create ARIA describedby value from multiple IDs.
    */
-  describedBy(...ids: (string | null | undefined)[]): string | null {
+  describedBy(...ids: Array<string | null | undefined>): string | null {
     const validIds = ids.filter(Boolean);
     return validIds.length > 0 ? validIds.join(' ') : null;
   },
@@ -141,7 +141,7 @@ export const AriaUtils = {
   /**
    * Create ARIA labelledby value from multiple IDs.
    */
-  labelledBy(...ids: (string | null | undefined)[]): string | null {
+  labelledBy(...ids: Array<string | null | undefined>): string | null {
     const validIds = ids.filter(Boolean);
     return validIds.length > 0 ? validIds.join(' ') : null;
   },
@@ -165,7 +165,12 @@ export const AriaUtils = {
       treeitem: { default: 'treeitem' },
       grid: { default: 'grid', treegrid: 'treegrid' },
       row: { default: 'row' },
-      cell: { default: 'cell', gridcell: 'gridcell', columnheader: 'columnheader', rowheader: 'rowheader' },
+      cell: {
+        default: 'cell',
+        gridcell: 'gridcell',
+        columnheader: 'columnheader',
+        rowheader: 'rowheader',
+      },
       progressbar: { default: 'progressbar' },
       slider: { default: 'slider' },
       spinbutton: { default: 'spinbutton' },
@@ -187,4 +192,3 @@ export const AriaUtils = {
     return componentRoles[context || 'default'] || componentRoles['default'];
   },
 };
-

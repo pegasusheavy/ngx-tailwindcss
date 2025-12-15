@@ -1,18 +1,10 @@
 <!-- Backdrop -->
 @if (visible() && showBackdrop) {
-  <div
-    [class]="backdropClasses()"
-    (click)="onBackdropClick()"
-    aria-hidden="true">
-  </div>
+  <div [class]="backdropClasses()" (click)="onBackdropClick()" aria-hidden="true"></div>
 }
 
 <!-- Sidebar panel -->
-<div
-  [class]="panelClasses()"
-  [attr.aria-hidden]="!visible()"
-  role="dialog"
-  aria-modal="true">
+<div [class]="panelClasses()" [attr.aria-hidden]="!visible()" role="dialog" aria-modal="true">
   <!-- Header -->
   @if (header || showCloseButton) {
     <div [class]="headerClasses()">
@@ -24,8 +16,15 @@
           type="button"
           class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
           (click)="hide()"
-          aria-label="Close sidebar">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          aria-label="Close sidebar"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
@@ -45,4 +44,3 @@
     </div>
   }
 </div>
-

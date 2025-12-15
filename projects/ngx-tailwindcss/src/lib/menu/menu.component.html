@@ -11,13 +11,19 @@
           [disabled]="item.disabled"
           role="menuitem"
           aria-haspopup="true"
-          [attr.aria-expanded]="openSubmenu() === item">
+          [attr.aria-expanded]="openSubmenu() === item"
+        >
           @if (item.icon) {
             <ng-container *ngTemplateOutlet="item.icon"></ng-container>
           }
           <span class="flex-1">{{ item.label }}</span>
           <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            />
           </svg>
         </button>
         @if (openSubmenu() === item) {
@@ -31,7 +37,8 @@
                   [class]="itemClasses(subItem)"
                   [disabled]="subItem.disabled"
                   role="menuitem"
-                  (click)="onItemClick(subItem)">
+                  (click)="onItemClick(subItem)"
+                >
                   @if (subItem.icon) {
                     <ng-container *ngTemplateOutlet="subItem.icon"></ng-container>
                   }
@@ -52,7 +59,8 @@
         [class]="itemClasses(item)"
         [disabled]="item.disabled"
         role="menuitem"
-        (click)="onItemClick(item)">
+        (click)="onItemClick(item)"
+      >
         @if (item.icon) {
           <ng-container *ngTemplateOutlet="item.icon"></ng-container>
         }
@@ -67,4 +75,3 @@
     }
   }
 </div>
-

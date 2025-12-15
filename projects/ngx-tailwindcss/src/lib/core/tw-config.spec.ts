@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { TW_CONFIG, DEFAULT_TW_CONFIG, TwConfig } from './tw-config';
+import { describe, expect, it } from 'vitest';
+import { DEFAULT_TW_CONFIG, TW_CONFIG, TwConfig } from './tw-config';
 
 describe('TwConfig', () => {
   describe('TW_CONFIG InjectionToken', () => {
@@ -92,4 +92,3 @@ describe('TwConfig', () => {
     });
   });
 });
-

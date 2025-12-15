@@ -1,17 +1,17 @@
-import { Component, ViewChild, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
-  TwCardComponent,
-  TwCardHeaderDirective,
-  TwCardTitleDirective,
-  TwCardSubtitleDirective,
-  TwCardBodyDirective,
-  TwCardFooterDirective,
-  TwCardMediaDirective,
-  TwCardHorizontalComponent,
   CardVariant,
+  TwCardBodyDirective,
+  TwCardComponent,
+  TwCardFooterDirective,
+  TwCardHeaderDirective,
+  TwCardHorizontalComponent,
+  TwCardMediaDirective,
+  TwCardSubtitleDirective,
+  TwCardTitleDirective,
 } from './card.component';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -24,7 +24,8 @@ import { TwClassService } from '../core/tw-class.service';
       [padded]="padded()"
       [classOverride]="classOverride()"
       [classReplace]="classReplace()"
-      data-testid="test-card">
+      data-testid="test-card"
+    >
       <tw-card-body>Card content</tw-card-body>
     </tw-card>
   `,
@@ -180,7 +181,9 @@ describe('Card section directives', () => {
 
   describe('TwCardSubtitleDirective', () => {
     it('should apply subtitle classes', () => {
-      const subtitle = fixture.debugElement.query(By.directive(TwCardSubtitleDirective)).nativeElement;
+      const subtitle = fixture.debugElement.query(
+        By.directive(TwCardSubtitleDirective)
+      ).nativeElement;
       expect(subtitle.className).toContain('text-sm');
     });
   });
@@ -205,7 +208,7 @@ describe('Card section directives', () => {
   template: `
     <tw-card>
       <tw-card-media [position]="position()" [class]="mediaClass()">
-        <img src="test.jpg" alt="Test">
+        <img src="test.jpg" alt="Test" />
       </tw-card-media>
       <tw-card-body>Content</tw-card-body>
     </tw-card>

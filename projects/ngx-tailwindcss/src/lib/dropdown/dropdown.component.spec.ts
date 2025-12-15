@@ -1,14 +1,14 @@
-import { Component, ViewChild, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
+  DropdownPosition,
   TwDropdownComponent,
-  TwDropdownItemDirective,
   TwDropdownDividerComponent,
   TwDropdownHeaderComponent,
-  DropdownPosition,
+  TwDropdownItemDirective,
 } from './dropdown.component';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -20,7 +20,8 @@ import { TwClassService } from '../core/tw-class.service';
       [closeOnSelect]="closeOnSelect()"
       (opened)="onOpened()"
       (closed)="onClosed()"
-      data-testid="test-dropdown">
+      data-testid="test-dropdown"
+    >
       <button twDropdownTrigger data-testid="trigger">Open Menu</button>
       <div class="tw-dropdown-menu">
         <button twDropdownItem data-testid="item-1">Item 1</button>
@@ -29,10 +30,7 @@ import { TwClassService } from '../core/tw-class.service';
     </tw-dropdown>
   `,
   standalone: true,
-  imports: [
-    TwDropdownComponent,
-    TwDropdownItemDirective,
-  ],
+  imports: [TwDropdownComponent, TwDropdownItemDirective],
 })
 class TestHostComponent {
   @ViewChild(TwDropdownComponent) dropdown!: TwDropdownComponent;
@@ -80,14 +78,14 @@ describe('TwDropdownComponent', () => {
 
   it('should not be open initially', () => {
     // Test internal state since portal is created dynamically
-    expect(component.dropdown['isOpen']()).toBe(false);
+    expect(component.dropdown.isOpen()).toBe(false);
   });
 
   it('should open when trigger is clicked', () => {
     trigger.click();
     fixture.detectChanges();
 
-    expect(component.dropdown['isOpen']()).toBe(true);
+    expect(component.dropdown.isOpen()).toBe(true);
     expect(component.openedCount).toBe(1);
   });
 
@@ -98,7 +96,7 @@ describe('TwDropdownComponent', () => {
     trigger.click();
     fixture.detectChanges();
 
-    expect(component.dropdown['isOpen']()).toBe(false);
+    expect(component.dropdown.isOpen()).toBe(false);
     expect(component.closedCount).toBe(1);
   });
 
@@ -109,7 +107,7 @@ describe('TwDropdownComponent', () => {
     trigger.click();
     fixture.detectChanges();
 
-    expect(component.dropdown['isOpen']()).toBe(false);
+    expect(component.dropdown.isOpen()).toBe(false);
   });
 
   describe('positions', () => {
@@ -132,7 +130,7 @@ describe('TwDropdownComponent', () => {
         trigger.click();
         fixture.detectChanges();
 
-        expect(component.dropdown['isOpen']()).toBe(true);
+        expect(component.dropdown.isOpen()).toBe(true);
       });
     });
   });
@@ -142,7 +140,7 @@ describe('TwDropdownComponent', () => {
       component.dropdown.open();
       fixture.detectChanges();
 
-      expect(component.dropdown['isOpen']()).toBe(true);
+      expect(component.dropdown.isOpen()).toBe(true);
     });
 
     it('should close via close()', () => {
@@ -152,27 +150,25 @@ describe('TwDropdownComponent', () => {
       component.dropdown.close();
       fixture.detectChanges();
 
-      expect(component.dropdown['isOpen']()).toBe(false);
+      expect(component.dropdown.isOpen()).toBe(false);
     });
 
     it('should toggle via toggle()', () => {
       component.dropdown.toggle();
       fixture.detectChanges();
 
-      expect(component.dropdown['isOpen']()).toBe(true);
+      expect(component.dropdown.isOpen()).toBe(true);
 
       component.dropdown.toggle();
       fixture.detectChanges();
 
-      expect(component.dropdown['isOpen']()).toBe(false);
+      expect(component.dropdown.isOpen()).toBe(false);
     });
   });
 });
 
 @Component({
-  template: `
-    <tw-dropdown-divider></tw-dropdown-divider>
-  `,
+  template: ` <tw-dropdown-divider></tw-dropdown-divider> `,
   standalone: true,
   imports: [TwDropdownDividerComponent],
 })
@@ -197,9 +193,7 @@ describe('TwDropdownDividerComponent', () => {
 });
 
 @Component({
-  template: `
-    <tw-dropdown-header>Actions</tw-dropdown-header>
-  `,
+  template: ` <tw-dropdown-header>Actions</tw-dropdown-header> `,
   standalone: true,
   imports: [TwDropdownHeaderComponent],
 })

@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { Component, computed, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type ProgressSize = 'xs' | 'sm' | 'md' | 'lg';
@@ -11,16 +11,36 @@ export type ProgressVariant = 'primary' | 'secondary' | 'success' | 'warning' | 
   templateUrl: './progress.component.html',
 })
 export class TwProgressComponent {
-  @Input() set value(val: number) { this._value.set(val); }
-  @Input() set max(val: number) { this._max.set(val); }
-  @Input() set size(val: ProgressSize) { this._size.set(val); }
-  @Input() set variant(val: ProgressVariant) { this._variant.set(val); }
-  @Input() set label(val: string) { this._label.set(val); }
-  @Input() set showValue(val: boolean) { this._showValue.set(val); }
-  @Input() set labelPosition(val: 'top' | 'bottom' | 'inside') { this._labelPosition.set(val); }
-  @Input() set striped(val: boolean) { this._striped.set(val); }
-  @Input() set animated(val: boolean) { this._animated.set(val); }
-  @Input() set indeterminate(val: boolean) { this._indeterminate.set(val); }
+  @Input() set value(val: number) {
+    this._value.set(val);
+  }
+  @Input() set max(val: number) {
+    this._max.set(val);
+  }
+  @Input() set size(val: ProgressSize) {
+    this._size.set(val);
+  }
+  @Input() set variant(val: ProgressVariant) {
+    this._variant.set(val);
+  }
+  @Input() set label(val: string) {
+    this._label.set(val);
+  }
+  @Input() set showValue(val: boolean) {
+    this._showValue.set(val);
+  }
+  @Input() set labelPosition(val: 'top' | 'bottom' | 'inside') {
+    this._labelPosition.set(val);
+  }
+  @Input() set striped(val: boolean) {
+    this._striped.set(val);
+  }
+  @Input() set animated(val: boolean) {
+    this._animated.set(val);
+  }
+  @Input() set indeterminate(val: boolean) {
+    this._indeterminate.set(val);
+  }
 
   protected _value = signal(0);
   protected _max = signal(100);
@@ -57,10 +77,7 @@ export class TwProgressComponent {
       lg: 'h-4',
     };
 
-    return [
-      'w-full overflow-hidden rounded-full bg-slate-200',
-      sizeClasses[size],
-    ].join(' ');
+    return ['w-full overflow-hidden rounded-full bg-slate-200', sizeClasses[size]].join(' ');
   });
 
   protected barClasses = computed(() => {
@@ -98,7 +115,9 @@ export class TwProgressComponent {
     }
 
     if (striped) {
-      classes.push('bg-[length:1rem_1rem] bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)]');
+      classes.push(
+        'bg-[length:1rem_1rem] bg-[linear-gradient(45deg,rgba(255,255,255,0.15)_25%,transparent_25%,transparent_50%,rgba(255,255,255,0.15)_50%,rgba(255,255,255,0.15)_75%,transparent_75%,transparent)]'
+      );
     }
 
     if (animated && striped) {
@@ -118,34 +137,61 @@ export class TwProgressComponent {
   standalone: true,
   imports: [CommonModule],
   templateUrl: './progress-circular.component.html',
-  styles: [`
-    :host {
-      display: inline-block;
-    }
-    @keyframes circular-rotate {
-      100% { transform: rotate(360deg); }
-    }
-    @keyframes circular-dash {
-      0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
-      50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
-      100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
-    }
-    .circular-rotate {
-      animation: circular-rotate 2s linear infinite;
-    }
-    .circular-dash {
-      animation: circular-dash 1.5s ease-in-out infinite;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: inline-block;
+      }
+      @keyframes circular-rotate {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes circular-dash {
+        0% {
+          stroke-dasharray: 1, 150;
+          stroke-dashoffset: 0;
+        }
+        50% {
+          stroke-dasharray: 90, 150;
+          stroke-dashoffset: -35;
+        }
+        100% {
+          stroke-dasharray: 90, 150;
+          stroke-dashoffset: -124;
+        }
+      }
+      .circular-rotate {
+        animation: circular-rotate 2s linear infinite;
+      }
+      .circular-dash {
+        animation: circular-dash 1.5s ease-in-out infinite;
+      }
+    `,
+  ],
 })
 export class TwProgressCircularComponent {
-  @Input() set value(val: number) { this._value.set(val); }
-  @Input() set max(val: number) { this._max.set(val); }
-  @Input() set size(val: number) { this._size.set(val); }
-  @Input() set variant(val: ProgressVariant) { this._variant.set(val); }
-  @Input() set showValue(val: boolean) { this._showValue.set(val); }
-  @Input() set indeterminate(val: boolean) { this._indeterminate.set(val); }
-  @Input() set thickness(val: number) { this._thickness.set(val); }
+  @Input() set value(val: number) {
+    this._value.set(val);
+  }
+  @Input() set max(val: number) {
+    this._max.set(val);
+  }
+  @Input() set size(val: number) {
+    this._size.set(val);
+  }
+  @Input() set variant(val: ProgressVariant) {
+    this._variant.set(val);
+  }
+  @Input() set showValue(val: boolean) {
+    this._showValue.set(val);
+  }
+  @Input() set indeterminate(val: boolean) {
+    this._indeterminate.set(val);
+  }
+  @Input() set thickness(val: number) {
+    this._thickness.set(val);
+  }
 
   protected _value = signal(0);
   protected _max = signal(100);
@@ -193,7 +239,8 @@ export class TwProgressCircularComponent {
 
   protected valueClasses = computed(() => {
     const sz = this._size();
-    const fontSize = sz < 40 ? 'text-[10px]' : sz < 56 ? 'text-xs' : sz < 72 ? 'text-sm' : 'text-base';
+    const fontSize =
+      sz < 40 ? 'text-[10px]' : sz < 56 ? 'text-xs' : sz < 72 ? 'text-sm' : 'text-base';
     return `absolute inset-0 flex items-center justify-center font-semibold text-slate-700 ${fontSize}`;
   });
 }

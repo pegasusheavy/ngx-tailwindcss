@@ -1,16 +1,16 @@
-import { Component, ViewChild, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import {
-  TwInputComponent,
-  TwTextareaComponent,
-  TwLabelDirective,
-  TwHintDirective,
-  TwErrorDirective,
-  InputVariant,
   InputSize,
+  InputVariant,
+  TwErrorDirective,
+  TwHintDirective,
+  TwInputComponent,
+  TwLabelDirective,
+  TwTextareaComponent,
 } from './input.component';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -29,7 +29,8 @@ import { TwClassService } from '../core/tw-class.service';
       [required]="required()"
       [clearable]="clearable()"
       [classOverride]="classOverride()"
-      data-testid="test-input">
+      data-testid="test-input"
+    >
     </tw-input>
   `,
   standalone: true,
@@ -211,7 +212,8 @@ describe('TwInputComponent', () => {
       [showCount]="showCount()"
       [autoResize]="autoResize()"
       [error]="error()"
-      data-testid="test-textarea">
+      data-testid="test-textarea"
+    >
     </tw-textarea>
   `,
   standalone: true,

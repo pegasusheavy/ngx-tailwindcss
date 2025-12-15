@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal, HostBinding } from '@angular/core';
+import { Component, computed, HostBinding, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type DividerOrientation = 'horizontal' | 'vertical';
@@ -10,40 +10,56 @@ export type DividerLabelPosition = 'left' | 'center' | 'right';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './divider.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
-    :host(.vertical) {
-      display: inline-flex;
-      align-self: stretch;
-      height: auto;
-    }
-    .divider-solid {
-      border-style: solid !important;
-    }
-    .divider-dashed {
-      border-style: dashed !important;
-    }
-    .divider-dotted {
-      border-style: dotted !important;
-    }
-    .vertical-line {
-      width: 0;
-      align-self: stretch;
-      min-height: 1em;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+      :host(.vertical) {
+        display: inline-flex;
+        align-self: stretch;
+        height: auto;
+      }
+      .divider-solid {
+        border-style: solid !important;
+      }
+      .divider-dashed {
+        border-style: dashed !important;
+      }
+      .divider-dotted {
+        border-style: dotted !important;
+      }
+      .vertical-line {
+        width: 0;
+        align-self: stretch;
+        min-height: 1em;
+      }
+    `,
+  ],
 })
 export class TwDividerComponent {
-  @Input() set orientation(value: DividerOrientation) { this._orientation.set(value); }
-  @Input() set variant(value: DividerVariant) { this._variant.set(value); }
+  @Input() set orientation(value: DividerOrientation) {
+    this._orientation.set(value);
+  }
+  @Input() set variant(value: DividerVariant) {
+    this._variant.set(value);
+  }
   // Alias for variant
-  @Input() set dividerStyle(value: DividerVariant) { this._variant.set(value); }
-  @Input() set labelPosition(value: DividerLabelPosition) { this._labelPosition.set(value); }
-  @Input() set color(value: string) { this._color.set(value); }
-  @Input() set spacing(value: 'sm' | 'md' | 'lg') { this._spacing.set(value); }
-  @Input() set label(value: string) { this._label.set(value); }
+  @Input() set dividerStyle(value: DividerVariant) {
+    this._variant.set(value);
+  }
+  @Input() set labelPosition(value: DividerLabelPosition) {
+    this._labelPosition.set(value);
+  }
+  @Input() set color(value: string) {
+    this._color.set(value);
+  }
+  @Input() set spacing(value: 'sm' | 'md' | 'lg') {
+    this._spacing.set(value);
+  }
+  @Input() set label(value: string) {
+    this._label.set(value);
+  }
 
   protected _orientation = signal<DividerOrientation>('horizontal');
   protected _variant = signal<DividerVariant>('solid');
@@ -77,12 +93,9 @@ export class TwDividerComponent {
       lg: 'my-8',
     };
 
-    return [
-      'border-t-2 border-0',
-      variantClasses[variant],
-      color,
-      spacingClasses[spacing],
-    ].join(' ');
+    return ['border-t-2 border-0', variantClasses[variant], color, spacingClasses[spacing]].join(
+      ' '
+    );
   });
 
   protected containerClasses = computed(() => {
@@ -94,10 +107,7 @@ export class TwDividerComponent {
       lg: 'my-8',
     };
 
-    return [
-      'flex items-center w-full',
-      spacingClasses[spacing],
-    ].join(' ');
+    return ['flex items-center w-full', spacingClasses[spacing]].join(' ');
   });
 
   protected lineClasses = computed(() => {
@@ -110,11 +120,7 @@ export class TwDividerComponent {
       dotted: 'divider-dotted',
     };
 
-    return [
-      'border-t-2 border-0',
-      variantClasses[variant],
-      color,
-    ].join(' ');
+    return ['border-t-2 border-0', variantClasses[variant], color].join(' ');
   });
 
   protected firstLineClasses = computed(() => {
@@ -137,8 +143,8 @@ export class TwDividerComponent {
     return `${baseClasses} flex-1`;
   });
 
-  protected labelClasses = computed(() =>
-    'px-4 text-sm text-slate-500 whitespace-nowrap select-none'
+  protected labelClasses = computed(
+    () => 'px-4 text-sm text-slate-500 whitespace-nowrap select-none'
   );
 
   protected verticalClasses = computed(() => {

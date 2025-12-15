@@ -1,14 +1,14 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
-  Output,
   EventEmitter,
-  OnInit,
-  OnDestroy,
   inject,
-  booleanAttribute,
+  Input,
   numberAttribute,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
 
 export interface InViewEvent {
@@ -33,7 +33,7 @@ export interface InViewEvent {
   standalone: true,
 })
 export class TwInViewDirective implements OnInit, OnDestroy {
-  private el: ElementRef<HTMLElement>;
+  private readonly el: ElementRef<HTMLElement>;
 
   constructor() {
     this.el = inject(ElementRef);
@@ -43,7 +43,7 @@ export class TwInViewDirective implements OnInit, OnDestroy {
 
   /** Root margin for intersection observer (CSS margin syntax) */
   @Input()
-  inViewRootMargin: string = '0px';
+  inViewRootMargin = '0px';
 
   /** Threshold(s) for triggering - 0 to 1, or array of values */
   @Input()
@@ -51,11 +51,11 @@ export class TwInViewDirective implements OnInit, OnDestroy {
 
   /** Only trigger once when element enters view */
   @Input({ transform: booleanAttribute })
-  inViewOnce: boolean = false;
+  inViewOnce = false;
 
   /** Disable the observer */
   @Input({ transform: booleanAttribute })
-  inViewDisabled: boolean = false;
+  inViewDisabled = false;
 
   /** Emits whenever intersection state changes */
   @Output()
@@ -75,8 +75,8 @@ export class TwInViewDirective implements OnInit, OnDestroy {
     }
 
     this.observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           const event: InViewEvent = {
             isIntersecting: entry.isIntersecting,
             intersectionRatio: entry.intersectionRatio,
@@ -113,4 +113,3 @@ export class TwInViewDirective implements OnInit, OnDestroy {
     }
   }
 }
-

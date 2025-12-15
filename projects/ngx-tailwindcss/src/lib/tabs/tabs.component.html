@@ -1,9 +1,6 @@
 <div [class]="containerClasses()">
   <!-- Tab list -->
-  <div
-    [class]="tabListClasses()"
-    role="tablist"
-    [attr.aria-orientation]="orientation">
+  <div [class]="tabListClasses()" role="tablist" [attr.aria-orientation]="orientation">
     @for (panel of panels; track panel.value) {
       <button
         type="button"
@@ -15,7 +12,8 @@
         [disabled]="panel.disabled"
         role="tab"
         (click)="selectTab(panel.value)"
-        (keydown)="onKeydown($event, panel.value)">
+        (keydown)="onKeydown($event, panel.value)"
+      >
         @if (panel.icon) {
           <span class="mr-2" [innerHTML]="panel.icon"></span>
         }
@@ -29,4 +27,3 @@
     <ng-content></ng-content>
   </div>
 </div>
-

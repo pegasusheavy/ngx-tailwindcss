@@ -1,36 +1,63 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { Component, computed, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type SpinnerSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type SpinnerVariant = 'border' | 'dots' | 'pulse' | 'bars';
-export type SpinnerColor = 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+export type SpinnerColor =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'neutral';
 
 @Component({
   selector: 'tw-spinner',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './spinner.component.html',
-  styles: [`
-    @keyframes bounce-dot {
-      0%, 80%, 100% { transform: scale(0); }
-      40% { transform: scale(1); }
-    }
-    @keyframes stretch-bar {
-      0%, 40%, 100% { transform: scaleY(0.4); }
-      20% { transform: scaleY(1); }
-    }
-    .dot-bounce {
-      animation: bounce-dot 1.4s infinite ease-in-out both;
-    }
-    .bar-stretch {
-      animation: stretch-bar 1.2s infinite ease-in-out;
-    }
-  `],
+  styles: [
+    `
+      @keyframes bounce-dot {
+        0%,
+        80%,
+        100% {
+          transform: scale(0);
+        }
+        40% {
+          transform: scale(1);
+        }
+      }
+      @keyframes stretch-bar {
+        0%,
+        40%,
+        100% {
+          transform: scaleY(0.4);
+        }
+        20% {
+          transform: scaleY(1);
+        }
+      }
+      .dot-bounce {
+        animation: bounce-dot 1.4s infinite ease-in-out both;
+      }
+      .bar-stretch {
+        animation: stretch-bar 1.2s infinite ease-in-out;
+      }
+    `,
+  ],
 })
 export class TwSpinnerComponent {
-  @Input() set size(val: SpinnerSize) { this._size.set(val); }
-  @Input() set variant(val: SpinnerVariant) { this._variant.set(val); }
-  @Input() set color(val: SpinnerColor | string) { this._color.set(val); }
+  @Input() set size(val: SpinnerSize) {
+    this._size.set(val);
+  }
+  @Input() set variant(val: SpinnerVariant) {
+    this._variant.set(val);
+  }
+  @Input() set color(val: SpinnerColor | string) {
+    this._color.set(val);
+  }
 
   protected _size = signal<SpinnerSize>('md');
   protected _variant = signal<SpinnerVariant>('border');
@@ -39,7 +66,7 @@ export class TwSpinnerComponent {
   protected variantVal = computed(() => this._variant());
 
   // Border color classes for border variant
-  private borderColors: Record<SpinnerColor, string> = {
+  private readonly borderColors: Record<SpinnerColor, string> = {
     primary: 'border-blue-600',
     secondary: 'border-slate-600',
     success: 'border-emerald-600',
@@ -50,7 +77,7 @@ export class TwSpinnerComponent {
   };
 
   // Background color classes for dots/pulse/bars variants
-  private bgColors: Record<SpinnerColor, string> = {
+  private readonly bgColors: Record<SpinnerColor, string> = {
     primary: 'bg-blue-600',
     secondary: 'bg-slate-600',
     success: 'bg-emerald-600',
@@ -121,11 +148,7 @@ export class TwSpinnerComponent {
       xl: 'w-3 h-3',
     };
 
-    return [
-      'rounded-full dot-bounce',
-      sizeClasses[sz],
-      this.getBgColor(),
-    ].join(' ');
+    return ['rounded-full dot-bounce', sizeClasses[sz], this.getBgColor()].join(' ');
   });
 
   protected pulseClasses = computed(() => {
@@ -139,11 +162,7 @@ export class TwSpinnerComponent {
       xl: 'w-10 h-10',
     };
 
-    return [
-      'rounded-full animate-pulse',
-      sizeClasses[sz],
-      this.getBgColor(),
-    ].join(' ');
+    return ['rounded-full animate-pulse', sizeClasses[sz], this.getBgColor()].join(' ');
   });
 
   protected barsContainerClasses = computed(() => {
@@ -171,11 +190,7 @@ export class TwSpinnerComponent {
       xl: 'w-2',
     };
 
-    return [
-      'h-full rounded-full bar-stretch',
-      sizeClasses[sz],
-      this.getBgColor(),
-    ].join(' ');
+    return ['h-full rounded-full bar-stretch', sizeClasses[sz], this.getBgColor()].join(' ');
   });
 }
 
@@ -186,11 +201,21 @@ export class TwSpinnerComponent {
   templateUrl: './loading-overlay.component.html',
 })
 export class TwLoadingOverlayComponent {
-  @Input() set size(val: SpinnerSize) { this._size.set(val); }
-  @Input() set variant(val: SpinnerVariant) { this._variant.set(val); }
-  @Input() set color(val: SpinnerColor | string) { this._color.set(val); }
-  @Input() set message(val: string) { this._message.set(val); }
-  @Input() set overlay(val: 'full' | 'inline') { this._overlay.set(val); }
+  @Input() set size(val: SpinnerSize) {
+    this._size.set(val);
+  }
+  @Input() set variant(val: SpinnerVariant) {
+    this._variant.set(val);
+  }
+  @Input() set color(val: SpinnerColor | string) {
+    this._color.set(val);
+  }
+  @Input() set message(val: string) {
+    this._message.set(val);
+  }
+  @Input() set overlay(val: 'full' | 'inline') {
+    this._overlay.set(val);
+  }
 
   protected _size = signal<SpinnerSize>('lg');
   protected _variant = signal<SpinnerVariant>('border');
@@ -211,13 +236,8 @@ export class TwLoadingOverlayComponent {
       inline: 'absolute inset-0 bg-white/80 backdrop-blur-sm rounded-inherit',
     };
 
-    return [
-      'flex items-center justify-center',
-      overlayStyles[ovl],
-    ].join(' ');
+    return ['flex items-center justify-center', overlayStyles[ovl]].join(' ');
   });
 
-  protected messageClasses = computed(() =>
-    'text-sm font-medium text-slate-600'
-  );
+  protected messageClasses = computed(() => 'text-sm font-medium text-slate-600');
 }

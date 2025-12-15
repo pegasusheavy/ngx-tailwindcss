@@ -1,13 +1,13 @@
 import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
+  computed,
+  EventEmitter,
+  inject,
   Input,
   Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  computed,
   signal,
-  booleanAttribute,
-  inject,
   TemplateRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -47,7 +47,7 @@ export type MenuVariant = 'default' | 'bordered' | 'elevated';
   templateUrl: './menu.component.html',
 })
 export class TwMenuComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Menu items */
   @Input() items: MenuItem[] = [];
@@ -73,11 +73,7 @@ export class TwMenuComponent {
       elevated: 'bg-white rounded-lg shadow-lg border border-slate-100',
     };
 
-    return this.twClass.merge(
-      'py-1 min-w-48',
-      variantClasses[this.variant],
-      this.classOverride
-    );
+    return this.twClass.merge('py-1 min-w-48', variantClasses[this.variant], this.classOverride);
   });
 
   protected itemClasses(item: MenuItem) {
@@ -139,7 +135,8 @@ export class TwMenuComponent {
         class="fixed z-50"
         [style.left.px]="x()"
         [style.top.px]="y()"
-        (click)="$event.stopPropagation()">
+        (click)="$event.stopPropagation()"
+      >
         <tw-menu [items]="items" variant="elevated" (onSelect)="onItemSelect($event)"></tw-menu>
       </div>
     }
@@ -177,4 +174,3 @@ export class TwContextMenuComponent {
     this.hide();
   }
 }
-

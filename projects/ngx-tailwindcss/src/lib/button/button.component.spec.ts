@@ -1,12 +1,12 @@
-import { Component, DebugElement, ViewChild, signal } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { Component, DebugElement, signal, ViewChild } from '@angular/core';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  ButtonSize,
+  ButtonVariant,
   TwButtonComponent,
   TwButtonLinkComponent,
-  ButtonVariant,
-  ButtonSize,
 } from './button.component';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -22,7 +22,8 @@ import { TwClassService } from '../core/tw-class.service';
       [ripple]="ripple()"
       [classOverride]="classOverride()"
       [classReplace]="classReplace()"
-      data-testid="test-button">
+      data-testid="test-button"
+    >
       {{ buttonText() }}
     </tw-button>
   `,

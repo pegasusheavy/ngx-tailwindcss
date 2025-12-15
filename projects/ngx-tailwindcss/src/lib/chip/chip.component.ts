@@ -1,12 +1,12 @@
 import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
+  computed,
+  EventEmitter,
+  inject,
   Input,
   Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  computed,
-  booleanAttribute,
-  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -72,7 +72,7 @@ const CHIP_SIZES: Record<ChipSize, { chip: string; image: string }> = {
   templateUrl: './chip.component.html',
 })
 export class TwChipComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Chip label text */
   @Input() label = '';
@@ -154,7 +154,8 @@ export class TwChipComponent {
           [chipStyle]="chipStyle"
           [size]="size"
           [removable]="!disabled"
-          (onRemove)="removeValue($index)">
+          (onRemove)="removeValue($index)"
+        >
         </tw-chip>
       }
       @if (allowAdd && !disabled) {
@@ -165,13 +166,14 @@ export class TwChipComponent {
           [disabled]="disabled"
           (keydown.enter)="onAddChip($event)"
           (keydown.backspace)="onBackspace($event)"
-          #inputRef />
+          #inputRef
+        />
       }
     </div>
   `,
 })
 export class TwChipsComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() values: any[] = [];
   @Input() variant: ChipVariant = 'primary';
@@ -236,4 +238,3 @@ export class TwChipsComponent {
     }
   }
 }
-

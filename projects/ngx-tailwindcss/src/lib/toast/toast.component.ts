@@ -1,8 +1,14 @@
-import { Component, Injectable, Input, computed, signal } from '@angular/core';
+import { Component, computed, Injectable, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type ToastVariant = 'info' | 'success' | 'warning' | 'danger' | 'neutral';
-export type ToastPosition = 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
+export type ToastPosition =
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'bottom-left'
+  | 'bottom-center'
+  | 'bottom-right';
 
 export interface ToastOptions {
   variant?: ToastVariant;
@@ -19,8 +25,8 @@ interface Toast extends ToastOptions {
 
 @Injectable({ providedIn: 'root' })
 export class TwToastService {
-  private _toasts = signal<Toast[]>([]);
-  private _position = signal<ToastPosition>('top-right');
+  private readonly _toasts = signal<Toast[]>([]);
+  private readonly _position = signal<ToastPosition>('top-right');
 
   readonly toasts = this._toasts.asReadonly();
   readonly position = this._position.asReadonly();
@@ -30,7 +36,7 @@ export class TwToastService {
   }
 
   show(options: ToastOptions): string {
-    const id = Math.random().toString(36).substring(2, 9);
+    const id = Math.random().toString(36).slice(2, 9);
     const toast: Toast = {
       id,
       variant: options.variant || 'info',
@@ -44,7 +50,7 @@ export class TwToastService {
     this._toasts.update(toasts => [...toasts, toast]);
 
     if (toast.duration && toast.duration > 0) {
-      setTimeout(() => this.dismiss(id), toast.duration);
+      setTimeout(() => { this.dismiss(id); }, toast.duration);
     }
 
     return id;
@@ -82,11 +88,21 @@ export class TwToastService {
   templateUrl: './toast.component.html',
 })
 export class TwToastComponent {
-  @Input() set variant(value: ToastVariant) { this._variant.set(value); }
-  @Input() set title(value: string) { this._title.set(value); }
-  @Input() set message(value: string) { this._message.set(value); }
-  @Input() set dismissible(value: boolean) { this._dismissible.set(value); }
-  @Input() set action(value: { label: string; onClick: () => void } | undefined) { this._action.set(value); }
+  @Input() set variant(value: ToastVariant) {
+    this._variant.set(value);
+  }
+  @Input() set title(value: string) {
+    this._title.set(value);
+  }
+  @Input() set message(value: string) {
+    this._message.set(value);
+  }
+  @Input() set dismissible(value: boolean) {
+    this._dismissible.set(value);
+  }
+  @Input() set action(value: { label: string; onClick: () => void } | undefined) {
+    this._action.set(value);
+  }
   @Input() dismiss: () => void = () => {};
 
   protected _variant = signal<ToastVariant>('info');
@@ -132,15 +148,23 @@ export class TwToastComponent {
   standalone: true,
   imports: [CommonModule, TwToastComponent],
   templateUrl: './toast-container.component.html',
-  styles: [`
-    @keyframes toast-in {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-  `],
+  styles: [
+    `
+      @keyframes toast-in {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    `,
+  ],
 })
 export class TwToastContainerComponent {
-  private toastService: TwToastService;
+  private readonly toastService: TwToastService;
   protected toasts;
   protected position;
 
@@ -170,6 +194,6 @@ export class TwToastContainerComponent {
   });
 
   getDismissFunction(id: string): () => void {
-    return () => this.toastService.dismiss(id);
+    return () => { this.toastService.dismiss(id); };
   }
 }

@@ -1,14 +1,14 @@
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  computed,
-  signal,
   booleanAttribute,
-  numberAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  EventEmitter,
   inject,
+  Input,
+  numberAttribute,
+  Output,
+  signal,
   TemplateRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -25,7 +25,10 @@ export interface StepItem {
 export type StepsOrientation = 'horizontal' | 'vertical';
 export type StepsSize = 'sm' | 'md' | 'lg';
 
-const STEPS_SIZES: Record<StepsSize, { indicator: string; indicatorSize: number; label: string; desc: string }> = {
+const STEPS_SIZES: Record<
+  StepsSize,
+  { indicator: string; indicatorSize: number; label: string; desc: string }
+> = {
   sm: { indicator: 'w-8 h-8 text-sm', indicatorSize: 32, label: 'text-sm', desc: 'text-xs' },
   md: { indicator: 'w-10 h-10 text-base', indicatorSize: 40, label: 'text-base', desc: 'text-sm' },
   lg: { indicator: 'w-12 h-12 text-lg', indicatorSize: 48, label: 'text-lg', desc: 'text-base' },
@@ -48,7 +51,7 @@ const STEPS_SIZES: Record<StepsSize, { indicator: string; indicatorSize: number;
   templateUrl: './steps.component.html',
 })
 export class TwStepsComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Step definitions */
   @Input() steps: StepItem[] = [];
@@ -81,50 +84,36 @@ export class TwStepsComponent {
   @Output() onStepClick$ = new EventEmitter<{ step: StepItem; index: number }>();
 
   protected containerClasses = computed(() => {
-    return this.twClass.merge(
-      'w-full',
-      this.classOverride
-    );
+    return this.twClass.merge('w-full', this.classOverride);
   });
 
   protected listClasses = computed(() => {
     return this.twClass.merge(
-      this.orientation === 'horizontal'
-        ? 'flex items-start'
-        : 'flex flex-col'
+      this.orientation === 'horizontal' ? 'flex items-start' : 'flex flex-col'
     );
   });
 
   protected itemClasses(isLast: boolean) {
     if (this.orientation === 'horizontal') {
-      return this.twClass.merge(
-        'relative flex items-center',
-        isLast ? '' : 'flex-1'
-      );
+      return this.twClass.merge('relative flex items-center', isLast ? '' : 'flex-1');
     }
     return '';
   }
 
   protected connectorClasses(index: number) {
     const isComplete = index < this.activeIndex;
-    return this.twClass.merge(
-      'flex-1 h-0.5 mx-2',
-      isComplete ? 'bg-blue-600' : 'bg-slate-200'
-    );
+    return this.twClass.merge('flex-1 h-0.5 mx-2', isComplete ? 'bg-blue-600' : 'bg-slate-200');
   }
 
   protected verticalConnectorClasses(index: number) {
     const isComplete = index < this.activeIndex;
-    const indicatorSize = STEPS_SIZES[this.size].indicatorSize;
+    const {indicatorSize} = STEPS_SIZES[this.size];
 
-    return this.twClass.merge(
-      'w-0.5 h-8',
-      isComplete ? 'bg-blue-600' : 'bg-slate-200'
-    );
+    return this.twClass.merge('w-0.5 h-8', isComplete ? 'bg-blue-600' : 'bg-slate-200');
   }
 
-  protected getVerticalConnectorStyle(): { [key: string]: string } {
-    const indicatorSize = STEPS_SIZES[this.size].indicatorSize;
+  protected getVerticalConnectorStyle(): Record<string, string> {
+    const {indicatorSize} = STEPS_SIZES[this.size];
     return {
       marginLeft: `${indicatorSize / 2 - 1}px`,
     };
@@ -132,7 +121,8 @@ export class TwStepsComponent {
 
   protected stepContentClasses(index: number) {
     const step = this.steps[index];
-    const isClickable = !this.readonly && !step.disabled && (!this.linear || index <= this.activeIndex);
+    const isClickable =
+      !this.readonly && !step.disabled && (!this.linear || index <= this.activeIndex);
 
     return this.twClass.merge(
       'flex items-center gap-3',
@@ -145,7 +135,8 @@ export class TwStepsComponent {
     const status = this.getStepStatus(index);
     const sizeClasses = STEPS_SIZES[this.size].indicator;
     const step = this.steps[index];
-    const isClickable = !this.readonly && !step.disabled && (!this.linear || index <= this.activeIndex);
+    const isClickable =
+      !this.readonly && !step.disabled && (!this.linear || index <= this.activeIndex);
 
     const statusClasses = {
       complete: 'bg-blue-600 text-white',
@@ -163,9 +154,7 @@ export class TwStepsComponent {
   }
 
   protected labelContainerClasses() {
-    return this.twClass.merge(
-      this.orientation === 'horizontal' ? 'text-center mt-2' : ''
-    );
+    return this.twClass.merge(this.orientation === 'horizontal' ? 'text-center mt-2' : '');
   }
 
   protected labelClasses(index: number) {

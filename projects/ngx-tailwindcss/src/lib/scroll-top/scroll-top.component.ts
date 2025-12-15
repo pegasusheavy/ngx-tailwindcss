@@ -1,15 +1,15 @@
 import {
-  Component,
-  Input,
   ChangeDetectionStrategy,
+  Component,
   computed,
-  signal,
-  numberAttribute,
   inject,
-  OnInit,
+  Input,
+  numberAttribute,
   OnDestroy,
-  TemplateRef,
+  OnInit,
   PLATFORM_ID,
+  signal,
+  TemplateRef,
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -25,7 +25,8 @@ const POSITION_CLASSES: Record<ScrollTopPosition, string> = {
 
 const VARIANT_CLASSES: Record<ScrollTopVariant, string> = {
   primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl',
-  secondary: 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-lg hover:shadow-xl',
+  secondary:
+    'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 shadow-lg hover:shadow-xl',
   dark: 'bg-slate-800 hover:bg-slate-900 text-white shadow-lg hover:shadow-xl',
 };
 
@@ -46,8 +47,8 @@ const VARIANT_CLASSES: Record<ScrollTopVariant, string> = {
   templateUrl: './scroll-top.component.html',
 })
 export class TwScrollTopComponent implements OnInit, OnDestroy {
-  private twClass = inject(TwClassService);
-  private platformId = inject(PLATFORM_ID);
+  private readonly twClass = inject(TwClassService);
+  private readonly platformId = inject(PLATFORM_ID);
 
   /** Scroll threshold to show button (in pixels) */
   @Input({ transform: numberAttribute }) threshold = 400;
@@ -133,4 +134,3 @@ export class TwScrollTopComponent implements OnInit, OnDestroy {
     }
   }
 }
-

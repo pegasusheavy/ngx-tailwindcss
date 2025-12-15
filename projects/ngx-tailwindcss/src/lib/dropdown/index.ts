@@ -2,10 +2,10 @@ export * from './dropdown.component';
 
 import {
   TwDropdownComponent,
-  TwDropdownMenuComponent,
-  TwDropdownItemDirective,
   TwDropdownDividerComponent,
   TwDropdownHeaderComponent,
+  TwDropdownItemDirective,
+  TwDropdownMenuComponent,
   TwDropdownTriggerDirective,
 } from './dropdown.component';
 
@@ -17,4 +17,3 @@ export const TW_DROPDOWN_COMPONENTS = [
   TwDropdownHeaderComponent,
   TwDropdownTriggerDirective,
 ] as const;
-

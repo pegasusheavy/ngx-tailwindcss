@@ -1,21 +1,21 @@
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  computed,
-  signal,
   booleanAttribute,
-  numberAttribute,
-  inject,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
   ContentChild,
-  TemplateRef,
+  effect,
   ElementRef,
+  EventEmitter,
+  inject,
+  Input,
+  numberAttribute,
   OnDestroy,
+  Output,
   PLATFORM_ID,
   Renderer2,
-  effect,
+  signal,
+  TemplateRef,
   ViewChild,
 } from '@angular/core';
 import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
@@ -42,15 +42,15 @@ export type PopoverTrigger = 'click' | 'hover' | 'focus' | 'manual';
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './popover.component.html',
   host: {
-    'class': 'inline-block',
+    class: 'inline-block',
   },
 })
 export class TwPopoverComponent implements OnDestroy {
-  private twClass = inject(TwClassService);
-  private elementRef = inject(ElementRef);
-  private document = inject(DOCUMENT);
-  private renderer = inject(Renderer2);
-  private platformId = inject(PLATFORM_ID);
+  private readonly twClass = inject(TwClassService);
+  private readonly elementRef = inject(ElementRef);
+  private readonly document = inject(DOCUMENT);
+  private readonly renderer = inject(Renderer2);
+  private readonly platformId = inject(PLATFORM_ID);
 
   @ViewChild('triggerContainer') triggerContainer!: ElementRef<HTMLElement>;
 
@@ -135,14 +135,14 @@ export class TwPopoverComponent implements OnDestroy {
   onTriggerEnter(): void {
     if (this.trigger === 'hover') {
       this.clearHoverTimeout();
-      this.hoverTimeout = setTimeout(() => this.show(), this.hoverDelay);
+      this.hoverTimeout = setTimeout(() => { this.show(); }, this.hoverDelay);
     }
   }
 
   onTriggerLeave(): void {
     if (this.trigger === 'hover') {
       this.clearHoverTimeout();
-      this.hoverTimeout = setTimeout(() => this.hide(), this.hoverDelay);
+      this.hoverTimeout = setTimeout(() => { this.hide(); }, this.hoverDelay);
     }
   }
 
@@ -155,7 +155,7 @@ export class TwPopoverComponent implements OnDestroy {
   private onPopoverLeave(): void {
     if (this.trigger === 'hover') {
       this.clearHoverTimeout();
-      this.hoverTimeout = setTimeout(() => this.hide(), this.hoverDelay);
+      this.hoverTimeout = setTimeout(() => { this.hide(); }, this.hoverDelay);
     }
   }
 
@@ -210,7 +210,11 @@ export class TwPopoverComponent implements OnDestroy {
     // Add animation styles
     this.renderer.setStyle(this.portalElement, 'opacity', '0');
     this.renderer.setStyle(this.portalElement, 'transform', 'scale(0.95)');
-    this.renderer.setStyle(this.portalElement, 'transition', 'opacity 150ms ease-out, transform 150ms ease-out');
+    this.renderer.setStyle(
+      this.portalElement,
+      'transition',
+      'opacity 150ms ease-out, transform 150ms ease-out'
+    );
 
     // Set ARIA attributes
     this.renderer.setAttribute(this.portalElement, 'role', 'tooltip');
@@ -384,22 +388,26 @@ export class TwPopoverComponent implements OnDestroy {
     const gap = 8; // margin between trigger and popover
 
     switch (this.position) {
-      case 'top':
+      case 'top': {
         top = rect.top - portalRect.height - gap;
-        left = rect.left + (rect.width / 2) - (portalRect.width / 2);
+        left = rect.left + rect.width / 2 - portalRect.width / 2;
         break;
-      case 'bottom':
+      }
+      case 'bottom': {
         top = rect.bottom + gap;
-        left = rect.left + (rect.width / 2) - (portalRect.width / 2);
+        left = rect.left + rect.width / 2 - portalRect.width / 2;
         break;
-      case 'left':
-        top = rect.top + (rect.height / 2) - (portalRect.height / 2);
+      }
+      case 'left': {
+        top = rect.top + rect.height / 2 - portalRect.height / 2;
         left = rect.left - portalRect.width - gap;
         break;
-      case 'right':
-        top = rect.top + (rect.height / 2) - (portalRect.height / 2);
+      }
+      case 'right': {
+        top = rect.top + rect.height / 2 - portalRect.height / 2;
         left = rect.right + gap;
         break;
+      }
     }
 
     // Ensure popover stays within viewport

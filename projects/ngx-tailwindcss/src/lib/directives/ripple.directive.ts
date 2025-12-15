@@ -1,14 +1,14 @@
 import {
+  AfterViewInit,
+  booleanAttribute,
   Directive,
   ElementRef,
   HostListener,
+  inject,
   Input,
   OnDestroy,
   OnInit,
   Renderer2,
-  inject,
-  booleanAttribute,
-  AfterViewInit,
 } from '@angular/core';
 
 /**
@@ -25,12 +25,12 @@ import {
   selector: '[twRipple]',
   standalone: true,
   host: {
-    'style': 'position: relative; overflow: hidden;',
+    style: 'position: relative; overflow: hidden;',
   },
 })
 export class TwRippleDirective implements OnDestroy, AfterViewInit {
-  private el: ElementRef;
-  private renderer: Renderer2;
+  private readonly el: ElementRef;
+  private readonly renderer: Renderer2;
 
   /** Color of the ripple effect */
   @Input() rippleColor = 'rgba(255, 255, 255, 0.4)';
@@ -44,7 +44,7 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
   /** Whether to center the ripple regardless of click position */
   @Input({ transform: booleanAttribute }) rippleCentered = false;
 
-  private activeRipples: HTMLElement[] = [];
+  private readonly activeRipples: HTMLElement[] = [];
   private initialized = false;
 
   constructor() {
@@ -75,7 +75,7 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
     const size = diameter * 2.5;
 
     // Calculate position
-    let x: number, y: number;
+    let x: number; let y: number;
 
     if (this.rippleCentered) {
       x = rect.width / 2;
@@ -140,7 +140,6 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.activeRipples.forEach(ripple => this.removeRipple(ripple));
+    this.activeRipples.forEach(ripple => { this.removeRipple(ripple); });
   }
 }
-

@@ -140,4 +140,3 @@ export const DEFAULT_TW_CONFIG: TwConfig = {
     neutral: 'bg-slate-200 hover:bg-slate-300 text-slate-900',
   },
 };
-

@@ -1,11 +1,11 @@
 import {
   Directive,
   ElementRef,
+  inject,
   Input,
   OnChanges,
-  SimpleChanges,
   Renderer2,
-  inject,
+  SimpleChanges,
 } from '@angular/core';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -33,9 +33,9 @@ import { TwClassService } from '../core/tw-class.service';
   standalone: true,
 })
 export class TwClassDirective implements OnChanges {
-  private el = inject(ElementRef);
-  private renderer = inject(Renderer2);
-  private twClass = inject(TwClassService);
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly twClass = inject(TwClassService);
 
   /** Base classes to apply */
   @Input('twClass') baseClasses = '';
@@ -94,9 +94,9 @@ export class TwClassDirective implements OnChanges {
   standalone: true,
 })
 export class TwVariantDirective implements OnChanges {
-  private el = inject(ElementRef);
-  private renderer = inject(Renderer2);
-  private twClassService = inject(TwClassService);
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
+  private readonly twClassService = inject(TwClassService);
 
   /** The variant name (primary, secondary, success, warning, danger, info, neutral) */
   @Input('twVariant') variant = '';
@@ -125,4 +125,3 @@ export class TwVariantDirective implements OnChanges {
     });
   }
 }
-

@@ -1,5 +1,5 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TwClassService } from './tw-class.service';
 import { TW_CONFIG } from './tw-config';
 import { provideTwConfig } from './provide-tw-config';
@@ -108,10 +108,7 @@ describe('TwClassService', () => {
       });
 
       it('should handle complex prefix combinations', () => {
-        const result = service.merge(
-          'md:hover:bg-blue-500',
-          'md:hover:bg-red-500'
-        );
+        const result = service.merge('md:hover:bg-blue-500', 'md:hover:bg-red-500');
         expect(result).toBe('md:hover:bg-red-500');
       });
 
@@ -373,4 +370,3 @@ describe('TwClassService', () => {
     });
   });
 });
-

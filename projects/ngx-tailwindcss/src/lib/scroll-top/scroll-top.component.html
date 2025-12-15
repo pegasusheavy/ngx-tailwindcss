@@ -3,7 +3,8 @@
     type="button"
     [class]="buttonClasses()"
     (click)="scrollToTop()"
-    aria-label="Scroll to top">
+    aria-label="Scroll to top"
+  >
     @if (icon) {
       <ng-container *ngTemplateOutlet="icon"></ng-container>
     } @else {
@@ -13,4 +14,3 @@
     }
   </button>
 }
-

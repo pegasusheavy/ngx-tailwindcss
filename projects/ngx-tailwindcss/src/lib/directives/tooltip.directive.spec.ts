@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach } from 'vitest';
-import { TwTooltipDirective, TooltipPosition } from './tooltip.directive';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { TooltipPosition, TwTooltipDirective } from './tooltip.directive';
 
 @Component({
   template: `
@@ -14,7 +14,8 @@ import { TwTooltipDirective, TooltipPosition } from './tooltip.directive';
       [tooltipHideDelay]="hideDelay()"
       [tooltipDisabled]="tooltipDisabled()"
       [tooltipZIndex]="zIndex()"
-      data-testid="tooltip-trigger">
+      data-testid="tooltip-trigger"
+    >
       Hover me
     </button>
   `,

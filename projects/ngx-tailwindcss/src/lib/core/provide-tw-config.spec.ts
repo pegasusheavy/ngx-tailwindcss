@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { provideTwConfig, withTwConfig } from './provide-tw-config';
-import { TW_CONFIG, TwConfig, DEFAULT_TW_CONFIG } from './tw-config';
+import { DEFAULT_TW_CONFIG, TW_CONFIG, TwConfig } from './tw-config';
 
 describe('provideTwConfig', () => {
   describe('provideTwConfig()', () => {
@@ -111,4 +111,3 @@ describe('provideTwConfig', () => {
     });
   });
 });
-

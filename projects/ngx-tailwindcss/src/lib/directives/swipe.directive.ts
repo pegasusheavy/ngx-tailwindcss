@@ -1,15 +1,15 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
-  Output,
   EventEmitter,
-  OnInit,
-  OnDestroy,
   inject,
-  numberAttribute,
-  booleanAttribute,
+  Input,
   NgZone,
+  numberAttribute,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
 
 export type SwipeDirection = 'left' | 'right' | 'up' | 'down';
@@ -40,33 +40,33 @@ export interface SwipeEvent {
   standalone: true,
 })
 export class TwSwipeDirective implements OnInit, OnDestroy {
-  private el: ElementRef<HTMLElement>;
-  private ngZone: NgZone;
+  private readonly el: ElementRef<HTMLElement>;
+  private readonly ngZone: NgZone;
 
   constructor() {
     this.el = inject(ElementRef);
     this.ngZone = inject(NgZone);
   }
 
-  private startX: number = 0;
-  private startY: number = 0;
-  private startTime: number = 0;
+  private startX = 0;
+  private startY = 0;
+  private startTime = 0;
 
   /** Minimum distance in pixels to trigger swipe (default: 50px) */
   @Input({ transform: numberAttribute })
-  swipeThreshold: number = 50;
+  swipeThreshold = 50;
 
   /** Maximum time in ms for the swipe gesture (default: 300ms) */
   @Input({ transform: numberAttribute })
-  swipeTimeout: number = 300;
+  swipeTimeout = 300;
 
   /** Minimum velocity to trigger swipe (pixels/ms) */
   @Input({ transform: numberAttribute })
-  swipeVelocity: number = 0.3;
+  swipeVelocity = 0.3;
 
   /** Disable swipe detection */
   @Input({ transform: booleanAttribute })
-  swipeDisabled: boolean = false;
+  swipeDisabled = false;
 
   /** Emits on any swipe */
   @Output()
@@ -88,7 +88,7 @@ export class TwSwipeDirective implements OnInit, OnDestroy {
   @Output()
   swipeDown = new EventEmitter<SwipeEvent>();
 
-  private onTouchStart = (event: TouchEvent): void => {
+  private readonly onTouchStart = (event: TouchEvent): void => {
     if (this.swipeDisabled || event.touches.length !== 1) return;
 
     const touch = event.touches[0];
@@ -97,7 +97,7 @@ export class TwSwipeDirective implements OnInit, OnDestroy {
     this.startTime = Date.now();
   };
 
-  private onTouchEnd = (event: TouchEvent): void => {
+  private readonly onTouchEnd = (event: TouchEvent): void => {
     if (this.swipeDisabled || event.changedTouches.length !== 1) return;
 
     const touch = event.changedTouches[0];
@@ -143,18 +143,22 @@ export class TwSwipeDirective implements OnInit, OnDestroy {
       this.swipe.emit(swipeEvent);
 
       switch (direction) {
-        case 'left':
+        case 'left': {
           this.swipeLeft.emit(swipeEvent);
           break;
-        case 'right':
+        }
+        case 'right': {
           this.swipeRight.emit(swipeEvent);
           break;
-        case 'up':
+        }
+        case 'up': {
           this.swipeUp.emit(swipeEvent);
           break;
-        case 'down':
+        }
+        case 'down': {
           this.swipeDown.emit(swipeEvent);
           break;
+        }
       }
     });
   };
@@ -174,4 +178,3 @@ export class TwSwipeDirective implements OnInit, OnDestroy {
     element.removeEventListener('touchend', this.onTouchEnd);
   }
 }
-

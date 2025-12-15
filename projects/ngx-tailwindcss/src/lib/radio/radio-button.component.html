@@ -8,10 +8,10 @@
     [attr.value]="value"
     (change)="onRadioChange()"
     (focus)="onFocus.emit($event)"
-    (blur)="onBlur.emit($event)" />
+    (blur)="onBlur.emit($event)"
+  />
   <span [class]="labelTextClasses()">
     {{ label }}
     <ng-content></ng-content>
   </span>
 </label>
-

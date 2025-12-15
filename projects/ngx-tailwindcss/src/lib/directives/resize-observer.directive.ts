@@ -1,17 +1,17 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
-  Output,
   EventEmitter,
-  OnInit,
-  OnDestroy,
   inject,
-  booleanAttribute,
-  numberAttribute,
+  Input,
   NgZone,
+  numberAttribute,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
-import { Subject, debounceTime, Subscription } from 'rxjs';
+import { debounceTime, Subject, Subscription } from 'rxjs';
 
 export interface ResizeEvent {
   width: number;
@@ -33,8 +33,8 @@ export interface ResizeEvent {
   standalone: true,
 })
 export class TwResizeObserverDirective implements OnInit, OnDestroy {
-  private el: ElementRef<HTMLElement>;
-  private ngZone: NgZone;
+  private readonly el: ElementRef<HTMLElement>;
+  private readonly ngZone: NgZone;
 
   constructor() {
     this.el = inject(ElementRef);
@@ -42,16 +42,16 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
   }
 
   private observer: ResizeObserver | null = null;
-  private resizeSubject = new Subject<ResizeEvent>();
+  private readonly resizeSubject = new Subject<ResizeEvent>();
   private subscription: Subscription | null = null;
 
   /** Debounce time in milliseconds (default: 0 = no debounce) */
   @Input({ transform: numberAttribute })
-  resizeDebounce: number = 0;
+  resizeDebounce = 0;
 
   /** Disable the observer */
   @Input({ transform: booleanAttribute })
-  resizeDisabled: boolean = false;
+  resizeDisabled = false;
 
   /** Emits when element size changes */
   @Output()
@@ -66,11 +66,11 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
     if (this.resizeDebounce > 0) {
       this.subscription = this.resizeSubject
         .pipe(debounceTime(this.resizeDebounce))
-        .subscribe((event) => this.resize.emit(event));
+        .subscribe(event => { this.resize.emit(event); });
     }
 
     this.ngZone.runOutsideAngular(() => {
-      this.observer = new ResizeObserver((entries) => {
+      this.observer = new ResizeObserver(entries => {
         for (const entry of entries) {
           const { width, height } = entry.contentRect;
           const event: ResizeEvent = { width, height, entry };
@@ -78,7 +78,7 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
           if (this.resizeDebounce > 0) {
             this.resizeSubject.next(event);
           } else {
-            this.ngZone.run(() => this.resize.emit(event));
+            this.ngZone.run(() => { this.resize.emit(event); });
           }
         }
       });
@@ -97,4 +97,3 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
     }
   }
 }
-

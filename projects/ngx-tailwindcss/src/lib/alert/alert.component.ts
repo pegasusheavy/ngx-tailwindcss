@@ -1,12 +1,12 @@
 import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
+  computed,
+  EventEmitter,
+  inject,
   Input,
   Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  inject,
-  booleanAttribute,
-  computed,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -113,12 +113,12 @@ const ICON_COLORS: Record<AlertVariant, Record<AlertStyle, string>> = {
   templateUrl: './alert.component.html',
   host: {
     '[class]': 'computedClasses()',
-    'role': 'alert',
+    role: 'alert',
     '[attr.aria-live]': 'ariaLive',
   },
 })
 export class TwAlertComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Color variant */
   @Input() variant: AlertVariant = 'info';
@@ -164,14 +164,12 @@ export class TwAlertComponent {
   });
 
   protected iconClasses = computed(() => {
-    return this.twClass.merge(
-      'flex-shrink-0',
-      ICON_COLORS[this.variant][this.alertStyle]
-    );
+    return this.twClass.merge('flex-shrink-0', ICON_COLORS[this.variant][this.alertStyle]);
   });
 
   protected dismissButtonClasses = computed(() => {
-    const baseClasses = 'inline-flex items-center justify-center rounded-md p-1 -m-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
+    const baseClasses =
+      'inline-flex items-center justify-center rounded-md p-1 -m-1 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2';
 
     const hoverClasses: Record<AlertStyle, string> = {
       solid: 'hover:bg-white/20 focus-visible:ring-white',
@@ -206,7 +204,7 @@ export class TwAlertComponent {
   selector: 'tw-alert-title',
   standalone: true,
   host: {
-    'class': 'block font-semibold mb-1',
+    class: 'block font-semibold mb-1',
   },
   template: `<ng-content></ng-content>`,
 })
@@ -219,9 +217,8 @@ export class TwAlertTitleComponent {}
   selector: 'tw-alert-description',
   standalone: true,
   host: {
-    'class': 'block text-sm opacity-90',
+    class: 'block text-sm opacity-90',
   },
   template: `<ng-content></ng-content>`,
 })
 export class TwAlertDescriptionComponent {}
-

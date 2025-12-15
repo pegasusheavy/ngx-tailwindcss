@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { Component, computed, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
@@ -12,14 +12,30 @@ export type AvatarStatus = 'online' | 'offline' | 'busy' | 'away' | 'none';
   templateUrl: './avatar.component.html',
 })
 export class TwAvatarComponent {
-  @Input() set src(val: string) { this._src.set(val); }
-  @Input() set alt(val: string) { this._alt.set(val); }
-  @Input() set initials(val: string) { this._initials.set(val); }
-  @Input() set size(val: AvatarSize) { this._size.set(val); }
-  @Input() set variant(val: AvatarVariant) { this._variant.set(val); }
-  @Input() set status(val: AvatarStatus) { this._status.set(val); }
-  @Input() set badge(val: string | number) { this._badge.set(val?.toString() ?? ''); }
-  @Input() set color(val: string) { this._color.set(val); }
+  @Input() set src(val: string) {
+    this._src.set(val);
+  }
+  @Input() set alt(val: string) {
+    this._alt.set(val);
+  }
+  @Input() set initials(val: string) {
+    this._initials.set(val);
+  }
+  @Input() set size(val: AvatarSize) {
+    this._size.set(val);
+  }
+  @Input() set variant(val: AvatarVariant) {
+    this._variant.set(val);
+  }
+  @Input() set status(val: AvatarStatus) {
+    this._status.set(val);
+  }
+  @Input() set badge(val: string | number) {
+    this._badge.set(val?.toString() ?? '');
+  }
+  @Input() set color(val: string) {
+    this._color.set(val);
+  }
 
   protected _src = signal('');
   protected _alt = signal('');
@@ -31,7 +47,7 @@ export class TwAvatarComponent {
   protected _color = signal('');
   protected _imageError = signal(false);
 
-  protected srcVal = computed(() => this._imageError() ? '' : this._src());
+  protected srcVal = computed(() => (this._imageError() ? '' : this._src()));
   protected altVal = computed(() => this._alt());
   protected initialsVal = computed(() => this._initials());
   protected statusVal = computed(() => this._status());
@@ -50,10 +66,7 @@ export class TwAvatarComponent {
       '2xl': 'w-20 h-20',
     };
 
-    return [
-      'relative inline-block',
-      sizeClasses[sz],
-    ].join(' ');
+    return ['relative inline-block', sizeClasses[sz]].join(' ');
   });
 
   protected innerClasses = computed(() => {
@@ -146,10 +159,18 @@ export class TwAvatarComponent {
   templateUrl: './avatar-group.component.html',
 })
 export class TwAvatarGroupComponent {
-  @Input() set max(val: number) { this._max.set(val); }
-  @Input() set total(val: number) { this._total.set(val); }
-  @Input() set size(val: AvatarSize) { this._size.set(val); }
-  @Input() set spacing(val: 'tight' | 'normal' | 'loose') { this._spacing.set(val); }
+  @Input() set max(val: number) {
+    this._max.set(val);
+  }
+  @Input() set total(val: number) {
+    this._total.set(val);
+  }
+  @Input() set size(val: AvatarSize) {
+    this._size.set(val);
+  }
+  @Input() set spacing(val: 'tight' | 'normal' | 'loose') {
+    this._spacing.set(val);
+  }
 
   protected _max = signal(0);
   protected _total = signal(0);
@@ -172,11 +193,7 @@ export class TwAvatarGroupComponent {
       loose: '-space-x-1',
     };
 
-    return [
-      'flex items-center',
-      spacingClasses[sp],
-      '[&>*]:ring-2 [&>*]:ring-white',
-    ].join(' ');
+    return ['flex items-center', spacingClasses[sp], '[&>*]:ring-2 [&>*]:ring-white'].join(' ');
   });
 
   protected overflowClasses = computed(() => {

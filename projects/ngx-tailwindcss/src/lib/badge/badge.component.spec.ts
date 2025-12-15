@@ -1,13 +1,13 @@
-import { Component, ViewChild, signal } from '@angular/core';
+import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
-  TwBadgeComponent,
-  TwBadgeGroupComponent,
-  BadgeVariant,
   BadgeSize,
   BadgeStyle,
+  BadgeVariant,
+  TwBadgeComponent,
+  TwBadgeGroupComponent,
 } from './badge.component';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -21,7 +21,8 @@ import { TwClassService } from '../core/tw-class.service';
       [removable]="removable()"
       (remove)="onRemove()"
       [classOverride]="classOverride()"
-      data-testid="test-badge">
+      data-testid="test-badge"
+    >
       {{ badgeText() }}
     </tw-badge>
   `,
@@ -130,7 +131,7 @@ describe('TwBadgeComponent', () => {
       component.removable.set(true);
       fixture.detectChanges();
 
-      const removeBtn = badgeEl.querySelector('button') as HTMLButtonElement;
+      const removeBtn = badgeEl.querySelector('button')!;
       removeBtn.click();
       fixture.detectChanges();
 
@@ -141,7 +142,7 @@ describe('TwBadgeComponent', () => {
       component.removable.set(true);
       fixture.detectChanges();
 
-      const removeBtn = badgeEl.querySelector('button') as HTMLButtonElement;
+      const removeBtn = badgeEl.querySelector('button')!;
       const clickEvent = new MouseEvent('click', { bubbles: true });
       const stopPropagationSpy = vi.spyOn(clickEvent, 'stopPropagation');
 
@@ -165,7 +166,8 @@ describe('TwBadgeComponent', () => {
       [direction]="direction()"
       [wrap]="wrap()"
       [classOverride]="classOverride()"
-      data-testid="badge-group">
+      data-testid="badge-group"
+    >
       <tw-badge>Badge 1</tw-badge>
       <tw-badge>Badge 2</tw-badge>
       <tw-badge>Badge 3</tw-badge>

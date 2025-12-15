@@ -1,13 +1,13 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
-  Renderer2,
-  OnInit,
-  OnDestroy,
   inject,
-  booleanAttribute,
+  Input,
   NgZone,
+  OnDestroy,
+  OnInit,
+  Renderer2,
 } from '@angular/core';
 
 /**
@@ -26,9 +26,9 @@ import {
   standalone: true,
 })
 export class TwHoverClassDirective implements OnInit, OnDestroy {
-  private el: ElementRef<HTMLElement>;
-  private renderer: Renderer2;
-  private ngZone: NgZone;
+  private readonly el: ElementRef<HTMLElement>;
+  private readonly renderer: Renderer2;
+  private readonly ngZone: NgZone;
 
   constructor() {
     this.el = inject(ElementRef);
@@ -41,25 +41,25 @@ export class TwHoverClassDirective implements OnInit, OnDestroy {
 
   /** Classes to add on hover */
   @Input({ required: true })
-  twHoverClass: string = '';
+  twHoverClass = '';
 
   /** Base classes to remove on hover (and restore on leave) */
   @Input()
-  hoverClassBase: string = '';
+  hoverClassBase = '';
 
   /** Delay before applying hover classes (ms) */
   @Input()
-  hoverDelay: number = 0;
+  hoverDelay = 0;
 
   /** Delay before removing hover classes (ms) */
   @Input()
-  hoverLeaveDelay: number = 0;
+  hoverLeaveDelay = 0;
 
   /** Disable hover effects */
   @Input({ transform: booleanAttribute })
-  hoverDisabled: boolean = false;
+  hoverDisabled = false;
 
-  private onMouseEnter = (): void => {
+  private readonly onMouseEnter = (): void => {
     if (this.hoverDisabled) return;
 
     if (this.hoverTimeout) {
@@ -78,7 +78,7 @@ export class TwHoverClassDirective implements OnInit, OnDestroy {
     }
   };
 
-  private onMouseLeave = (): void => {
+  private readonly onMouseLeave = (): void => {
     if (this.hoverDisabled) return;
 
     if (this.hoverTimeout) {
@@ -102,14 +102,14 @@ export class TwHoverClassDirective implements OnInit, OnDestroy {
 
     // Remove base classes
     if (this.hoverClassBase) {
-      this.hoverClassBase.split(' ').forEach((cls) => {
+      this.hoverClassBase.split(' ').forEach(cls => {
         if (cls) this.renderer.removeClass(element, cls);
       });
     }
 
     // Add hover classes
     if (this.twHoverClass) {
-      this.twHoverClass.split(' ').forEach((cls) => {
+      this.twHoverClass.split(' ').forEach(cls => {
         if (cls) this.renderer.addClass(element, cls);
       });
     }
@@ -120,14 +120,14 @@ export class TwHoverClassDirective implements OnInit, OnDestroy {
 
     // Remove hover classes
     if (this.twHoverClass) {
-      this.twHoverClass.split(' ').forEach((cls) => {
+      this.twHoverClass.split(' ').forEach(cls => {
         if (cls) this.renderer.removeClass(element, cls);
       });
     }
 
     // Restore base classes
     if (this.hoverClassBase) {
-      this.hoverClassBase.split(' ').forEach((cls) => {
+      this.hoverClassBase.split(' ').forEach(cls => {
         if (cls) this.renderer.addClass(element, cls);
       });
     }
@@ -152,4 +152,3 @@ export class TwHoverClassDirective implements OnInit, OnDestroy {
     element.removeEventListener('mouseleave', this.onMouseLeave);
   }
 }
-

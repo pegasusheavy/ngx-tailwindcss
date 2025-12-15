@@ -1,21 +1,21 @@
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  inject,
-  booleanAttribute,
-  computed,
-  signal,
-  ContentChildren,
-  QueryList,
   AfterContentInit,
-  TemplateRef,
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ContentChildren,
   Directive,
+  ElementRef,
+  EventEmitter,
   HostBinding,
   HostListener,
-  ElementRef,
+  inject,
+  Input,
+  Output,
+  QueryList,
+  signal,
+  TemplateRef,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -65,14 +65,14 @@ const TABS_SIZES: Record<TabsSize, string> = {
   templateUrl: './tab-panel.component.html',
   host: {
     '[class]': 'computedClasses()',
-    'role': 'tabpanel',
+    role: 'tabpanel',
     '[attr.aria-labelledby]': 'labelledBy',
     '[attr.tabindex]': '0',
     '[attr.hidden]': '!active ? true : null',
   },
 })
 export class TwTabPanelComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Unique identifier for this tab */
   @Input() value = '';
@@ -132,11 +132,11 @@ export class TwTabPanelComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './tabs.component.html',
   host: {
-    'class': 'block',
+    class: 'block',
   },
 })
 export class TwTabsComponent implements AfterContentInit {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @ContentChildren(TwTabPanelComponent) tabPanels!: QueryList<TwTabPanelComponent>;
 
@@ -193,9 +193,7 @@ export class TwTabsComponent implements AfterContentInit {
   }
 
   protected containerClasses = computed(() => {
-    return this.twClass.merge(
-      this.orientation === 'vertical' ? 'flex gap-4' : 'block'
-    );
+    return this.twClass.merge(this.orientation === 'vertical' ? 'flex gap-4' : 'block');
   });
 
   protected tabListClasses = computed(() => {
@@ -235,7 +233,7 @@ export class TwTabsComponent implements AfterContentInit {
 
     this.panels.forEach(panel => {
       panel.active = panel.value === value;
-      panel.labelledBy = 'tab-' + panel.value;
+      panel.labelledBy = `tab-${  panel.value}`;
     });
 
     this.value = value;
@@ -258,13 +256,11 @@ export class TwTabsComponent implements AfterContentInit {
       } else if (event.key === 'ArrowLeft') {
         newIndex = (currentIndex - 1 + enabledPanels.length) % enabledPanels.length;
       }
-    } else {
-      if (event.key === 'ArrowDown') {
+    } else if (event.key === 'ArrowDown') {
         newIndex = (currentIndex + 1) % enabledPanels.length;
       } else if (event.key === 'ArrowUp') {
         newIndex = (currentIndex - 1 + enabledPanels.length) % enabledPanels.length;
       }
-    }
 
     if (event.key === 'Home') {
       newIndex = 0;
@@ -278,7 +274,7 @@ export class TwTabsComponent implements AfterContentInit {
       this.selectTab(newTab.value);
 
       // Focus the new tab
-      const tabElement = document.getElementById('tab-' + newTab.value);
+      const tabElement = document.getElementById(`tab-${  newTab.value}`);
       tabElement?.focus();
     }
   }
@@ -293,4 +289,3 @@ export class TwTabsComponent implements AfterContentInit {
     return this.panels.find(p => p.active);
   }
 }
-

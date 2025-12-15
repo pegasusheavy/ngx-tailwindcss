@@ -37,7 +37,7 @@ import { TwKeyboardShortcutDirective } from './keyboard-shortcut.directive';
 import { TwSwipeDirective } from './swipe.directive';
 import { TwResizeObserverDirective } from './resize-observer.directive';
 import { TwLazyImageDirective } from './lazy-image.directive';
-import { TwScrollToDirective, TwScrollSectionDirective } from './scroll-anchor.directive';
+import { TwScrollSectionDirective, TwScrollToDirective } from './scroll-anchor.directive';
 import { TwHoverClassDirective } from './hover-class.directive';
 import { TwTrapScrollDirective } from './trap-scroll.directive';
 import { TW_ARIA_DIRECTIVES } from './aria.directive';

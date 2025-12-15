@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, computed, signal } from '@angular/core';
+import { Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type PaginationSize = 'sm' | 'md' | 'lg';
@@ -11,14 +11,30 @@ export type PaginationVariant = 'default' | 'outlined' | 'simple';
   templateUrl: './pagination.component.html',
 })
 export class TwPaginationComponent {
-  @Input() set currentPage(value: number) { this._currentPage.set(value); }
-  @Input() set totalPages(value: number) { this._totalPages.set(value); }
-  @Input() set totalItems(value: number) { this._totalItems.set(value); }
-  @Input() set itemsPerPage(value: number) { this._itemsPerPage.set(value); }
-  @Input() set siblingCount(value: number) { this._siblingCount.set(value); }
-  @Input() set size(value: PaginationSize) { this._size.set(value); }
-  @Input() set variant(value: PaginationVariant) { this._variant.set(value); }
-  @Input() set showFirstLast(value: boolean) { this._showFirstLast.set(value); }
+  @Input() set currentPage(value: number) {
+    this._currentPage.set(value);
+  }
+  @Input() set totalPages(value: number) {
+    this._totalPages.set(value);
+  }
+  @Input() set totalItems(value: number) {
+    this._totalItems.set(value);
+  }
+  @Input() set itemsPerPage(value: number) {
+    this._itemsPerPage.set(value);
+  }
+  @Input() set siblingCount(value: number) {
+    this._siblingCount.set(value);
+  }
+  @Input() set size(value: PaginationSize) {
+    this._size.set(value);
+  }
+  @Input() set variant(value: PaginationVariant) {
+    this._variant.set(value);
+  }
+  @Input() set showFirstLast(value: boolean) {
+    this._showFirstLast.set(value);
+  }
 
   @Output() pageChange = new EventEmitter<number>();
 
@@ -102,13 +118,11 @@ export class TwPaginationComponent {
 
     if (disabled) {
       baseClasses.push('text-slate-300 cursor-not-allowed');
-    } else {
-      if (variant === 'outlined') {
+    } else if (variant === 'outlined') {
         baseClasses.push('text-slate-600 hover:bg-slate-100 border border-slate-300');
       } else {
         baseClasses.push('text-slate-600 hover:bg-slate-100');
       }
-    }
 
     return baseClasses.join(' ');
   }
@@ -130,13 +144,11 @@ export class TwPaginationComponent {
 
     if (isActive) {
       baseClasses.push('bg-blue-600 text-white');
-    } else {
-      if (variant === 'outlined') {
+    } else if (variant === 'outlined') {
         baseClasses.push('text-slate-600 hover:bg-slate-100 border border-slate-300');
       } else {
         baseClasses.push('text-slate-600 hover:bg-slate-100');
       }
-    }
 
     return baseClasses.join(' ');
   }
@@ -167,4 +179,3 @@ export class TwPaginationComponent {
     return baseClasses.join(' ');
   }
 }
-

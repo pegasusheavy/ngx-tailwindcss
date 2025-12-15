@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { Component, computed, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface BreadcrumbItem {
@@ -16,9 +16,15 @@ export type BreadcrumbSeparator = 'slash' | 'chevron' | 'arrow' | 'dot';
   templateUrl: './breadcrumb.component.html',
 })
 export class TwBreadcrumbComponent {
-  @Input() set items(value: BreadcrumbItem[]) { this._items.set(value); }
-  @Input() set separator(value: BreadcrumbSeparator) { this._separator.set(value); }
-  @Input() set size(value: 'sm' | 'md' | 'lg') { this._size.set(value); }
+  @Input() set items(value: BreadcrumbItem[]) {
+    this._items.set(value);
+  }
+  @Input() set separator(value: BreadcrumbSeparator) {
+    this._separator.set(value);
+  }
+  @Input() set size(value: 'sm' | 'md' | 'lg') {
+    this._size.set(value);
+  }
 
   protected _items = signal<BreadcrumbItem[]>([]);
   protected _separator = signal<BreadcrumbSeparator>('chevron');
@@ -39,15 +45,9 @@ export class TwBreadcrumbComponent {
     return sizeClasses[size];
   });
 
-  protected separatorClasses = computed(() =>
-    'mx-2 text-slate-400 flex items-center'
-  );
+  protected separatorClasses = computed(() => 'mx-2 text-slate-400 flex items-center');
 
-  protected linkClasses = computed(() =>
-    'text-slate-500 hover:text-slate-700 transition-colors'
-  );
+  protected linkClasses = computed(() => 'text-slate-500 hover:text-slate-700 transition-colors');
 
-  protected currentClasses = computed(() =>
-    'font-medium text-slate-900'
-  );
+  protected currentClasses = computed(() => 'font-medium text-slate-900');
 }

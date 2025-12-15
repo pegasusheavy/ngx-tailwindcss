@@ -66,8 +66,8 @@ export * from './lib/image/index';
 export * from './lib/scroll-top/index';
 
 // Convenience re-exports for all components
-import { TW_DIRECTIVES, TW_CORE_DIRECTIVES, TW_DX_DIRECTIVES } from './lib/directives/index';
-export { TW_CORE_DIRECTIVES, TW_DX_DIRECTIVES };
+import {  TW_DIRECTIVES,  } from './lib/directives/index';
+
 import { TW_BUTTON_COMPONENTS } from './lib/button/index';
 import { TW_CARD_COMPONENTS } from './lib/card/index';
 import { TW_INPUT_COMPONENTS } from './lib/input/index';
@@ -77,9 +77,14 @@ import { TW_MODAL_COMPONENTS } from './lib/modal/index';
 import { TW_DROPDOWN_COMPONENTS } from './lib/dropdown/index';
 import { TW_TABS_COMPONENTS } from './lib/tabs/index';
 import { TwAvatarComponent, TwAvatarGroupComponent } from './lib/avatar/index';
-import { TwSpinnerComponent, TwLoadingOverlayComponent } from './lib/spinner/index';
-import { TwProgressComponent, TwProgressCircularComponent } from './lib/progress/index';
-import { TwSkeletonComponent, TwSkeletonTextComponent, TwSkeletonCardComponent, TwSkeletonTableComponent } from './lib/skeleton/index';
+import { TwLoadingOverlayComponent, TwSpinnerComponent } from './lib/spinner/index';
+import { TwProgressCircularComponent, TwProgressComponent } from './lib/progress/index';
+import {
+  TwSkeletonCardComponent,
+  TwSkeletonComponent,
+  TwSkeletonTableComponent,
+  TwSkeletonTextComponent,
+} from './lib/skeleton/index';
 import { TwToastComponent, TwToastContainerComponent } from './lib/toast/index';
 import { TwBreadcrumbComponent } from './lib/breadcrumb/index';
 import { TwPaginationComponent } from './lib/pagination/index';
@@ -102,7 +107,7 @@ import { TwTimelineComponent } from './lib/timeline/index';
 
 // New navigation components
 import { TwStepsComponent } from './lib/steps/index';
-import { TwMenuComponent, TwContextMenuComponent } from './lib/menu/index';
+import { TwContextMenuComponent, TwMenuComponent } from './lib/menu/index';
 
 // New overlay components
 import { TwSidebarComponent } from './lib/sidebar/index';
@@ -114,20 +119,11 @@ import { TwImageComponent } from './lib/image/index';
 // Misc components
 import { TwScrollTopComponent } from './lib/scroll-top/index';
 
-export const TW_AVATAR_COMPONENTS = [
-  TwAvatarComponent,
-  TwAvatarGroupComponent,
-] as const;
+export const TW_AVATAR_COMPONENTS = [TwAvatarComponent, TwAvatarGroupComponent] as const;
 
-export const TW_SPINNER_COMPONENTS = [
-  TwSpinnerComponent,
-  TwLoadingOverlayComponent,
-] as const;
+export const TW_SPINNER_COMPONENTS = [TwSpinnerComponent, TwLoadingOverlayComponent] as const;
 
-export const TW_PROGRESS_COMPONENTS = [
-  TwProgressComponent,
-  TwProgressCircularComponent,
-] as const;
+export const TW_PROGRESS_COMPONENTS = [TwProgressComponent, TwProgressCircularComponent] as const;
 
 export const TW_SKELETON_COMPONENTS = [
   TwSkeletonComponent,
@@ -136,95 +132,48 @@ export const TW_SKELETON_COMPONENTS = [
   TwSkeletonTableComponent,
 ] as const;
 
-export const TW_TOAST_COMPONENTS = [
-  TwToastComponent,
-  TwToastContainerComponent,
-] as const;
+export const TW_TOAST_COMPONENTS = [TwToastComponent, TwToastContainerComponent] as const;
 
-export const TW_BREADCRUMB_COMPONENTS = [
-  TwBreadcrumbComponent,
-] as const;
+export const TW_BREADCRUMB_COMPONENTS = [TwBreadcrumbComponent] as const;
 
-export const TW_PAGINATION_COMPONENTS = [
-  TwPaginationComponent,
-] as const;
+export const TW_PAGINATION_COMPONENTS = [TwPaginationComponent] as const;
 
-export const TW_ACCORDION_COMPONENTS = [
-  TwAccordionComponent,
-  TwAccordionItemComponent,
-] as const;
+export const TW_ACCORDION_COMPONENTS = [TwAccordionComponent, TwAccordionItemComponent] as const;
 
-export const TW_DIVIDER_COMPONENTS = [
-  TwDividerComponent,
-] as const;
+export const TW_DIVIDER_COMPONENTS = [TwDividerComponent] as const;
 
 // New component groups
-export const TW_CHECKBOX_COMPONENTS = [
-  TwCheckboxComponent,
-] as const;
+export const TW_CHECKBOX_COMPONENTS = [TwCheckboxComponent] as const;
 
-export const TW_RADIO_COMPONENTS = [
-  TwRadioButtonComponent,
-  TwRadioGroupComponent,
-] as const;
+export const TW_RADIO_COMPONENTS = [TwRadioButtonComponent, TwRadioGroupComponent] as const;
 
-export const TW_SWITCH_COMPONENTS = [
-  TwSwitchComponent,
-] as const;
+export const TW_SWITCH_COMPONENTS = [TwSwitchComponent] as const;
 
-export const TW_SELECT_COMPONENTS = [
-  TwSelectComponent,
-] as const;
+export const TW_SELECT_COMPONENTS = [TwSelectComponent] as const;
 
-export const TW_SLIDER_COMPONENTS = [
-  TwSliderComponent,
-] as const;
+export const TW_SLIDER_COMPONENTS = [TwSliderComponent] as const;
 
-export const TW_RATING_COMPONENTS = [
-  TwRatingComponent,
-] as const;
+export const TW_RATING_COMPONENTS = [TwRatingComponent] as const;
 
-export const TW_CHIP_COMPONENTS = [
-  TwChipComponent,
-  TwChipsComponent,
-] as const;
+export const TW_CHIP_COMPONENTS = [TwChipComponent, TwChipsComponent] as const;
 
-export const TW_TABLE_COMPONENTS = [
-  TwTableComponent,
-] as const;
+export const TW_TABLE_COMPONENTS = [TwTableComponent] as const;
 
-export const TW_TREE_COMPONENTS = [
-  TwTreeComponent,
-] as const;
+export const TW_TREE_COMPONENTS = [TwTreeComponent] as const;
 
-export const TW_TIMELINE_COMPONENTS = [
-  TwTimelineComponent,
-] as const;
+export const TW_TIMELINE_COMPONENTS = [TwTimelineComponent] as const;
 
-export const TW_STEPS_COMPONENTS = [
-  TwStepsComponent,
-] as const;
+export const TW_STEPS_COMPONENTS = [TwStepsComponent] as const;
 
-export const TW_MENU_COMPONENTS = [
-  TwMenuComponent,
-  TwContextMenuComponent,
-] as const;
+export const TW_MENU_COMPONENTS = [TwMenuComponent, TwContextMenuComponent] as const;
 
-export const TW_SIDEBAR_COMPONENTS = [
-  TwSidebarComponent,
-] as const;
+export const TW_SIDEBAR_COMPONENTS = [TwSidebarComponent] as const;
 
-export const TW_POPOVER_COMPONENTS = [
-  TwPopoverComponent,
-] as const;
+export const TW_POPOVER_COMPONENTS = [TwPopoverComponent] as const;
 
-export const TW_IMAGE_COMPONENTS = [
-  TwImageComponent,
-] as const;
+export const TW_IMAGE_COMPONENTS = [TwImageComponent] as const;
 
-export const TW_SCROLL_TOP_COMPONENTS = [
-  TwScrollTopComponent,
-] as const;
+export const TW_SCROLL_TOP_COMPONENTS = [TwScrollTopComponent] as const;
 
 /**
  * All ngx-tailwindcss components and directives
@@ -284,3 +233,5 @@ export const TW_ALL = [
   // Misc
   ...TW_SCROLL_TOP_COMPONENTS,
 ] as const;
+
+export {TW_CORE_DIRECTIVES, TW_DX_DIRECTIVES} from './lib/directives/index';

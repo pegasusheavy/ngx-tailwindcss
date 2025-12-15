@@ -1,13 +1,13 @@
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
   ChangeDetectionStrategy,
+  Component,
   computed,
-  signal,
-  numberAttribute,
+  EventEmitter,
   inject,
+  Input,
+  numberAttribute,
+  Output,
+  signal,
   TemplateRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -46,7 +46,7 @@ export type TreeSelectionMode = 'none' | 'single' | 'multiple' | 'checkbox';
   templateUrl: './tree.component.html',
 })
 export class TwTreeComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Tree nodes */
   @Input() nodes: TreeNode[] = [];
@@ -84,10 +84,7 @@ export class TwTreeComponent {
   protected selection = signal<TreeNode[]>([]);
 
   protected containerClasses = computed(() => {
-    return this.twClass.merge(
-      'py-2',
-      this.classOverride
-    );
+    return this.twClass.merge('py-2', this.classOverride);
   });
 
   protected nodeClasses(node: TreeNode, level: number) {
@@ -149,7 +146,7 @@ export class TwTreeComponent {
   onCheckboxChange(node: TreeNode, event: Event): void {
     if (node.disabled) return;
 
-    const checked = (event.target as HTMLInputElement).checked;
+    const {checked} = (event.target as HTMLInputElement);
 
     if (checked) {
       this.selectNode(node);
@@ -178,7 +175,7 @@ export class TwTreeComponent {
     }
 
     if (this.propagateSelectionDown && node.children) {
-      node.children.forEach(child => this.selectNode(child));
+      node.children.forEach(child => { this.selectNode(child); });
     }
   }
 
@@ -187,7 +184,7 @@ export class TwTreeComponent {
     this.onNodeUnselect.emit(node);
 
     if (this.propagateSelectionDown && node.children) {
-      node.children.forEach(child => this.unselectNode(child));
+      node.children.forEach(child => { this.unselectNode(child); });
     }
   }
 
@@ -264,4 +261,3 @@ export class TwTreeComponent {
     this.selectionChange.emit([]);
   }
 }
-

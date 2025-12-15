@@ -1,12 +1,12 @@
 import {
-  Component,
-  Input,
-  ChangeDetectionStrategy,
-  inject,
   booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
   computed,
   Directive,
   HostBinding,
+  inject,
+  Input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -34,16 +34,13 @@ const CARD_VARIANTS: Record<CardVariant, string> = {
   standalone: true,
 })
 export class TwCardHeaderDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge(
-      'block px-6 py-4 border-b border-slate-100',
-      this.class
-    );
+    return this.twClass.merge('block px-6 py-4 border-b border-slate-100', this.class);
   }
 }
 
@@ -55,16 +52,13 @@ export class TwCardHeaderDirective {
   standalone: true,
 })
 export class TwCardTitleDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge(
-      'block text-lg font-semibold text-slate-900',
-      this.class
-    );
+    return this.twClass.merge('block text-lg font-semibold text-slate-900', this.class);
   }
 }
 
@@ -76,16 +70,13 @@ export class TwCardTitleDirective {
   standalone: true,
 })
 export class TwCardSubtitleDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge(
-      'block text-sm text-slate-500 mt-1',
-      this.class
-    );
+    return this.twClass.merge('block text-sm text-slate-500 mt-1', this.class);
   }
 }
 
@@ -97,16 +88,13 @@ export class TwCardSubtitleDirective {
   standalone: true,
 })
 export class TwCardBodyDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge(
-      'block p-6',
-      this.class
-    );
+    return this.twClass.merge('block p-6', this.class);
   }
 }
 
@@ -118,7 +106,7 @@ export class TwCardBodyDirective {
   standalone: true,
 })
 export class TwCardFooterDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
 
@@ -139,7 +127,7 @@ export class TwCardFooterDirective {
   standalone: true,
 })
 export class TwCardMediaDirective {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() class = '';
 
@@ -198,12 +186,12 @@ export class TwCardMediaDirective {
   host: {
     '[class]': 'computedClasses()',
     '[attr.tabindex]': 'clickable ? 0 : null',
-    'role': 'article',
+    role: 'article',
   },
   template: `<ng-content></ng-content>`,
 })
 export class TwCardComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Visual variant of the card */
   @Input() variant: CardVariant = 'elevated';
@@ -238,7 +226,9 @@ export class TwCardComponent {
     }
 
     if (this.clickable) {
-      conditionalClasses.push('cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2');
+      conditionalClasses.push(
+        'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2'
+      );
     }
 
     if (this.padded) {
@@ -265,11 +255,11 @@ export class TwCardComponent {
   templateUrl: './card-horizontal.component.html',
   host: {
     '[class]': 'computedClasses()',
-    'role': 'article',
+    role: 'article',
   },
 })
 export class TwCardHorizontalComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   @Input() variant: CardVariant = 'elevated';
   @Input() classOverride = '';
@@ -282,4 +272,3 @@ export class TwCardHorizontalComponent {
     );
   });
 }
-

@@ -1,17 +1,17 @@
 import {
+  booleanAttribute,
+  computed,
   Directive,
-  Input,
+  ElementRef,
   HostBinding,
   inject,
-  signal,
-  computed,
-  booleanAttribute,
+  Input,
   numberAttribute,
   OnDestroy,
-  ElementRef,
   Renderer2,
+  signal,
 } from '@angular/core';
-import { TwAriaService, AriaUtils } from '../core/aria.service';
+import { AriaUtils, TwAriaService } from '../core/aria.service';
 
 /**
  * Directive to add screen reader only text to elements.
@@ -31,7 +31,7 @@ export class TwSrOnlyDirective {
 
   @Input({ transform: booleanAttribute }) focusable = false;
 
-  private _enabled = signal(true);
+  private readonly _enabled = signal(true);
 
   protected srOnlyClasses = computed(() => {
     if (!this._enabled()) return '';
@@ -51,7 +51,7 @@ export class TwSrOnlyDirective {
   standalone: true,
 })
 export class TwAnnounceDirective implements OnDestroy {
-  private ariaService = inject(TwAriaService);
+  private readonly ariaService = inject(TwAriaService);
   private previousMessage = '';
 
   @Input() set twAnnounce(message: string) {
@@ -76,8 +76,8 @@ export class TwAnnounceDirective implements OnDestroy {
   standalone: true,
 })
 export class TwAriaExpandedDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input({ transform: booleanAttribute }) set twAriaExpanded(value: boolean) {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-expanded', String(value));
@@ -100,8 +100,8 @@ export class TwAriaExpandedDirective {
   standalone: true,
 })
 export class TwAriaSelectedDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input({ transform: booleanAttribute }) set twAriaSelected(value: boolean) {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-selected', String(value));
@@ -116,8 +116,8 @@ export class TwAriaSelectedDirective {
   standalone: true,
 })
 export class TwAriaCheckedDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input() set twAriaChecked(value: boolean | 'mixed') {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-checked', String(value));
@@ -132,8 +132,8 @@ export class TwAriaCheckedDirective {
   standalone: true,
 })
 export class TwAriaPressedDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input() set twAriaPressed(value: boolean | 'mixed') {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-pressed', String(value));
@@ -148,8 +148,8 @@ export class TwAriaPressedDirective {
   standalone: true,
 })
 export class TwAriaDisabledDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input({ transform: booleanAttribute }) set twAriaDisabled(value: boolean) {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-disabled', String(value));
@@ -167,8 +167,8 @@ export class TwAriaDisabledDirective {
   standalone: true,
 })
 export class TwAriaHiddenDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input({ transform: booleanAttribute }) set twAriaHidden(value: boolean) {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-hidden', String(value));
@@ -183,8 +183,8 @@ export class TwAriaHiddenDirective {
   standalone: true,
 })
 export class TwAriaLiveDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input() set twAriaLive(value: 'off' | 'polite' | 'assertive') {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-live', value);
@@ -207,10 +207,12 @@ export class TwAriaLiveDirective {
   standalone: true,
 })
 export class TwAriaCurrentDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
-  @Input() set twAriaCurrent(value: 'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false' | boolean) {
+  @Input() set twAriaCurrent(
+    value: 'page' | 'step' | 'location' | 'date' | 'time' | 'true' | 'false' | boolean
+  ) {
     const strValue = typeof value === 'boolean' ? String(value) : value;
     if (value && strValue !== 'false') {
       this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-current', strValue);
@@ -228,8 +230,8 @@ export class TwAriaCurrentDirective {
   standalone: true,
 })
 export class TwAriaBusyDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input({ transform: booleanAttribute }) set twAriaBusy(value: boolean) {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-busy', String(value));
@@ -244,8 +246,8 @@ export class TwAriaBusyDirective {
   standalone: true,
 })
 export class TwAriaDescribedbyDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input() set twAriaDescribedby(value: string | string[] | null) {
     if (!value) {
@@ -265,8 +267,8 @@ export class TwAriaDescribedbyDirective {
   standalone: true,
 })
 export class TwAriaLabelledbyDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input() set twAriaLabelledby(value: string | string[] | null) {
     if (!value) {
@@ -286,8 +288,8 @@ export class TwAriaLabelledbyDirective {
   standalone: true,
 })
 export class TwAriaLabelDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input() set twAriaLabel(value: string | null) {
     if (value) {
@@ -306,8 +308,8 @@ export class TwAriaLabelDirective {
   standalone: true,
 })
 export class TwAriaValueDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input({ transform: numberAttribute }) set twAriaValue(value: number) {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-valuenow', String(value));
@@ -338,8 +340,8 @@ export class TwAriaValueDirective {
   standalone: true,
 })
 export class TwRoleDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input() set twRole(value: string | null) {
     if (value) {
@@ -358,8 +360,8 @@ export class TwRoleDirective {
   standalone: true,
 })
 export class TwAriaModalDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input({ transform: booleanAttribute }) set twAriaModal(value: boolean) {
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-modal', String(value));
@@ -374,10 +376,12 @@ export class TwAriaModalDirective {
   standalone: true,
 })
 export class TwAriaHaspopupDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
-  @Input() set twAriaHaspopup(value: 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog' | 'true' | 'false' | boolean) {
+  @Input() set twAriaHaspopup(
+    value: 'menu' | 'listbox' | 'tree' | 'grid' | 'dialog' | 'true' | 'false' | boolean
+  ) {
     const strValue = typeof value === 'boolean' ? String(value) : value;
     this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-haspopup', strValue);
   }
@@ -391,8 +395,8 @@ export class TwAriaHaspopupDirective {
   standalone: true,
 })
 export class TwAriaOwnsDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input() set twAriaOwns(value: string | string[] | null) {
     if (!value) {
@@ -412,8 +416,8 @@ export class TwAriaOwnsDirective {
   standalone: true,
 })
 export class TwAriaActivedescendantDirective {
-  private elementRef = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly elementRef = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   @Input() set twAriaActivedescendant(value: string | null) {
     if (value) {
@@ -449,4 +453,3 @@ export const TW_ARIA_DIRECTIVES = [
   TwAriaOwnsDirective,
   TwAriaActivedescendantDirective,
 ] as const;
-

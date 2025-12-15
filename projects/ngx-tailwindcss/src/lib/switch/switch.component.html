@@ -7,7 +7,8 @@
     [disabled]="disabled()"
     (click)="toggle()"
     (keydown.space)="toggle(); $event.preventDefault()"
-    (keydown.enter)="toggle(); $event.preventDefault()">
+    (keydown.enter)="toggle(); $event.preventDefault()"
+  >
     <span [class]="thumbClasses()"></span>
   </button>
   @if (hasLabel) {

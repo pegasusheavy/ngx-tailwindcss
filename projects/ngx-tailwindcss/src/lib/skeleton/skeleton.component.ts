@@ -1,4 +1,4 @@
-import { Component, Input, computed, signal } from '@angular/core';
+import { Component, computed, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type SkeletonVariant = 'text' | 'circular' | 'rectangular' | 'rounded';
@@ -8,17 +8,27 @@ export type SkeletonVariant = 'text' | 'circular' | 'rectangular' | 'rounded';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './skeleton.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
 export class TwSkeletonComponent {
-  @Input() set variant(value: SkeletonVariant) { this._variant.set(value); }
-  @Input() set width(value: string | number) { this._width.set(value); }
-  @Input() set height(value: string | number) { this._height.set(value); }
-  @Input() set animated(value: boolean) { this._animated.set(value); }
+  @Input() set variant(value: SkeletonVariant) {
+    this._variant.set(value);
+  }
+  @Input() set width(value: string | number) {
+    this._width.set(value);
+  }
+  @Input() set height(value: string | number) {
+    this._height.set(value);
+  }
+  @Input() set animated(value: boolean) {
+    this._animated.set(value);
+  }
 
   protected _variant = signal<SkeletonVariant>('text');
   protected _width = signal<string | number>('100%');
@@ -36,11 +46,7 @@ export class TwSkeletonComponent {
       rounded: 'rounded-lg',
     };
 
-    const classes = [
-      'bg-slate-200',
-      'block',
-      variantClasses[variant],
-    ];
+    const classes = ['bg-slate-200', 'block', variantClasses[variant]];
 
     if (animated) {
       classes.push('animate-pulse');
@@ -77,17 +83,27 @@ export type SkeletonGap = 'sm' | 'md' | 'lg';
   standalone: true,
   imports: [CommonModule, TwSkeletonComponent],
   templateUrl: './skeleton-text.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
 export class TwSkeletonTextComponent {
-  @Input() set lineCount(value: number) { this._lineCount.set(value); }
-  @Input() set animated(value: boolean) { this._animated.set(value); }
-  @Input() set lastLineWidth(value: string) { this._lastLineWidth.set(value); }
-  @Input() set gap(value: SkeletonGap) { this._gap.set(value); }
+  @Input() set lineCount(value: number) {
+    this._lineCount.set(value);
+  }
+  @Input() set animated(value: boolean) {
+    this._animated.set(value);
+  }
+  @Input() set lastLineWidth(value: string) {
+    this._lastLineWidth.set(value);
+  }
+  @Input() set gap(value: SkeletonGap) {
+    this._gap.set(value);
+  }
 
   protected _lineCount = signal(3);
   protected _animated = signal(true);
@@ -120,17 +136,27 @@ export class TwSkeletonTextComponent {
   standalone: true,
   imports: [CommonModule, TwSkeletonComponent, TwSkeletonTextComponent],
   templateUrl: './skeleton-card.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
 export class TwSkeletonCardComponent {
-  @Input() set showMedia(value: boolean) { this._showMedia.set(value); }
-  @Input() set showAvatar(value: boolean) { this._showAvatar.set(value); }
-  @Input() set mediaHeight(value: number) { this._mediaHeight.set(value); }
-  @Input() set lineCount(value: number) { this._lineCount.set(value); }
+  @Input() set showMedia(value: boolean) {
+    this._showMedia.set(value);
+  }
+  @Input() set showAvatar(value: boolean) {
+    this._showAvatar.set(value);
+  }
+  @Input() set mediaHeight(value: number) {
+    this._mediaHeight.set(value);
+  }
+  @Input() set lineCount(value: number) {
+    this._lineCount.set(value);
+  }
 
   protected _showMedia = signal(true);
   protected _showAvatar = signal(false);
@@ -148,15 +174,21 @@ export class TwSkeletonCardComponent {
   standalone: true,
   imports: [CommonModule, TwSkeletonComponent],
   templateUrl: './skeleton-table.component.html',
-  styles: [`
-    :host {
-      display: block;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
 })
 export class TwSkeletonTableComponent {
-  @Input() set rowCount(value: number) { this._rowCount.set(value); }
-  @Input() set columnCount(value: number) { this._columnCount.set(value); }
+  @Input() set rowCount(value: number) {
+    this._rowCount.set(value);
+  }
+  @Input() set columnCount(value: number) {
+    this._columnCount.set(value);
+  }
 
   protected _rowCount = signal(5);
   protected _columnCount = signal(4);
@@ -169,4 +201,3 @@ export class TwSkeletonTableComponent {
     }))
   );
 }
-

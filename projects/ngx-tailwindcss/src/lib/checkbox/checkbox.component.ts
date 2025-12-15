@@ -1,13 +1,13 @@
 import {
-  Component,
-  forwardRef,
   ChangeDetectionStrategy,
+  Component,
   computed,
-  signal,
+  effect,
+  forwardRef,
   inject,
   input,
   output,
-  effect,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -54,13 +54,15 @@ const CHECKBOX_SIZES: Record<CheckboxSize, { box: string; label: string }> = {
   templateUrl: './checkbox.component.html',
 })
 export class TwCheckboxComponent implements ControlValueAccessor {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   // Signal-based inputs
   readonly variant = input<CheckboxVariant>('primary');
   readonly size = input<CheckboxSize>('md');
   readonly disabled = input(false, { transform: (v: boolean | string) => v === '' || v === true });
-  readonly indeterminate = input(false, { transform: (v: boolean | string) => v === '' || v === true });
+  readonly indeterminate = input(false, {
+    transform: (v: boolean | string) => v === '' || v === true,
+  });
   readonly name = input('');
   readonly value = input<any>();
   readonly readonly = input(false, { transform: (v: boolean | string) => v === '' || v === true });
@@ -73,7 +75,7 @@ export class TwCheckboxComponent implements ControlValueAccessor {
 
   // Internal state
   protected readonly checked = signal(false);
-  private _disabled = signal(false);
+  private readonly _disabled = signal(false);
 
   private onChangeFn: (value: boolean) => void = () => {};
   private onTouchedFn: () => void = () => {};

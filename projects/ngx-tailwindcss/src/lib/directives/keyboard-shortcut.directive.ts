@@ -1,13 +1,13 @@
 import {
-  Directive,
-  Input,
-  Output,
-  EventEmitter,
-  OnInit,
-  OnDestroy,
-  inject,
   booleanAttribute,
+  Directive,
+  EventEmitter,
+  inject,
+  Input,
   NgZone,
+  OnDestroy,
+  OnInit,
+  Output,
   PLATFORM_ID,
 } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
@@ -36,8 +36,8 @@ export interface KeyboardShortcutEvent {
   standalone: true,
 })
 export class TwKeyboardShortcutDirective implements OnInit, OnDestroy {
-  private ngZone: NgZone;
-  private platformId: object;
+  private readonly ngZone: NgZone;
+  private readonly platformId: object;
 
   constructor() {
     this.ngZone = inject(NgZone);
@@ -46,42 +46,42 @@ export class TwKeyboardShortcutDirective implements OnInit, OnDestroy {
 
   /** Keyboard shortcut string (e.g., "ctrl+s", "ctrl+shift+p", "escape") */
   @Input({ required: true })
-  twKeyboardShortcut: string = '';
+  twKeyboardShortcut = '';
 
   /** Listen globally (document) instead of element-only */
   @Input({ transform: booleanAttribute })
-  shortcutGlobal: boolean = true;
+  shortcutGlobal = true;
 
   /** Prevent default browser behavior */
   @Input({ transform: booleanAttribute })
-  shortcutPreventDefault: boolean = true;
+  shortcutPreventDefault = true;
 
   /** Stop event propagation */
   @Input({ transform: booleanAttribute })
-  shortcutStopPropagation: boolean = false;
+  shortcutStopPropagation = false;
 
   /** Disable the shortcut */
   @Input({ transform: booleanAttribute })
-  shortcutDisabled: boolean = false;
+  shortcutDisabled = false;
 
   /** Emits when the shortcut is pressed */
   @Output()
   shortcutPressed = new EventEmitter<KeyboardShortcutEvent>();
 
-  private keydownHandler = (event: Event): void => {
+  private readonly keydownHandler = (event: Event): void => {
     const keyEvent = event as KeyboardEvent;
     if (this.shortcutDisabled) return;
 
     const shortcut = this.twKeyboardShortcut.toLowerCase();
-    const parts = shortcut.split('+').map((p) => p.trim());
+    const parts = shortcut.split('+').map(p => p.trim());
 
-    const key = parts[parts.length - 1];
-    const modifiers = parts.slice(0, -1);
+    const key = parts.at(-1);
+    const modifiers = new Set(parts.slice(0, -1));
 
-    const ctrlRequired = modifiers.includes('ctrl') || modifiers.includes('control');
-    const altRequired = modifiers.includes('alt');
-    const shiftRequired = modifiers.includes('shift');
-    const metaRequired = modifiers.includes('meta') || modifiers.includes('cmd');
+    const ctrlRequired = modifiers.has('ctrl') || modifiers.has('control');
+    const altRequired = modifiers.has('alt');
+    const shiftRequired = modifiers.has('shift');
+    const metaRequired = modifiers.has('meta') || modifiers.has('cmd');
 
     const ctrlPressed = keyEvent.ctrlKey || keyEvent.metaKey; // Treat meta as ctrl for cross-platform
     const altPressed = keyEvent.altKey;
@@ -130,4 +130,3 @@ export class TwKeyboardShortcutDirective implements OnInit, OnDestroy {
     target.removeEventListener('keydown', this.keydownHandler);
   }
 }
-

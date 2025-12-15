@@ -1,18 +1,25 @@
 import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
+  computed,
+  EventEmitter,
+  inject,
   Input,
   Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  inject,
-  booleanAttribute,
-  computed,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
-export type BadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral';
+export type BadgeVariant =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'neutral';
 export type BadgeSize = 'sm' | 'md' | 'lg';
 export type BadgeStyle = 'solid' | 'soft' | 'outline' | 'dot';
 
@@ -97,7 +104,7 @@ const BADGE_ROUNDED: Record<string, string> = {
   },
 })
 export class TwBadgeComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   // Internal signals
   protected readonly _variant = signal<BadgeVariant>('neutral');
@@ -108,12 +115,24 @@ export class TwBadgeComponent {
   protected readonly _classOverride = signal('');
 
   // Input setters
-  @Input() set variant(value: BadgeVariant) { this._variant.set(value); }
-  @Input() set badgeStyle(value: BadgeStyle) { this._badgeStyle.set(value); }
-  @Input() set size(value: BadgeSize) { this._size.set(value); }
-  @Input({ transform: booleanAttribute }) set pill(value: boolean) { this._pill.set(value); }
-  @Input({ transform: booleanAttribute }) set removable(value: boolean) { this._removable.set(value); }
-  @Input() set classOverride(value: string) { this._classOverride.set(value); }
+  @Input() set variant(value: BadgeVariant) {
+    this._variant.set(value);
+  }
+  @Input() set badgeStyle(value: BadgeStyle) {
+    this._badgeStyle.set(value);
+  }
+  @Input() set size(value: BadgeSize) {
+    this._size.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set pill(value: boolean) {
+    this._pill.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set removable(value: boolean) {
+    this._removable.set(value);
+  }
+  @Input() set classOverride(value: string) {
+    this._classOverride.set(value);
+  }
 
   // Output
   @Output() remove = new EventEmitter<void>();
@@ -166,7 +185,7 @@ export class TwBadgeComponent {
   templateUrl: './badge-group.component.html',
 })
 export class TwBadgeGroupComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   // Internal signals
   protected readonly _gap = signal<'sm' | 'md' | 'lg'>('sm');
@@ -175,10 +194,18 @@ export class TwBadgeGroupComponent {
   protected readonly _classOverride = signal('');
 
   // Input setters
-  @Input() set gap(value: 'sm' | 'md' | 'lg') { this._gap.set(value); }
-  @Input() set direction(value: 'row' | 'column') { this._direction.set(value); }
-  @Input({ transform: booleanAttribute }) set wrap(value: boolean) { this._wrap.set(value); }
-  @Input() set classOverride(value: string) { this._classOverride.set(value); }
+  @Input() set gap(value: 'sm' | 'md' | 'lg') {
+    this._gap.set(value);
+  }
+  @Input() set direction(value: 'row' | 'column') {
+    this._direction.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set wrap(value: boolean) {
+    this._wrap.set(value);
+  }
+  @Input() set classOverride(value: string) {
+    this._classOverride.set(value);
+  }
 
   protected readonly computedClasses = computed(() => {
     const gaps: Record<string, string> = {

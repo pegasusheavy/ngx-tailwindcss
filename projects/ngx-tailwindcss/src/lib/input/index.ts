@@ -1,12 +1,12 @@
 export * from './input.component';
 
 import {
-  TwInputComponent,
-  TwTextareaComponent,
-  TwLabelDirective,
-  TwHintDirective,
   TwErrorDirective,
+  TwHintDirective,
   TwInputAffixDirective,
+  TwInputComponent,
+  TwLabelDirective,
+  TwTextareaComponent,
 } from './input.component';
 
 export const TW_INPUT_COMPONENTS = [
@@ -17,4 +17,3 @@ export const TW_INPUT_COMPONENTS = [
   TwErrorDirective,
   TwInputAffixDirective,
 ] as const;
-

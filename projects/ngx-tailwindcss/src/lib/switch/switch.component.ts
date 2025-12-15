@@ -1,13 +1,13 @@
 import {
-  Component,
-  forwardRef,
   ChangeDetectionStrategy,
+  Component,
   computed,
-  signal,
+  forwardRef,
   inject,
   input,
-  output,
   model,
+  output,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -24,7 +24,10 @@ const SWITCH_VARIANTS: Record<SwitchVariant, { on: string; off: string }> = {
   danger: { on: 'bg-rose-600', off: 'bg-slate-300' },
 };
 
-const SWITCH_SIZES: Record<SwitchSize, { track: string; thumb: string; translate: string; label: string }> = {
+const SWITCH_SIZES: Record<
+  SwitchSize,
+  { track: string; thumb: string; translate: string; label: string }
+> = {
   sm: { track: 'w-8 h-5', thumb: 'w-4 h-4', translate: 'translate-x-3', label: 'text-sm' },
   md: { track: 'w-11 h-6', thumb: 'w-5 h-5', translate: 'translate-x-5', label: 'text-base' },
   lg: { track: 'w-14 h-8', thumb: 'w-7 h-7', translate: 'translate-x-6', label: 'text-lg' },
@@ -54,7 +57,7 @@ const SWITCH_SIZES: Record<SwitchSize, { track: string; thumb: string; translate
   templateUrl: './switch.component.html',
 })
 export class TwSwitchComponent implements ControlValueAccessor {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   // Signal-based inputs
   readonly variant = input<SwitchVariant>('primary');
@@ -69,7 +72,7 @@ export class TwSwitchComponent implements ControlValueAccessor {
   // Internal state
   protected readonly checked = signal(false);
   protected readonly hasLabel = true;
-  private _disabled = signal(false);
+  private readonly _disabled = signal(false);
 
   private onChangeFn: (value: boolean) => void = () => {};
   private onTouchedFn: () => void = () => {};

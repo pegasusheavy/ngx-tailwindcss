@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TwClickOutsideDirective } from './click-outside.directive';
 
 @Component({
@@ -11,7 +11,8 @@ import { TwClickOutsideDirective } from './click-outside.directive';
       [clickOutsideEnabled]="enabled()"
       [clickOutsideExclude]="excludeSelectors()"
       [clickOutsideDelay]="delay()"
-      data-testid="click-outside-target">
+      data-testid="click-outside-target"
+    >
       <button data-testid="inside-button">Inside</button>
     </div>
     <button data-testid="outside-button">Outside</button>
@@ -44,7 +45,9 @@ describe('TwClickOutsideDirective', () => {
 
     fixture = TestBed.createComponent(TestHostComponent);
     component = fixture.componentInstance;
-    targetEl = fixture.debugElement.query(By.css('[data-testid="click-outside-target"]')).nativeElement;
+    targetEl = fixture.debugElement.query(
+      By.css('[data-testid="click-outside-target"]')
+    ).nativeElement;
     fixture.detectChanges();
   });
 

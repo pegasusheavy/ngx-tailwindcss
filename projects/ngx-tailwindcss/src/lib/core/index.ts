@@ -6,4 +6,3 @@ export * from './provide-tw-config';
 export * from './tw-class.service';
 export * from './aria.service';
 export * from './i18n.service';
-

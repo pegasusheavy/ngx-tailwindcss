@@ -1,12 +1,12 @@
 export * from './modal.component';
 
 import {
+  TwConfirmDialogComponent,
+  TwModalBodyComponent,
   TwModalComponent,
+  TwModalFooterComponent,
   TwModalHeaderComponent,
   TwModalTitleComponent,
-  TwModalBodyComponent,
-  TwModalFooterComponent,
-  TwConfirmDialogComponent,
 } from './modal.component';
 
 export const TW_MODAL_COMPONENTS = [
@@ -17,4 +17,3 @@ export const TW_MODAL_COMPONENTS = [
   TwModalFooterComponent,
   TwConfirmDialogComponent,
 ] as const;
-

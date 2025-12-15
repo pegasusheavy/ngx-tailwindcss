@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { TwClassDirective, TwVariantDirective } from './class-merge.directive';
 import { TwClassService } from '../core/tw-class.service';
 import { provideTwConfig } from '../core/provide-tw-config';
@@ -12,7 +12,8 @@ import { provideTwConfig } from '../core/provide-tw-config';
       [twClass]="baseClasses"
       [twClassMerge]="mergeClasses"
       [twClassIf]="conditionalClasses"
-      data-testid="class-merge-target">
+      data-testid="class-merge-target"
+    >
       Content
     </div>
   `,
@@ -39,7 +40,9 @@ describe('TwClassDirective', () => {
     fixture = TestBed.createComponent(TestHostComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    targetEl = fixture.debugElement.query(By.css('[data-testid="class-merge-target"]')).nativeElement;
+    targetEl = fixture.debugElement.query(
+      By.css('[data-testid="class-merge-target"]')
+    ).nativeElement;
   });
 
   it('should create the directive', () => {
@@ -81,13 +84,7 @@ describe('TwClassDirective', () => {
 });
 
 @Component({
-  template: `
-    <div
-      [twVariant]="variant"
-      data-testid="variant-target">
-      Content
-    </div>
-  `,
+  template: ` <div [twVariant]="variant" data-testid="variant-target">Content</div> `,
   standalone: true,
   imports: [TwVariantDirective],
 })

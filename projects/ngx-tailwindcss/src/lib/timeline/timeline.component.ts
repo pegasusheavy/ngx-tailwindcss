@@ -1,9 +1,9 @@
 import {
-  Component,
-  Input,
   ChangeDetectionStrategy,
+  Component,
   computed,
   inject,
+  Input,
   TemplateRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -48,7 +48,7 @@ const TIMELINE_COLORS: Record<string, { bg: string; border: string }> = {
   templateUrl: './timeline.component.html',
 })
 export class TwTimelineComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Events to display */
   @Input() events: TimelineEvent[] = [];
@@ -63,7 +63,7 @@ export class TwTimelineComponent {
   @Input() markerSize: 'sm' | 'md' | 'lg' = 'md';
 
   /** Track by function for ngFor */
-  @Input() trackByFn: (event: TimelineEvent) => any = (event) => event.id ?? event;
+  @Input() trackByFn: (event: TimelineEvent) => any = event => event.id ?? event;
 
   /** Additional classes */
   @Input() classOverride = '';
@@ -86,7 +86,7 @@ export class TwTimelineComponent {
       'relative flex gap-4',
       this.layout === 'horizontal' ? 'flex-col flex-1' : '',
       this.align === 'right' ? 'flex-row-reverse' : '',
-      !isLast ? 'pb-8' : ''
+      isLast ? '' : 'pb-8'
     );
   }
 
@@ -114,11 +114,7 @@ export class TwTimelineComponent {
     const color = event.color || 'primary';
     const colorClasses = TIMELINE_COLORS[color];
 
-    return this.twClass.merge(
-      'rounded-full ring-4 ring-white',
-      size,
-      colorClasses.bg
-    );
+    return this.twClass.merge('rounded-full ring-4 ring-white', size, colorClasses.bg);
   }
 
   protected iconMarkerClasses(event: TimelineEvent) {
@@ -134,10 +130,7 @@ export class TwTimelineComponent {
   }
 
   protected contentClasses() {
-    return this.twClass.merge(
-      'flex-1 min-w-0',
-      this.align === 'right' ? 'text-right' : ''
-    );
+    return this.twClass.merge('flex-1 min-w-0', this.align === 'right' ? 'text-right' : '');
   }
 
   protected dateClasses() {
@@ -152,4 +145,3 @@ export class TwTimelineComponent {
     return 'text-sm text-slate-600 mt-1';
   }
 }
-

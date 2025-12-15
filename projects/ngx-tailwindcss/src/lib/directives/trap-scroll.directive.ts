@@ -1,12 +1,12 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
-  OnInit,
-  OnDestroy,
   inject,
-  booleanAttribute,
+  Input,
   NgZone,
+  OnDestroy,
+  OnInit,
 } from '@angular/core';
 
 /**
@@ -26,8 +26,8 @@ import {
   standalone: true,
 })
 export class TwTrapScrollDirective implements OnInit, OnDestroy {
-  private el: ElementRef<HTMLElement>;
-  private ngZone: NgZone;
+  private readonly el: ElementRef<HTMLElement>;
+  private readonly ngZone: NgZone;
 
   constructor() {
     this.el = inject(ElementRef);
@@ -36,13 +36,13 @@ export class TwTrapScrollDirective implements OnInit, OnDestroy {
 
   /** Disable scroll trapping */
   @Input({ transform: booleanAttribute })
-  trapScrollDisabled: boolean = false;
+  trapScrollDisabled = false;
 
   /** Allow horizontal scroll to propagate */
   @Input({ transform: booleanAttribute })
-  trapScrollAllowHorizontal: boolean = false;
+  trapScrollAllowHorizontal = false;
 
-  private onWheel = (event: WheelEvent): void => {
+  private readonly onWheel = (event: WheelEvent): void => {
     if (this.trapScrollDisabled) return;
 
     const element = this.el.nativeElement;
@@ -76,13 +76,16 @@ export class TwTrapScrollDirective implements OnInit, OnDestroy {
     }
   };
 
-  private onTouchMove = (event: TouchEvent): void => {
+  private readonly onTouchMove = (event: TouchEvent): void => {
     if (this.trapScrollDisabled) return;
 
     const element = this.el.nativeElement;
 
     // If element is not scrollable, prevent all touch scroll
-    if (element.scrollHeight <= element.clientHeight && element.scrollWidth <= element.clientWidth) {
+    if (
+      element.scrollHeight <= element.clientHeight &&
+      element.scrollWidth <= element.clientWidth
+    ) {
       event.preventDefault();
     }
   };
@@ -102,4 +105,3 @@ export class TwTrapScrollDirective implements OnInit, OnDestroy {
     element.removeEventListener('touchmove', this.onTouchMove);
   }
 }
-

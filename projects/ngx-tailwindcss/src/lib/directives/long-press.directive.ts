@@ -1,15 +1,15 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
-  Output,
   EventEmitter,
-  OnInit,
-  OnDestroy,
   inject,
-  numberAttribute,
-  booleanAttribute,
+  Input,
   NgZone,
+  numberAttribute,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
 
 export interface LongPressEvent {
@@ -33,8 +33,8 @@ export interface LongPressEvent {
   standalone: true,
 })
 export class TwLongPressDirective implements OnInit, OnDestroy {
-  private el: ElementRef<HTMLElement>;
-  private ngZone: NgZone;
+  private readonly el: ElementRef<HTMLElement>;
+  private readonly ngZone: NgZone;
 
   constructor() {
     this.el = inject(ElementRef);
@@ -42,25 +42,25 @@ export class TwLongPressDirective implements OnInit, OnDestroy {
   }
 
   private timeout: ReturnType<typeof setTimeout> | null = null;
-  private startTime: number = 0;
-  private startX: number = 0;
-  private startY: number = 0;
+  private startTime = 0;
+  private startX = 0;
+  private startY = 0;
 
   /** Duration in ms to trigger long press (default: 500ms) */
   @Input({ transform: numberAttribute })
-  longPressDuration: number = 500;
+  longPressDuration = 500;
 
   /** Maximum movement allowed during press (default: 10px) */
   @Input({ transform: numberAttribute })
-  longPressMoveTolerance: number = 10;
+  longPressMoveTolerance = 10;
 
   /** Disable the directive */
   @Input({ transform: booleanAttribute })
-  longPressDisabled: boolean = false;
+  longPressDisabled = false;
 
   /** Prevent default behavior on long press */
   @Input({ transform: booleanAttribute })
-  longPressPreventDefault: boolean = true;
+  longPressPreventDefault = true;
 
   /** Emits when long press is detected */
   @Output()
@@ -74,7 +74,7 @@ export class TwLongPressDirective implements OnInit, OnDestroy {
   @Output()
   pressEnd = new EventEmitter<void>();
 
-  private onPointerDown = (event: PointerEvent): void => {
+  private readonly onPointerDown = (event: PointerEvent): void => {
     if (this.longPressDisabled) return;
 
     this.startTime = Date.now();
@@ -99,12 +99,12 @@ export class TwLongPressDirective implements OnInit, OnDestroy {
     }, this.longPressDuration);
   };
 
-  private onPointerUp = (): void => {
+  private readonly onPointerUp = (): void => {
     this.cancel();
     this.pressEnd.emit();
   };
 
-  private onPointerMove = (event: PointerEvent): void => {
+  private readonly onPointerMove = (event: PointerEvent): void => {
     if (!this.timeout) return;
 
     const deltaX = Math.abs(event.clientX - this.startX);
@@ -115,7 +115,7 @@ export class TwLongPressDirective implements OnInit, OnDestroy {
     }
   };
 
-  private onContextMenu = (event: Event): void => {
+  private readonly onContextMenu = (event: Event): void => {
     if (this.longPressPreventDefault && this.timeout) {
       event.preventDefault();
     }
@@ -151,4 +151,3 @@ export class TwLongPressDirective implements OnInit, OnDestroy {
     element.removeEventListener('contextmenu', this.onContextMenu);
   }
 }
-

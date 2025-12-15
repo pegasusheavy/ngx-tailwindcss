@@ -1,10 +1,10 @@
 import {
+  booleanAttribute,
   Directive,
-  Input,
-  Output,
   EventEmitter,
   HostListener,
-  booleanAttribute,
+  Input,
+  Output,
 } from '@angular/core';
 
 export interface CopyClipboardEvent {
@@ -29,11 +29,11 @@ export interface CopyClipboardEvent {
 export class TwCopyClipboardDirective {
   /** Text to copy to clipboard */
   @Input({ required: true })
-  twCopyClipboard: string = '';
+  twCopyClipboard = '';
 
   /** Disable copying */
   @Input({ transform: booleanAttribute })
-  copyDisabled: boolean = false;
+  copyDisabled = false;
 
   /** Emits when copy operation completes */
   @Output()
@@ -67,15 +67,14 @@ export class TwCopyClipboardDirective {
     textarea.style.position = 'fixed';
     textarea.style.left = '-9999px';
     textarea.style.top = '-9999px';
-    document.body.appendChild(textarea);
+    document.body.append(textarea);
     textarea.focus();
     textarea.select();
 
     try {
       document.execCommand('copy');
     } finally {
-      document.body.removeChild(textarea);
+      textarea.remove();
     }
   }
 }
-

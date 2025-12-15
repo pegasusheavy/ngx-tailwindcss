@@ -1,14 +1,14 @@
 import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
+  computed,
+  EventEmitter,
+  HostListener,
+  inject,
   Input,
   Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  computed,
   signal,
-  booleanAttribute,
-  inject,
-  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -33,7 +33,7 @@ export type ImageBorderRadius = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3x
   templateUrl: './image.component.html',
 })
 export class TwImageComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Image source URL */
   @Input({ required: true }) src = '';
@@ -51,15 +51,21 @@ export class TwImageComponent {
   @Input() height = '';
 
   /** Object fit */
-  @Input() set fit(value: ImageFit) { this._fit.set(value); }
+  @Input() set fit(value: ImageFit) {
+    this._fit.set(value);
+  }
   protected _fit = signal<ImageFit>('cover');
 
   /** Border radius */
-  @Input() set borderRadius(value: ImageBorderRadius) { this._borderRadius.set(value); }
+  @Input() set borderRadius(value: ImageBorderRadius) {
+    this._borderRadius.set(value);
+  }
   protected _borderRadius = signal<ImageBorderRadius>('none');
 
   /** Whether to enable preview on click */
-  @Input({ transform: booleanAttribute }) set preview(value: boolean) { this._preview.set(value); }
+  @Input({ transform: booleanAttribute }) set preview(value: boolean) {
+    this._preview.set(value);
+  }
   protected _preview = signal(false);
 
   /** Whether zoom is enabled in preview */
@@ -114,10 +120,12 @@ export class TwImageComponent {
   protected containerStyles = computed(() => {
     const styles: Record<string, string> = {};
     if (this.width) {
-      styles['width'] = this.width.includes('px') || this.width.includes('%') ? this.width : `${this.width}px`;
+      styles['width'] =
+        this.width.includes('px') || this.width.includes('%') ? this.width : `${this.width}px`;
     }
     if (this.height) {
-      styles['height'] = this.height.includes('px') || this.height.includes('%') ? this.height : `${this.height}px`;
+      styles['height'] =
+        this.height.includes('px') || this.height.includes('%') ? this.height : `${this.height}px`;
     }
     return styles;
   });
@@ -131,10 +139,7 @@ export class TwImageComponent {
       'scale-down': 'object-scale-down',
     };
 
-    return this.twClass.merge(
-      'w-full h-full',
-      fitClasses[this._fit()]
-    );
+    return this.twClass.merge('w-full h-full', fitClasses[this._fit()]);
   });
 
   protected placeholderClasses = computed(() => {
@@ -206,4 +211,3 @@ export class TwImageComponent {
     this.rotation.set(this.rotation() + 90);
   }
 }
-

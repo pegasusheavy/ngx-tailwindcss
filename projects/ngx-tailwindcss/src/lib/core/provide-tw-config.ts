@@ -1,5 +1,5 @@
-import { Provider, EnvironmentProviders, makeEnvironmentProviders } from '@angular/core';
-import { TW_CONFIG, TwConfig, DEFAULT_TW_CONFIG } from './tw-config';
+import { EnvironmentProviders, makeEnvironmentProviders, Provider } from '@angular/core';
+import { DEFAULT_TW_CONFIG, TW_CONFIG, TwConfig } from './tw-config';
 
 /**
  * Provides ngx-tailwindcss configuration at the application level
@@ -38,4 +38,3 @@ export function withTwConfig(config: Partial<TwConfig>): Provider {
     useValue: { ...DEFAULT_TW_CONFIG, ...config },
   };
 }
-

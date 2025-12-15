@@ -3,11 +3,12 @@
   #triggerContainer
   (click)="onTriggerClick()"
   (mouseenter)="onTriggerEnter()"
-  (mouseleave)="onTriggerLeave()">
+  (mouseleave)="onTriggerLeave()"
+>
   <ng-content select="[twPopoverTrigger]"></ng-content>
 </div>
 
 <!-- Hidden content source - will be cloned to portal -->
-<div class="popover-content-source" style="display: none;">
+<div class="popover-content-source" style="display: none">
   <ng-content></ng-content>
 </div>

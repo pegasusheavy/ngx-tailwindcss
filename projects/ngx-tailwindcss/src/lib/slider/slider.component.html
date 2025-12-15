@@ -28,14 +28,19 @@
       <!-- Thumb indicator (visual only, positioned over the fill) -->
       <div
         class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-none"
-        [style.left.%]="fillPercentage()">
+        [style.left.%]="fillPercentage()"
+      >
         <div [class]="thumbClasses()"></div>
 
         <!-- Value tooltip bubble (shown while dragging or when showValueBubble is true) -->
         @if (showValueBubble && isDragging()) {
-          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-xs font-medium rounded shadow-lg whitespace-nowrap">
+          <div
+            class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-xs font-medium rounded shadow-lg whitespace-nowrap"
+          >
             {{ displayValue() }}
-            <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+            <div
+              class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"
+            ></div>
           </div>
         }
       </div>
@@ -56,11 +61,14 @@
         (touchstart)="onDragStart()"
         (touchend)="onDragEnd()"
         (focus)="onFocus.emit($event)"
-        (blur)="onInputBlur()" />
+        (blur)="onInputBlur()"
+      />
     </div>
 
     @if (showMinMax) {
-      <span class="text-xs text-slate-500 ml-3 tabular-nums min-w-6 text-right">{{ valueFormat(max) }}</span>
+      <span class="text-xs text-slate-500 ml-3 tabular-nums min-w-6 text-right">{{
+        valueFormat(max)
+      }}</span>
     }
   </div>
 

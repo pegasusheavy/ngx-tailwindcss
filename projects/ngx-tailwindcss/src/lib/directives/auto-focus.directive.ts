@@ -1,10 +1,10 @@
 import {
+  AfterViewInit,
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
-  AfterViewInit,
   inject,
-  booleanAttribute,
+  Input,
   numberAttribute,
 } from '@angular/core';
 
@@ -23,7 +23,7 @@ import {
   standalone: true,
 })
 export class TwAutoFocusDirective implements AfterViewInit {
-  private el: ElementRef<HTMLElement>;
+  private readonly el: ElementRef<HTMLElement>;
 
   constructor() {
     this.el = inject(ElementRef);
@@ -31,19 +31,19 @@ export class TwAutoFocusDirective implements AfterViewInit {
 
   /** Whether auto-focus is enabled */
   @Input({ alias: 'twAutoFocus', transform: booleanAttribute })
-  autoFocusEnabled: boolean = true;
+  autoFocusEnabled = true;
 
   /** Delay in milliseconds before focusing */
   @Input({ transform: numberAttribute })
-  autoFocusDelay: number = 0;
+  autoFocusDelay = 0;
 
   /** Whether to select text content (for inputs) */
   @Input({ transform: booleanAttribute })
-  autoFocusSelect: boolean = false;
+  autoFocusSelect = false;
 
   /** Whether to scroll element into view */
   @Input({ transform: booleanAttribute })
-  autoFocusScroll: boolean = false;
+  autoFocusScroll = false;
 
   ngAfterViewInit(): void {
     if (!this.autoFocusEnabled) return;
@@ -73,4 +73,3 @@ export class TwAutoFocusDirective implements AfterViewInit {
     }
   }
 }
-

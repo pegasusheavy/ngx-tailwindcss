@@ -1,7 +1,10 @@
-<div [class]="containerClasses()" role="progressbar"
-     [attr.aria-valuenow]="valueNum()"
-     [attr.aria-valuemin]="0"
-     [attr.aria-valuemax]="maxNum()">
+<div
+  [class]="containerClasses()"
+  role="progressbar"
+  [attr.aria-valuenow]="valueNum()"
+  [attr.aria-valuemin]="0"
+  [attr.aria-valuemax]="maxNum()"
+>
   @if ((labelText() || showValueFlag()) && labelPositionVal() === 'top') {
     <div class="flex justify-between items-center mb-1">
       <span class="text-sm font-medium text-slate-700">{{ labelText() }}</span>

@@ -1,13 +1,8 @@
 import { Component, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { describe, it, expect, beforeEach } from 'vitest';
-import {
-  TwTabsComponent,
-  TwTabPanelComponent,
-  TabsVariant,
-  TabsSize,
-} from './tabs.component';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { TabsSize, TabsVariant, TwTabPanelComponent, TwTabsComponent } from './tabs.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
@@ -18,7 +13,8 @@ import { TwClassService } from '../core/tw-class.service';
       [size]="size"
       [fullWidth]="fullWidth"
       (valueChange)="onTabChange($event)"
-      data-testid="test-tabs">
+      data-testid="test-tabs"
+    >
       <tw-tab-panel value="tab1" label="Tab 1" data-testid="panel-1">
         Content for Tab 1
       </tw-tab-panel>

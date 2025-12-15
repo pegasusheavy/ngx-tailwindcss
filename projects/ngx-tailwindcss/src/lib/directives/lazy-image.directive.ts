@@ -1,14 +1,14 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
-  Output,
   EventEmitter,
-  OnInit,
-  OnDestroy,
-  Renderer2,
   inject,
-  booleanAttribute,
+  Input,
+  OnDestroy,
+  OnInit,
+  Output,
+  Renderer2,
 } from '@angular/core';
 
 export interface LazyImageEvent {
@@ -31,8 +31,8 @@ export interface LazyImageEvent {
   standalone: true,
 })
 export class TwLazyImageDirective implements OnInit, OnDestroy {
-  private el: ElementRef<HTMLImageElement>;
-  private renderer: Renderer2;
+  private readonly el: ElementRef<HTMLImageElement>;
+  private readonly renderer: Renderer2;
 
   constructor() {
     this.el = inject(ElementRef);
@@ -43,31 +43,31 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
 
   /** The image source to lazy load */
   @Input({ required: true })
-  twLazyImage: string = '';
+  twLazyImage = '';
 
   /** Placeholder image to show before loading */
   @Input()
-  lazyPlaceholder: string = '';
+  lazyPlaceholder = '';
 
   /** CSS class to add while loading */
   @Input()
-  lazyLoadingClass: string = '';
+  lazyLoadingClass = '';
 
   /** CSS class to add after loaded */
   @Input()
-  lazyLoadedClass: string = '';
+  lazyLoadedClass = '';
 
   /** Root margin for intersection observer */
   @Input()
-  lazyRootMargin: string = '100px';
+  lazyRootMargin = '100px';
 
   /** Disable lazy loading (load immediately) */
   @Input({ transform: booleanAttribute })
-  lazyDisabled: boolean = false;
+  lazyDisabled = false;
 
   /** Use native loading="lazy" attribute */
   @Input({ transform: booleanAttribute })
-  lazyNative: boolean = false;
+  lazyNative = false;
 
   /** Emits when image loads or errors */
   @Output()
@@ -83,7 +83,7 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
 
     // Add loading class
     if (this.lazyLoadingClass) {
-      this.lazyLoadingClass.split(' ').forEach((cls) => {
+      this.lazyLoadingClass.split(' ').forEach(cls => {
         if (cls) this.renderer.addClass(img, cls);
       });
     }
@@ -104,8 +104,8 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
     }
 
     this.observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
+      entries => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
             this.loadImage();
             this.observer?.disconnect();
@@ -127,23 +127,23 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
     // Create a new image to preload
     const tempImg = new Image();
 
-    tempImg.onload = () => {
+    tempImg.addEventListener('load', () => {
       this.renderer.setAttribute(img, 'src', this.twLazyImage);
 
       // Remove loading class, add loaded class
       if (this.lazyLoadingClass) {
-        this.lazyLoadingClass.split(' ').forEach((cls) => {
+        this.lazyLoadingClass.split(' ').forEach(cls => {
           if (cls) this.renderer.removeClass(img, cls);
         });
       }
       if (this.lazyLoadedClass) {
-        this.lazyLoadedClass.split(' ').forEach((cls) => {
+        this.lazyLoadedClass.split(' ').forEach(cls => {
           if (cls) this.renderer.addClass(img, cls);
         });
       }
 
       this.lazyLoaded.emit({ loaded: true, src: this.twLazyImage });
-    };
+    });
 
     tempImg.onerror = () => {
       this.lazyLoaded.emit({
@@ -163,4 +163,3 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
     }
   }
 }
-

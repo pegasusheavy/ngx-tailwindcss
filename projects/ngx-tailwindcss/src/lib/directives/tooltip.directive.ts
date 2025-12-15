@@ -1,14 +1,14 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
-  OnDestroy,
-  OnChanges,
-  SimpleChanges,
-  Renderer2,
   inject,
-  booleanAttribute,
+  Input,
   numberAttribute,
+  OnChanges,
+  OnDestroy,
+  Renderer2,
+  SimpleChanges,
 } from '@angular/core';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
@@ -34,8 +34,8 @@ export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
   },
 })
 export class TwTooltipDirective implements OnDestroy, OnChanges {
-  private el = inject(ElementRef);
-  private renderer = inject(Renderer2);
+  private readonly el = inject(ElementRef);
+  private readonly renderer = inject(Renderer2);
 
   /** The tooltip text content */
   @Input('twTooltip') content = '';
@@ -116,7 +116,7 @@ export class TwTooltipDirective implements OnDestroy, OnChanges {
 
     // Add custom classes
     const allClasses = [...baseClasses, ...this.tooltipClass.split(' ').filter(Boolean)];
-    allClasses.forEach(cls => this.renderer.addClass(this.tooltipElement, cls));
+    allClasses.forEach(cls => { this.renderer.addClass(this.tooltipElement, cls); });
 
     this.renderer.setStyle(this.tooltipElement, 'z-index', this.tooltipZIndex.toString());
 
@@ -146,26 +146,30 @@ export class TwTooltipDirective implements OnDestroy, OnChanges {
 
   private setArrowPosition(arrow: HTMLElement): void {
     switch (this.tooltipPosition) {
-      case 'top':
+      case 'top': {
         this.renderer.setStyle(arrow, 'bottom', '-4px');
         this.renderer.setStyle(arrow, 'left', '50%');
         this.renderer.setStyle(arrow, 'transform', 'translateX(-50%) rotate(45deg)');
         break;
-      case 'bottom':
+      }
+      case 'bottom': {
         this.renderer.setStyle(arrow, 'top', '-4px');
         this.renderer.setStyle(arrow, 'left', '50%');
         this.renderer.setStyle(arrow, 'transform', 'translateX(-50%) rotate(45deg)');
         break;
-      case 'left':
+      }
+      case 'left': {
         this.renderer.setStyle(arrow, 'right', '-4px');
         this.renderer.setStyle(arrow, 'top', '50%');
         this.renderer.setStyle(arrow, 'transform', 'translateY(-50%) rotate(45deg)');
         break;
-      case 'right':
+      }
+      case 'right': {
         this.renderer.setStyle(arrow, 'left', '-4px');
         this.renderer.setStyle(arrow, 'top', '50%');
         this.renderer.setStyle(arrow, 'transform', 'translateY(-50%) rotate(45deg)');
         break;
+      }
     }
   }
 
@@ -180,22 +184,26 @@ export class TwTooltipDirective implements OnDestroy, OnChanges {
     let left: number;
 
     switch (this.tooltipPosition) {
-      case 'top':
+      case 'top': {
         top = hostRect.top - tooltipRect.height - gap;
         left = hostRect.left + (hostRect.width - tooltipRect.width) / 2;
         break;
-      case 'bottom':
+      }
+      case 'bottom': {
         top = hostRect.bottom + gap;
         left = hostRect.left + (hostRect.width - tooltipRect.width) / 2;
         break;
-      case 'left':
+      }
+      case 'left': {
         top = hostRect.top + (hostRect.height - tooltipRect.height) / 2;
         left = hostRect.left - tooltipRect.width - gap;
         break;
-      case 'right':
+      }
+      case 'right': {
         top = hostRect.top + (hostRect.height - tooltipRect.height) / 2;
         left = hostRect.right + gap;
         break;
+      }
     }
 
     // Keep tooltip within viewport
@@ -230,4 +238,3 @@ export class TwTooltipDirective implements OnDestroy, OnChanges {
     this.destroyTooltip();
   }
 }
-

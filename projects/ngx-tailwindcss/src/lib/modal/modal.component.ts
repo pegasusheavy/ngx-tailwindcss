@@ -1,18 +1,18 @@
 import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  inject,
   booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
   computed,
-  signal,
-  OnDestroy,
-  ElementRef,
-  HostListener,
-  ViewChild,
   effect,
+  ElementRef,
+  EventEmitter,
+  HostListener,
+  inject,
+  Input,
+  OnDestroy,
+  Output,
+  signal,
+  ViewChild,
 } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -60,9 +60,7 @@ const MODAL_SIZES: Record<ModalSize, string> = {
         style({ opacity: 0 }),
         animate('150ms ease-out', style({ opacity: 1 })),
       ]),
-      transition(':leave', [
-        animate('100ms ease-in', style({ opacity: 0 })),
-      ]),
+      transition(':leave', [animate('100ms ease-in', style({ opacity: 0 }))]),
     ]),
     trigger('panelAnimation', [
       transition(':enter', [
@@ -76,8 +74,8 @@ const MODAL_SIZES: Record<ModalSize, string> = {
   ],
 })
 export class TwModalComponent implements OnDestroy {
-  private twClass = inject(TwClassService);
-  private document = inject(DOCUMENT);
+  private readonly twClass = inject(TwClassService);
+  private readonly document = inject(DOCUMENT);
 
   @ViewChild('modalPanel') modalPanel!: ElementRef;
 
@@ -96,20 +94,46 @@ export class TwModalComponent implements OnDestroy {
   protected readonly _panelClass = signal('');
 
   // Input setters
-  @Input() set open(value: boolean) { this._open.set(value); }
-  get open(): boolean { return this._open(); }
+  @Input() set open(value: boolean) {
+    this._open.set(value);
+  }
+  get open(): boolean {
+    return this._open();
+  }
 
-  @Input() set size(value: ModalSize) { this._size.set(value); }
-  @Input({ transform: booleanAttribute }) set closeOnBackdropClick(value: boolean) { this._closeOnBackdropClick.set(value); }
-  @Input({ transform: booleanAttribute }) set closeOnEscape(value: boolean) { this._closeOnEscape.set(value); }
-  @Input({ transform: booleanAttribute }) set showCloseButton(value: boolean) { this._showCloseButton.set(value); }
-  @Input({ transform: booleanAttribute }) set autoFocus(value: boolean) { this._autoFocus.set(value); }
-  @Input({ transform: booleanAttribute }) set restoreFocus(value: boolean) { this._restoreFocus.set(value); }
-  @Input({ transform: booleanAttribute }) set centered(value: boolean) { this._centered.set(value); }
-  @Input() set ariaLabelledBy(value: string) { this._ariaLabelledBy.set(value); }
-  @Input() set ariaDescribedBy(value: string) { this._ariaDescribedBy.set(value); }
-  @Input() set backdropClass(value: string) { this._backdropClass.set(value); }
-  @Input() set panelClass(value: string) { this._panelClass.set(value); }
+  @Input() set size(value: ModalSize) {
+    this._size.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set closeOnBackdropClick(value: boolean) {
+    this._closeOnBackdropClick.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set closeOnEscape(value: boolean) {
+    this._closeOnEscape.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set showCloseButton(value: boolean) {
+    this._showCloseButton.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set autoFocus(value: boolean) {
+    this._autoFocus.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set restoreFocus(value: boolean) {
+    this._restoreFocus.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set centered(value: boolean) {
+    this._centered.set(value);
+  }
+  @Input() set ariaLabelledBy(value: string) {
+    this._ariaLabelledBy.set(value);
+  }
+  @Input() set ariaDescribedBy(value: string) {
+    this._ariaDescribedBy.set(value);
+  }
+  @Input() set backdropClass(value: string) {
+    this._backdropClass.set(value);
+  }
+  @Input() set panelClass(value: string) {
+    this._panelClass.set(value);
+  }
 
   // Outputs
   @Output() opened = new EventEmitter<void>();
@@ -198,7 +222,7 @@ export class TwModalComponent implements OnDestroy {
   selector: 'tw-modal-header',
   standalone: true,
   host: {
-    'class': 'block px-6 py-4 border-b border-slate-100',
+    class: 'block px-6 py-4 border-b border-slate-100',
   },
   template: `<ng-content></ng-content>`,
 })
@@ -211,7 +235,7 @@ export class TwModalHeaderComponent {}
   selector: 'tw-modal-title',
   standalone: true,
   host: {
-    'class': 'block text-lg font-semibold text-slate-900',
+    class: 'block text-lg font-semibold text-slate-900',
   },
   template: `<ng-content></ng-content>`,
 })
@@ -224,7 +248,7 @@ export class TwModalTitleComponent {}
   selector: 'tw-modal-body',
   standalone: true,
   host: {
-    'class': 'block p-6',
+    class: 'block p-6',
   },
   template: `<ng-content></ng-content>`,
 })
@@ -244,13 +268,17 @@ export class TwModalBodyComponent {}
   template: `<ng-content></ng-content>`,
 })
 export class TwModalFooterComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   protected readonly _align = signal<'start' | 'center' | 'end' | 'between'>('end');
   protected readonly _classOverride = signal('');
 
-  @Input() set align(value: 'start' | 'center' | 'end' | 'between') { this._align.set(value); }
-  @Input() set classOverride(value: string) { this._classOverride.set(value); }
+  @Input() set align(value: 'start' | 'center' | 'end' | 'between') {
+    this._align.set(value);
+  }
+  @Input() set classOverride(value: string) {
+    this._classOverride.set(value);
+  }
 
   protected readonly computedClasses = computed(() => {
     const alignClasses: Record<string, string> = {
@@ -274,12 +302,19 @@ export class TwModalFooterComponent {
 @Component({
   selector: 'tw-confirm-dialog',
   standalone: true,
-  imports: [CommonModule, TwModalComponent, TwModalHeaderComponent, TwModalTitleComponent, TwModalBodyComponent, TwModalFooterComponent],
+  imports: [
+    CommonModule,
+    TwModalComponent,
+    TwModalHeaderComponent,
+    TwModalTitleComponent,
+    TwModalBodyComponent,
+    TwModalFooterComponent,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './confirm-dialog.component.html',
 })
 export class TwConfirmDialogComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   protected readonly _open = signal(false);
   protected readonly _title = signal('Confirm');
@@ -289,15 +324,31 @@ export class TwConfirmDialogComponent {
   protected readonly _variant = signal<'primary' | 'danger'>('primary');
   protected readonly _loading = signal(false);
 
-  @Input() set open(value: boolean) { this._open.set(value); }
-  get open(): boolean { return this._open(); }
+  @Input() set open(value: boolean) {
+    this._open.set(value);
+  }
+  get open(): boolean {
+    return this._open();
+  }
 
-  @Input() set title(value: string) { this._title.set(value); }
-  @Input() set message(value: string) { this._message.set(value); }
-  @Input() set confirmText(value: string) { this._confirmText.set(value); }
-  @Input() set cancelText(value: string) { this._cancelText.set(value); }
-  @Input() set variant(value: 'primary' | 'danger') { this._variant.set(value); }
-  @Input({ transform: booleanAttribute }) set loading(value: boolean) { this._loading.set(value); }
+  @Input() set title(value: string) {
+    this._title.set(value);
+  }
+  @Input() set message(value: string) {
+    this._message.set(value);
+  }
+  @Input() set confirmText(value: string) {
+    this._confirmText.set(value);
+  }
+  @Input() set cancelText(value: string) {
+    this._cancelText.set(value);
+  }
+  @Input() set variant(value: 'primary' | 'danger') {
+    this._variant.set(value);
+  }
+  @Input({ transform: booleanAttribute }) set loading(value: boolean) {
+    this._loading.set(value);
+  }
 
   @Output() openChange = new EventEmitter<boolean>();
   @Output() confirm = new EventEmitter<void>();

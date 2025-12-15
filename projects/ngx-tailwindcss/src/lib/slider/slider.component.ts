@@ -1,15 +1,15 @@
 import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
-  Input,
-  Output,
+  computed,
   EventEmitter,
   forwardRef,
-  ChangeDetectionStrategy,
-  computed,
-  signal,
-  booleanAttribute,
-  numberAttribute,
   inject,
+  Input,
+  numberAttribute,
+  Output,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -56,7 +56,7 @@ const SLIDER_SIZES: Record<SliderSize, { track: string; thumb: string }> = {
   templateUrl: './slider.component.html',
 })
 export class TwSliderComponent implements ControlValueAccessor {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Minimum value */
   @Input({ transform: numberAttribute }) min = 0;
@@ -95,7 +95,7 @@ export class TwSliderComponent implements ControlValueAccessor {
   @Input({ transform: booleanAttribute }) showValueBubble = false;
 
   /** Format function for display value */
-  @Input() valueFormat: (value: number) => string = (v) => v.toString();
+  @Input() valueFormat: (value: number) => string = v => v.toString();
 
   /** Additional classes */
   @Input() classOverride = '';
@@ -190,14 +190,14 @@ export class TwSliderComponent implements ControlValueAccessor {
 
   onSliderInput(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const newValue = parseFloat(input.value);
+    const newValue = Number.parseFloat(input.value);
     this.value.set(newValue);
     this.onInput.emit(newValue);
   }
 
   onSliderChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const newValue = parseFloat(input.value);
+    const newValue = Number.parseFloat(input.value);
     this.value.set(newValue);
     this.onChangeFn(newValue);
     this.onChange.emit(newValue);
@@ -233,4 +233,3 @@ export class TwSliderComponent implements ControlValueAccessor {
     this.disabled = isDisabled;
   }
 }
-

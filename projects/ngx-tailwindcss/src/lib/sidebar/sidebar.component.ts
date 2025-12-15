@@ -1,15 +1,15 @@
 import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
+  computed,
+  ContentChild,
+  EventEmitter,
+  HostListener,
+  inject,
   Input,
   Output,
-  EventEmitter,
-  ChangeDetectionStrategy,
-  computed,
   signal,
-  booleanAttribute,
-  inject,
-  HostListener,
-  ContentChild,
   TemplateRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -46,7 +46,7 @@ const SIDEBAR_SIZES: Record<SidebarPosition, Record<SidebarSize, string>> = {
   },
 })
 export class TwSidebarComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Whether the sidebar is visible */
   @Input({ transform: booleanAttribute })
@@ -137,14 +137,18 @@ export class TwSidebarComponent {
 
   private getPositionClasses(): string {
     switch (this.position) {
-      case 'left':
+      case 'left': {
         return 'top-0 left-0 h-full';
-      case 'right':
+      }
+      case 'right': {
         return 'top-0 right-0 h-full';
-      case 'top':
+      }
+      case 'top': {
         return 'top-0 left-0 w-full';
-      case 'bottom':
+      }
+      case 'bottom': {
         return 'bottom-0 left-0 w-full';
+      }
     }
   }
 
@@ -152,14 +156,18 @@ export class TwSidebarComponent {
     if (this.visible()) return 'translate-x-0 translate-y-0';
 
     switch (this.position) {
-      case 'left':
+      case 'left': {
         return '-translate-x-full';
-      case 'right':
+      }
+      case 'right': {
         return 'translate-x-full';
-      case 'top':
+      }
+      case 'top': {
         return '-translate-y-full';
-      case 'bottom':
+      }
+      case 'bottom': {
         return 'translate-y-full';
+      }
     }
   }
 
@@ -207,4 +215,3 @@ export class TwSidebarComponent {
     }
   }
 }
-

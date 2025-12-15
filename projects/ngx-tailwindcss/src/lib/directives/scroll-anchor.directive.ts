@@ -1,11 +1,11 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
-  Input,
   HostListener,
   inject,
+  Input,
   numberAttribute,
-  booleanAttribute,
 } from '@angular/core';
 
 /**
@@ -25,11 +25,11 @@ import {
 export class TwScrollToDirective {
   /** Target selector or element ID */
   @Input({ required: true })
-  twScrollTo: string = '';
+  twScrollTo = '';
 
   /** Offset from the top in pixels (useful for fixed headers) */
   @Input({ transform: numberAttribute })
-  scrollOffset: number = 0;
+  scrollOffset = 0;
 
   /** Scroll behavior: 'smooth' or 'auto' */
   @Input()
@@ -41,7 +41,7 @@ export class TwScrollToDirective {
 
   /** Disable scrolling */
   @Input({ transform: booleanAttribute })
-  scrollDisabled: boolean = false;
+  scrollDisabled = false;
 
   @HostListener('click', ['$event'])
   onClick(event: Event): void {
@@ -83,7 +83,7 @@ export class TwScrollToDirective {
   standalone: true,
 })
 export class TwScrollSectionDirective {
-  private el: ElementRef<HTMLElement>;
+  private readonly el: ElementRef<HTMLElement>;
 
   constructor() {
     this.el = inject(ElementRef);
@@ -91,7 +91,7 @@ export class TwScrollSectionDirective {
 
   /** Section identifier */
   @Input({ required: true })
-  twScrollSection: string = '';
+  twScrollSection = '';
 
   /** Get the element's position relative to viewport */
   getPosition(): { top: number; bottom: number; id: string } {
@@ -103,4 +103,3 @@ export class TwScrollSectionDirective {
     };
   }
 }
-

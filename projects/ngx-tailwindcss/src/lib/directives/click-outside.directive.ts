@@ -1,14 +1,14 @@
 import {
+  booleanAttribute,
   Directive,
   ElementRef,
   EventEmitter,
+  inject,
   Input,
+  NgZone,
   OnDestroy,
   OnInit,
   Output,
-  inject,
-  booleanAttribute,
-  NgZone,
 } from '@angular/core';
 
 /**
@@ -34,8 +34,8 @@ import {
   standalone: true,
 })
 export class TwClickOutsideDirective implements OnInit, OnDestroy {
-  private el = inject(ElementRef);
-  private ngZone = inject(NgZone);
+  private readonly el = inject(ElementRef);
+  private readonly ngZone = inject(NgZone);
 
   /** Event emitted when a click occurs outside the element */
   @Output('twClickOutside') clickOutside = new EventEmitter<MouseEvent>();
@@ -64,7 +64,7 @@ export class TwClickOutsideDirective implements OnInit, OnDestroy {
       }, this.clickOutsideDelay);
     } else {
       // Use a microtask delay to prevent immediate triggering
-      Promise.resolve().then(() => this.attachListener());
+      Promise.resolve().then(() => { this.attachListener(); });
     }
   }
 
@@ -101,7 +101,7 @@ export class TwClickOutsideDirective implements OnInit, OnDestroy {
     for (const selector of this.clickOutsideExclude) {
       // Check if the target matches the selector or is a descendant
       const excludedElements = document.querySelectorAll(selector);
-      for (const excluded of Array.from(excludedElements)) {
+      for (const excluded of excludedElements) {
         if (excluded.contains(target)) {
           return true;
         }
@@ -126,4 +126,3 @@ export class TwClickOutsideDirective implements OnInit, OnDestroy {
     this.detachListener();
   }
 }
-

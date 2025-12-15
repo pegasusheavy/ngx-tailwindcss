@@ -1,17 +1,17 @@
 import {
+  AfterContentInit,
+  booleanAttribute,
+  ChangeDetectionStrategy,
   Component,
-  Input,
-  Output,
+  computed,
+  ContentChildren,
   EventEmitter,
   forwardRef,
-  ChangeDetectionStrategy,
-  computed,
-  signal,
-  booleanAttribute,
   inject,
-  ContentChildren,
+  Input,
+  Output,
   QueryList,
-  AfterContentInit,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
@@ -50,7 +50,7 @@ const RADIO_SIZES: Record<RadioSize, { radio: string; label: string }> = {
   templateUrl: './radio-button.component.html',
 })
 export class TwRadioButtonComponent {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Value of the radio button */
   @Input({ required: true }) value: any;
@@ -145,7 +145,7 @@ export class TwRadioButtonComponent {
   templateUrl: './radio-group.component.html',
 })
 export class TwRadioGroupComponent implements ControlValueAccessor, AfterContentInit {
-  private twClass = inject(TwClassService);
+  private readonly twClass = inject(TwClassService);
 
   /** Name for all radio buttons in the group */
   @Input() name = `tw-radio-group-${Math.random().toString(36).slice(2)}`;
@@ -185,7 +185,7 @@ export class TwRadioGroupComponent implements ControlValueAccessor, AfterContent
 
   ngAfterContentInit(): void {
     this.updateRadioButtons();
-    this.radioButtons.changes.subscribe(() => this.updateRadioButtons());
+    this.radioButtons.changes.subscribe(() => { this.updateRadioButtons(); });
   }
 
   private updateRadioButtons(): void {
@@ -231,4 +231,3 @@ export class TwRadioGroupComponent implements ControlValueAccessor, AfterContent
     }
   }
 }
-

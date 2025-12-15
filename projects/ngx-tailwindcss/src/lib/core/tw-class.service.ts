@@ -1,5 +1,5 @@
-import { Injectable, inject } from '@angular/core';
-import { TW_CONFIG, TwConfig, DEFAULT_TW_CONFIG } from './tw-config';
+import { inject, Injectable } from '@angular/core';
+import { DEFAULT_TW_CONFIG, TW_CONFIG, TwConfig } from './tw-config';
 
 /**
  * Service for managing Tailwind CSS classes with conflict resolution
@@ -7,7 +7,7 @@ import { TW_CONFIG, TwConfig, DEFAULT_TW_CONFIG } from './tw-config';
  */
 @Injectable({ providedIn: 'root' })
 export class TwClassService {
-  private config: TwConfig;
+  private readonly config: TwConfig;
 
   constructor() {
     const injectedConfig = inject(TW_CONFIG, { optional: true });
@@ -18,7 +18,7 @@ export class TwClassService {
    * Merges multiple class strings, handling Tailwind class conflicts
    * Later classes override earlier ones for the same utility
    */
-  merge(...classes: (string | undefined | null | false)[]): string {
+  merge(...classes: Array<string | undefined | null | false>): string {
     const classMap = new Map<string, string>();
 
     for (const classString of classes) {
@@ -32,16 +32,13 @@ export class TwClassService {
       }
     }
 
-    return Array.from(classMap.values()).join(' ');
+    return [...classMap.values()].join(' ');
   }
 
   /**
    * Conditionally applies classes based on a condition map
    */
-  conditional(
-    baseClasses: string,
-    conditionals: Record<string, boolean | undefined>
-  ): string {
+  conditional(baseClasses: string, conditionals: Record<string, boolean | undefined>): string {
     const activeClasses = Object.entries(conditionals)
       .filter(([, condition]) => condition)
       .map(([classes]) => classes);
@@ -62,13 +59,16 @@ export class TwClassService {
   private getClassGroup(cls: string): string {
     // Handle responsive/state prefixes
     const parts = cls.split(':');
-    const baseClass = parts[parts.length - 1];
+    const baseClass = parts.at(-1);
     const prefix = parts.slice(0, -1).join(':');
 
     // Group patterns for common Tailwind utilities
-    const groupPatterns: [RegExp, string][] = [
+    const groupPatterns: Array<[RegExp, string]> = [
       // Layout
-      [/^(block|inline|inline-block|flex|inline-flex|grid|inline-grid|hidden|contents|flow-root)$/, 'display'],
+      [
+        /^(block|inline|inline-block|flex|inline-flex|grid|inline-grid|hidden|contents|flow-root)$/,
+        'display',
+      ],
       [/^(static|fixed|absolute|relative|sticky)$/, 'position'],
       [/^(visible|invisible|collapse)$/, 'visibility'],
       [/^overflow-/, 'overflow'],
@@ -134,7 +134,7 @@ export class TwClassService {
       [/^to-/, 'gradient-to'],
 
       // Borders
-      [/^border($|-[xytblr]?-?\d|-(solid|dashed|dotted|double|hidden|none))/, 'border-width'],
+      [/^border($|-[blrtxy]?-?\d|-(solid|dashed|dotted|double|hidden|none))/, 'border-width'],
       [/^border-/, 'border-color'],
       [/^rounded(-|$)/, 'border-radius'],
       [/^ring-/, 'ring'],
@@ -177,8 +177,7 @@ export class TwClassService {
   /**
    * Creates a class string from an array of class names
    */
-  join(...classes: (string | undefined | null | false)[]): string {
+  join(...classes: Array<string | undefined | null | false>): string {
     return classes.filter(Boolean).join(' ');
   }
 }
-

@@ -1,15 +1,15 @@
 import {
-  Directive,
-  Input,
-  Output,
-  EventEmitter,
-  OnInit,
-  OnDestroy,
-  HostListener,
-  numberAttribute,
   booleanAttribute,
+  Directive,
+  EventEmitter,
+  HostListener,
+  Input,
+  numberAttribute,
+  OnDestroy,
+  OnInit,
+  Output,
 } from '@angular/core';
-import { Subject, Subscription, debounceTime } from 'rxjs';
+import { debounceTime, Subject, Subscription } from 'rxjs';
 
 /**
  * Directive to debounce click events, preventing accidental double-clicks
@@ -25,16 +25,16 @@ import { Subject, Subscription, debounceTime } from 'rxjs';
   standalone: true,
 })
 export class TwDebounceClickDirective implements OnInit, OnDestroy {
-  private clicks = new Subject<MouseEvent>();
+  private readonly clicks = new Subject<MouseEvent>();
   private subscription: Subscription | null = null;
 
   /** Debounce time in milliseconds (default: 300ms) */
   @Input({ transform: numberAttribute })
-  debounceTime: number = 300;
+  debounceTime = 300;
 
   /** Disable debouncing */
   @Input({ transform: booleanAttribute })
-  debounceDisabled: boolean = false;
+  debounceDisabled = false;
 
   /** Emits debounced click events */
   @Output()
@@ -52,7 +52,7 @@ export class TwDebounceClickDirective implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscription = this.clicks
       .pipe(debounceTime(this.debounceTime))
-      .subscribe((event) => this.debounceClick.emit(event));
+      .subscribe(event => { this.debounceClick.emit(event); });
   }
 
   ngOnDestroy(): void {
@@ -61,4 +61,3 @@ export class TwDebounceClickDirective implements OnInit, OnDestroy {
     }
   }
 }
-
