@@ -19,6 +19,9 @@ export * from './scroll-anchor.directive';
 export * from './hover-class.directive';
 export * from './trap-scroll.directive';
 
+// ARIA accessibility directives
+export * from './aria.directive';
+
 // Convenience export of all directives
 import { TwRippleDirective } from './ripple.directive';
 import { TwTooltipDirective } from './tooltip.directive';
@@ -37,6 +40,7 @@ import { TwLazyImageDirective } from './lazy-image.directive';
 import { TwScrollToDirective, TwScrollSectionDirective } from './scroll-anchor.directive';
 import { TwHoverClassDirective } from './hover-class.directive';
 import { TwTrapScrollDirective } from './trap-scroll.directive';
+import { TW_ARIA_DIRECTIVES } from './aria.directive';
 
 /** All core directives */
 export const TW_CORE_DIRECTIVES = [
@@ -69,4 +73,5 @@ export const TW_DX_DIRECTIVES = [
 export const TW_DIRECTIVES = [
   ...TW_CORE_DIRECTIVES,
   ...TW_DX_DIRECTIVES,
+  ...TW_ARIA_DIRECTIVES,
 ] as const;
