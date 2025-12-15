@@ -116,7 +116,9 @@ export class TwTooltipDirective implements OnDestroy, OnChanges {
 
     // Add custom classes
     const allClasses = [...baseClasses, ...this.tooltipClass.split(' ').filter(Boolean)];
-    allClasses.forEach(cls => { this.renderer.addClass(this.tooltipElement, cls); });
+    allClasses.forEach(cls => {
+      this.renderer.addClass(this.tooltipElement, cls);
+    });
 
     this.renderer.setStyle(this.tooltipElement, 'z-index', this.tooltipZIndex.toString());
 

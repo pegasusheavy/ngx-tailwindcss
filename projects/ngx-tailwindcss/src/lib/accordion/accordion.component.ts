@@ -60,7 +60,7 @@ export class TwAccordionItemComponent {
   }
 
   protected itemClasses = computed(() => {
-    const {variant} = this;
+    const { variant } = this;
 
     const variantClasses: Record<string, string> = {
       default: 'border-b border-slate-200 last:border-b-0',

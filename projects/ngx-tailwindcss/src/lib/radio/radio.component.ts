@@ -185,7 +185,9 @@ export class TwRadioGroupComponent implements ControlValueAccessor, AfterContent
 
   ngAfterContentInit(): void {
     this.updateRadioButtons();
-    this.radioButtons.changes.subscribe(() => { this.updateRadioButtons(); });
+    this.radioButtons.changes.subscribe(() => {
+      this.updateRadioButtons();
+    });
   }
 
   private updateRadioButtons(): void {

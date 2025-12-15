@@ -75,7 +75,8 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
     const size = diameter * 2.5;
 
     // Calculate position
-    let x: number; let y: number;
+    let x: number;
+    let y: number;
 
     if (this.rippleCentered) {
       x = rect.width / 2;
@@ -140,6 +141,8 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.activeRipples.forEach(ripple => { this.removeRipple(ripple); });
+    this.activeRipples.forEach(ripple => {
+      this.removeRipple(ripple);
+    });
   }
 }

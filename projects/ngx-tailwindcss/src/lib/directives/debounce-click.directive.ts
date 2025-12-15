@@ -50,9 +50,9 @@ export class TwDebounceClickDirective implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscription = this.clicks
-      .pipe(debounceTime(this.debounceTime))
-      .subscribe(event => { this.debounceClick.emit(event); });
+    this.subscription = this.clicks.pipe(debounceTime(this.debounceTime)).subscribe(event => {
+      this.debounceClick.emit(event);
+    });
   }
 
   ngOnDestroy(): void {

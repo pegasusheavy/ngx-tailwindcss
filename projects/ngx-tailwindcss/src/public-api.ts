@@ -66,7 +66,7 @@ export * from './lib/image/index';
 export * from './lib/scroll-top/index';
 
 // Convenience re-exports for all components
-import {  TW_DIRECTIVES,  } from './lib/directives/index';
+import { TW_DIRECTIVES } from './lib/directives/index';
 
 import { TW_BUTTON_COMPONENTS } from './lib/button/index';
 import { TW_CARD_COMPONENTS } from './lib/card/index';
@@ -234,4 +234,4 @@ export const TW_ALL = [
   ...TW_SCROLL_TOP_COMPONENTS,
 ] as const;
 
-export {TW_CORE_DIRECTIVES, TW_DX_DIRECTIVES} from './lib/directives/index';
+export { TW_CORE_DIRECTIVES, TW_DX_DIRECTIVES } from './lib/directives/index';

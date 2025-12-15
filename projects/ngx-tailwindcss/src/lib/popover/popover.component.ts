@@ -135,14 +135,18 @@ export class TwPopoverComponent implements OnDestroy {
   onTriggerEnter(): void {
     if (this.trigger === 'hover') {
       this.clearHoverTimeout();
-      this.hoverTimeout = setTimeout(() => { this.show(); }, this.hoverDelay);
+      this.hoverTimeout = setTimeout(() => {
+        this.show();
+      }, this.hoverDelay);
     }
   }
 
   onTriggerLeave(): void {
     if (this.trigger === 'hover') {
       this.clearHoverTimeout();
-      this.hoverTimeout = setTimeout(() => { this.hide(); }, this.hoverDelay);
+      this.hoverTimeout = setTimeout(() => {
+        this.hide();
+      }, this.hoverDelay);
     }
   }
 
@@ -155,7 +159,9 @@ export class TwPopoverComponent implements OnDestroy {
   private onPopoverLeave(): void {
     if (this.trigger === 'hover') {
       this.clearHoverTimeout();
-      this.hoverTimeout = setTimeout(() => { this.hide(); }, this.hoverDelay);
+      this.hoverTimeout = setTimeout(() => {
+        this.hide();
+      }, this.hoverDelay);
     }
   }
 

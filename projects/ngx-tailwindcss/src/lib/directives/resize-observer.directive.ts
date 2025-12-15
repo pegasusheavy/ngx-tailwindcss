@@ -66,7 +66,9 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
     if (this.resizeDebounce > 0) {
       this.subscription = this.resizeSubject
         .pipe(debounceTime(this.resizeDebounce))
-        .subscribe(event => { this.resize.emit(event); });
+        .subscribe(event => {
+          this.resize.emit(event);
+        });
     }
 
     this.ngZone.runOutsideAngular(() => {
@@ -78,7 +80,9 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
           if (this.resizeDebounce > 0) {
             this.resizeSubject.next(event);
           } else {
-            this.ngZone.run(() => { this.resize.emit(event); });
+            this.ngZone.run(() => {
+              this.resize.emit(event);
+            });
           }
         }
       });

@@ -404,7 +404,9 @@ export class TwTextareaComponent implements ControlValueAccessor {
   writeValue(value: string): void {
     this.value = value ?? '';
     if (this.autoResize) {
-      setTimeout(() => { this.adjustHeight(); }, 0);
+      setTimeout(() => {
+        this.adjustHeight();
+      }, 0);
     }
   }
 

@@ -119,10 +119,10 @@ export class TwPaginationComponent {
     if (disabled) {
       baseClasses.push('text-slate-300 cursor-not-allowed');
     } else if (variant === 'outlined') {
-        baseClasses.push('text-slate-600 hover:bg-slate-100 border border-slate-300');
-      } else {
-        baseClasses.push('text-slate-600 hover:bg-slate-100');
-      }
+      baseClasses.push('text-slate-600 hover:bg-slate-100 border border-slate-300');
+    } else {
+      baseClasses.push('text-slate-600 hover:bg-slate-100');
+    }
 
     return baseClasses.join(' ');
   }
@@ -145,10 +145,10 @@ export class TwPaginationComponent {
     if (isActive) {
       baseClasses.push('bg-blue-600 text-white');
     } else if (variant === 'outlined') {
-        baseClasses.push('text-slate-600 hover:bg-slate-100 border border-slate-300');
-      } else {
-        baseClasses.push('text-slate-600 hover:bg-slate-100');
-      }
+      baseClasses.push('text-slate-600 hover:bg-slate-100 border border-slate-300');
+    } else {
+      baseClasses.push('text-slate-600 hover:bg-slate-100');
+    }
 
     return baseClasses.join(' ');
   }

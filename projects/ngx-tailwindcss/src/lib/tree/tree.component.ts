@@ -146,7 +146,7 @@ export class TwTreeComponent {
   onCheckboxChange(node: TreeNode, event: Event): void {
     if (node.disabled) return;
 
-    const {checked} = (event.target as HTMLInputElement);
+    const { checked } = event.target as HTMLInputElement;
 
     if (checked) {
       this.selectNode(node);
@@ -175,7 +175,9 @@ export class TwTreeComponent {
     }
 
     if (this.propagateSelectionDown && node.children) {
-      node.children.forEach(child => { this.selectNode(child); });
+      node.children.forEach(child => {
+        this.selectNode(child);
+      });
     }
   }
 
@@ -184,7 +186,9 @@ export class TwTreeComponent {
     this.onNodeUnselect.emit(node);
 
     if (this.propagateSelectionDown && node.children) {
-      node.children.forEach(child => { this.unselectNode(child); });
+      node.children.forEach(child => {
+        this.unselectNode(child);
+      });
     }
   }
 

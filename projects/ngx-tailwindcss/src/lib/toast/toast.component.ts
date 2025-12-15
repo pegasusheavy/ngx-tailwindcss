@@ -50,7 +50,9 @@ export class TwToastService {
     this._toasts.update(toasts => [...toasts, toast]);
 
     if (toast.duration && toast.duration > 0) {
-      setTimeout(() => { this.dismiss(id); }, toast.duration);
+      setTimeout(() => {
+        this.dismiss(id);
+      }, toast.duration);
     }
 
     return id;
@@ -194,6 +196,8 @@ export class TwToastContainerComponent {
   });
 
   getDismissFunction(id: string): () => void {
-    return () => { this.toastService.dismiss(id); };
+    return () => {
+      this.toastService.dismiss(id);
+    };
   }
 }

@@ -107,13 +107,13 @@ export class TwStepsComponent {
 
   protected verticalConnectorClasses(index: number) {
     const isComplete = index < this.activeIndex;
-    const {indicatorSize} = STEPS_SIZES[this.size];
+    const { indicatorSize } = STEPS_SIZES[this.size];
 
     return this.twClass.merge('w-0.5 h-8', isComplete ? 'bg-blue-600' : 'bg-slate-200');
   }
 
   protected getVerticalConnectorStyle(): Record<string, string> {
-    const {indicatorSize} = STEPS_SIZES[this.size];
+    const { indicatorSize } = STEPS_SIZES[this.size];
     return {
       marginLeft: `${indicatorSize / 2 - 1}px`,
     };

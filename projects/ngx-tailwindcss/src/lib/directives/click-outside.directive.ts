@@ -64,7 +64,9 @@ export class TwClickOutsideDirective implements OnInit, OnDestroy {
       }, this.clickOutsideDelay);
     } else {
       // Use a microtask delay to prevent immediate triggering
-      Promise.resolve().then(() => { this.attachListener(); });
+      Promise.resolve().then(() => {
+        this.attachListener();
+      });
     }
   }
 

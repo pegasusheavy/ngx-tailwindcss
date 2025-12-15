@@ -98,32 +98,32 @@ describe('TwModalComponent', () => {
 
         const panel = fixture.debugElement.query(By.css('[role="dialog"]'));
         switch (size) {
-        case 'sm': {
-          expect(panel.nativeElement.className).toContain('max-w-sm');
-        
-        break;
-        }
-        case 'md': {
-          expect(panel.nativeElement.className).toContain('max-w-md');
-        
-        break;
-        }
-        case 'lg': {
-          expect(panel.nativeElement.className).toContain('max-w-lg');
-        
-        break;
-        }
-        case 'xl': {
-          expect(panel.nativeElement.className).toContain('max-w-xl');
-        
-        break;
-        }
-        case 'full': {
-          expect(panel.nativeElement.className).toContain('max-w-full');
-        
-        break;
-        }
-        // No default
+          case 'sm': {
+            expect(panel.nativeElement.className).toContain('max-w-sm');
+
+            break;
+          }
+          case 'md': {
+            expect(panel.nativeElement.className).toContain('max-w-md');
+
+            break;
+          }
+          case 'lg': {
+            expect(panel.nativeElement.className).toContain('max-w-lg');
+
+            break;
+          }
+          case 'xl': {
+            expect(panel.nativeElement.className).toContain('max-w-xl');
+
+            break;
+          }
+          case 'full': {
+            expect(panel.nativeElement.className).toContain('max-w-full');
+
+            break;
+          }
+          // No default
         }
       });
     });

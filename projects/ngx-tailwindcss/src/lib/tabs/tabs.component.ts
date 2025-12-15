@@ -233,7 +233,7 @@ export class TwTabsComponent implements AfterContentInit {
 
     this.panels.forEach(panel => {
       panel.active = panel.value === value;
-      panel.labelledBy = `tab-${  panel.value}`;
+      panel.labelledBy = `tab-${panel.value}`;
     });
 
     this.value = value;
@@ -257,10 +257,10 @@ export class TwTabsComponent implements AfterContentInit {
         newIndex = (currentIndex - 1 + enabledPanels.length) % enabledPanels.length;
       }
     } else if (event.key === 'ArrowDown') {
-        newIndex = (currentIndex + 1) % enabledPanels.length;
-      } else if (event.key === 'ArrowUp') {
-        newIndex = (currentIndex - 1 + enabledPanels.length) % enabledPanels.length;
-      }
+      newIndex = (currentIndex + 1) % enabledPanels.length;
+    } else if (event.key === 'ArrowUp') {
+      newIndex = (currentIndex - 1 + enabledPanels.length) % enabledPanels.length;
+    }
 
     if (event.key === 'Home') {
       newIndex = 0;
@@ -274,7 +274,7 @@ export class TwTabsComponent implements AfterContentInit {
       this.selectTab(newTab.value);
 
       // Focus the new tab
-      const tabElement = document.getElementById(`tab-${  newTab.value}`);
+      const tabElement = document.getElementById(`tab-${newTab.value}`);
       tabElement?.focus();
     }
   }

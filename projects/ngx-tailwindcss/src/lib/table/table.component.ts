@@ -267,10 +267,10 @@ export class TwTableComponent {
     if (this.selectionMode === 'single') {
       this.selection.set(index === -1 ? [row] : []);
     } else if (index === -1) {
-        this.selection.set([...current, row]);
-      } else {
-        this.selection.set(current.filter(r => r !== row));
-      }
+      this.selection.set([...current, row]);
+    } else {
+      this.selection.set(current.filter(r => r !== row));
+    }
     this.selectionChange.emit(this.selection());
   }
 

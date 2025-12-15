@@ -73,7 +73,9 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
 
       if (this.focusTrapAutoFocus) {
         // Delay focus to ensure DOM is ready
-        setTimeout(() => { this.focusInitial(); }, 0);
+        setTimeout(() => {
+          this.focusInitial();
+        }, 0);
       }
     }
   }
