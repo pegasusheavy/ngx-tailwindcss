@@ -1063,6 +1063,7 @@ packages:
 
   '@pegasus-heavy/ngx-tailwindcss@file:../dist/ngx-tailwindcss':
     resolution: {directory: ../dist/ngx-tailwindcss, type: directory}
+    engines: {node: '>=18.0.0'}
     peerDependencies:
       '@angular/animations': ^19.0.0 || ^20.0.0 || ^21.0.0
       '@angular/cdk': ^19.0.0 || ^20.0.0 || ^21.0.0

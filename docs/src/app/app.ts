@@ -51,6 +51,8 @@ import {
   faCompass,
   faComments,
   faPuzzlePiece,
+  faUniversalAccess,
+  faGlobe,
 } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 
@@ -103,12 +105,16 @@ export class App {
     comments: faComments,
     puzzle: faPuzzlePiece,
     layer: faLayerGroup,
+    accessibility: faUniversalAccess,
+    globe: faGlobe,
   };
 
   protected mainNavItems: NavItem[] = [
     { label: 'Home', path: '/', icon: faHome },
     { label: 'Components', path: '/components/button', icon: faCubes },
     { label: 'Directives', path: '/directives', icon: faWandMagicSparkles },
+    { label: 'Accessibility', path: '/accessibility', icon: faUniversalAccess },
+    { label: 'i18n', path: '/i18n', icon: faGlobe },
   ];
 
   // Organized component categories for sidebar

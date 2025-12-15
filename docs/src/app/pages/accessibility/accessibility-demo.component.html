@@ -1,0 +1,273 @@
+<app-page-header
+  title="Accessibility (ARIA)"
+  description="Comprehensive ARIA support for building accessible web applications. Includes services, directives, and utilities for screen readers and assistive technologies.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Overview -->
+  <tw-card>
+    <div twCardHeader>
+      <h2 twCardTitle>Overview</h2>
+    </div>
+    <div twCardBody class="prose prose-slate max-w-none">
+      <p>
+        The ngx-tailwindcss library provides comprehensive accessibility support through:
+      </p>
+      <ul class="list-disc list-inside space-y-2 mt-4">
+        <li><strong>TwAriaService</strong> - Screen reader announcements and live regions</li>
+        <li><strong>AriaUtils</strong> - Utility functions for generating ARIA attributes</li>
+        <li><strong>20+ ARIA Directives</strong> - Declarative ARIA attribute management</li>
+      </ul>
+      <p class="mt-4">
+        All components in this library are built with accessibility in mind, following WCAG 2.1 guidelines
+        and WAI-ARIA best practices.
+      </p>
+    </div>
+  </tw-card>
+
+  <!-- TwAriaService -->
+  <app-demo-section
+    title="TwAriaService - Screen Reader Announcements"
+    description="Use the TwAriaService to announce dynamic content changes to screen readers."
+    [code]="ariaServiceCode">
+    <div class="space-y-4">
+      <div class="flex flex-wrap gap-4">
+        <tw-button variant="primary" (click)="announcePolite()">
+          Announce (Polite)
+        </tw-button>
+        <tw-button variant="warning" (click)="announceAssertive()">
+          Announce (Assertive)
+        </tw-button>
+      </div>
+      <p class="text-sm text-slate-600">
+        Polite announcements: {{ announcementCount() }} | 
+        Open your screen reader to hear announcements.
+      </p>
+    </div>
+  </app-demo-section>
+
+  <!-- Screen Reader Only -->
+  <app-demo-section
+    title="twSrOnly - Screen Reader Only Content"
+    description="Hide content visually while keeping it accessible to screen readers."
+    [code]="srOnlyCode">
+    <div class="space-y-4">
+      <div class="flex items-center gap-4">
+        <button class="p-3 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+          <span twSrOnly>Close dialog</span>
+        </button>
+        <span class="text-sm text-slate-600">← Icon button with screen reader text</span>
+      </div>
+
+      <div class="mt-4">
+        <a href="#main-content" twSrOnly [focusable]="true"
+           class="focus:not-sr-only focus:absolute focus:z-50 focus:p-3 focus:bg-blue-600 focus:text-white focus:rounded-lg">
+          Skip to main content
+        </a>
+        <p class="text-sm text-slate-600">
+          Press Tab to reveal the skip link (focusable screen reader content)
+        </p>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- ARIA Expanded -->
+  <app-demo-section
+    title="twAriaExpanded - Expandable Regions"
+    description="Manage aria-expanded state for expandable content."
+    [code]="ariaExpandedCode">
+    <div class="space-y-4">
+      <button
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        [twAriaExpanded]="isExpanded()"
+        [ariaControls]="'demo-panel'"
+        (click)="toggleExpanded()">
+        {{ isExpanded() ? 'Collapse Section' : 'Expand Section' }}
+      </button>
+
+      <div
+        id="demo-panel"
+        class="p-4 bg-slate-50 rounded-lg border border-slate-200"
+        [class.hidden]="!isExpanded()">
+        <p class="text-slate-700">
+          This content is now visible! The button's aria-expanded attribute 
+          is set to "true", and aria-controls references this panel's ID.
+        </p>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- ARIA Live -->
+  <app-demo-section
+    title="twAriaLive - Live Regions"
+    description="Create live regions that announce content changes to screen readers."
+    [code]="ariaLiveCode">
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <h4 class="font-semibold text-blue-900 mb-2">Polite Region</h4>
+          <div twAriaLive="polite" [ariaAtomic]="true" class="text-blue-800">
+            Updates here wait for the user to finish their current task.
+          </div>
+        </div>
+
+        <div class="p-4 bg-amber-50 rounded-lg border border-amber-200">
+          <h4 class="font-semibold text-amber-900 mb-2">Assertive Region</h4>
+          <div twAriaLive="assertive" [ariaAtomic]="true" class="text-amber-800">
+            Updates here interrupt the user immediately.
+          </div>
+        </div>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- ARIA Busy -->
+  <app-demo-section
+    title="twAriaBusy - Loading States"
+    description="Indicate loading states to assistive technologies."
+    [code]="ariaBusyCode">
+    <div class="space-y-4">
+      <tw-button
+        variant="primary"
+        [loading]="isLoading()"
+        (click)="simulateLoading()">
+        {{ isLoading() ? 'Loading...' : 'Load Data' }}
+      </tw-button>
+
+      <div
+        [twAriaBusy]="isLoading()"
+        role="region"
+        aria-label="Data display"
+        class="p-4 bg-slate-50 rounded-lg border border-slate-200 min-h-[100px] flex items-center justify-center">
+        @if (isLoading()) {
+          <div class="flex items-center gap-3 text-slate-600">
+            <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span>Loading data...</span>
+          </div>
+        } @else {
+          <p class="text-slate-700">Data loaded successfully!</p>
+        }
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- ARIA Current -->
+  <app-demo-section
+    title="twAriaCurrent - Navigation"
+    description="Indicate the current item in navigation and step indicators."
+    [code]="ariaCurrentCode">
+    <div class="space-y-6">
+      <nav aria-label="Demo navigation" class="flex gap-4">
+        <a href="javascript:void(0)"
+           [twAriaCurrent]="'page'"
+           class="px-3 py-2 rounded-lg bg-blue-600 text-white">
+          Home (Current)
+        </a>
+        <a href="javascript:void(0)"
+           [twAriaCurrent]="false"
+           class="px-3 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">
+          About
+        </a>
+        <a href="javascript:void(0)"
+           [twAriaCurrent]="false"
+           class="px-3 py-2 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200">
+          Contact
+        </a>
+      </nav>
+    </div>
+  </app-demo-section>
+
+  <!-- ARIA Label -->
+  <app-demo-section
+    title="twAriaLabel - Accessible Labels"
+    description="Add accessible labels to elements without visible text."
+    [code]="ariaLabelCode">
+    <div class="flex items-center gap-4">
+      <button
+        twAriaLabel="Search products"
+        class="p-3 rounded-lg bg-slate-100 hover:bg-slate-200 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </button>
+      <span class="text-sm text-slate-600">← Button with aria-label="Search products"</span>
+    </div>
+  </app-demo-section>
+
+  <!-- All Directives List -->
+  <app-demo-section
+    title="Available ARIA Directives"
+    description="Complete list of ARIA directives available in the library."
+    [code]="directivesListCode">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div class="p-4 bg-slate-50 rounded-lg">
+        <h4 class="font-semibold text-slate-900 mb-2">Screen Reader</h4>
+        <ul class="text-sm text-slate-600 space-y-1">
+          <li><code>twSrOnly</code></li>
+          <li><code>twAnnounce</code></li>
+        </ul>
+      </div>
+
+      <div class="p-4 bg-slate-50 rounded-lg">
+        <h4 class="font-semibold text-slate-900 mb-2">State</h4>
+        <ul class="text-sm text-slate-600 space-y-1">
+          <li><code>twAriaExpanded</code></li>
+          <li><code>twAriaSelected</code></li>
+          <li><code>twAriaChecked</code></li>
+          <li><code>twAriaPressed</code></li>
+          <li><code>twAriaDisabled</code></li>
+          <li><code>twAriaHidden</code></li>
+          <li><code>twAriaBusy</code></li>
+          <li><code>twAriaCurrent</code></li>
+        </ul>
+      </div>
+
+      <div class="p-4 bg-slate-50 rounded-lg">
+        <h4 class="font-semibold text-slate-900 mb-2">Relationships</h4>
+        <ul class="text-sm text-slate-600 space-y-1">
+          <li><code>twAriaDescribedby</code></li>
+          <li><code>twAriaLabelledby</code></li>
+          <li><code>twAriaLabel</code></li>
+          <li><code>twAriaOwns</code></li>
+          <li><code>twAriaActivedescendant</code></li>
+        </ul>
+      </div>
+
+      <div class="p-4 bg-slate-50 rounded-lg">
+        <h4 class="font-semibold text-slate-900 mb-2">Widgets</h4>
+        <ul class="text-sm text-slate-600 space-y-1">
+          <li><code>twAriaValue</code></li>
+          <li><code>twRole</code></li>
+          <li><code>twAriaModal</code></li>
+          <li><code>twAriaHaspopup</code></li>
+          <li><code>twAriaLive</code></li>
+        </ul>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- AriaUtils -->
+  <app-demo-section
+    title="AriaUtils - Utility Functions"
+    description="Helper functions for generating ARIA IDs and attributes."
+    [code]="ariaUtilsCode">
+    <div class="p-4 bg-slate-50 rounded-lg">
+      <p class="text-slate-700">
+        AriaUtils provides static helper methods for common ARIA patterns:
+      </p>
+      <ul class="mt-4 space-y-2 text-sm text-slate-600">
+        <li><code class="bg-slate-200 px-1 rounded">generateId(prefix)</code> - Generate unique IDs</li>
+        <li><code class="bg-slate-200 px-1 rounded">describedBy(...ids)</code> - Build aria-describedby</li>
+        <li><code class="bg-slate-200 px-1 rounded">labelledBy(...ids)</code> - Build aria-labelledby</li>
+        <li><code class="bg-slate-200 px-1 rounded">getRole(component, context)</code> - Get appropriate role</li>
+      </ul>
+    </div>
+  </app-demo-section>
+</div>
+

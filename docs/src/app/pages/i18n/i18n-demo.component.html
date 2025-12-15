@@ -1,0 +1,238 @@
+<app-page-header
+  title="Internationalization (i18n)"
+  description="Built-in internationalization support with translations for all components, RTL language support, and easy customization.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Overview -->
+  <tw-card>
+    <div twCardHeader>
+      <h2 twCardTitle>Overview</h2>
+    </div>
+    <div twCardBody class="prose prose-slate max-w-none">
+      <p>
+        The ngx-tailwindcss library includes comprehensive i18n support:
+      </p>
+      <ul class="list-disc list-inside space-y-2 mt-4">
+        <li><strong>Default English translations</strong> for all 30+ components</li>
+        <li><strong>Easy customization</strong> via provideTwTranslations()</li>
+        <li><strong>RTL support</strong> with automatic direction detection</li>
+        <li><strong>Interpolation</strong> for dynamic values in translations</li>
+        <li><strong>Runtime locale switching</strong></li>
+      </ul>
+    </div>
+  </tw-card>
+
+  <!-- Live Demo -->
+  <app-demo-section
+    title="Live Translation Demo"
+    description="See translations in action. Switch locales and observe how text direction changes for RTL languages.">
+    <div class="space-y-6">
+      <div class="flex flex-wrap items-center gap-4">
+        <label class="font-medium text-slate-700">Select Locale:</label>
+        <div class="flex flex-wrap gap-2">
+          @for (locale of locales; track locale.value) {
+            <button
+              class="px-4 py-2 rounded-lg transition-colors"
+              [class]="selectedLocale() === locale.value
+                ? 'bg-blue-600 text-white'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+              (click)="changeLocale(locale.value)">
+              {{ locale.label }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-slate-50 rounded-lg">
+          <h4 class="font-semibold text-slate-900 mb-3">Current State</h4>
+          <ul class="space-y-2 text-sm">
+            <li><span class="text-slate-600">Locale:</span> <code class="bg-slate-200 px-1 rounded">{{ i18nService.locale() }}</code></li>
+            <li><span class="text-slate-600">Direction:</span> <code class="bg-slate-200 px-1 rounded">{{ i18nService.direction() }}</code></li>
+            <li><span class="text-slate-600">Is RTL:</span> <code class="bg-slate-200 px-1 rounded">{{ i18nService.isRtl() }}</code></li>
+          </ul>
+        </div>
+
+        <div class="p-4 bg-slate-50 rounded-lg">
+          <h4 class="font-semibold text-slate-900 mb-3">Sample Translations</h4>
+          <ul class="space-y-2 text-sm">
+            <li><span class="text-slate-600">Loading:</span> {{ getTranslation('common.loading') }}</li>
+            <li><span class="text-slate-600">Close:</span> {{ getTranslation('common.close') }}</li>
+            <li><span class="text-slate-600">Search:</span> {{ getTranslation('common.search') }}</li>
+            <li><span class="text-slate-600">No Results:</span> {{ getTranslation('common.noResults') }}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <h4 class="font-semibold text-blue-900 mb-2">Interpolation Example</h4>
+        <p class="text-blue-800">
+          <code class="bg-blue-100 px-1 rounded">table.pageOf</code> with {{ '{' }}page: 3, total: 10{{ '}' }}:
+          <strong>{{ getInterpolatedTranslation() }}</strong>
+        </p>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Setup -->
+  <app-demo-section
+    title="Setup - Custom Translations"
+    description="Provide custom translations in your app configuration."
+    [code]="setupCode">
+    <div class="p-4 bg-slate-50 rounded-lg">
+      <p class="text-slate-700">
+        Use <code class="bg-slate-200 px-1 rounded">provideTwTranslations()</code> to provide custom translations.
+        Your translations will be deeply merged with the defaults, so you only need to provide what you want to override.
+      </p>
+    </div>
+  </app-demo-section>
+
+  <!-- Service Usage -->
+  <app-demo-section
+    title="TwI18nService"
+    description="Use the i18n service to access translations and manage locales in your components."
+    [code]="serviceCode">
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-slate-50 rounded-lg">
+          <h4 class="font-semibold text-slate-900 mb-2">Read-only Signals</h4>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li><code class="bg-slate-200 px-1 rounded">locale()</code> - Current locale</li>
+            <li><code class="bg-slate-200 px-1 rounded">direction()</code> - 'ltr' or 'rtl'</li>
+            <li><code class="bg-slate-200 px-1 rounded">isRtl()</code> - Boolean for RTL check</li>
+            <li><code class="bg-slate-200 px-1 rounded">translations()</code> - All translations</li>
+          </ul>
+        </div>
+
+        <div class="p-4 bg-slate-50 rounded-lg">
+          <h4 class="font-semibold text-slate-900 mb-2">Methods</h4>
+          <ul class="text-sm text-slate-600 space-y-1">
+            <li><code class="bg-slate-200 px-1 rounded">setLocale(locale)</code> - Change locale</li>
+            <li><code class="bg-slate-200 px-1 rounded">translate(key, params?)</code> - Get translation</li>
+            <li><code class="bg-slate-200 px-1 rounded">t(key, params?)</code> - Shorthand for translate</li>
+            <li><code class="bg-slate-200 px-1 rounded">getComponentTranslations(name)</code> - Get all for component</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- RTL Support -->
+  <app-demo-section
+    title="RTL Language Support"
+    description="Automatic right-to-left support for Arabic, Hebrew, and other RTL languages."
+    [code]="rtlCode">
+    <div class="space-y-4">
+      <div class="p-4 bg-amber-50 rounded-lg border border-amber-200">
+        <h4 class="font-semibold text-amber-900 mb-2">Supported RTL Languages</h4>
+        <div class="flex flex-wrap gap-2 mt-2">
+          <span class="px-2 py-1 bg-amber-100 rounded text-sm text-amber-800">Arabic (ar)</span>
+          <span class="px-2 py-1 bg-amber-100 rounded text-sm text-amber-800">Hebrew (he)</span>
+          <span class="px-2 py-1 bg-amber-100 rounded text-sm text-amber-800">Persian (fa)</span>
+          <span class="px-2 py-1 bg-amber-100 rounded text-sm text-amber-800">Urdu (ur)</span>
+          <span class="px-2 py-1 bg-amber-100 rounded text-sm text-amber-800">Pashto (ps)</span>
+          <span class="px-2 py-1 bg-amber-100 rounded text-sm text-amber-800">Sindhi (sd)</span>
+          <span class="px-2 py-1 bg-amber-100 rounded text-sm text-amber-800">Yiddish (yi)</span>
+          <span class="px-2 py-1 bg-amber-100 rounded text-sm text-amber-800">Divehi (dv)</span>
+        </div>
+      </div>
+
+      <p class="text-slate-700">
+        When you set an RTL locale, the service automatically:
+      </p>
+      <ul class="list-disc list-inside text-slate-600 space-y-1">
+        <li>Sets <code class="bg-slate-200 px-1 rounded">dir="rtl"</code> on the document root</li>
+        <li>Updates the <code class="bg-slate-200 px-1 rounded">direction()</code> signal to 'rtl'</li>
+        <li>Sets <code class="bg-slate-200 px-1 rounded">isRtl()</code> to true</li>
+      </ul>
+    </div>
+  </app-demo-section>
+
+  <!-- Translation Interface -->
+  <app-demo-section
+    title="Translation Interface"
+    description="Complete structure of the TwTranslations interface."
+    [code]="translationInterfaceCode">
+    <div class="space-y-4">
+      <p class="text-slate-700">
+        The library provides translations for all components. Here are the main categories:
+      </p>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="p-3 bg-slate-50 rounded-lg text-center">
+          <div class="text-2xl font-bold text-blue-600">common</div>
+          <div class="text-xs text-slate-500">30+ strings</div>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-lg text-center">
+          <div class="text-2xl font-bold text-blue-600">table</div>
+          <div class="text-xs text-slate-500">12 strings</div>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-lg text-center">
+          <div class="text-2xl font-bold text-blue-600">datepicker</div>
+          <div class="text-xs text-slate-500">15+ strings</div>
+        </div>
+        <div class="p-3 bg-slate-50 rounded-lg text-center">
+          <div class="text-2xl font-bold text-blue-600">pagination</div>
+          <div class="text-xs text-slate-500">7 strings</div>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-2 mt-4">
+        @for (category of ['button', 'input', 'select', 'modal', 'alert', 'toast', 'upload', 'tree', 'accordion', 'tabs', 'slider', 'rating', 'stepper', 'avatar', 'chip', 'dropdown', 'popover', 'sidebar', 'progress', 'spinner', 'skeleton', 'breadcrumb', 'menu', 'timeline', 'image']; track category) {
+          <span class="px-2 py-1 bg-slate-100 rounded text-xs text-slate-600">{{ category }}</span>
+        }
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Interpolation -->
+  <app-demo-section
+    title="String Interpolation"
+    description="Use placeholders in translations for dynamic content."
+    [code]="interpolationCode">
+    <div class="space-y-4">
+      <div class="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+        <h4 class="font-semibold text-emerald-900 mb-2">Placeholder Syntax</h4>
+        <p class="text-emerald-800">
+          Use <code class="bg-emerald-100 px-1 rounded">{{ '{' }}paramName{{ '}' }}</code> in your translation strings,
+          then pass an object with matching keys to the translate method.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="p-4 bg-slate-50 rounded-lg">
+          <h4 class="font-semibold text-slate-900 mb-2">Translation String</h4>
+          <code class="text-sm bg-slate-200 px-2 py-1 rounded block">
+            "Page {{ '{' }}page{{ '}' }} of {{ '{' }}total{{ '}' }}"
+          </code>
+        </div>
+
+        <div class="p-4 bg-slate-50 rounded-lg">
+          <h4 class="font-semibold text-slate-900 mb-2">Result</h4>
+          <code class="text-sm bg-slate-200 px-2 py-1 rounded block">
+            "Page 3 of 10"
+          </code>
+        </div>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Available Translation Keys -->
+  <app-demo-section
+    title="Common Translation Keys"
+    description="Browse available translation keys you can use or override.">
+    <div class="space-y-4">
+      <div class="flex flex-wrap gap-2">
+        @for (key of commonKeys; track key) {
+          <div class="px-3 py-2 bg-slate-100 rounded-lg text-sm">
+            <code class="text-slate-700">{{ key }}</code>
+            <span class="text-slate-400 mx-2">→</span>
+            <span class="text-slate-600">{{ getTranslation(key) }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  </app-demo-section>
+</div>
+

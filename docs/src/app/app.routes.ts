@@ -156,6 +156,14 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/directives/directives-demo.component').then(m => m.DirectivesDemoComponent),
   },
   {
+    path: 'accessibility',
+    loadComponent: () => import('./pages/accessibility/accessibility-demo.component').then(m => m.AccessibilityDemoComponent),
+  },
+  {
+    path: 'i18n',
+    loadComponent: () => import('./pages/i18n/i18n-demo.component').then(m => m.I18nDemoComponent),
+  },
+  {
     path: '**',
     redirectTo: '',
   },

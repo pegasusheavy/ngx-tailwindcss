@@ -102,6 +102,22 @@
             <fa-icon [icon]="icons.wand" class="text-sm opacity-60"></fa-icon>
             Directives
           </a>
+          <a
+            routerLink="/accessibility"
+            routerLinkActive="bg-blue-50 text-blue-600"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+            (click)="toggleMobileMenu()">
+            <fa-icon [icon]="icons.accessibility" class="text-sm opacity-60"></fa-icon>
+            Accessibility (ARIA)
+          </a>
+          <a
+            routerLink="/i18n"
+            routerLinkActive="bg-blue-50 text-blue-600"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+            (click)="toggleMobileMenu()">
+            <fa-icon [icon]="icons.globe" class="text-sm opacity-60"></fa-icon>
+            Internationalization
+          </a>
         </div>
       </nav>
     </div>
@@ -146,6 +162,20 @@
             class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors border-l-2 border-transparent">
             <fa-icon [icon]="icons.wand" class="text-xs opacity-60 w-4"></fa-icon>
             Directives
+          </a>
+          <a
+            routerLink="/accessibility"
+            routerLinkActive="bg-blue-50 text-blue-600 border-l-2 border-blue-600"
+            class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors border-l-2 border-transparent">
+            <fa-icon [icon]="icons.accessibility" class="text-xs opacity-60 w-4"></fa-icon>
+            Accessibility (ARIA)
+          </a>
+          <a
+            routerLink="/i18n"
+            routerLinkActive="bg-blue-50 text-blue-600 border-l-2 border-blue-600"
+            class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors border-l-2 border-transparent">
+            <fa-icon [icon]="icons.globe" class="text-xs opacity-60 w-4"></fa-icon>
+            Internationalization
           </a>
         </div>
       </nav>
