@@ -15,6 +15,13 @@
   "bugs": {
     "url": "https://github.com/pegasusheavy/ngx-tailwindcss/issues"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "keywords": [
     "angular",
     "tailwindcss",
