@@ -191,7 +191,7 @@ export class TwButtonComponent {
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './button-link.component.html',
-  hostDirectives: [TwRippleDirective],
+  // Note: hostDirectives are inherited from TwButtonComponent, no need to redeclare
   host: {
     '[class]': 'computedClasses()',
     '[attr.aria-disabled]': '_disabled()',

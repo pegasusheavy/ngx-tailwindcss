@@ -19,7 +19,7 @@ import { TwClassService } from '../core/tw-class.service';
       [size]="size()"
       [pill]="pill()"
       [removable]="removable()"
-      [remove]="onRemove"
+      (remove)="onRemove()"
       [classOverride]="classOverride()"
       data-testid="test-badge">
       {{ badgeText() }}
@@ -39,9 +39,9 @@ class TestHostComponent {
   badgeText = signal('Badge');
   removeCount = 0;
 
-  onRemove = (): void => {
+  onRemove(): void {
     this.removeCount++;
-  };
+  }
 }
 
 describe('TwBadgeComponent', () => {
