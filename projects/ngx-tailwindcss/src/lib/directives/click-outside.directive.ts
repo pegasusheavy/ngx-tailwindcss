@@ -100,7 +100,7 @@ export class TwClickOutsideDirective implements OnInit, OnDestroy {
   private isExcluded(target: HTMLElement): boolean {
     for (const selector of this.clickOutsideExclude) {
       // Check if the target matches the selector or is a descendant
-      const excludedElements = document.querySelectorAll(selector);
+      const excludedElements = Array.from(document.querySelectorAll(selector));
       for (const excluded of excludedElements) {
         if (excluded.contains(target)) {
           return true;

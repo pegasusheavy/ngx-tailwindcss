@@ -59,7 +59,7 @@ export class TwClassService {
   private getClassGroup(cls: string): string {
     // Handle responsive/state prefixes
     const parts = cls.split(':');
-    const baseClass = parts.at(-1);
+    const baseClass = parts.at(-1) ?? cls;
     const prefix = parts.slice(0, -1).join(':');
 
     // Group patterns for common Tailwind utilities
