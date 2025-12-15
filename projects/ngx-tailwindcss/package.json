@@ -1,21 +1,61 @@
 {
   "name": "@pegasus-heavy/ngx-tailwindcss",
   "version": "0.1.0",
-  "description": "Highly customizable Angular components designed for Tailwind CSS 4+",
+  "description": "A highly customizable Angular component library for Tailwind CSS 4+. Build beautiful, accessible UI components with full theming support, intelligent class merging, and zero bundled CSS. Features 30+ components including buttons, cards, modals, forms, tables, and more.",
   "license": "MIT",
-  "author": "Pegasus Heavy Industries LLC",
+  "author": {
+    "name": "Pegasus Heavy Industries LLC",
+    "url": "https://pegasusheavy.github.io/ngx-tailwindcss"
+  },
+  "homepage": "https://pegasusheavy.github.io/ngx-tailwindcss",
   "repository": {
     "type": "git",
-    "url": "https://github.com/PegasusHeavyIndustries/ngx-tailwindcss"
+    "url": "git+https://github.com/pegasusheavy/ngx-tailwindcss.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pegasusheavy/ngx-tailwindcss/issues"
   },
   "keywords": [
     "angular",
     "tailwindcss",
     "tailwind",
+    "tailwind-css-4",
     "components",
     "ui",
-    "library",
-    "tailwind-css-4"
+    "ui-library",
+    "ui-components",
+    "component-library",
+    "angular-components",
+    "angular-library",
+    "angular-ui",
+    "design-system",
+    "typescript",
+    "standalone-components",
+    "signals",
+    "accessible",
+    "a11y",
+    "wcag",
+    "responsive",
+    "customizable",
+    "theming",
+    "forms",
+    "buttons",
+    "modals",
+    "cards",
+    "tables",
+    "dropdown",
+    "toast",
+    "accordion",
+    "tabs",
+    "pagination",
+    "avatar",
+    "badge",
+    "spinner",
+    "skeleton",
+    "progress",
+    "tree",
+    "timeline",
+    "stepper"
   ],
   "peerDependencies": {
     "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0",
