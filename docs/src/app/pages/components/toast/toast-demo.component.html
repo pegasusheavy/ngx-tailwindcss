@@ -1,0 +1,36 @@
+<app-page-header
+  title="Toast"
+  description="Toast notification component for displaying brief messages.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="flex flex-wrap gap-3">
+      <tw-button variant="success" (click)="showSuccess()">Show Success</tw-button>
+      <tw-button variant="danger" (click)="showError()">Show Error</tw-button>
+      <tw-button variant="warning" (click)="showWarning()">Show Warning</tw-button>
+      <tw-button variant="info" (click)="showInfo()">Show Info</tw-button>
+    </div>
+  </app-demo-section>
+
+  <!-- Position Options -->
+  <app-demo-section title="Positions" [code]="positionCode">
+    <p class="text-slate-600 mb-4">
+      Toasts can be positioned in different corners of the screen:
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">top-left</code>,
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">top-center</code>,
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">top-right</code>,
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">bottom-left</code>,
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">bottom-center</code>,
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">bottom-right</code>
+    </p>
+  </app-demo-section>
+
+  <!-- Options -->
+  <app-demo-section title="Options" [code]="optionsCode">
+    <p class="text-slate-600">
+      Toasts support various options including custom duration, dismissible toggle, and action buttons.
+    </p>
+  </app-demo-section>
+</div>

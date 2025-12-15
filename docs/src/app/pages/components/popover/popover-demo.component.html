@@ -1,0 +1,89 @@
+<app-page-header
+  title="Popover"
+  description="Popover component for displaying floating content triggered by user interaction.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <tw-popover>
+      <tw-button trigger>Open Popover</tw-button>
+      <div content class="p-4">
+        <h4 class="font-semibold text-slate-900 mb-2">Popover Title</h4>
+        <p class="text-sm text-slate-600">This is the popover content. You can put any content here.</p>
+      </div>
+    </tw-popover>
+  </app-demo-section>
+
+  <!-- Positions -->
+  <app-demo-section title="Positions" [code]="positionsCode">
+    <div class="flex flex-wrap gap-4">
+      <tw-popover position="top">
+        <tw-button trigger variant="outline">Top</tw-button>
+        <div content class="p-3">
+          <p class="text-sm">Popover on top</p>
+        </div>
+      </tw-popover>
+      <tw-popover position="bottom">
+        <tw-button trigger variant="outline">Bottom</tw-button>
+        <div content class="p-3">
+          <p class="text-sm">Popover on bottom</p>
+        </div>
+      </tw-popover>
+      <tw-popover position="left">
+        <tw-button trigger variant="outline">Left</tw-button>
+        <div content class="p-3">
+          <p class="text-sm">Popover on left</p>
+        </div>
+      </tw-popover>
+      <tw-popover position="right">
+        <tw-button trigger variant="outline">Right</tw-button>
+        <div content class="p-3">
+          <p class="text-sm">Popover on right</p>
+        </div>
+      </tw-popover>
+    </div>
+  </app-demo-section>
+
+  <!-- Trigger Types -->
+  <app-demo-section title="Trigger Types" [code]="triggersCode">
+    <div class="flex flex-wrap gap-4">
+      <tw-popover triggerType="click">
+        <tw-button trigger>Click to open</tw-button>
+        <div content class="p-3">
+          <p class="text-sm">Triggered by click</p>
+        </div>
+      </tw-popover>
+      <tw-popover triggerType="hover">
+        <tw-button trigger variant="outline">Hover to open</tw-button>
+        <div content class="p-3">
+          <p class="text-sm">Triggered by hover</p>
+        </div>
+      </tw-popover>
+    </div>
+  </app-demo-section>
+
+  <!-- Rich Content -->
+  <app-demo-section title="Rich Content" [code]="basicCode">
+    <tw-popover>
+      <tw-button trigger variant="primary">User Profile</tw-button>
+      <div content class="p-4 w-64">
+        <div class="flex items-center gap-3 mb-3">
+          <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+            <span class="text-blue-600 font-semibold">JD</span>
+          </div>
+          <div>
+            <p class="font-semibold text-slate-900">John Doe</p>
+            <p class="text-sm text-slate-500">john&#64;example.com</p>
+          </div>
+        </div>
+        <div class="border-t pt-3 space-y-2">
+          <a href="#" class="block text-sm text-slate-600 hover:text-slate-900">View Profile</a>
+          <a href="#" class="block text-sm text-slate-600 hover:text-slate-900">Settings</a>
+          <a href="#" class="block text-sm text-rose-600 hover:text-rose-700">Sign Out</a>
+        </div>
+      </div>
+    </tw-popover>
+  </app-demo-section>
+</div>
+

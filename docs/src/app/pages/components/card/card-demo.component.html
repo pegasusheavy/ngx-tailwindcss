@@ -1,0 +1,168 @@
+<app-page-header
+  title="Card"
+  description="Flexible card component for displaying content in a contained format.">
+</app-page-header>
+
+<app-demo-section
+  title="Variants"
+  description="Different visual styles for various use cases."
+  [code]="variantsCode">
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <tw-card variant="elevated">
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Elevated</h3>
+        <p class="text-sm text-slate-600">Card with shadow</p>
+      </tw-card-body>
+    </tw-card>
+    <tw-card variant="outlined">
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Outlined</h3>
+        <p class="text-sm text-slate-600">Card with border</p>
+      </tw-card-body>
+    </tw-card>
+    <tw-card variant="filled">
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Filled</h3>
+        <p class="text-sm text-slate-600">Card with background</p>
+      </tw-card-body>
+    </tw-card>
+    <tw-card variant="ghost">
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Ghost</h3>
+        <p class="text-sm text-slate-600">Transparent card</p>
+      </tw-card-body>
+    </tw-card>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="With Header and Footer"
+  description="Structured card with header, body, and footer sections."
+  [code]="headerFooterCode">
+  <div class="max-w-md">
+    <tw-card variant="elevated">
+      <tw-card-header>
+        <tw-card-title>Card Title</tw-card-title>
+        <tw-card-subtitle>Supporting text below the title</tw-card-subtitle>
+      </tw-card-header>
+      <tw-card-body>
+        <p class="text-slate-600">
+          This is the main content area of the card. You can put any content here,
+          including text, images, forms, or other components.
+        </p>
+      </tw-card-body>
+      <tw-card-footer>
+        <tw-button variant="ghost" size="sm">Cancel</tw-button>
+        <tw-button variant="primary" size="sm">Save</tw-button>
+      </tw-card-footer>
+    </tw-card>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="With Media"
+  description="Cards with images or other media content."
+  [code]="mediaCode">
+  <div class="grid md:grid-cols-3 gap-6">
+    <tw-card variant="elevated">
+      <tw-card-media position="top">
+        <img
+          src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=250&fit=crop"
+          alt="Ocean waves"
+          class="w-full h-48 object-cover">
+      </tw-card-media>
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Ocean View</h3>
+        <p class="text-sm text-slate-600">A beautiful view of the ocean at sunset.</p>
+      </tw-card-body>
+    </tw-card>
+    <tw-card variant="elevated">
+      <tw-card-media position="top">
+        <img
+          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop"
+          alt="Mountain landscape"
+          class="w-full h-48 object-cover">
+      </tw-card-media>
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Mountain Peak</h3>
+        <p class="text-sm text-slate-600">Majestic mountains reaching the clouds.</p>
+      </tw-card-body>
+    </tw-card>
+    <tw-card variant="elevated">
+      <tw-card-media position="top">
+        <img
+          src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=250&fit=crop"
+          alt="Forest path"
+          class="w-full h-48 object-cover">
+      </tw-card-media>
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Forest Trail</h3>
+        <p class="text-sm text-slate-600">A peaceful walk through the woods.</p>
+      </tw-card-body>
+    </tw-card>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Interactive Cards"
+  description="Cards with hover effects and click interactions."
+  [code]="interactiveCode">
+  <div class="grid md:grid-cols-3 gap-4">
+    <tw-card variant="outlined" [hoverable]="true">
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Hoverable</h3>
+        <p class="text-sm text-slate-600">Hover to see the lift effect.</p>
+      </tw-card-body>
+    </tw-card>
+    <tw-card variant="outlined" [clickable]="true">
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Clickable</h3>
+        <p class="text-sm text-slate-600">Click to trigger an action.</p>
+      </tw-card-body>
+    </tw-card>
+    <tw-card variant="outlined" [hoverable]="true" [clickable]="true">
+      <tw-card-body>
+        <h3 class="font-semibold text-slate-900 mb-2">Both</h3>
+        <p class="text-sm text-slate-600">Hoverable and clickable combined.</p>
+      </tw-card-body>
+    </tw-card>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Complex Card"
+  description="A more complex card example with multiple elements."
+  [code]="complexCode">
+  <div class="max-w-sm">
+    <tw-card variant="elevated">
+      <tw-card-media position="top">
+        <img
+          src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop"
+          alt="Code on screen"
+          class="w-full h-40 object-cover">
+      </tw-card-media>
+      <tw-card-header>
+        <div class="flex items-start justify-between">
+          <div>
+            <tw-card-title>ngx-tailwindcss</tw-card-title>
+            <tw-card-subtitle>Angular + Tailwind</tw-card-subtitle>
+          </div>
+          <tw-badge variant="success" badgeStyle="soft">New</tw-badge>
+        </div>
+      </tw-card-header>
+      <tw-card-body>
+        <p class="text-slate-600 text-sm">
+          Beautiful, accessible Angular components designed for Tailwind CSS 4+.
+        </p>
+        <div class="flex flex-wrap gap-2 mt-4">
+          <tw-badge variant="neutral" [pill]="true">Angular</tw-badge>
+          <tw-badge variant="neutral" [pill]="true">Tailwind</tw-badge>
+          <tw-badge variant="neutral" [pill]="true">TypeScript</tw-badge>
+        </div>
+      </tw-card-body>
+      <tw-card-footer>
+        <tw-button variant="primary" size="sm" [fullWidth]="true">Learn More</tw-button>
+      </tw-card-footer>
+    </tw-card>
+  </div>
+</app-demo-section>

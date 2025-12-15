@@ -1,0 +1,50 @@
+<app-page-header
+  title="Switch"
+  description="Toggle switch component for binary choices with multiple variants and sizes.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="flex flex-col gap-4">
+      <tw-switch [(ngModel)]="darkMode">Dark Mode ({{ darkMode ? 'On' : 'Off' }})</tw-switch>
+      <tw-switch [(ngModel)]="notifications">Notifications</tw-switch>
+    </div>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="flex flex-wrap gap-6">
+      <tw-switch variant="primary">Primary</tw-switch>
+      <tw-switch variant="secondary">Secondary</tw-switch>
+      <tw-switch variant="success">Success</tw-switch>
+      <tw-switch variant="warning">Warning</tw-switch>
+      <tw-switch variant="danger">Danger</tw-switch>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="flex items-center gap-6">
+      <tw-switch size="sm">Small</tw-switch>
+      <tw-switch size="md">Medium</tw-switch>
+      <tw-switch size="lg">Large</tw-switch>
+    </div>
+  </app-demo-section>
+
+  <!-- Label Position -->
+  <app-demo-section title="Label Position" [code]="labelPositionCode">
+    <div class="flex flex-col gap-4">
+      <tw-switch labelPosition="right">Label on Right</tw-switch>
+      <tw-switch labelPosition="left">Label on Left</tw-switch>
+    </div>
+  </app-demo-section>
+
+  <!-- Disabled -->
+  <app-demo-section title="Disabled State" [code]="basicCode">
+    <div class="flex gap-6">
+      <tw-switch [disabled]="true">Disabled Off</tw-switch>
+      <tw-switch [disabled]="true" [ngModel]="true">Disabled On</tw-switch>
+    </div>
+  </app-demo-section>
+</div>

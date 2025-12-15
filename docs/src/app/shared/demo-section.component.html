@@ -1,0 +1,38 @@
+<section class="mb-12">
+  <h2 class="text-xl font-semibold text-slate-900 mb-2">{{ title }}</h2>
+  @if (description) {
+    <p class="text-slate-600 mb-4">{{ description }}</p>
+  }
+  <div class="rounded-xl border border-slate-200 overflow-hidden">
+    <div class="p-6 bg-white">
+      <ng-content></ng-content>
+    </div>
+    @if (code) {
+      <div class="border-t border-slate-200 bg-slate-50">
+        <button
+          type="button"
+          class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+          (click)="toggleCode()">
+          <span class="flex items-center gap-2">
+            <fa-icon [icon]="icons.code" class="text-slate-400"></fa-icon>
+            {{ showCode() ? 'Hide' : 'Show' }} Code
+          </span>
+          <fa-icon [icon]="showCode() ? icons.chevronUp : icons.chevronDown" class="text-slate-400"></fa-icon>
+        </button>
+        @if (showCode()) {
+          <div class="relative bg-slate-900">
+            <button
+              type="button"
+              class="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
+              [class]="copied() ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white'"
+              (click)="copyCode()">
+              <fa-icon [icon]="copied() ? icons.check : icons.copy" class="text-xs"></fa-icon>
+              {{ copied() ? 'Copied!' : 'Copy' }}
+            </button>
+            <pre class="p-4 pr-24 text-sm text-slate-300 overflow-x-auto"><code class="language-html">{{ code }}</code></pre>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</section>

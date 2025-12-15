@@ -1,0 +1,13 @@
+@if (orientationValue() === 'horizontal') {
+  @if (labelValue()) {
+    <div [class]="containerClasses()">
+      <div [class]="firstLineClasses()"></div>
+      <span [class]="labelClasses()">{{ labelValue() }}</span>
+      <div [class]="lastLineClasses()"></div>
+    </div>
+  } @else {
+    <hr [class]="hrClasses()" />
+  }
+} @else {
+  <div [class]="verticalClasses()"></div>
+}

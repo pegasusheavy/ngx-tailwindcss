@@ -1,0 +1,74 @@
+# ngx-tailwindcss
+
+> Highly customizable Angular components designed for Tailwind CSS 4+
+
+## What is ngx-tailwindcss?
+
+ngx-tailwindcss is an open-source Angular UI component library providing 30+ components styled with Tailwind CSS 4+. It's designed for Angular 19, 20, and 21.
+
+## Key Features
+
+- **Tailwind CSS 4+ Ready**: Built for the latest Tailwind with CSS-first configuration
+- **Fully Customizable**: Override styling via classOverride/classReplace props or global config
+- **Accessible**: WCAG compliant with ARIA attributes, keyboard navigation, focus management
+- **Tree-Shakeable**: Import only what you need
+- **No Bundled CSS**: Components use your Tailwind config directly
+- **Standalone Components**: No NgModule required
+- **Modern Angular**: Uses signals, computed properties, and effects
+
+## Quick Start
+
+```bash
+pnpm add @pegasus-heavy/ngx-tailwindcss
+```
+
+Configure Tailwind to scan the library:
+
+```css
+@import "tailwindcss";
+@source "../node_modules/@pegasus-heavy/ngx-tailwindcss/**/*.mjs";
+```
+
+## Available Components
+
+### Basic: Button, Card, Badge, Alert, Input
+### Form: Checkbox, Switch, Radio, Select, Slider, Rating
+### Navigation: Tabs, Menu, Breadcrumb, Pagination, Steps
+### Data: Table, Tree, Timeline, Accordion
+### Overlays: Modal, Dropdown, Popover, Toast, Sidebar
+### Feedback: Progress, Spinner, Skeleton
+### Misc: Avatar, Chip, Divider, Image
+
+## Directives
+
+### Core Directives
+- twRipple: Material-style ripple effect
+- twTooltip: Tooltips
+- twClickOutside: Click outside detection
+- twFocusTrap: Focus trapping for modals
+- twClass: Intelligent class merging
+
+### DX Enhancement Directives
+- twAutoFocus: Auto-focus elements on mount
+- twInView: Intersection observer for lazy loading/animations
+- twLongPress: Long press/touch detection
+- twDebounceClick: Debounce click events
+- twCopyClipboard: Copy text to clipboard
+- twKeyboardShortcut: Handle keyboard shortcuts
+- twSwipe: Swipe gesture detection
+- twResizeObserver: Element size change detection
+- twLazyImage: Lazy load images
+- twScrollTo: Smooth scroll to elements
+- twHoverClass: Dynamic hover state classes
+- twTrapScroll: Trap scroll within element
+
+## Links
+
+- Documentation: https://ngx-tailwindcss.dev
+- npm: https://www.npmjs.com/package/@pegasus-heavy/ngx-tailwindcss
+- License: MIT
+
+## Author
+
+Pegasus Heavy Industries LLC
+

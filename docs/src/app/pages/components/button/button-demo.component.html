@@ -1,0 +1,116 @@
+<app-page-header
+  title="Button"
+  description="Versatile button component with multiple variants, sizes, and states.">
+</app-page-header>
+
+<app-demo-section
+  title="Variants"
+  description="Choose from different visual styles for various contexts."
+  [code]="variantsCode">
+  <div class="flex flex-wrap gap-3">
+    <tw-button variant="primary">Primary</tw-button>
+    <tw-button variant="secondary">Secondary</tw-button>
+    <tw-button variant="success">Success</tw-button>
+    <tw-button variant="warning">Warning</tw-button>
+    <tw-button variant="danger">Danger</tw-button>
+    <tw-button variant="info">Info</tw-button>
+    <tw-button variant="ghost">Ghost</tw-button>
+    <tw-button variant="outline">Outline</tw-button>
+    <tw-button variant="link">Link</tw-button>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Sizes"
+  description="Available in multiple sizes to fit different layouts."
+  [code]="sizesCode">
+  <div class="flex flex-wrap items-center gap-3">
+    <tw-button variant="primary" size="xs">Extra Small</tw-button>
+    <tw-button variant="primary" size="sm">Small</tw-button>
+    <tw-button variant="primary" size="md">Medium</tw-button>
+    <tw-button variant="primary" size="lg">Large</tw-button>
+    <tw-button variant="primary" size="xl">Extra Large</tw-button>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="States"
+  description="Handle disabled and loading states gracefully."
+  [code]="statesCode">
+  <div class="flex flex-wrap items-center gap-3">
+    <tw-button variant="primary" [disabled]="true">Disabled</tw-button>
+    <tw-button variant="primary" [loading]="true">Loading</tw-button>
+    <tw-button variant="secondary" [loading]="isLoading()" (click)="simulateLoading()">
+      Click to Load
+    </tw-button>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="With Icons"
+  description="Add icons before or after the button text."
+  [code]="iconsCode">
+  <div class="flex flex-wrap items-center gap-3">
+    <tw-button variant="primary">
+      <fa-icon [icon]="icons.plus" twButtonIcon></fa-icon>
+      Add Item
+    </tw-button>
+    <tw-button variant="success">
+      <fa-icon [icon]="icons.check" twButtonIcon></fa-icon>
+      Save
+    </tw-button>
+    <tw-button variant="danger">
+      Delete
+      <fa-icon [icon]="icons.trash" twButtonIconEnd></fa-icon>
+    </tw-button>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Icon Only"
+  description="Square buttons with just an icon."
+  [code]="iconOnlyCode">
+  <div class="flex flex-wrap items-center gap-3">
+    <tw-button variant="primary" [iconOnly]="true" size="sm">
+      <fa-icon [icon]="icons.plus" twButtonIcon></fa-icon>
+    </tw-button>
+    <tw-button variant="secondary" [iconOnly]="true">
+      <fa-icon [icon]="icons.heart" twButtonIcon></fa-icon>
+    </tw-button>
+    <tw-button variant="ghost" [iconOnly]="true" size="lg">
+      <fa-icon [icon]="icons.gear" twButtonIcon></fa-icon>
+    </tw-button>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Full Width"
+  description="Buttons that span the full width of their container."
+  [code]="fullWidthCode">
+  <div class="space-y-3 max-w-md">
+    <tw-button variant="primary" [fullWidth]="true">Full Width Primary</tw-button>
+    <tw-button variant="outline" [fullWidth]="true">Full Width Outline</tw-button>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Custom Styling"
+  description="Override or replace styles with classOverride or classReplace."
+  [code]="customCode">
+  <div class="flex flex-wrap items-center gap-3">
+    <tw-button
+      variant="primary"
+      classOverride="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+      Gradient Button
+    </tw-button>
+    <tw-button
+      variant="primary"
+      classOverride="rounded-full">
+      Rounded Button
+    </tw-button>
+    <tw-button
+      classReplace="px-6 py-2 bg-black text-white font-bold uppercase tracking-wider hover:bg-gray-800 transition-colors">
+      Custom Button
+    </tw-button>
+  </div>
+</app-demo-section>

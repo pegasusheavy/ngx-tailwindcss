@@ -1,0 +1,75 @@
+<app-page-header
+  title="Alert"
+  description="Display important messages and notifications to users.">
+</app-page-header>
+
+<app-demo-section
+  title="Variants"
+  description="Different alert types for various message contexts."
+  [code]="variantsCode">
+  <div class="space-y-4">
+    <tw-alert variant="info">This is an informational message.</tw-alert>
+    <tw-alert variant="success">Your changes have been saved successfully!</tw-alert>
+    <tw-alert variant="warning">Please review your input before continuing.</tw-alert>
+    <tw-alert variant="danger">An error occurred. Please try again.</tw-alert>
+    <tw-alert variant="neutral">This is a neutral notification.</tw-alert>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Alert Styles"
+  description="Different visual styles for alerts."
+  [code]="stylesCode">
+  <div class="space-y-4">
+    <tw-alert variant="info" alertStyle="solid">Solid style alert</tw-alert>
+    <tw-alert variant="info" alertStyle="soft">Soft style alert</tw-alert>
+    <tw-alert variant="info" alertStyle="outlined">Outlined style alert</tw-alert>
+    <tw-alert variant="info" alertStyle="accent">Accent style alert</tw-alert>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="With Title and Description"
+  description="Structured alerts with title and description."
+  [code]="titleDescCode">
+  <div class="space-y-4">
+    <tw-alert variant="success" alertStyle="soft">
+      <tw-alert-title>Success!</tw-alert-title>
+      <tw-alert-description>Your payment has been processed successfully. You will receive a confirmation email shortly.</tw-alert-description>
+    </tw-alert>
+    <tw-alert variant="danger" alertStyle="accent">
+      <tw-alert-title>Error</tw-alert-title>
+      <tw-alert-description>Unable to connect to the server. Please check your internet connection and try again.</tw-alert-description>
+    </tw-alert>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Dismissible Alerts"
+  description="Alerts that can be closed by the user."
+  [code]="dismissibleCode">
+  <div class="space-y-4">
+    <tw-alert variant="info" alertStyle="soft" [dismissible]="true" (dismiss)="onDismiss()">
+      Click the X button to dismiss this alert.
+    </tw-alert>
+    <tw-alert variant="warning" alertStyle="soft" [dismissible]="true" (dismiss)="onDismiss()">
+      <tw-alert-title>Heads up!</tw-alert-title>
+      <tw-alert-description>This alert can be dismissed. It will be removed from the page when closed.</tw-alert-description>
+    </tw-alert>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Without Icon"
+  description="Alerts without the default icon."
+  [code]="noIconCode">
+  <div class="space-y-4">
+    <tw-alert variant="info" alertStyle="soft" [showIcon]="false">
+      This alert doesn't show an icon.
+    </tw-alert>
+    <tw-alert variant="success" alertStyle="accent" [showIcon]="false">
+      <tw-alert-title>Note</tw-alert-title>
+      <tw-alert-description>You can hide the icon for a cleaner look when needed.</tw-alert-description>
+    </tw-alert>
+  </div>
+</app-demo-section>

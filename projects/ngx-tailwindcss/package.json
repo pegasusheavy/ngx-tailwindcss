@@ -1,0 +1,29 @@
+{
+  "name": "@pegasus-heavy/ngx-tailwindcss",
+  "version": "0.1.0",
+  "description": "Highly customizable Angular components designed for Tailwind CSS 4+",
+  "license": "MIT",
+  "author": "Pegasus Heavy Industries LLC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/PegasusHeavyIndustries/ngx-tailwindcss"
+  },
+  "keywords": [
+    "angular",
+    "tailwindcss",
+    "tailwind",
+    "components",
+    "ui",
+    "library",
+    "tailwind-css-4"
+  ],
+  "peerDependencies": {
+    "@angular/common": "^19.0.0 || ^20.0.0 || ^21.0.0",
+    "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0",
+    "@angular/cdk": "^19.0.0 || ^20.0.0 || ^21.0.0",
+    "@angular/forms": "^19.0.0 || ^20.0.0 || ^21.0.0",
+    "@angular/animations": "^19.0.0 || ^20.0.0 || ^21.0.0"
+  },
+  "sideEffects": false
+}
+

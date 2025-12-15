@@ -1,0 +1,64 @@
+<app-page-header
+  title="Select"
+  description="Dropdown select component with search, filtering, and selection support.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="max-w-sm">
+      <tw-select
+        [options]="countries"
+        [(ngModel)]="selectedCountry"
+        placeholder="Select a country">
+      </tw-select>
+      <p class="mt-2 text-sm text-slate-600">Selected: {{ selectedCountry || 'None' }}</p>
+    </div>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Default</label>
+        <tw-select variant="default" [options]="sizes" placeholder="Select size"></tw-select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Filled</label>
+        <tw-select variant="filled" [options]="sizes" placeholder="Select size"></tw-select>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="flex flex-wrap items-start gap-4 max-w-3xl">
+      <div class="w-40">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Small</label>
+        <tw-select size="sm" [options]="sizes" placeholder="Small"></tw-select>
+      </div>
+      <div class="w-48">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Medium</label>
+        <tw-select size="md" [options]="sizes" placeholder="Medium"></tw-select>
+      </div>
+      <div class="w-56">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Large</label>
+        <tw-select size="lg" [options]="sizes" placeholder="Large"></tw-select>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- States -->
+  <app-demo-section title="States" [code]="statesCode">
+    <div class="flex flex-wrap gap-4 max-w-2xl">
+      <div class="w-48">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Disabled</label>
+        <tw-select [disabled]="true" [options]="sizes" placeholder="Disabled"></tw-select>
+      </div>
+      <div class="w-48">
+        <label class="block text-sm font-medium text-slate-700 mb-1">With Error</label>
+        <tw-select error="This field is required" [options]="sizes" placeholder="Required"></tw-select>
+      </div>
+    </div>
+  </app-demo-section>
+</div>

@@ -1,0 +1,32 @@
+<div [class]="containerClasses()">
+  <!-- Tab list -->
+  <div
+    [class]="tabListClasses()"
+    role="tablist"
+    [attr.aria-orientation]="orientation">
+    @for (panel of panels; track panel.value) {
+      <button
+        type="button"
+        [class]="getTabClasses(panel)"
+        [id]="'tab-' + panel.value"
+        [attr.aria-selected]="panel.active"
+        [attr.aria-controls]="'panel-' + panel.value"
+        [attr.tabindex]="panel.active ? 0 : -1"
+        [disabled]="panel.disabled"
+        role="tab"
+        (click)="selectTab(panel.value)"
+        (keydown)="onKeydown($event, panel.value)">
+        @if (panel.icon) {
+          <span class="mr-2" [innerHTML]="panel.icon"></span>
+        }
+        {{ panel.label }}
+      </button>
+    }
+  </div>
+
+  <!-- Tab panels -->
+  <div [class]="panelsContainerClasses()">
+    <ng-content></ng-content>
+  </div>
+</div>
+

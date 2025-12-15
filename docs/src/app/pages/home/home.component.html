@@ -1,0 +1,91 @@
+<!-- Hero Section -->
+<div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white p-8 md:p-12 mb-12">
+  <div class="absolute inset-0 opacity-10">
+    <div class="absolute inset-0" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+  </div>
+  <div class="relative">
+    <div class="flex items-center gap-2 mb-4">
+      <tw-badge variant="info" badgeStyle="soft" [pill]="true">v0.1.0</tw-badge>
+      <tw-badge variant="success" badgeStyle="soft" [pill]="true">
+        <fa-icon [icon]="icons.rocket" class="mr-1"></fa-icon>
+        Tailwind CSS 4+
+      </tw-badge>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold mb-4">
+      ngx-tailwindcss
+    </h1>
+    <p class="text-xl text-blue-100 max-w-2xl mb-8">
+      Beautiful, accessible Angular components designed for Tailwind CSS 4+.
+      Fully customizable with no bundled CSS — your Tailwind config, your rules.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <tw-button variant="secondary" size="lg" routerLink="/components/button">
+        <fa-icon [icon]="icons.arrow" class="mr-2"></fa-icon>
+        Get Started
+      </tw-button>
+      <a
+        href="https://github.com/PegasusHeavyIndustries/ngx-tailwindcss"
+        target="_blank"
+        rel="noopener noreferrer">
+        <tw-button variant="outline" size="lg" classOverride="bg-transparent border-white/60 text-white hover:bg-white/10 hover:border-white focus-visible:ring-white">
+          <fa-icon [icon]="icons.github" class="mr-2 text-lg"></fa-icon>
+          View on GitHub
+        </tw-button>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Features Grid -->
+<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+  @for (feature of features; track feature.title) {
+    <tw-card variant="outlined" [hoverable]="true">
+      <tw-card-body>
+        <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-4">
+          <fa-icon [icon]="feature.icon" [class]="'text-2xl ' + feature.iconColor"></fa-icon>
+        </div>
+        <h3 class="text-lg font-semibold text-slate-900 mb-2">{{ feature.title }}</h3>
+        <p class="text-slate-600 text-sm">{{ feature.description }}</p>
+      </tw-card-body>
+    </tw-card>
+  }
+</div>
+
+<!-- Quick Start -->
+<div class="mb-12">
+  <h2 class="text-2xl font-bold text-slate-900 mb-4">
+    <fa-icon [icon]="icons.terminal" class="mr-2 text-slate-400"></fa-icon>
+    Quick Start
+  </h2>
+  <div class="rounded-xl border border-slate-200 overflow-hidden">
+    <div class="bg-slate-900 p-6">
+      <div class="flex items-center gap-2 mb-4">
+        <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+        <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+        <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+      </div>
+      <pre class="text-sm text-slate-300 overflow-x-auto"><code class="language-bash">{{ installCode }}</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- Components Preview -->
+<div class="mb-12">
+  <h2 class="text-2xl font-bold text-slate-900 mb-4">Components</h2>
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+    @for (component of components; track component.name) {
+      <a [routerLink]="component.path" class="group">
+        <tw-card variant="outlined" [hoverable]="true" [clickable]="true">
+          <tw-card-body class="text-center">
+            <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-transform">
+              <fa-icon [icon]="component.icon" [class]="'text-xl ' + component.iconColor"></fa-icon>
+            </div>
+            <h3 class="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
+              {{ component.name }}
+            </h3>
+          </tw-card-body>
+        </tw-card>
+      </a>
+    }
+  </div>
+</div>

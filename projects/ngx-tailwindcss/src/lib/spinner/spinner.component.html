@@ -1,0 +1,30 @@
+@switch (variantVal()) {
+  @case ('border') {
+    <div [class]="borderClasses()" role="status" aria-label="Loading">
+      <span class="sr-only">Loading...</span>
+    </div>
+  }
+  @case ('dots') {
+    <div [class]="dotsContainerClasses()" role="status" aria-label="Loading">
+      <div [class]="dotClasses()" style="animation-delay: 0ms"></div>
+      <div [class]="dotClasses()" style="animation-delay: 150ms"></div>
+      <div [class]="dotClasses()" style="animation-delay: 300ms"></div>
+      <span class="sr-only">Loading...</span>
+    </div>
+  }
+  @case ('pulse') {
+    <div [class]="pulseClasses()" role="status" aria-label="Loading">
+      <span class="sr-only">Loading...</span>
+    </div>
+  }
+  @case ('bars') {
+    <div [class]="barsContainerClasses()" role="status" aria-label="Loading">
+      <div [class]="barClasses()" style="animation-delay: 0ms"></div>
+      <div [class]="barClasses()" style="animation-delay: 100ms"></div>
+      <div [class]="barClasses()" style="animation-delay: 200ms"></div>
+      <div [class]="barClasses()" style="animation-delay: 300ms"></div>
+      <span class="sr-only">Loading...</span>
+    </div>
+  }
+}
+

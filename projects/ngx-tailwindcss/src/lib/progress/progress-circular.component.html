@@ -1,0 +1,40 @@
+<div class="relative inline-flex items-center justify-center"
+     [style.width.px]="sizeValue()"
+     [style.height.px]="sizeValue()"
+     role="progressbar"
+     [attr.aria-valuenow]="indeterminateFlag() ? undefined : valueNum()"
+     [attr.aria-valuemin]="0"
+     [attr.aria-valuemax]="maxNum()">
+  <svg
+    class="-rotate-90"
+    [class.circular-rotate]="indeterminateFlag()"
+    [style.width.px]="sizeValue()"
+    [style.height.px]="sizeValue()"
+    viewBox="0 0 36 36">
+    <!-- Background circle -->
+    <circle
+      class="text-slate-200"
+      stroke="currentColor"
+      fill="none"
+      [attr.stroke-width]="strokeWidth()"
+      cx="18"
+      cy="18"
+      r="15.9155" />
+    <!-- Progress circle -->
+    <circle
+      [class.circular-dash]="indeterminateFlag()"
+      [attr.stroke]="strokeColor()"
+      fill="none"
+      [attr.stroke-width]="strokeWidth()"
+      stroke-linecap="round"
+      cx="18"
+      cy="18"
+      r="15.9155"
+      stroke-dasharray="100 100"
+      [style.stroke-dashoffset]="indeterminateFlag() ? undefined : dashOffset()"
+      class="transition-all duration-300" />
+  </svg>
+  @if (showValueFlag() && !indeterminateFlag()) {
+    <span [class]="valueClasses()">{{ percentage() | number:'1.0-0' }}%</span>
+  }
+</div>

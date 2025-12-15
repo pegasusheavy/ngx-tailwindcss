@@ -1,0 +1,16 @@
+# Test files
+*.spec.ts
+*.test.ts
+**/__tests__/
+
+# TypeScript config (not needed in published package)
+tsconfig.lib.json
+tsconfig.lib.prod.json
+tsconfig.spec.json
+
+# ng-packagr config (build only)
+ng-package.json
+
+# Source maps (optional - remove if you want source maps in package)
+# *.map
+

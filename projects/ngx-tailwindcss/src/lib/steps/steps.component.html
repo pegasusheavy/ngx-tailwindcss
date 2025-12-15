@@ -1,0 +1,56 @@
+<nav [class]="containerClasses()" aria-label="Progress">
+  <ol [class]="listClasses()">
+    @for (step of steps; track step.id ?? $index; let i = $index; let last = $last) {
+      <li [class]="itemClasses(last)">
+        <!-- Step content (indicator + label) -->
+        <div [class]="stepContentClasses(i)" (click)="onStepClick(i)">
+          <!-- Step indicator -->
+          <div [class]="indicatorClasses(i)">
+            @if (getStepStatus(i) === 'complete') {
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 01.208 1.04l-9 13.5a.75.75 0 01-1.154.114l-6-6a.75.75 0 011.06-1.06l5.353 5.353 8.493-12.739a.75.75 0 011.04-.208z" clip-rule="evenodd" />
+              </svg>
+            } @else if (step.icon) {
+              <ng-container *ngTemplateOutlet="step.icon"></ng-container>
+            } @else {
+              <span>{{ i + 1 }}</span>
+            }
+          </div>
+
+          <!-- Label (for horizontal, shown below indicator) -->
+          @if (showLabels && orientation === 'horizontal') {
+            <div [class]="labelContainerClasses()">
+              <span [class]="labelClasses(i)">{{ step.label }}</span>
+              @if (step.description) {
+                <span [class]="descriptionClasses()">{{ step.description }}</span>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Label (for vertical, shown next to indicator) -->
+        @if (showLabels && orientation === 'vertical') {
+          <div class="ml-3">
+            <span [class]="labelClasses(i)">{{ step.label }}</span>
+            @if (step.description) {
+              <span [class]="descriptionClasses()">{{ step.description }}</span>
+            }
+          </div>
+        }
+
+        <!-- Horizontal connector (inline between steps) -->
+        @if (!last && orientation === 'horizontal') {
+          <div [class]="connectorClasses(i)"></div>
+        }
+      </li>
+
+      <!-- Vertical connector (between items) -->
+      @if (!last && orientation === 'vertical') {
+        <div
+          [class]="verticalConnectorClasses(i)"
+          [ngStyle]="getVerticalConnectorStyle()">
+        </div>
+      }
+    }
+  </ol>
+</nav>

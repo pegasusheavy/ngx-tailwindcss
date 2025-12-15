@@ -1,0 +1,59 @@
+<app-page-header
+  title="Steps"
+  description="Step indicator component for multi-step processes and wizards.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="space-y-4">
+      <tw-steps [steps]="steps" [activeIndex]="currentStep"></tw-steps>
+      <div class="flex gap-2">
+        <button
+          class="px-4 py-2 text-sm bg-slate-200 rounded hover:bg-slate-300"
+          [disabled]="currentStep === 0"
+          (click)="currentStep = currentStep - 1">
+          Previous
+        </button>
+        <button
+          class="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+          [disabled]="currentStep === steps.length - 1"
+          (click)="currentStep = currentStep + 1">
+          Next
+        </button>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Orientation -->
+  <app-demo-section title="Orientation" [code]="orientationCode">
+    <div class="space-y-8">
+      <div>
+        <span class="text-sm text-slate-600 block mb-4">Horizontal</span>
+        <tw-steps orientation="horizontal" [steps]="steps" [activeIndex]="1"></tw-steps>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-4">Vertical</span>
+        <tw-steps orientation="vertical" [steps]="steps" [activeIndex]="1"></tw-steps>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="space-y-8">
+      <div>
+        <span class="text-sm text-slate-600 block mb-4">Small</span>
+        <tw-steps size="sm" [steps]="steps" [activeIndex]="1"></tw-steps>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-4">Medium</span>
+        <tw-steps size="md" [steps]="steps" [activeIndex]="1"></tw-steps>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-4">Large</span>
+        <tw-steps size="lg" [steps]="steps" [activeIndex]="1"></tw-steps>
+      </div>
+    </div>
+  </app-demo-section>
+</div>

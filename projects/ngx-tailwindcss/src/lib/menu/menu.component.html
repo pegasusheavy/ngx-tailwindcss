@@ -1,0 +1,70 @@
+<div [class]="containerClasses()" role="menu">
+  @for (item of items; track item.id ?? $index) {
+    @if (item.separator) {
+      <div [class]="separatorClasses()"></div>
+    } @else if (item.items && item.items.length > 0) {
+      <!-- Submenu -->
+      <div class="relative" (mouseenter)="onSubmenuEnter(item)" (mouseleave)="onSubmenuLeave()">
+        <button
+          type="button"
+          [class]="itemClasses(item)"
+          [disabled]="item.disabled"
+          role="menuitem"
+          aria-haspopup="true"
+          [attr.aria-expanded]="openSubmenu() === item">
+          @if (item.icon) {
+            <ng-container *ngTemplateOutlet="item.icon"></ng-container>
+          }
+          <span class="flex-1">{{ item.label }}</span>
+          <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+        @if (openSubmenu() === item) {
+          <div [class]="submenuClasses()">
+            @for (subItem of item.items; track subItem.id ?? $index) {
+              @if (subItem.separator) {
+                <div [class]="separatorClasses()"></div>
+              } @else {
+                <button
+                  type="button"
+                  [class]="itemClasses(subItem)"
+                  [disabled]="subItem.disabled"
+                  role="menuitem"
+                  (click)="onItemClick(subItem)">
+                  @if (subItem.icon) {
+                    <ng-container *ngTemplateOutlet="subItem.icon"></ng-container>
+                  }
+                  <span>{{ subItem.label }}</span>
+                  @if (subItem.shortcut) {
+                    <span class="ml-auto text-xs text-slate-400">{{ subItem.shortcut }}</span>
+                  }
+                </button>
+              }
+            }
+          </div>
+        }
+      </div>
+    } @else {
+      <!-- Regular item -->
+      <button
+        type="button"
+        [class]="itemClasses(item)"
+        [disabled]="item.disabled"
+        role="menuitem"
+        (click)="onItemClick(item)">
+        @if (item.icon) {
+          <ng-container *ngTemplateOutlet="item.icon"></ng-container>
+        }
+        <span>{{ item.label }}</span>
+        @if (item.shortcut) {
+          <span class="ml-auto text-xs text-slate-400">{{ item.shortcut }}</span>
+        }
+        @if (item.badge) {
+          <span [class]="badgeClasses()">{{ item.badge }}</span>
+        }
+      </button>
+    }
+  }
+</div>
+

@@ -1,0 +1,64 @@
+# Angular Template Files
+
+## Rule
+
+All Angular component templates MUST be in separate `.html` files, not inline in the TypeScript file.
+
+## Requirements
+
+1. **Use `templateUrl` instead of `template`**
+   - Every `@Component` decorator should use `templateUrl: './component-name.component.html'`
+   - Never use inline `template:` property with template strings
+
+2. **File naming convention**
+   - Template file: `component-name.component.html`
+   - Component file: `component-name.component.ts`
+   - Style file (if needed): `component-name.component.scss`
+
+3. **Example structure**
+   ```
+   button/
+   ├── button.component.ts
+   ├── button.component.html
+   └── index.ts
+   ```
+
+## Bad Example (DO NOT DO THIS)
+
+```typescript
+@Component({
+  selector: 'tw-button',
+  template: `
+    <button [class]="classes()">
+      <ng-content></ng-content>
+    </button>
+  `,
+})
+export class TwButtonComponent { }
+```
+
+## Good Example (DO THIS)
+
+```typescript
+// button.component.ts
+@Component({
+  selector: 'tw-button',
+  templateUrl: './button.component.html',
+})
+export class TwButtonComponent { }
+```
+
+```html
+<!-- button.component.html -->
+<button [class]="classes()">
+  <ng-content></ng-content>
+</button>
+```
+
+## Rationale
+
+- Separation of concerns - TypeScript logic separate from HTML markup
+- Better IDE support for HTML editing
+- Easier to read and maintain larger templates
+- Consistent codebase structure
+- Better support for Vitest with `@analogjs/vite-plugin-angular`

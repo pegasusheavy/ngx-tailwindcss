@@ -1,0 +1,84 @@
+<div [class]="containerClasses()" role="tree">
+  <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: nodes, level: 0 }"></ng-container>
+</div>
+
+<ng-template #nodeTemplate let-nodes let-level="level">
+  @for (node of nodes; track node.key ?? $index) {
+    @if (node.visible !== false) {
+      <div role="treeitem" [attr.aria-expanded]="node.expanded">
+        <div
+          [class]="nodeClasses(node, level)"
+          [style.paddingLeft.px]="level * indentSize"
+          (click)="onNodeClick(node)">
+          <!-- Expand/Collapse toggle -->
+          @if (node.children && node.children.length > 0) {
+            <button
+              type="button"
+              class="p-1 rounded hover:bg-slate-200 transition-colors"
+              (click)="toggleNode(node); $event.stopPropagation()"
+              [attr.aria-label]="node.expanded ? 'Collapse' : 'Expand'">
+              <svg
+                class="w-4 h-4 transition-transform duration-200"
+                [class.rotate-90]="node.expanded"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          } @else {
+            <span class="w-6"></span>
+          }
+
+          <!-- Checkbox for selection -->
+          @if (selectionMode !== 'none') {
+            <input
+              type="checkbox"
+              class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              [checked]="isSelected(node)"
+              [indeterminate]="isIndeterminate(node)"
+              (change)="onCheckboxChange(node, $event)"
+              (click)="$event.stopPropagation()" />
+          }
+
+          <!-- Icon -->
+          @if (node.icon) {
+            <ng-container *ngTemplateOutlet="node.icon"></ng-container>
+          } @else if (node.children && node.children.length > 0) {
+            <svg class="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+              @if (node.expanded) {
+                <path d="M19 11H5a2 2 0 00-2 2v7a2 2 0 002 2h14a2 2 0 002-2v-7a2 2 0 00-2-2z"/>
+                <path d="M17 11V7a2 2 0 00-2-2H5a2 2 0 00-2 2v4"/>
+              } @else {
+                <path d="M3 7v13a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6.586a1 1 0 01-.707-.293l-2-2A1 1 0 009.586 4H5a2 2 0 00-2 2z"/>
+              }
+            </svg>
+          } @else {
+            <svg class="w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          }
+
+          <!-- Label -->
+          <span [class]="labelClasses(node)">{{ node.label }}</span>
+
+          <!-- Badge -->
+          @if (node.badge) {
+            <span class="ml-auto px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700">
+              {{ node.badge }}
+            </span>
+          }
+        </div>
+
+        <!-- Children -->
+        @if (node.children && node.children.length > 0 && node.expanded) {
+          <div class="animate-in slide-in-from-top-1 duration-200">
+            <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: node.children, level: level + 1 }"></ng-container>
+          </div>
+        }
+      </div>
+    }
+  }
+</ng-template>
+

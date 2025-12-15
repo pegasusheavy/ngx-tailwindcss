@@ -1,0 +1,30 @@
+<app-page-header
+  title="Timeline"
+  description="Timeline component for displaying events in chronological order.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <tw-timeline [events]="events"></tw-timeline>
+  </app-demo-section>
+
+  <!-- Alignment -->
+  <app-demo-section title="Alignment" [code]="alignCode">
+    <div class="space-y-8">
+      <div>
+        <span class="text-sm text-slate-600 block mb-4">Left aligned</span>
+        <tw-timeline [events]="events" align="left"></tw-timeline>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-4">Alternate</span>
+        <tw-timeline [events]="events" align="alternate"></tw-timeline>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Simple Events -->
+  <app-demo-section title="Simple Timeline" [code]="basicCode">
+    <tw-timeline [events]="simpleEvents"></tw-timeline>
+  </app-demo-section>
+</div>

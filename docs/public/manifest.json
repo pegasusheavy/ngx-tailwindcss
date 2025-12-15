@@ -1,0 +1,62 @@
+{
+  "name": "ngx-tailwindcss Documentation",
+  "short_name": "ngx-tailwindcss",
+  "description": "Highly customizable Angular components designed for Tailwind CSS 4+",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#06b6d4",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["developer tools", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ngx-tailwindcss Documentation Homepage"
+    },
+    {
+      "src": "/screenshots/mobile.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ngx-tailwindcss Documentation on Mobile"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Components",
+      "short_name": "Components",
+      "description": "Browse all available components",
+      "url": "/components/button",
+      "icons": [{ "src": "/logo.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Directives",
+      "short_name": "Directives",
+      "description": "Browse all available directives",
+      "url": "/directives",
+      "icons": [{ "src": "/logo.svg", "sizes": "any" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
+

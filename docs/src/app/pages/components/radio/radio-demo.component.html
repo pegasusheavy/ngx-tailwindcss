@@ -1,0 +1,74 @@
+<app-page-header
+  title="Radio Button"
+  description="Radio button group component for single-choice selections.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <tw-radio-group [(ngModel)]="selectedOption">
+      <tw-radio-button value="option1" label="Option 1"></tw-radio-button>
+      <tw-radio-button value="option2" label="Option 2"></tw-radio-button>
+      <tw-radio-button value="option3" label="Option 3"></tw-radio-button>
+    </tw-radio-group>
+    <p class="mt-4 text-sm text-slate-600">Selected: {{ selectedOption }}</p>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="flex flex-wrap gap-8">
+      <tw-radio-group [(ngModel)]="variantPrimary">
+        <tw-radio-button value="a" label="Primary A" variant="primary"></tw-radio-button>
+        <tw-radio-button value="b" label="Primary B" variant="primary"></tw-radio-button>
+      </tw-radio-group>
+      <tw-radio-group [(ngModel)]="variantSuccess">
+        <tw-radio-button value="a" label="Success A" variant="success"></tw-radio-button>
+        <tw-radio-button value="b" label="Success B" variant="success"></tw-radio-button>
+      </tw-radio-group>
+      <tw-radio-group [(ngModel)]="variantDanger">
+        <tw-radio-button value="a" label="Danger A" variant="danger"></tw-radio-button>
+        <tw-radio-button value="b" label="Danger B" variant="danger"></tw-radio-button>
+      </tw-radio-group>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="flex flex-wrap gap-8">
+      <tw-radio-group [(ngModel)]="sizeSm">
+        <tw-radio-button value="a" label="Small A" size="sm"></tw-radio-button>
+        <tw-radio-button value="b" label="Small B" size="sm"></tw-radio-button>
+      </tw-radio-group>
+      <tw-radio-group [(ngModel)]="sizeMd">
+        <tw-radio-button value="a" label="Medium A" size="md"></tw-radio-button>
+        <tw-radio-button value="b" label="Medium B" size="md"></tw-radio-button>
+      </tw-radio-group>
+      <tw-radio-group [(ngModel)]="sizeLg">
+        <tw-radio-button value="a" label="Large A" size="lg"></tw-radio-button>
+        <tw-radio-button value="b" label="Large B" size="lg"></tw-radio-button>
+      </tw-radio-group>
+    </div>
+  </app-demo-section>
+
+  <!-- Orientation -->
+  <app-demo-section title="Orientation" [code]="orientationCode">
+    <div class="space-y-6">
+      <div>
+        <p class="text-sm font-medium text-slate-700 mb-2">Vertical (default)</p>
+        <tw-radio-group orientation="vertical" [(ngModel)]="orientationVertical">
+          <tw-radio-button value="1" label="First option"></tw-radio-button>
+          <tw-radio-button value="2" label="Second option"></tw-radio-button>
+          <tw-radio-button value="3" label="Third option"></tw-radio-button>
+        </tw-radio-group>
+      </div>
+      <div>
+        <p class="text-sm font-medium text-slate-700 mb-2">Horizontal</p>
+        <tw-radio-group orientation="horizontal" [(ngModel)]="orientationHorizontal">
+          <tw-radio-button value="1" label="First"></tw-radio-button>
+          <tw-radio-button value="2" label="Second"></tw-radio-button>
+          <tw-radio-button value="3" label="Third"></tw-radio-button>
+        </tw-radio-group>
+      </div>
+    </div>
+  </app-demo-section>
+</div>

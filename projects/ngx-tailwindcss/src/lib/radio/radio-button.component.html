@@ -1,0 +1,17 @@
+<label [class]="labelContainerClasses()">
+  <input
+    type="radio"
+    [class]="radioClasses()"
+    [checked]="isChecked()"
+    [disabled]="disabled"
+    [attr.name]="name"
+    [attr.value]="value"
+    (change)="onRadioChange()"
+    (focus)="onFocus.emit($event)"
+    (blur)="onBlur.emit($event)" />
+  <span [class]="labelTextClasses()">
+    {{ label }}
+    <ng-content></ng-content>
+  </span>
+</label>
+

@@ -1,0 +1,105 @@
+<app-page-header
+  title="Dropdown"
+  description="Contextual menus for actions and navigation options.">
+</app-page-header>
+
+<app-demo-section
+  title="Basic Dropdown"
+  description="Simple dropdown menu with items."
+  [code]="basicCode">
+  <tw-dropdown>
+    <tw-button twDropdownTrigger variant="outline">
+      Options
+      <fa-icon [icon]="icons.chevronDown" class="ml-2 text-sm"></fa-icon>
+    </tw-button>
+    <tw-dropdown-menu>
+      <button twDropdownItem (click)="onAction('edit')">Edit</button>
+      <button twDropdownItem (click)="onAction('duplicate')">Duplicate</button>
+      <button twDropdownItem (click)="onAction('archive')">Archive</button>
+    </tw-dropdown-menu>
+  </tw-dropdown>
+</app-demo-section>
+
+<app-demo-section
+  title="With Headers and Dividers"
+  description="Organized dropdown with sections."
+  [code]="headersCode">
+  <tw-dropdown>
+    <tw-button twDropdownTrigger variant="primary">
+      Actions
+      <fa-icon [icon]="icons.chevronDown" class="ml-2 text-sm"></fa-icon>
+    </tw-button>
+    <tw-dropdown-menu>
+      <tw-dropdown-header>Manage</tw-dropdown-header>
+      <button twDropdownItem (click)="onAction('edit')">
+        <fa-icon [icon]="icons.pen" class="w-4 mr-2 text-slate-400"></fa-icon>
+        Edit
+      </button>
+      <button twDropdownItem (click)="onAction('duplicate')">
+        <fa-icon [icon]="icons.copy" class="w-4 mr-2 text-slate-400"></fa-icon>
+        Duplicate
+      </button>
+      <tw-dropdown-divider></tw-dropdown-divider>
+      <tw-dropdown-header>Danger Zone</tw-dropdown-header>
+      <button twDropdownItem class="text-rose-600 hover:text-rose-700 hover:bg-rose-50" (click)="onAction('delete')">
+        <fa-icon [icon]="icons.trash" class="w-4 mr-2"></fa-icon>
+        Delete
+      </button>
+    </tw-dropdown-menu>
+  </tw-dropdown>
+</app-demo-section>
+
+<app-demo-section
+  title="Dropdown Positions"
+  description="Different placement options for the menu."
+  [code]="positionsCode">
+  <div class="flex flex-wrap gap-4">
+    <tw-dropdown position="bottom-start">
+      <tw-button twDropdownTrigger variant="outline">Bottom Start</tw-button>
+      <tw-dropdown-menu>
+        <button twDropdownItem>Option 1</button>
+        <button twDropdownItem>Option 2</button>
+        <button twDropdownItem>Option 3</button>
+      </tw-dropdown-menu>
+    </tw-dropdown>
+
+    <tw-dropdown position="bottom-end">
+      <tw-button twDropdownTrigger variant="outline">Bottom End</tw-button>
+      <tw-dropdown-menu>
+        <button twDropdownItem>Option 1</button>
+        <button twDropdownItem>Option 2</button>
+        <button twDropdownItem>Option 3</button>
+      </tw-dropdown-menu>
+    </tw-dropdown>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Icon Button Dropdown"
+  description="Dropdown triggered by an icon button."
+  [code]="iconCode">
+  <tw-dropdown>
+    <tw-button twDropdownTrigger variant="ghost" [iconOnly]="true">
+      <fa-icon [icon]="icons.ellipsis" class="text-lg"></fa-icon>
+    </tw-button>
+    <tw-dropdown-menu>
+      <button twDropdownItem>
+        <fa-icon [icon]="icons.eye" class="w-4 mr-2 text-slate-400"></fa-icon>
+        View Details
+      </button>
+      <button twDropdownItem>
+        <fa-icon [icon]="icons.pen" class="w-4 mr-2 text-slate-400"></fa-icon>
+        Edit
+      </button>
+      <button twDropdownItem>
+        <fa-icon [icon]="icons.share" class="w-4 mr-2 text-slate-400"></fa-icon>
+        Share
+      </button>
+      <tw-dropdown-divider></tw-dropdown-divider>
+      <button twDropdownItem class="text-rose-600">
+        <fa-icon [icon]="icons.trash" class="w-4 mr-2"></fa-icon>
+        Delete
+      </button>
+    </tw-dropdown-menu>
+  </tw-dropdown>
+</app-demo-section>

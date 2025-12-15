@@ -1,0 +1,64 @@
+<app-page-header
+  title="Sidebar"
+  description="Slide-out sidebar/drawer component for navigation and additional content.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="flex gap-4">
+      <tw-button (click)="leftSidebarVisible = true">Open Left Sidebar</tw-button>
+      <tw-button variant="outline" (click)="rightSidebarVisible = true">Open Right Sidebar</tw-button>
+    </div>
+
+    <tw-sidebar [visibleInput]="leftSidebarVisible" (visibleChange)="leftSidebarVisible = $event" position="left" header="Menu">
+      <nav class="space-y-1">
+        <a href="#" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg">Dashboard</a>
+        <a href="#" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg">Projects</a>
+        <a href="#" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg">Team</a>
+        <a href="#" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg">Calendar</a>
+        <a href="#" class="block px-4 py-2 text-slate-700 hover:bg-slate-100 rounded-lg">Settings</a>
+      </nav>
+    </tw-sidebar>
+
+    <tw-sidebar [visibleInput]="rightSidebarVisible" (visibleChange)="rightSidebarVisible = $event" position="right" header="Notifications">
+      <div class="space-y-4">
+        <div class="p-3 bg-blue-50 rounded-lg">
+          <p class="text-sm font-medium text-blue-900">New message</p>
+          <p class="text-xs text-blue-700">You have a new message from John</p>
+        </div>
+        <div class="p-3 bg-green-50 rounded-lg">
+          <p class="text-sm font-medium text-green-900">Task completed</p>
+          <p class="text-xs text-green-700">Your task has been marked as complete</p>
+        </div>
+        <div class="p-3 bg-amber-50 rounded-lg">
+          <p class="text-sm font-medium text-amber-900">Reminder</p>
+          <p class="text-xs text-amber-700">Meeting in 30 minutes</p>
+        </div>
+      </div>
+    </tw-sidebar>
+  </app-demo-section>
+
+  <!-- Positions -->
+  <app-demo-section title="Positions" [code]="positionsCode">
+    <p class="text-slate-600">
+      Sidebars can slide in from different edges:
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">left</code>,
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">right</code>,
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">top</code>,
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">bottom</code>
+    </p>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <p class="text-slate-600">
+      Available sizes:
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">sm</code> (256px),
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">md</code> (320px),
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">lg</code> (384px),
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">xl</code> (480px),
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">full</code> (100%)
+    </p>
+  </app-demo-section>
+</div>

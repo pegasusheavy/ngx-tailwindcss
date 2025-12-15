@@ -1,0 +1,92 @@
+<app-page-header
+  title="Progress"
+  description="Progress bar and circular progress components for displaying completion status.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="max-w-md">
+      <tw-progress [value]="progress"></tw-progress>
+      <p class="mt-2 text-sm text-slate-600">{{ progress }}% complete</p>
+    </div>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="max-w-md space-y-4">
+      <div>
+        <span class="text-sm text-slate-600">Primary (75%)</span>
+        <tw-progress variant="primary" [value]="75"></tw-progress>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600">Success (100%)</span>
+        <tw-progress variant="success" [value]="100"></tw-progress>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600">Warning (50%)</span>
+        <tw-progress variant="warning" [value]="50"></tw-progress>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600">Danger (25%)</span>
+        <tw-progress variant="danger" [value]="25"></tw-progress>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="max-w-md space-y-4">
+      <div>
+        <span class="text-sm text-slate-600">Small</span>
+        <tw-progress size="sm" [value]="60"></tw-progress>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600">Medium</span>
+        <tw-progress size="md" [value]="60"></tw-progress>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600">Large</span>
+        <tw-progress size="lg" [value]="60"></tw-progress>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Striped -->
+  <app-demo-section title="Striped & Animated" [code]="stripedCode">
+    <div class="max-w-md space-y-4">
+      <div>
+        <span class="text-sm text-slate-600">Striped</span>
+        <tw-progress [value]="70" [striped]="true"></tw-progress>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600">Striped Animated</span>
+        <tw-progress [value]="70" [striped]="true" [animated]="true"></tw-progress>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- With Value -->
+  <app-demo-section title="Show Value" [code]="labelCode">
+    <div class="max-w-md">
+      <tw-progress [value]="75" [showValue]="true"></tw-progress>
+    </div>
+  </app-demo-section>
+
+  <!-- Indeterminate -->
+  <app-demo-section title="Indeterminate" [code]="indeterminateCode">
+    <div class="max-w-md">
+      <tw-progress [indeterminate]="true"></tw-progress>
+    </div>
+  </app-demo-section>
+
+  <!-- Circular -->
+  <app-demo-section title="Circular Progress" [code]="circularCode">
+    <div class="flex items-center gap-6">
+      <tw-progress-circular [value]="25" [size]="48"></tw-progress-circular>
+      <tw-progress-circular [value]="50" [size]="64"></tw-progress-circular>
+      <tw-progress-circular [value]="75" [size]="80" [showValue]="true"></tw-progress-circular>
+      <tw-progress-circular [indeterminate]="true" [size]="64"></tw-progress-circular>
+    </div>
+  </app-demo-section>
+</div>

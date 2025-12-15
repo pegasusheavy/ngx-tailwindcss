@@ -1,0 +1,19 @@
+# Build outputs
+dist/
+out-tsc/
+.angular/
+coverage/
+
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+
+# IDE
+.vscode/
+.idea/
+
+# Generated files
+*.d.ts
+*.tsbuildinfo
+

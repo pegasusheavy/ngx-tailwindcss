@@ -1,0 +1,154 @@
+<app-page-header
+  title="Input"
+  description="Form input components with validation states, labels, and various styles.">
+</app-page-header>
+
+<app-demo-section
+  title="Basic Input"
+  description="Simple text input with label and placeholder."
+  [code]="basicCode">
+  <div class="max-w-md space-y-4">
+    <tw-input
+      label="Full Name"
+      placeholder="Enter your name">
+    </tw-input>
+    <tw-input
+      label="Email Address"
+      type="email"
+      placeholder="you@example.com">
+    </tw-input>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Input Variants"
+  description="Different visual styles for inputs."
+  [code]="variantsCode">
+  <div class="max-w-md space-y-4">
+    <tw-input
+      variant="default"
+      label="Default"
+      placeholder="Default variant">
+    </tw-input>
+    <tw-input
+      variant="filled"
+      label="Filled"
+      placeholder="Filled variant">
+    </tw-input>
+    <tw-input
+      variant="outlined"
+      label="Outlined"
+      placeholder="Outlined variant">
+    </tw-input>
+    <tw-input
+      variant="underlined"
+      label="Underlined"
+      placeholder="Underlined variant">
+    </tw-input>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Input Sizes"
+  description="Available in multiple sizes."
+  [code]="sizesCode">
+  <div class="max-w-md space-y-4">
+    <tw-input
+      size="sm"
+      label="Small"
+      placeholder="Small input">
+    </tw-input>
+    <tw-input
+      size="md"
+      label="Medium"
+      placeholder="Medium input">
+    </tw-input>
+    <tw-input
+      size="lg"
+      label="Large"
+      placeholder="Large input">
+    </tw-input>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="With Hint and Error"
+  description="Display helper text and validation errors."
+  [code]="hintErrorCode">
+  <div class="max-w-md space-y-4">
+    <tw-input
+      label="Username"
+      placeholder="Choose a username"
+      hint="Must be at least 3 characters long">
+    </tw-input>
+    <tw-input
+      label="Email"
+      type="email"
+      placeholder="Enter email"
+      error="Please enter a valid email address">
+    </tw-input>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Required and Disabled"
+  description="Handle required fields and disabled states."
+  [code]="statesCode">
+  <div class="max-w-md space-y-4">
+    <tw-input
+      label="Required Field"
+      placeholder="This field is required"
+      [required]="true">
+    </tw-input>
+    <tw-input
+      label="Disabled Field"
+      placeholder="This field is disabled"
+      [disabled]="true">
+    </tw-input>
+    <tw-input
+      label="Readonly Field"
+      placeholder="This field is readonly"
+      [readonly]="true"
+      value="Read-only value">
+    </tw-input>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Clearable Input"
+  description="Input with a clear button."
+  [code]="clearableCode">
+  <div class="max-w-md">
+    <tw-input
+      label="Search"
+      placeholder="Type to search..."
+      [clearable]="true">
+    </tw-input>
+  </div>
+</app-demo-section>
+
+<app-demo-section
+  title="Textarea"
+  description="Multi-line text input."
+  [code]="textareaCode">
+  <div class="max-w-md space-y-4">
+    <tw-textarea
+      label="Bio"
+      placeholder="Tell us about yourself..."
+      [rows]="4">
+    </tw-textarea>
+    <tw-textarea
+      label="With Character Count"
+      placeholder="Limited to 200 characters..."
+      [rows]="3"
+      [maxlength]="200"
+      [showCount]="true">
+    </tw-textarea>
+    <tw-textarea
+      label="Auto-resize"
+      placeholder="This textarea will grow as you type..."
+      [rows]="2"
+      [autoResize]="true">
+    </tw-textarea>
+  </div>
+</app-demo-section>

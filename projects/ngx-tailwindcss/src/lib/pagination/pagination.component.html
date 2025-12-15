@@ -1,0 +1,72 @@
+@switch (variantValue()) {
+  @case ('simple') {
+    <div class="flex items-center justify-between">
+      <button
+        type="button"
+        [disabled]="currentPageValue() <= 1"
+        [class]="simpleButtonClasses(currentPageValue() <= 1)"
+        (click)="goToPage(currentPageValue() - 1)">
+        <svg class="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+        Previous
+      </button>
+      <span class="text-sm text-slate-600">
+        Page {{ currentPageValue() }} of {{ totalPagesValue() }}
+      </span>
+      <button
+        type="button"
+        [disabled]="currentPageValue() >= totalPagesValue()"
+        [class]="simpleButtonClasses(currentPageValue() >= totalPagesValue())"
+        (click)="goToPage(currentPageValue() + 1)">
+        Next
+        <svg class="w-5 h-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+  }
+  @default {
+    <nav class="flex items-center gap-1" aria-label="Pagination">
+      <!-- Previous -->
+      <button
+        type="button"
+        [disabled]="currentPageValue() <= 1"
+        [class]="navButtonClasses(currentPageValue() <= 1)"
+        (click)="goToPage(currentPageValue() - 1)"
+        aria-label="Previous page">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <!-- Page numbers -->
+      @for (page of visiblePages(); track page) {
+        @if (page === '...') {
+          <span [class]="ellipsisClasses()">...</span>
+        } @else {
+          <button
+            type="button"
+            [class]="pageButtonClasses(+page === currentPageValue())"
+            [attr.aria-current]="+page === currentPageValue() ? 'page' : null"
+            (click)="goToPage(+page)">
+            {{ page }}
+          </button>
+        }
+      }
+
+      <!-- Next -->
+      <button
+        type="button"
+        [disabled]="currentPageValue() >= totalPagesValue()"
+        [class]="navButtonClasses(currentPageValue() >= totalPagesValue())"
+        (click)="goToPage(currentPageValue() + 1)"
+        aria-label="Next page">
+        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </nav>
+  }
+}
+

@@ -1,0 +1,58 @@
+<app-page-header
+  title="Avatar"
+  description="Avatar component for displaying user profile images, initials, or icons.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="flex items-center gap-4">
+      <tw-avatar src="https://i.pravatar.cc/150?img=1" alt="User"></tw-avatar>
+      <tw-avatar initials="JD"></tw-avatar>
+      <tw-avatar></tw-avatar>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="flex items-end gap-4">
+      <tw-avatar size="xs" src="https://i.pravatar.cc/150?img=2"></tw-avatar>
+      <tw-avatar size="sm" src="https://i.pravatar.cc/150?img=3"></tw-avatar>
+      <tw-avatar size="md" src="https://i.pravatar.cc/150?img=4"></tw-avatar>
+      <tw-avatar size="lg" src="https://i.pravatar.cc/150?img=5"></tw-avatar>
+      <tw-avatar size="xl" src="https://i.pravatar.cc/150?img=6"></tw-avatar>
+    </div>
+  </app-demo-section>
+
+  <!-- Shapes -->
+  <app-demo-section title="Shapes" [code]="shapesCode">
+    <div class="flex items-center gap-4">
+      <tw-avatar shape="circle" src="https://i.pravatar.cc/150?img=7"></tw-avatar>
+      <tw-avatar shape="square" src="https://i.pravatar.cc/150?img=8"></tw-avatar>
+      <tw-avatar shape="rounded" src="https://i.pravatar.cc/150?img=9"></tw-avatar>
+    </div>
+  </app-demo-section>
+
+  <!-- Status -->
+  <app-demo-section title="Status Indicator" [code]="statusCode">
+    <div class="flex items-center gap-4">
+      <tw-avatar status="online" src="https://i.pravatar.cc/150?img=10"></tw-avatar>
+      <tw-avatar status="offline" src="https://i.pravatar.cc/150?img=11"></tw-avatar>
+      <tw-avatar status="away" src="https://i.pravatar.cc/150?img=12"></tw-avatar>
+      <tw-avatar status="busy" src="https://i.pravatar.cc/150?img=13"></tw-avatar>
+    </div>
+  </app-demo-section>
+
+  <!-- Avatar Group -->
+  <app-demo-section title="Avatar Group" [code]="groupCode">
+    <tw-avatar-group [max]="4">
+      <tw-avatar src="https://i.pravatar.cc/150?img=14"></tw-avatar>
+      <tw-avatar src="https://i.pravatar.cc/150?img=15"></tw-avatar>
+      <tw-avatar src="https://i.pravatar.cc/150?img=16"></tw-avatar>
+      <tw-avatar src="https://i.pravatar.cc/150?img=17"></tw-avatar>
+      <tw-avatar src="https://i.pravatar.cc/150?img=18"></tw-avatar>
+      <tw-avatar src="https://i.pravatar.cc/150?img=19"></tw-avatar>
+    </tw-avatar-group>
+  </app-demo-section>
+</div>
+

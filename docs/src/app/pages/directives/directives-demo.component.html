@@ -1,0 +1,472 @@
+<app-page-header
+  title="Directives"
+  description="Utility directives to enhance your components with common behaviors and interactions.">
+</app-page-header>
+
+<div class="space-y-12">
+  <!-- Core Directives Section -->
+  <div>
+    <h2 class="text-2xl font-bold text-slate-900 mb-6 pb-2 border-b border-slate-200">Core Directives</h2>
+
+    <!-- Ripple -->
+    <app-demo-section
+      title="Ripple Effect"
+      description="Add material-design style ripple effects to clickable elements."
+      [code]="rippleCode">
+      <div class="flex flex-wrap gap-4">
+        <button
+          twRipple
+          class="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+          Click for Ripple
+        </button>
+        <button
+          twRipple
+          [rippleColor]="'rgba(0,0,0,0.2)'"
+          class="px-6 py-3 bg-white text-slate-900 font-medium rounded-lg border border-slate-300 hover:bg-slate-50 transition-colors">
+          Dark Ripple
+        </button>
+        <button
+          twRipple
+          [rippleCentered]="true"
+          class="px-6 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors">
+          Centered Ripple
+        </button>
+        <button
+          twRipple
+          class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg">
+          Gradient Button
+        </button>
+      </div>
+    </app-demo-section>
+
+    <!-- Tooltip -->
+    <app-demo-section
+      title="Tooltip"
+      description="Display helpful information on hover or focus."
+      [code]="tooltipCode">
+      <div class="flex flex-wrap gap-4">
+        <button
+          twTooltip="This is a tooltip!"
+          class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors">
+          Hover me (top)
+        </button>
+        <button
+          twTooltip="Tooltip on bottom"
+          tooltipPosition="bottom"
+          class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors">
+          Bottom tooltip
+        </button>
+        <button
+          twTooltip="Tooltip on left"
+          tooltipPosition="left"
+          class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors">
+          Left tooltip
+        </button>
+        <button
+          twTooltip="Tooltip on right"
+          tooltipPosition="right"
+          class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors">
+          Right tooltip
+        </button>
+      </div>
+    </app-demo-section>
+
+    <!-- Tooltip with Delay -->
+    <app-demo-section
+      title="Tooltip with Delay"
+      description="Configure show and hide delays for tooltips."
+      [code]="tooltipDelayCode">
+      <div class="flex flex-wrap gap-4">
+        <button
+          twTooltip="Shows after 500ms"
+          [tooltipShowDelay]="500"
+          class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors">
+          Delayed show (500ms)
+        </button>
+        <button
+          twTooltip="Instant show"
+          [tooltipShowDelay]="0"
+          class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 transition-colors">
+          No delay
+        </button>
+      </div>
+    </app-demo-section>
+
+    <!-- Click Outside -->
+    <app-demo-section
+      title="Click Outside"
+      description="Detect clicks outside an element to close dropdowns or menus."
+      [code]="clickOutsideCode">
+      <div class="relative inline-block">
+        <button
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          (click)="toggleDropdown()">
+          {{ dropdownOpen() ? 'Click outside to close' : 'Open dropdown' }}
+        </button>
+
+        @if (dropdownOpen()) {
+          <div
+            (twClickOutside)="onClickOutside()"
+            [clickOutsideEnabled]="dropdownOpen()"
+            class="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-2 z-10">
+            <div class="px-4 py-2 text-sm text-slate-600">
+              This dropdown will close when you click outside of it.
+            </div>
+            <div class="border-t border-slate-100 mt-2 pt-2">
+              <button class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">
+                Option 1
+              </button>
+              <button class="w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50">
+                Option 2
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </app-demo-section>
+
+    <!-- Focus Trap -->
+    <app-demo-section
+      title="Focus Trap"
+      description="Trap keyboard focus within an element, essential for modal dialogs and accessible UI."
+      [code]="focusTrapCode">
+      <div>
+        <button
+          class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mb-4"
+          (click)="toggleFocusTrap()">
+          {{ focusTrapActive() ? 'Deactivate Focus Trap' : 'Activate Focus Trap' }}
+        </button>
+
+        @if (focusTrapActive()) {
+          <div
+            [twFocusTrap]="focusTrapActive()"
+            class="p-6 bg-slate-100 rounded-lg border-2 border-blue-500">
+            <p class="text-sm text-slate-600 mb-4">
+              Tab key will cycle only within these buttons. Press the button above to exit.
+            </p>
+            <div class="flex gap-2">
+              <button class="px-3 py-1.5 bg-white border border-slate-300 rounded text-sm hover:bg-slate-50">
+                Button 1
+              </button>
+              <button class="px-3 py-1.5 bg-white border border-slate-300 rounded text-sm hover:bg-slate-50">
+                Button 2
+              </button>
+              <button class="px-3 py-1.5 bg-white border border-slate-300 rounded text-sm hover:bg-slate-50">
+                Button 3
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </app-demo-section>
+  </div>
+
+  <!-- DX Enhancement Directives Section -->
+  <div>
+    <h2 class="text-2xl font-bold text-slate-900 mb-6 pb-2 border-b border-slate-200">DX Enhancement Directives</h2>
+
+    <!-- Auto Focus -->
+    <app-demo-section
+      title="Auto Focus"
+      description="Automatically focus an element when it's rendered."
+      [code]="autoFocusCode">
+      <div class="space-y-4">
+        <p class="text-sm text-slate-600">The input below receives focus automatically:</p>
+        <input
+          twAutoFocus
+          type="text"
+          placeholder="I'm auto-focused!"
+          class="px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+      </div>
+    </app-demo-section>
+
+    <!-- Long Press -->
+    <app-demo-section
+      title="Long Press"
+      description="Detect long press/hold gestures with progress feedback."
+      [code]="longPressCode">
+      <div class="flex flex-wrap gap-4 items-center">
+        <button
+          twLongPress
+          (longPress)="onLongPress()"
+          [longPressDuration]="800"
+          class="px-6 py-3 bg-amber-600 text-white font-medium rounded-lg hover:bg-amber-700 transition-colors">
+          Hold for 800ms (Count: {{ longPressCount() }})
+        </button>
+        <span class="text-sm text-slate-600">Hold the button for 800ms to trigger</span>
+      </div>
+    </app-demo-section>
+
+    <!-- Debounce Click -->
+    <app-demo-section
+      title="Debounce Click"
+      description="Prevent rapid repeated clicks with debouncing."
+      [code]="debounceClickCode">
+      <div class="flex flex-wrap gap-4 items-center">
+        <button
+          twDebounceClick
+          (debounceClick)="onDebounceClick()"
+          [debounceTime]="500"
+          class="px-6 py-3 bg-teal-600 text-white font-medium rounded-lg hover:bg-teal-700 transition-colors">
+          Click rapidly (debounced 500ms)
+        </button>
+        <span class="text-sm text-slate-600">Actual clicks registered: {{ debounceCount() }}</span>
+      </div>
+    </app-demo-section>
+
+    <!-- Copy to Clipboard -->
+    <app-demo-section
+      title="Copy to Clipboard"
+      description="Copy text to the clipboard with a single directive."
+      [code]="copyClipboardCode">
+      <div class="flex flex-wrap gap-4 items-center">
+        <button
+          twCopyClipboard="Hello from ngx-tailwindcss! 🎉"
+          (copied)="onCopied($event)"
+          class="px-4 py-2 bg-slate-800 text-white font-medium rounded-lg hover:bg-slate-900 transition-colors">
+          📋 Copy "Hello from ngx-tailwindcss!"
+        </button>
+        @if (copyStatus()) {
+          <span class="text-sm font-medium" [class]="copyStatus() === 'Copied!' ? 'text-emerald-600' : 'text-red-600'">
+            {{ copyStatus() }}
+          </span>
+        }
+      </div>
+    </app-demo-section>
+
+    <!-- Keyboard Shortcut -->
+    <app-demo-section
+      title="Keyboard Shortcut"
+      description="Listen for keyboard shortcuts and combinations."
+      [code]="keyboardShortcutCode">
+      <div class="space-y-4">
+        <div
+          twKeyboardShortcut="ctrl+k"
+          (shortcutPressed)="onKeyboardShortcut($event)"
+          class="p-6 bg-slate-100 rounded-lg border-2 border-dashed border-slate-300 text-center">
+          <p class="text-slate-600 mb-2">Press <kbd class="px-2 py-1 bg-white rounded border border-slate-300 text-sm font-mono">Ctrl+K</kbd> anywhere on this page</p>
+          @if (keyPressed()) {
+            <p class="text-lg font-bold text-blue-600">Pressed: {{ keyPressed() }}</p>
+          }
+        </div>
+      </div>
+    </app-demo-section>
+
+    <!-- Swipe -->
+    <app-demo-section
+      title="Swipe Gestures"
+      description="Detect swipe gestures in any direction."
+      [code]="swipeCode">
+      <div
+        twSwipe
+        (swipeLeft)="onSwipe('⬅️ Left')"
+        (swipeRight)="onSwipe('➡️ Right')"
+        (swipeUp)="onSwipe('⬆️ Up')"
+        (swipeDown)="onSwipe('⬇️ Down')"
+        class="p-12 bg-gradient-to-br from-indigo-100 to-purple-100 rounded-xl border-2 border-dashed border-indigo-300 text-center cursor-grab active:cursor-grabbing select-none">
+        <p class="text-indigo-700 font-medium mb-2">Swipe in any direction</p>
+        @if (swipeDirection()) {
+          <p class="text-2xl font-bold text-indigo-600">{{ swipeDirection() }}</p>
+        } @else {
+          <p class="text-slate-500">👆 Try swiping!</p>
+        }
+      </div>
+    </app-demo-section>
+
+    <!-- Resize Observer -->
+    <app-demo-section
+      title="Resize Observer"
+      description="Observe and react to element size changes."
+      [code]="resizeObserverCode">
+      <div
+        twResizeObserver
+        (resize)="onResize($event)"
+        class="p-6 bg-cyan-50 rounded-lg border-2 border-cyan-200 resize overflow-auto min-w-[200px] min-h-[100px] max-w-full">
+        <p class="text-cyan-700 font-medium">Drag the corner to resize this box</p>
+        <p class="text-cyan-600 text-sm mt-2">
+          Width: <strong>{{ elementSize().width }}px</strong> ×
+          Height: <strong>{{ elementSize().height }}px</strong>
+        </p>
+      </div>
+    </app-demo-section>
+
+    <!-- In View -->
+    <app-demo-section
+      title="In View Detection"
+      description="Detect when an element enters or leaves the viewport."
+      [code]="inViewCode">
+      <div class="space-y-4">
+        <p class="text-sm text-slate-600">Scroll down to see the element enter the viewport:</p>
+        <div class="h-32 overflow-y-auto border border-slate-200 rounded-lg p-4">
+          <div class="h-24"></div>
+          <div
+            twInView
+            (inView)="onInView($event)"
+            [inViewThreshold]="0.5"
+            class="p-6 bg-rose-100 rounded-lg text-center">
+            <p class="text-rose-700 font-bold text-lg">{{ inViewStatus() }}</p>
+            <p class="text-rose-600 text-sm">50% visibility threshold</p>
+          </div>
+          <div class="h-24"></div>
+        </div>
+      </div>
+    </app-demo-section>
+
+    <!-- Hover Class -->
+    <app-demo-section
+      title="Hover Class"
+      description="Dynamically add classes on hover without CSS."
+      [code]="hoverClassCode">
+      <div class="flex flex-wrap gap-4">
+        <div
+          twHoverClass="bg-blue-100 scale-105 shadow-lg"
+          class="p-6 bg-white rounded-lg border border-slate-200 transition-all duration-200 cursor-pointer">
+          <p class="font-medium text-slate-900">Hover me!</p>
+          <p class="text-sm text-slate-500">Scale + Shadow + Background</p>
+        </div>
+        <div
+          twHoverClass="border-emerald-500 -translate-y-1"
+          class="p-6 bg-white rounded-lg border-2 border-slate-200 transition-all duration-200 cursor-pointer">
+          <p class="font-medium text-slate-900">Hover me!</p>
+          <p class="text-sm text-slate-500">Border color + Translate</p>
+        </div>
+        <div
+          twHoverClass="rotate-3 ring-4 ring-purple-300"
+          class="p-6 bg-white rounded-lg border border-slate-200 transition-all duration-200 cursor-pointer">
+          <p class="font-medium text-slate-900">Hover me!</p>
+          <p class="text-sm text-slate-500">Rotate + Ring</p>
+        </div>
+      </div>
+    </app-demo-section>
+
+    <!-- Trap Scroll -->
+    <app-demo-section
+      title="Trap Scroll"
+      description="Prevent scroll events from propagating to parent containers."
+      [code]="trapScrollCode">
+      <div class="space-y-4">
+        <p class="text-sm text-slate-600">Scroll inside the box - the page won't scroll when you reach the end:</p>
+        <div
+          twTrapScroll
+          class="h-40 overflow-auto bg-slate-100 rounded-lg p-4 border border-slate-200">
+          <div class="space-y-4">
+            @for (i of [1,2,3,4,5,6,7,8]; track i) {
+              <p class="text-slate-600">Scrollable content item {{ i }}</p>
+            }
+          </div>
+        </div>
+      </div>
+    </app-demo-section>
+
+    <!-- Scroll Anchor -->
+    <app-demo-section
+      title="Scroll Anchor"
+      description="Smooth scroll navigation to specific sections."
+      [code]="scrollAnchorCode">
+      <div class="space-y-4">
+        <div class="flex flex-wrap gap-2">
+          <button
+            twScrollTo="demo-section-1"
+            [scrollBehavior]="'smooth'"
+            [scrollOffset]="80"
+            class="px-3 py-1.5 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors text-sm">
+            Go to Section 1
+          </button>
+          <button
+            twScrollTo="demo-section-2"
+            [scrollBehavior]="'smooth'"
+            [scrollOffset]="80"
+            class="px-3 py-1.5 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors text-sm">
+            Go to Section 2
+          </button>
+          <button
+            twScrollTo="demo-section-3"
+            [scrollBehavior]="'smooth'"
+            [scrollOffset]="80"
+            class="px-3 py-1.5 bg-slate-200 text-slate-700 rounded hover:bg-slate-300 transition-colors text-sm">
+            Go to Section 3
+          </button>
+        </div>
+
+        <div class="h-48 overflow-y-auto border border-slate-200 rounded-lg">
+          <div twScrollSection="demo-section-1" class="p-4 bg-blue-50 min-h-[150px]">
+            <h4 class="font-bold text-blue-900">Section 1</h4>
+            <p class="text-blue-700 text-sm">This is the first section content.</p>
+          </div>
+          <div twScrollSection="demo-section-2" class="p-4 bg-emerald-50 min-h-[150px]">
+            <h4 class="font-bold text-emerald-900">Section 2</h4>
+            <p class="text-emerald-700 text-sm">This is the second section content.</p>
+          </div>
+          <div twScrollSection="demo-section-3" class="p-4 bg-amber-50 min-h-[150px]">
+            <h4 class="font-bold text-amber-900">Section 3</h4>
+            <p class="text-amber-700 text-sm">This is the third section content.</p>
+          </div>
+        </div>
+      </div>
+    </app-demo-section>
+
+    <!-- Lazy Image -->
+    <app-demo-section
+      title="Lazy Image"
+      description="Lazy load images when they approach the viewport."
+      [code]="lazyImageCode">
+      <div class="space-y-4">
+        <p class="text-sm text-slate-600">Images below are lazy loaded when scrolled into view:</p>
+        <div class="h-48 overflow-y-auto border border-slate-200 rounded-lg p-4 space-y-4">
+          <div class="h-32 flex items-center justify-center text-slate-400">
+            ↓ Scroll down to load images ↓
+          </div>
+          <div class="w-full h-48 rounded-lg overflow-hidden bg-slate-200">
+            <img
+              twLazyImage="https://picsum.photos/400/200?random=1"
+              alt="Lazy loaded image 1"
+              class="w-full h-full object-cover">
+          </div>
+          <div class="w-full h-48 rounded-lg overflow-hidden bg-slate-200">
+            <img
+              twLazyImage="https://picsum.photos/400/200?random=2"
+              alt="Lazy loaded image 2"
+              class="w-full h-full object-cover">
+          </div>
+          <div class="w-full h-48 rounded-lg overflow-hidden bg-slate-200">
+            <img
+              twLazyImage="https://picsum.photos/400/200?random=3"
+              alt="Lazy loaded image 3"
+              class="w-full h-full object-cover">
+          </div>
+        </div>
+      </div>
+    </app-demo-section>
+  </div>
+
+  <!-- Combined Example Section -->
+  <div>
+    <h2 class="text-2xl font-bold text-slate-900 mb-6 pb-2 border-b border-slate-200">Combined Examples</h2>
+
+    <app-demo-section
+      title="Multiple Directives"
+      description="Using multiple directives together on a single element."
+      [code]="combinedCode">
+      <div class="flex flex-wrap gap-4">
+        <button
+          twRipple
+          twTooltip="Click me for a ripple effect!"
+          twHoverClass="scale-105 shadow-xl"
+          (click)="incrementClick()"
+          class="px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg transition-all duration-200">
+          Ripple + Tooltip + Hover (Clicked: {{ clickCount() }})
+        </button>
+
+        <button
+          twRipple
+          twTooltip="Debounced click - try clicking rapidly!"
+          twDebounceClick
+          (debounceClick)="onDebounceClick()"
+          [debounceTime]="300"
+          class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white font-medium rounded-lg">
+          Ripple + Tooltip + Debounce ({{ debounceCount() }})
+        </button>
+      </div>
+    </app-demo-section>
+  </div>
+</div>

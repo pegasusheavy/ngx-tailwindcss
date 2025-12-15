@@ -1,0 +1,67 @@
+<app-page-header
+  title="Rating"
+  description="Star rating component for collecting user feedback and displaying scores.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="space-y-4">
+      <tw-rating [(ngModel)]="rating"></tw-rating>
+      <p class="text-sm text-slate-600">Rating: {{ rating }} / 5</p>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="space-y-4">
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-slate-600 w-16">Small</span>
+        <tw-rating size="sm" [(ngModel)]="sizeSmValue"></tw-rating>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-slate-600 w-16">Medium</span>
+        <tw-rating size="md" [(ngModel)]="sizeMdValue"></tw-rating>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-slate-600 w-16">Large</span>
+        <tw-rating size="lg" [(ngModel)]="sizeLgValue"></tw-rating>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-slate-600 w-16">XL</span>
+        <tw-rating size="xl" [(ngModel)]="sizeXlValue"></tw-rating>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="space-y-4">
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-slate-600 w-16">Warning</span>
+        <tw-rating variant="warning" [(ngModel)]="warningValue"></tw-rating>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-slate-600 w-16">Primary</span>
+        <tw-rating variant="primary" [(ngModel)]="primaryValue"></tw-rating>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-slate-600 w-16">Danger</span>
+        <tw-rating variant="danger" [(ngModel)]="dangerValue"></tw-rating>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Readonly -->
+  <app-demo-section title="Readonly" [code]="readonlyCode">
+    <div class="flex items-center gap-4">
+      <tw-rating [(ngModel)]="readonlyValue" [readonly]="true"></tw-rating>
+      <span class="text-sm text-slate-600">({{ readonlyValue }} out of 5)</span>
+    </div>
+  </app-demo-section>
+
+  <!-- Custom Stars -->
+  <app-demo-section title="Custom Number of Stars" [code]="starsCode">
+    <tw-rating [stars]="10" [(ngModel)]="customStarsValue"></tw-rating>
+  </app-demo-section>
+</div>

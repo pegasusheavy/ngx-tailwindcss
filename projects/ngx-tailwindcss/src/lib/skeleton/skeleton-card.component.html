@@ -1,0 +1,17 @@
+<div class="rounded-lg border border-slate-200 overflow-hidden">
+  @if (showMediaValue()) {
+    <tw-skeleton variant="rectangular" width="100%" [height]="mediaHeightValue()"></tw-skeleton>
+  }
+  <div class="p-5 space-y-4">
+    @if (showAvatarValue()) {
+      <div class="flex items-center gap-4">
+        <tw-skeleton variant="circular" [width]="48" [height]="48"></tw-skeleton>
+        <div class="flex-1 space-y-3">
+          <tw-skeleton variant="text" width="50%" height="14px"></tw-skeleton>
+          <tw-skeleton variant="text" width="30%" height="12px"></tw-skeleton>
+        </div>
+      </div>
+    }
+    <tw-skeleton-text [lineCount]="lineCountValue()" [lastLineWidth]="'80%'" gap="md"></tw-skeleton-text>
+  </div>
+</div>

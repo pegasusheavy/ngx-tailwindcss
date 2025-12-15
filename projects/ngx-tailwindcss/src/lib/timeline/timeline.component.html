@@ -1,0 +1,38 @@
+<div [class]="containerClasses()">
+  @for (event of events; track trackByFn(event); let first = $first; let last = $last; let i = $index) {
+    <div [class]="itemClasses(first, last)">
+      <!-- Connector line -->
+      @if (!last) {
+        <div [class]="connectorClasses()"></div>
+      }
+
+      <!-- Marker -->
+      <div [class]="markerContainerClasses()">
+        @if (event.icon) {
+          <div [class]="iconMarkerClasses(event)">
+            <ng-container *ngTemplateOutlet="event.icon"></ng-container>
+          </div>
+        } @else {
+          <div [class]="dotMarkerClasses(event)"></div>
+        }
+      </div>
+
+      <!-- Content -->
+      <div [class]="contentClasses()">
+        @if (event.date) {
+          <time [class]="dateClasses()">{{ event.date }}</time>
+        }
+        @if (event.title) {
+          <h4 [class]="titleClasses()">{{ event.title }}</h4>
+        }
+        @if (event.description) {
+          <p [class]="descriptionClasses()">{{ event.description }}</p>
+        }
+        @if (event.content) {
+          <ng-container *ngTemplateOutlet="event.content"></ng-container>
+        }
+      </div>
+    </div>
+  }
+</div>
+

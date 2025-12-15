@@ -1,0 +1,142 @@
+<div [class]="containerClasses()">
+  <!-- Header with title and actions -->
+  @if (title || hasHeaderActions) {
+    <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
+      @if (title) {
+        <h3 class="text-lg font-semibold text-slate-900">{{ title }}</h3>
+      }
+      <div class="flex items-center gap-2">
+        <ng-content select="[twTableActions]"></ng-content>
+      </div>
+    </div>
+  }
+
+  <!-- Search/Filter bar -->
+  @if (showGlobalFilter) {
+    <div class="px-6 py-3 border-b border-slate-200 bg-slate-50">
+      <div class="relative max-w-md">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          type="text"
+          [placeholder]="filterPlaceholder"
+          class="w-full pl-10 pr-4 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          [value]="globalFilter()"
+          (input)="onGlobalFilterChange($event)" />
+      </div>
+    </div>
+  }
+
+  <!-- Table wrapper -->
+  <div [class]="tableWrapperClasses()">
+    <table [class]="tableClasses()">
+      <thead [class]="theadClasses()">
+        <tr>
+          @if (selectable) {
+            <th class="w-12 px-4 py-3">
+              <input
+                type="checkbox"
+                class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                [checked]="allSelected()"
+                [indeterminate]="someSelected()"
+                (change)="toggleSelectAll()" />
+            </th>
+          }
+          @for (col of columns; track col.field) {
+            <th
+              [class]="thClasses(col)"
+              [style.width]="col.width"
+              (click)="col.sortable !== false ? onSort(col) : null">
+              <div class="flex items-center gap-2">
+                <span>{{ col.header }}</span>
+                @if (col.sortable !== false && sortField() === col.field) {
+                  <svg class="w-4 h-4" [class.rotate-180]="sortOrder() === -1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                  </svg>
+                }
+              </div>
+            </th>
+          }
+          @if (hasRowActions) {
+            <th class="w-20 px-4 py-3 text-right">Actions</th>
+          }
+        </tr>
+      </thead>
+      <tbody [class]="tbodyClasses()">
+        @for (row of displayedData(); track trackByFn(row); let i = $index; let odd = $odd) {
+          <tr [class]="trClasses(row, odd)" (click)="onRowClick(row)">
+            @if (selectable) {
+              <td class="px-4 py-3">
+                <input
+                  type="checkbox"
+                  class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                  [checked]="isSelected(row)"
+                  (change)="toggleSelection(row)"
+                  (click)="$event.stopPropagation()" />
+              </td>
+            }
+            @for (col of columns; track col.field) {
+              <td [class]="tdClasses(col)">
+                @if (col.template) {
+                  <ng-container *ngTemplateOutlet="col.template; context: { $implicit: row, rowData: row, column: col }"></ng-container>
+                } @else {
+                  {{ getFieldValue(row, col.field) }}
+                }
+              </td>
+            }
+            @if (hasRowActions) {
+              <td class="px-4 py-3 text-right">
+                <ng-content select="[twRowActions]"></ng-content>
+              </td>
+            }
+          </tr>
+        } @empty {
+          <tr>
+            <td [attr.colspan]="totalColumns" class="px-6 py-12 text-center text-slate-500">
+              {{ emptyMessage }}
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  @if (paginator && totalRecords() > 0) {
+    <div class="px-6 py-4 border-t border-slate-200 flex items-center justify-between bg-slate-50">
+      <div class="text-sm text-slate-600">
+        Showing {{ paginationStart() }} to {{ paginationEnd() }} of {{ totalRecords() }} entries
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          type="button"
+          class="px-3 py-1.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="currentPage() === 1"
+          (click)="goToPage(currentPage() - 1)">
+          Previous
+        </button>
+        @for (page of visiblePages(); track page) {
+          @if (page === '...') {
+            <span class="px-2 text-slate-400">...</span>
+          } @else {
+            <button
+              type="button"
+              [class]="pageButtonClasses(+page)"
+              (click)="goToPage(+page)">
+              {{ page }}
+            </button>
+          }
+        }
+        <button
+          type="button"
+          class="px-3 py-1.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
+          [disabled]="currentPage() === totalPages()"
+          (click)="goToPage(currentPage() + 1)">
+          Next
+        </button>
+      </div>
+    </div>
+  }
+</div>
+

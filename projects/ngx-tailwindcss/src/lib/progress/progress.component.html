@@ -1,0 +1,28 @@
+<div [class]="containerClasses()" role="progressbar"
+     [attr.aria-valuenow]="valueNum()"
+     [attr.aria-valuemin]="0"
+     [attr.aria-valuemax]="maxNum()">
+  @if ((labelText() || showValueFlag()) && labelPositionVal() === 'top') {
+    <div class="flex justify-between items-center mb-1">
+      <span class="text-sm font-medium text-slate-700">{{ labelText() }}</span>
+      @if (showValueFlag()) {
+        <span class="text-sm text-slate-500">{{ percentage() }}%</span>
+      }
+    </div>
+  }
+  <div [class]="trackClasses()">
+    <div [class]="barClasses()" [style.width.%]="percentage()">
+      @if (showValueFlag() && labelPositionVal() === 'inside' && percentage() > 10) {
+        <span class="text-xs font-medium text-white">{{ percentage() }}%</span>
+      }
+    </div>
+  </div>
+  @if ((labelText() || showValueFlag()) && labelPositionVal() === 'bottom') {
+    <div class="flex justify-between items-center mt-1">
+      <span class="text-sm font-medium text-slate-700">{{ labelText() }}</span>
+      @if (showValueFlag()) {
+        <span class="text-sm text-slate-500">{{ percentage() }}%</span>
+      }
+    </div>
+  }
+</div>

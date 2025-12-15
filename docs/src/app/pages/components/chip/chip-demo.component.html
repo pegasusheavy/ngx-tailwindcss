@@ -1,0 +1,82 @@
+<app-page-header
+  title="Chip"
+  description="Chip component for tags, filters, and compact selections.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="flex flex-wrap gap-2">
+      <tw-chip label="Default"></tw-chip>
+      <tw-chip label="Removable" [removable]="true"></tw-chip>
+    </div>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="flex flex-wrap gap-2">
+      <tw-chip variant="primary" label="Primary"></tw-chip>
+      <tw-chip variant="secondary" label="Secondary"></tw-chip>
+      <tw-chip variant="success" label="Success"></tw-chip>
+      <tw-chip variant="warning" label="Warning"></tw-chip>
+      <tw-chip variant="danger" label="Danger"></tw-chip>
+      <tw-chip variant="info" label="Info"></tw-chip>
+    </div>
+  </app-demo-section>
+
+  <!-- Styles -->
+  <app-demo-section title="Styles" [code]="stylesCode">
+    <div class="flex flex-wrap gap-4">
+      <div class="flex flex-wrap gap-2">
+        <tw-chip chipStyle="solid" variant="primary" label="Solid"></tw-chip>
+        <tw-chip chipStyle="solid" variant="success" label="Solid"></tw-chip>
+        <tw-chip chipStyle="solid" variant="danger" label="Solid"></tw-chip>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <tw-chip chipStyle="outline" variant="primary" label="Outlined"></tw-chip>
+        <tw-chip chipStyle="outline" variant="success" label="Outlined"></tw-chip>
+        <tw-chip chipStyle="outline" variant="danger" label="Outlined"></tw-chip>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="flex items-center gap-2">
+      <tw-chip size="sm" label="Small"></tw-chip>
+      <tw-chip size="md" label="Medium"></tw-chip>
+      <tw-chip size="lg" label="Large"></tw-chip>
+    </div>
+  </app-demo-section>
+
+  <!-- Removable Tags -->
+  <app-demo-section title="Removable Tags" [code]="removableCode">
+    <div class="flex flex-wrap gap-2">
+      @for (tag of tags; track tag) {
+        <tw-chip
+          [label]="tag"
+          variant="primary"
+          chipStyle="outline"
+          [removable]="true"
+          (onRemove)="onRemove(tag)">
+        </tw-chip>
+      }
+    </div>
+  </app-demo-section>
+
+  <!-- Chips Input -->
+  <app-demo-section title="Chips Input" description="A form input for adding multiple chips/tags." [code]="chipsInputCode">
+    <div class="max-w-md">
+      <tw-chips
+        [(values)]="inputTags"
+        variant="primary"
+        chipStyle="soft"
+        placeholder="Type and press Enter..."
+        (onAdd)="onTagAdded($event)"
+        (onRemove)="onTagRemoved($event)">
+      </tw-chips>
+      <p class="mt-2 text-sm text-slate-500">Current tags: {{ inputTags.join(', ') || 'None' }}</p>
+    </div>
+  </app-demo-section>
+</div>
+

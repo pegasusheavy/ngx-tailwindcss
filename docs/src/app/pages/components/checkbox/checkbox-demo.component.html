@@ -1,0 +1,44 @@
+<app-page-header
+  title="Checkbox"
+  description="Customizable checkbox component with multiple variants, sizes, and states.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="flex flex-col gap-4">
+      <tw-checkbox [(ngModel)]="termsAccepted">Accept terms and conditions</tw-checkbox>
+      <tw-checkbox [(ngModel)]="checked">Controlled checkbox (checked: {{ checked }})</tw-checkbox>
+    </div>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="flex flex-wrap gap-6">
+      <tw-checkbox variant="primary" [(ngModel)]="variantPrimary">Primary</tw-checkbox>
+      <tw-checkbox variant="secondary" [(ngModel)]="variantSecondary">Secondary</tw-checkbox>
+      <tw-checkbox variant="success" [(ngModel)]="variantSuccess">Success</tw-checkbox>
+      <tw-checkbox variant="warning" [(ngModel)]="variantWarning">Warning</tw-checkbox>
+      <tw-checkbox variant="danger" [(ngModel)]="variantDanger">Danger</tw-checkbox>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="flex items-center gap-6">
+      <tw-checkbox size="sm" [(ngModel)]="sizeSm">Small</tw-checkbox>
+      <tw-checkbox size="md" [(ngModel)]="sizeMd">Medium</tw-checkbox>
+      <tw-checkbox size="lg" [(ngModel)]="sizeLg">Large</tw-checkbox>
+    </div>
+  </app-demo-section>
+
+  <!-- States -->
+  <app-demo-section title="States" [code]="statesCode">
+    <div class="flex flex-wrap gap-6">
+      <tw-checkbox [(ngModel)]="stateChecked">Checked</tw-checkbox>
+      <tw-checkbox [indeterminate]="true">Indeterminate</tw-checkbox>
+      <tw-checkbox [disabled]="true">Disabled</tw-checkbox>
+      <tw-checkbox [disabled]="true" [(ngModel)]="disabledChecked">Disabled Checked</tw-checkbox>
+    </div>
+  </app-demo-section>
+</div>

@@ -1,0 +1,74 @@
+<div [class]="containerClasses()">
+  <!-- Header row with label and/or value -->
+  @if (label || showValue) {
+    <div class="flex justify-between items-center mb-2">
+      @if (label) {
+        <label [class]="labelClasses()">{{ label }}</label>
+      } @else {
+        <span></span>
+      }
+      @if (showValue) {
+        <span class="text-sm font-semibold text-slate-900 tabular-nums">{{ displayValue() }}</span>
+      }
+    </div>
+  }
+
+  <div [class]="sliderContainerClasses()">
+    @if (showMinMax) {
+      <span class="text-xs text-slate-500 mr-3 tabular-nums min-w-6">{{ valueFormat(min) }}</span>
+    }
+
+    <div class="relative flex-1">
+      <!-- Track background -->
+      <div [class]="trackClasses()">
+        <!-- Fill -->
+        <div [class]="fillClasses()" [style.width.%]="fillPercentage()"></div>
+      </div>
+
+      <!-- Thumb indicator (visual only, positioned over the fill) -->
+      <div
+        class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-none"
+        [style.left.%]="fillPercentage()">
+        <div [class]="thumbClasses()"></div>
+
+        <!-- Value tooltip bubble (shown while dragging or when showValueBubble is true) -->
+        @if (showValueBubble && isDragging()) {
+          <div class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-xs font-medium rounded shadow-lg whitespace-nowrap">
+            {{ displayValue() }}
+            <div class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-800"></div>
+          </div>
+        }
+      </div>
+
+      <!-- Native range input (invisible, handles interaction) -->
+      <input
+        type="range"
+        [class]="inputClasses()"
+        [min]="min"
+        [max]="max"
+        [step]="step"
+        [value]="value()"
+        [disabled]="disabled"
+        (input)="onSliderInput($event)"
+        (change)="onSliderChange($event)"
+        (mousedown)="onDragStart()"
+        (mouseup)="onDragEnd()"
+        (touchstart)="onDragStart()"
+        (touchend)="onDragEnd()"
+        (focus)="onFocus.emit($event)"
+        (blur)="onInputBlur()" />
+    </div>
+
+    @if (showMinMax) {
+      <span class="text-xs text-slate-500 ml-3 tabular-nums min-w-6 text-right">{{ valueFormat(max) }}</span>
+    }
+  </div>
+
+  @if (showTicks && tickCount > 0) {
+    <div class="flex justify-between px-1 mt-1">
+      @for (tick of ticks(); track $index) {
+        <span class="text-xs text-slate-400 tabular-nums">{{ tick }}</span>
+      }
+    </div>
+  }
+</div>

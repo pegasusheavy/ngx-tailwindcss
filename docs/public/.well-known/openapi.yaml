@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  title: ngx-tailwindcss Documentation API
+  description: |
+    API for accessing ngx-tailwindcss documentation.
+    This is a static documentation site, so the API is limited to navigation.
+  version: 1.0.0
+  contact:
+    name: Pegasus Heavy Industries LLC
+    url: https://pegasusheavy.com
+    email: support@pegasusheavy.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://ngx-tailwindcss.dev
+    description: Production documentation site
+
+paths:
+  /:
+    get:
+      summary: Homepage
+      description: Get the main documentation homepage with overview and quick start guide
+      operationId: getHomepage
+      responses:
+        '200':
+          description: HTML documentation page
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /components/button:
+    get:
+      summary: Button Component Documentation
+      description: Documentation for the tw-button component including variants, sizes, and examples
+      operationId: getButtonDocs
+      responses:
+        '200':
+          description: Button component documentation
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /components/card:
+    get:
+      summary: Card Component Documentation
+      description: Documentation for the tw-card component
+      operationId: getCardDocs
+      responses:
+        '200':
+          description: Card component documentation
+
+  /components/modal:
+    get:
+      summary: Modal Component Documentation
+      description: Documentation for the tw-modal component
+      operationId: getModalDocs
+      responses:
+        '200':
+          description: Modal component documentation
+
+  /components/table:
+    get:
+      summary: Table Component Documentation
+      description: Documentation for the tw-table component
+      operationId: getTableDocs
+      responses:
+        '200':
+          description: Table component documentation
+
+  /directives:
+    get:
+      summary: Directives Documentation
+      description: Documentation for all available directives
+      operationId: getDirectivesDocs
+      responses:
+        '200':
+          description: Directives documentation
+
+  /llms.txt:
+    get:
+      summary: LLM Instructions
+      description: Concise instructions for AI/LLM assistants about ngx-tailwindcss
+      operationId: getLlmsTxt
+      responses:
+        '200':
+          description: Plain text instructions for LLMs
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /llms-full.txt:
+    get:
+      summary: Full LLM Documentation
+      description: Comprehensive documentation for AI/LLM assistants
+      operationId: getLlmsFullTxt
+      responses:
+        '200':
+          description: Complete plain text documentation for LLMs
+          content:
+            text/plain:
+              schema:
+                type: string
+
+  /sitemap.xml:
+    get:
+      summary: Sitemap
+      description: XML sitemap for search engines
+      operationId: getSitemap
+      responses:
+        '200':
+          description: XML sitemap
+          content:
+            application/xml:
+              schema:
+                type: string
+
+tags:
+  - name: documentation
+    description: Documentation pages
+  - name: ai
+    description: AI/LLM specific endpoints
+  - name: seo
+    description: SEO related endpoints
+

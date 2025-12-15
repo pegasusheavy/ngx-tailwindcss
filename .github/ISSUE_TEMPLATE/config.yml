@@ -1,0 +1,12 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Discussions
+    url: https://github.com/PegasusHeavyIndustries/ng-tailwindcss/discussions
+    about: Ask questions and discuss ideas
+  - name: 📖 Documentation
+    url: https://pegasusheavyindustries.github.io/ng-tailwindcss/
+    about: Read the documentation
+  - name: 🔍 Search Issues
+    url: https://github.com/PegasusHeavyIndustries/ng-tailwindcss/issues
+    about: Search existing issues before creating a new one
+

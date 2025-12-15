@@ -1,0 +1,9 @@
+<div [class]="overlayClasses()">
+  <div class="flex flex-col items-center gap-3">
+    <tw-spinner [size]="sizeVal()" [variant]="variantVal()" [color]="colorVal()"></tw-spinner>
+    @if (messageVal()) {
+      <p [class]="messageClasses()">{{ messageVal() }}</p>
+    }
+  </div>
+</div>
+

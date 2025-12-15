@@ -1,0 +1,68 @@
+# Source files (we only publish dist/)
+projects/
+src/
+
+# Documentation site
+docs/
+
+# Test files
+*.spec.ts
+*.test.ts
+**/__tests__/
+coverage/
+vitest.config.ts
+vitest.setup.ts
+tsconfig.spec.json
+
+# Configuration files
+.cursor/
+.github/
+.vscode/
+.editorconfig
+.eslintrc*
+.prettierrc*
+eslint.config.*
+prettier.config.*
+angular.json
+tsconfig.json
+tsconfig.*.json
+ng-package.json
+
+# Build artifacts and caches
+node_modules/
+.angular/
+.nx/
+.cache/
+*.tsbuildinfo
+*.log
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# IDE files
+*.swp
+*.swo
+*~
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Package manager files
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+.pnpm-store/
+
+# Misc
+*.md
+!README.md
+!CHANGELOG.md
+!LICENSE
+cliff.toml
+FUNDING.yml
+CODEOWNERS

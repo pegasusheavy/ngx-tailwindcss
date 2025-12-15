@@ -1,0 +1,66 @@
+<app-page-header
+  title="Skeleton"
+  description="Placeholder loading component for content that is being loaded.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="max-w-md" style="display: flex; flex-direction: column; gap: 16px;">
+      <tw-skeleton></tw-skeleton>
+      <tw-skeleton width="75%"></tw-skeleton>
+      <tw-skeleton width="50%"></tw-skeleton>
+    </div>
+  </app-demo-section>
+
+  <!-- Shapes -->
+  <app-demo-section title="Shapes" [code]="shapesCode">
+    <div class="flex items-start gap-6">
+      <div class="text-center">
+        <tw-skeleton variant="rectangular" width="150px" height="100px"></tw-skeleton>
+        <p class="mt-2 text-sm text-slate-600">Rectangular</p>
+      </div>
+      <div class="text-center">
+        <tw-skeleton variant="circular" width="80px" height="80px"></tw-skeleton>
+        <p class="mt-2 text-sm text-slate-600">Circular</p>
+      </div>
+      <div class="text-center">
+        <tw-skeleton variant="rounded" width="150px" height="100px"></tw-skeleton>
+        <p class="mt-2 text-sm text-slate-600">Rounded</p>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Text Skeleton -->
+  <app-demo-section title="Text Lines" [code]="textCode">
+    <div class="max-w-md">
+      <tw-skeleton-text [lineCount]="4"></tw-skeleton-text>
+    </div>
+  </app-demo-section>
+
+  <!-- Card Skeleton -->
+  <app-demo-section title="Card Preset" [code]="cardCode">
+    <div class="max-w-sm">
+      <div class="bg-white rounded-lg shadow p-4" style="display: flex; flex-direction: column; gap: 16px;">
+        <tw-skeleton variant="rectangular" width="100%" height="150px"></tw-skeleton>
+        <tw-skeleton width="60%"></tw-skeleton>
+        <tw-skeleton-text [lineCount]="2"></tw-skeleton-text>
+        <div style="display: flex; gap: 8px;">
+          <tw-skeleton width="80px" height="32px" variant="rounded"></tw-skeleton>
+          <tw-skeleton width="80px" height="32px" variant="rounded"></tw-skeleton>
+        </div>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- With Real Content Preview -->
+  <app-demo-section title="Profile Skeleton" [code]="basicCode">
+    <div style="display: flex; align-items: center; gap: 16px;">
+      <tw-skeleton variant="circular" width="56px" height="56px"></tw-skeleton>
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <tw-skeleton width="150px" height="18px"></tw-skeleton>
+        <tw-skeleton width="100px" height="14px"></tw-skeleton>
+      </div>
+    </div>
+  </app-demo-section>
+</div>

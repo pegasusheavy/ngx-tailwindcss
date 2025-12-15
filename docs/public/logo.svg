@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <defs>
+    <!-- Tailwind CSS inspired gradient -->
+    <linearGradient id="tailwindGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#06b6d4"/>
+      <stop offset="50%" style="stop-color:#3b82f6"/>
+      <stop offset="100%" style="stop-color:#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="tailwindGradientLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#22d3ee"/>
+      <stop offset="50%" style="stop-color:#60a5fa"/>
+      <stop offset="100%" style="stop-color:#a78bfa"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Angular Shield Shape with Tailwind Colors -->
+  <path d="M128 16L24 56l16 136 88 48 88-48 16-136L128 16z" fill="url(#tailwindGradient)"/>
+
+  <!-- Inner shield highlight -->
+  <path d="M128 32L40 66l14 118 74 40 74-40 14-118L128 32z" fill="url(#tailwindGradientLight)" opacity="0.3"/>
+
+  <!-- Angular "A" shape -->
+  <path d="M128 48L72 176h24l10-26h44l10 26h24L128 48zm0 46l14 36h-28l14-36z" fill="white"/>
+</svg>
+

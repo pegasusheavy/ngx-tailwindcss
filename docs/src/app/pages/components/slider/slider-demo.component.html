@@ -1,0 +1,57 @@
+<app-page-header
+  title="Slider"
+  description="Range slider component for selecting values within a range.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="max-w-md space-y-4">
+      <tw-slider [(ngModel)]="volume" [min]="0" [max]="100"></tw-slider>
+      <p class="text-sm text-slate-600">Volume: {{ volume }}%</p>
+    </div>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="max-w-md space-y-6">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Primary</label>
+        <tw-slider variant="primary" [(ngModel)]="sliderValue1"></tw-slider>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Success</label>
+        <tw-slider variant="success" [(ngModel)]="sliderValue2"></tw-slider>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Warning</label>
+        <tw-slider variant="warning" [(ngModel)]="sliderValue3"></tw-slider>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Danger</label>
+        <tw-slider variant="danger" [(ngModel)]="sliderValue4"></tw-slider>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Steps -->
+  <app-demo-section title="With Steps" [code]="stepsCode">
+    <div class="max-w-md space-y-6">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Step: 10</label>
+        <tw-slider [min]="0" [max]="100" [step]="10" [(ngModel)]="stepValue1"></tw-slider>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Step: 25</label>
+        <tw-slider [min]="0" [max]="100" [step]="25" [(ngModel)]="stepValue2"></tw-slider>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Show Value -->
+  <app-demo-section title="Show Value" [code]="rangeCode">
+    <div class="max-w-md">
+      <tw-slider [(ngModel)]="brightness" [min]="0" [max]="100" [showValue]="true"></tw-slider>
+    </div>
+  </app-demo-section>
+</div>

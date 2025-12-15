@@ -1,0 +1,34 @@
+<app-page-header
+  title="Tree"
+  description="Hierarchical tree view component for displaying nested data structures.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="max-w-md">
+      <tw-tree [nodes]="treeData"></tw-tree>
+    </div>
+  </app-demo-section>
+
+  <!-- Single Selection -->
+  <app-demo-section title="Single Selection" [code]="selectableCode">
+    <div class="max-w-md">
+      <tw-tree [nodes]="treeData" selectionMode="single"></tw-tree>
+    </div>
+  </app-demo-section>
+
+  <!-- Checkbox Selection -->
+  <app-demo-section title="Checkbox Selection" [code]="checkboxCode">
+    <div class="max-w-md">
+      <tw-tree [nodes]="treeData" selectionMode="checkbox"></tw-tree>
+    </div>
+  </app-demo-section>
+
+  <!-- Simple List -->
+  <app-demo-section title="Navigation Tree" [code]="basicCode">
+    <div class="max-w-md">
+      <tw-tree [nodes]="simpleTree"></tw-tree>
+    </div>
+  </app-demo-section>
+</div>

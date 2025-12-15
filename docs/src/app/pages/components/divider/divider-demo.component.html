@@ -1,0 +1,67 @@
+<app-page-header
+  title="Divider"
+  description="Divider component for separating content sections.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="space-y-4">
+      <p class="text-slate-600">Content above the divider</p>
+      <tw-divider></tw-divider>
+      <p class="text-slate-600">Content below the divider</p>
+    </div>
+  </app-demo-section>
+
+  <!-- Styles -->
+  <app-demo-section title="Styles" [code]="stylesCode">
+    <div class="space-y-6">
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Solid</span>
+        <tw-divider dividerStyle="solid"></tw-divider>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Dashed</span>
+        <tw-divider dividerStyle="dashed"></tw-divider>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Dotted</span>
+        <tw-divider dividerStyle="dotted"></tw-divider>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- With Label -->
+  <app-demo-section title="With Label" [code]="withLabelCode">
+    <div class="space-y-6">
+      <tw-divider label="OR"></tw-divider>
+      <tw-divider label="Continue" labelPosition="left"></tw-divider>
+      <tw-divider label="End" labelPosition="right"></tw-divider>
+    </div>
+  </app-demo-section>
+
+  <!-- Vertical -->
+  <app-demo-section title="Vertical Orientation" [code]="orientationCode">
+    <div class="flex items-center gap-4 h-16">
+      <span class="text-slate-600">Item 1</span>
+      <tw-divider orientation="vertical"></tw-divider>
+      <span class="text-slate-600">Item 2</span>
+      <tw-divider orientation="vertical"></tw-divider>
+      <span class="text-slate-600">Item 3</span>
+    </div>
+  </app-demo-section>
+
+  <!-- Spacing -->
+  <app-demo-section title="Spacing" [code]="spacingCode">
+    <div>
+      <p class="text-slate-600">Small spacing</p>
+      <tw-divider spacing="sm"></tw-divider>
+      <p class="text-slate-600">Medium spacing</p>
+      <tw-divider spacing="md"></tw-divider>
+      <p class="text-slate-600">Large spacing</p>
+      <tw-divider spacing="lg"></tw-divider>
+      <p class="text-slate-600">End</p>
+    </div>
+  </app-demo-section>
+</div>
+

@@ -1,0 +1,44 @@
+<app-page-header
+  title="Table"
+  description="Data table component with sorting, selection, and pagination support.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <tw-table [data]="users" [columns]="columns"></tw-table>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="space-y-6">
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Default</span>
+        <tw-table [data]="users" [columns]="columns" variant="default"></tw-table>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Striped</span>
+        <tw-table [data]="users" [columns]="columns" variant="striped"></tw-table>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="space-y-6">
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Small</span>
+        <tw-table [data]="users" [columns]="columns" size="sm"></tw-table>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Medium</span>
+        <tw-table [data]="users" [columns]="columns" size="md"></tw-table>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Hoverable -->
+  <app-demo-section title="Hoverable" [code]="hoverCode">
+    <tw-table [data]="users" [columns]="columns" [hoverable]="true"></tw-table>
+  </app-demo-section>
+</div>

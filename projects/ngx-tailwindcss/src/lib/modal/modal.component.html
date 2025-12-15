@@ -1,0 +1,46 @@
+@if (_open()) {
+  <!-- Backdrop -->
+  <div
+    class="fixed inset-0 z-50"
+    [@overlayAnimation]
+    (click)="onBackdropClick()">
+    <div [class]="backdropClasses()"></div>
+  </div>
+
+  <!-- Modal container -->
+  <div
+    class="fixed inset-0 z-50 overflow-y-auto"
+    [@overlayAnimation]>
+    <div [class]="containerClasses()">
+      <!-- Modal panel -->
+      <div
+        #modalPanel
+        [class]="panelClasses()"
+        [@panelAnimation]
+        twFocusTrap
+        [focusTrapAutoFocus]="_autoFocus()"
+        [focusTrapRestoreFocus]="_restoreFocus()"
+        role="dialog"
+        [attr.aria-modal]="true"
+        [attr.aria-labelledby]="_ariaLabelledBy()"
+        [attr.aria-describedby]="_ariaDescribedBy()"
+        (click)="$event.stopPropagation()">
+
+        <!-- Close button -->
+        @if (_showCloseButton()) {
+          <button
+            type="button"
+            class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg p-1"
+            (click)="closeModal()"
+            aria-label="Close modal">
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        }
+
+        <ng-content></ng-content>
+      </div>
+    </div>
+  </div>
+}

@@ -1,0 +1,16 @@
+<label [class]="labelContainerClasses()">
+  <input
+    type="checkbox"
+    [class]="checkboxClasses()"
+    [checked]="checked()"
+    [disabled]="disabled()"
+    [attr.name]="name()"
+    [attr.value]="value()"
+    [indeterminate]="indeterminate()"
+    (change)="onCheckboxChange($event)"
+    (focus)="onFocus.emit($event)"
+    (blur)="onInputBlur($event)" />
+  <span [class]="labelTextClasses()">
+    <ng-content></ng-content>
+  </span>
+</label>

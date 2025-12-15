@@ -1,0 +1,75 @@
+<app-page-header
+  title="Spinner"
+  description="Loading spinner component with multiple variants and sizes.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <tw-spinner></tw-spinner>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="flex items-center gap-8">
+      <div class="text-center">
+        <tw-spinner variant="border"></tw-spinner>
+        <p class="mt-2 text-sm text-slate-600">Border</p>
+      </div>
+      <div class="text-center">
+        <tw-spinner variant="dots"></tw-spinner>
+        <p class="mt-2 text-sm text-slate-600">Dots</p>
+      </div>
+      <div class="text-center">
+        <tw-spinner variant="pulse"></tw-spinner>
+        <p class="mt-2 text-sm text-slate-600">Pulse</p>
+      </div>
+      <div class="text-center">
+        <tw-spinner variant="bars"></tw-spinner>
+        <p class="mt-2 text-sm text-slate-600">Bars</p>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="flex items-end gap-6">
+      <div class="text-center">
+        <tw-spinner size="sm"></tw-spinner>
+        <p class="mt-2 text-sm text-slate-600">Small</p>
+      </div>
+      <div class="text-center">
+        <tw-spinner size="md"></tw-spinner>
+        <p class="mt-2 text-sm text-slate-600">Medium</p>
+      </div>
+      <div class="text-center">
+        <tw-spinner size="lg"></tw-spinner>
+        <p class="mt-2 text-sm text-slate-600">Large</p>
+      </div>
+      <div class="text-center">
+        <tw-spinner size="xl"></tw-spinner>
+        <p class="mt-2 text-sm text-slate-600">XL</p>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Colors -->
+  <app-demo-section title="Colors" [code]="colorsCode">
+    <div class="flex items-center gap-6">
+      <tw-spinner color="primary"></tw-spinner>
+      <tw-spinner color="secondary"></tw-spinner>
+      <tw-spinner color="success"></tw-spinner>
+      <tw-spinner color="warning"></tw-spinner>
+      <tw-spinner color="danger"></tw-spinner>
+    </div>
+  </app-demo-section>
+
+  <!-- With Label -->
+  <app-demo-section title="With Label" [code]="basicCode">
+    <div class="flex items-center gap-3">
+      <tw-spinner size="sm"></tw-spinner>
+      <span class="text-slate-600">Loading...</span>
+    </div>
+  </app-demo-section>
+</div>
+

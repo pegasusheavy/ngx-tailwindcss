@@ -1,0 +1,52 @@
+<app-page-header
+  title="Breadcrumb"
+  description="Navigation breadcrumb component showing the current page location.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <tw-breadcrumb [items]="items"></tw-breadcrumb>
+  </app-demo-section>
+
+  <!-- Separators -->
+  <app-demo-section title="Separators" [code]="separatorsCode">
+    <div class="space-y-4">
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Slash (default)</span>
+        <tw-breadcrumb [items]="items" separator="slash"></tw-breadcrumb>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Chevron</span>
+        <tw-breadcrumb [items]="items" separator="chevron"></tw-breadcrumb>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Arrow</span>
+        <tw-breadcrumb [items]="items" separator="arrow"></tw-breadcrumb>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Dot</span>
+        <tw-breadcrumb [items]="items" separator="dot"></tw-breadcrumb>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="space-y-4">
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Small</span>
+        <tw-breadcrumb [items]="items" size="sm"></tw-breadcrumb>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Medium</span>
+        <tw-breadcrumb [items]="items" size="md"></tw-breadcrumb>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Large</span>
+        <tw-breadcrumb [items]="items" size="lg"></tw-breadcrumb>
+      </div>
+    </div>
+  </app-demo-section>
+</div>
+

@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "ngx-tailwindcss",
+  "name_for_model": "ngx_tailwindcss",
+  "description_for_human": "Highly customizable Angular components designed for Tailwind CSS 4+. Browse documentation, components, and examples.",
+  "description_for_model": "ngx-tailwindcss is an Angular UI component library for Tailwind CSS 4+. Use this to find information about Angular components styled with Tailwind CSS, including Button, Card, Modal, Table, Input, and 25+ more components. The library supports Angular 19, 20, and 21, uses standalone components, and is fully customizable via classOverride/classReplace props or global configuration.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://ngx-tailwindcss.dev/.well-known/openapi.yaml"
+  },
+  "logo_url": "https://ngx-tailwindcss.dev/logo.png",
+  "contact_email": "support@pegasusheavy.com",
+  "legal_info_url": "https://ngx-tailwindcss.dev/legal"
+}
+

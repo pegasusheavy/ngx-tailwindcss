@@ -1,0 +1,65 @@
+<app-page-header
+  title="Pagination"
+  description="Pagination component for navigating through pages of content.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="space-y-4">
+      <tw-pagination
+        [currentPage]="currentPage"
+        [totalPages]="totalPages"
+        (pageChange)="onPageChange($event)">
+      </tw-pagination>
+      <p class="text-sm text-slate-600">Current page: {{ currentPage }}</p>
+    </div>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="space-y-6">
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Default</span>
+        <tw-pagination variant="default" [totalPages]="10" [currentPage]="3"></tw-pagination>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Simple</span>
+        <tw-pagination variant="simple" [totalPages]="10" [currentPage]="3"></tw-pagination>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="space-y-6">
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Small</span>
+        <tw-pagination size="sm" [totalPages]="10" [currentPage]="3"></tw-pagination>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Medium</span>
+        <tw-pagination size="md" [totalPages]="10" [currentPage]="3"></tw-pagination>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Large</span>
+        <tw-pagination size="lg" [totalPages]="10" [currentPage]="3"></tw-pagination>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Sibling Count -->
+  <app-demo-section title="Sibling Count" [code]="siblingCountCode">
+    <div class="space-y-6">
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">1 sibling on each side</span>
+        <tw-pagination [totalPages]="20" [currentPage]="10" [siblingCount]="1"></tw-pagination>
+      </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">2 siblings on each side</span>
+        <tw-pagination [totalPages]="20" [currentPage]="10" [siblingCount]="2"></tw-pagination>
+      </div>
+    </div>
+  </app-demo-section>
+</div>
+

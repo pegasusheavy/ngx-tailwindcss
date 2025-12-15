@@ -1,0 +1,9 @@
+<div [class]="groupClasses()">
+  <ng-content></ng-content>
+  @if (maxVal() && overflowVal() > 0) {
+    <div [class]="overflowClasses()">
+      +{{ overflowVal() }}
+    </div>
+  }
+</div>
+

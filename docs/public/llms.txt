@@ -1,0 +1,144 @@
+# ngx-tailwindcss
+
+> Highly customizable Angular components designed for Tailwind CSS 4+
+
+## Overview
+
+ngx-tailwindcss is an open-source Angular UI component library that provides 30+ components styled with Tailwind CSS. It's designed for Angular 19, 20, and 21, using standalone components and modern Angular features like signals and effects.
+
+## Key Features
+
+- **Tailwind CSS 4+ Ready**: Built for the latest Tailwind with CSS-first configuration
+- **Fully Customizable**: Override styling via classOverride/classReplace props or global config
+- **Accessible**: WCAG compliant with ARIA attributes, keyboard navigation, focus management
+- **Tree-Shakeable**: Import only what you need
+- **No Bundled CSS**: Components use your Tailwind config directly
+- **Standalone Components**: No NgModule required
+
+## Installation
+
+```bash
+pnpm add @pegasus-heavy/ngx-tailwindcss
+```
+
+Configure Tailwind to scan the library:
+
+```css
+@import "tailwindcss";
+@source "../node_modules/@pegasus-heavy/ngx-tailwindcss/**/*.mjs";
+```
+
+## Components
+
+### Basic Components
+- Button (tw-button): Variants: primary, secondary, success, warning, danger, ghost, outline, link
+- Card (tw-card): With header, body, footer sections
+- Badge (tw-badge): Status indicators with colors and sizes
+- Alert (tw-alert): Dismissible notifications
+
+### Form Controls
+- Input (tw-input): Text input with validation states
+- Checkbox (tw-checkbox): Single and group checkboxes
+- Switch (tw-switch): Toggle switches
+- Radio (tw-radio-button, tw-radio-group): Radio button groups
+- Select (tw-select): Dropdown selection
+- Slider (tw-slider): Range slider
+- Rating (tw-rating): Star rating
+
+### Navigation
+- Tabs (tw-tabs, tw-tab-panel): Tabbed content
+- Menu (tw-menu): Navigation menus
+- Breadcrumb (tw-breadcrumb): Path navigation
+- Pagination (tw-pagination): Page navigation
+- Steps (tw-steps): Step indicators
+
+### Data Display
+- Table (tw-table): Data tables with sorting/selection
+- Tree (tw-tree): Hierarchical data display
+- Timeline (tw-timeline): Event timeline
+- Accordion (tw-accordion): Collapsible sections
+
+### Overlays
+- Modal (tw-modal): Dialog windows
+- Dropdown (tw-dropdown): Dropdown menus
+- Popover (tw-popover): Popover content
+- Toast (tw-toast): Toast notifications
+- Sidebar (tw-sidebar): Slide-out panels
+
+### Feedback
+- Progress (tw-progress): Progress bars (linear & circular)
+- Spinner (tw-spinner): Loading spinners
+- Skeleton (tw-skeleton): Loading placeholders
+
+### Miscellaneous
+- Avatar (tw-avatar): User avatars
+- Chip (tw-chip): Tags and chips
+- Divider (tw-divider): Content separators
+- Image (tw-image): Image with preview
+
+## Directives
+
+### Core Directives
+- twRipple: Material-style ripple effect
+- twTooltip: Tooltips
+- twClickOutside: Click outside detection
+- twFocusTrap: Focus trapping for modals
+- twClass: Intelligent class merging
+- twVariant: Apply variant styling
+
+### DX Enhancement Directives
+- twAutoFocus: Auto-focus elements on mount
+- twInView: Intersection observer for lazy loading/animations
+- twLongPress: Long press/touch detection
+- twDebounceClick: Debounce click events (prevent double-clicks)
+- twCopyClipboard: Copy text to clipboard
+- twKeyboardShortcut: Handle keyboard shortcuts (e.g., "ctrl+s")
+- twSwipe: Swipe gesture detection (left/right/up/down)
+- twResizeObserver: Element size change detection
+- twLazyImage: Lazy load images on viewport entry
+- twScrollTo: Smooth scroll to elements
+- twHoverClass: Dynamic hover state classes
+- twTrapScroll: Trap scroll within element (prevent propagation)
+- twVariant: Apply variant styling
+
+## Global Configuration
+
+```typescript
+import { provideTwConfig } from '@pegasus-heavy/ngx-tailwindcss';
+
+export const appConfig = {
+  providers: [
+    provideTwConfig({
+      animationDuration: 200,
+      theme: {
+        primary: 'bg-blue-600 hover:bg-blue-700 text-white',
+        secondary: 'bg-slate-600 hover:bg-slate-700 text-white',
+        // ... more variants
+      },
+    }),
+  ]
+};
+```
+
+## Per-Component Customization
+
+```html
+<tw-button
+  variant="primary"
+  classOverride="rounded-full px-8">
+  Custom Button
+</tw-button>
+```
+
+## Links
+
+- Documentation: https://ngx-tailwindcss.dev
+- GitHub: https://github.com/PegasusHeavyIndustries/ngx-tailwindcss
+- npm: https://www.npmjs.com/package/@pegasus-heavy/ngx-tailwindcss
+- License: MIT
+
+## Contact
+
+- Author: Pegasus Heavy Industries LLC
+- Website: https://pegasusheavy.com
+

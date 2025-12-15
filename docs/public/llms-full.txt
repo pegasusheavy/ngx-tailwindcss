@@ -1,0 +1,870 @@
+# ngx-tailwindcss - Complete Documentation for AI/LLM
+
+> A comprehensive, highly customizable Angular component library designed for Tailwind CSS 4+
+
+## Table of Contents
+
+1. [Overview](#overview)
+2. [Installation](#installation)
+3. [Configuration](#configuration)
+4. [Components Reference](#components-reference)
+5. [Directives Reference](#directives-reference)
+6. [Customization Guide](#customization-guide)
+7. [Best Practices](#best-practices)
+8. [Common Patterns](#common-patterns)
+9. [Troubleshooting](#troubleshooting)
+
+---
+
+## Overview
+
+ngx-tailwindcss is an open-source Angular UI component library that provides 30+ production-ready components styled with Tailwind CSS 4+. It's designed for modern Angular applications (v19, v20, v21) using standalone components.
+
+### Key Differentiators
+
+1. **No Bundled CSS**: Unlike other UI libraries, ngx-tailwindcss doesn't bundle its own CSS. Components use Tailwind CSS classes that are processed by your app's Tailwind setup.
+
+2. **Full Customization**: Every component supports `classOverride` (merge classes) and `classReplace` (replace classes) props.
+
+3. **Modern Angular**: Uses signals, computed properties, and effects throughout. Compatible with zoneless change detection.
+
+4. **Intelligent Class Merging**: Built-in `TwClassService` handles Tailwind class conflicts intelligently.
+
+---
+
+## Installation
+
+### Step 1: Install the package
+
+```bash
+# Using pnpm (recommended)
+pnpm add @pegasus-heavy/ngx-tailwindcss
+
+# Using npm
+npm install @pegasus-heavy/ngx-tailwindcss
+
+# Using yarn
+yarn add @pegasus-heavy/ngx-tailwindcss
+```
+
+### Step 2: Configure Tailwind CSS
+
+In your `styles.css` or `styles.scss`:
+
+```css
+@import "tailwindcss";
+
+/* IMPORTANT: Add this line to scan the library for Tailwind classes */
+@source "../node_modules/@pegasus-heavy/ngx-tailwindcss/**/*.mjs";
+```
+
+### Step 3: Import Components
+
+```typescript
+import { TwButtonComponent, TwCardComponent } from '@pegasus-heavy/ngx-tailwindcss';
+
+@Component({
+  standalone: true,
+  imports: [TwButtonComponent, TwCardComponent],
+  // ...
+})
+export class MyComponent {}
+```
+
+---
+
+## Configuration
+
+### Global Configuration with provideTwConfig
+
+```typescript
+import { ApplicationConfig } from '@angular/core';
+import { provideTwConfig } from '@pegasus-heavy/ngx-tailwindcss';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideTwConfig({
+      // Animation duration in milliseconds
+      animationDuration: 200,
+
+      // Custom theme variants
+      theme: {
+        primary: 'bg-blue-600 hover:bg-blue-700 text-white focus-visible:ring-blue-500',
+        secondary: 'bg-slate-600 hover:bg-slate-700 text-white focus-visible:ring-slate-500',
+        success: 'bg-emerald-600 hover:bg-emerald-700 text-white focus-visible:ring-emerald-500',
+        warning: 'bg-amber-500 hover:bg-amber-600 text-white focus-visible:ring-amber-500',
+        danger: 'bg-rose-600 hover:bg-rose-700 text-white focus-visible:ring-rose-500',
+        info: 'bg-cyan-600 hover:bg-cyan-700 text-white focus-visible:ring-cyan-500',
+      },
+    }),
+  ]
+};
+```
+
+---
+
+## Components Reference
+
+### Button Component (tw-button)
+
+The most commonly used component. Supports multiple variants, sizes, and states.
+
+```html
+<!-- Basic usage -->
+<tw-button>Click me</tw-button>
+
+<!-- With variant -->
+<tw-button variant="primary">Primary</tw-button>
+<tw-button variant="secondary">Secondary</tw-button>
+<tw-button variant="success">Success</tw-button>
+<tw-button variant="warning">Warning</tw-button>
+<tw-button variant="danger">Danger</tw-button>
+<tw-button variant="ghost">Ghost</tw-button>
+<tw-button variant="outline">Outline</tw-button>
+<tw-button variant="link">Link</tw-button>
+
+<!-- Sizes -->
+<tw-button size="xs">Extra Small</tw-button>
+<tw-button size="sm">Small</tw-button>
+<tw-button size="md">Medium (default)</tw-button>
+<tw-button size="lg">Large</tw-button>
+<tw-button size="xl">Extra Large</tw-button>
+
+<!-- States -->
+<tw-button [disabled]="true">Disabled</tw-button>
+<tw-button [loading]="true">Loading</tw-button>
+
+<!-- With icon -->
+<tw-button>
+  <fa-icon [icon]="faCheck" class="mr-2"></fa-icon>
+  Save
+</tw-button>
+
+<!-- Icon only -->
+<tw-button [iconOnly]="true" aria-label="Settings">
+  <fa-icon [icon]="faCog"></fa-icon>
+</tw-button>
+
+<!-- With ripple effect (enabled by default) -->
+<tw-button [ripple]="true">With Ripple</tw-button>
+<tw-button [ripple]="false">Without Ripple</tw-button>
+
+<!-- Custom classes -->
+<tw-button classOverride="rounded-full shadow-lg">Rounded</tw-button>
+```
+
+**Inputs:**
+- `variant`: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'ghost' | 'outline' | 'link'
+- `size`: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
+- `disabled`: boolean
+- `loading`: boolean
+- `iconOnly`: boolean
+- `ripple`: boolean (default: true)
+- `rippleColor`: string (default: 'rgba(255,255,255,0.4)')
+- `classOverride`: string (merge additional classes)
+- `classReplace`: string (replace all classes)
+
+**Outputs:**
+- `onClick`: EventEmitter<MouseEvent>
+
+---
+
+### Card Component (tw-card)
+
+Container component with optional header, body, and footer sections.
+
+```html
+<!-- Basic card -->
+<tw-card>
+  <p>Card content</p>
+</tw-card>
+
+<!-- With directives -->
+<tw-card>
+  <ng-container twCardHeader>
+    <tw-card-title>Card Title</tw-card-title>
+    <tw-card-subtitle>Subtitle</tw-card-subtitle>
+  </ng-container>
+
+  <ng-container twCardBody>
+    <p>Card body content goes here.</p>
+  </ng-container>
+
+  <ng-container twCardFooter>
+    <tw-button variant="primary">Action</tw-button>
+  </ng-container>
+</tw-card>
+
+<!-- Variants -->
+<tw-card variant="elevated">Elevated card with shadow</tw-card>
+<tw-card variant="outlined">Outlined card with border</tw-card>
+<tw-card variant="filled">Filled card with background</tw-card>
+
+<!-- Hoverable -->
+<tw-card [hover]="true">Hover effect on mouse over</tw-card>
+
+<!-- Clickable -->
+<tw-card [clickable]="true" (cardClick)="onCardClick()">
+  Clickable card
+</tw-card>
+```
+
+---
+
+### Input Component (tw-input)
+
+Form input with label, helper text, and validation states.
+
+```html
+<!-- Basic input -->
+<tw-input label="Email" placeholder="Enter your email"></tw-input>
+
+<!-- With ngModel -->
+<tw-input
+  label="Username"
+  [(ngModel)]="username"
+  [required]="true">
+</tw-input>
+
+<!-- Variants -->
+<tw-input variant="default" label="Default"></tw-input>
+<tw-input variant="filled" label="Filled"></tw-input>
+<tw-input variant="outlined" label="Outlined"></tw-input>
+
+<!-- Sizes -->
+<tw-input size="sm" label="Small"></tw-input>
+<tw-input size="md" label="Medium"></tw-input>
+<tw-input size="lg" label="Large"></tw-input>
+
+<!-- States -->
+<tw-input [disabled]="true" label="Disabled"></tw-input>
+<tw-input [readonly]="true" label="Readonly" value="Read only value"></tw-input>
+<tw-input [error]="true" errorMessage="This field is required" label="Error"></tw-input>
+
+<!-- With helper text -->
+<tw-input
+  label="Password"
+  type="password"
+  helperText="Must be at least 8 characters">
+</tw-input>
+
+<!-- With prefix/suffix -->
+<tw-input label="Price">
+  <span prefix>$</span>
+  <span suffix>.00</span>
+</tw-input>
+```
+
+---
+
+### Modal Component (tw-modal)
+
+Dialog/modal component with focus trapping and keyboard support.
+
+```html
+<!-- Basic modal -->
+<tw-button (click)="showModal = true">Open Modal</tw-button>
+
+<tw-modal [(open)]="showModal" title="Modal Title">
+  <p>Modal content goes here.</p>
+
+  <tw-modal-footer>
+    <tw-button variant="ghost" (click)="showModal = false">Cancel</tw-button>
+    <tw-button variant="primary">Confirm</tw-button>
+  </tw-modal-footer>
+</tw-modal>
+
+<!-- Sizes -->
+<tw-modal size="sm">Small modal</tw-modal>
+<tw-modal size="md">Medium modal (default)</tw-modal>
+<tw-modal size="lg">Large modal</tw-modal>
+<tw-modal size="xl">Extra large modal</tw-modal>
+<tw-modal size="full">Full screen modal</tw-modal>
+
+<!-- Prevent close on backdrop click -->
+<tw-modal [closeOnBackdrop]="false">
+  Can only be closed via close button or ESC key
+</tw-modal>
+
+<!-- Prevent close on ESC key -->
+<tw-modal [closeOnEscape]="false">
+  ESC key won't close this modal
+</tw-modal>
+```
+
+---
+
+### Table Component (tw-table)
+
+Data table with sorting, selection, and styling options.
+
+```html
+<tw-table
+  [data]="users"
+  [columns]="columns"
+  [selectable]="true"
+  [(selection)]="selectedUsers"
+  [sortable]="true"
+  (sort)="onSort($event)">
+</tw-table>
+```
+
+```typescript
+columns = [
+  { field: 'name', header: 'Name', sortable: true },
+  { field: 'email', header: 'Email', sortable: true },
+  { field: 'role', header: 'Role' },
+];
+
+users = [
+  { name: 'John Doe', email: 'john@example.com', role: 'Admin' },
+  { name: 'Jane Smith', email: 'jane@example.com', role: 'User' },
+];
+```
+
+---
+
+### Tabs Component (tw-tabs)
+
+Tabbed navigation with multiple style variants.
+
+```html
+<tw-tabs [(activeTab)]="activeTab">
+  <tw-tab-panel label="Tab 1" value="tab1">
+    Content for tab 1
+  </tw-tab-panel>
+  <tw-tab-panel label="Tab 2" value="tab2">
+    Content for tab 2
+  </tw-tab-panel>
+  <tw-tab-panel label="Tab 3" value="tab3" [disabled]="true">
+    Disabled tab
+  </tw-tab-panel>
+</tw-tabs>
+
+<!-- Variants -->
+<tw-tabs variant="default">Default tabs</tw-tabs>
+<tw-tabs variant="pills">Pill-style tabs</tw-tabs>
+<tw-tabs variant="soft-rounded">Soft rounded tabs</tw-tabs>
+<tw-tabs variant="bordered">Bordered tabs</tw-tabs>
+```
+
+---
+
+### Toast Service
+
+Programmatic toast notifications.
+
+```typescript
+import { TwToastService } from '@pegasus-heavy/ngx-tailwindcss';
+
+@Component({...})
+export class MyComponent {
+  private toast = inject(TwToastService);
+
+  showSuccess() {
+    this.toast.success('Operation completed successfully!');
+  }
+
+  showError() {
+    this.toast.error('An error occurred', { duration: 5000 });
+  }
+
+  showWarning() {
+    this.toast.warning('Please review your input');
+  }
+
+  showInfo() {
+    this.toast.info('New update available');
+  }
+
+  showCustom() {
+    this.toast.show({
+      message: 'Custom toast',
+      variant: 'info',
+      position: 'top-right',
+      duration: 3000,
+      dismissible: true,
+    });
+  }
+}
+```
+
+---
+
+## Directives Reference
+
+### Core Directives
+
+#### Ripple Directive (twRipple)
+
+Adds Material-style ripple effect to any element.
+
+```html
+<button twRipple>Click for ripple</button>
+<div twRipple rippleColor="rgba(0,0,255,0.3)">Blue ripple</div>
+<button twRipple [rippleDisabled]="true">No ripple</button>
+```
+
+#### Tooltip Directive (twTooltip)
+
+Adds tooltips to elements.
+
+```html
+<button twTooltip="This is a tooltip">Hover me</button>
+<button twTooltip="Top tooltip" tooltipPosition="top">Top</button>
+<button twTooltip="Bottom tooltip" tooltipPosition="bottom">Bottom</button>
+<button twTooltip="Left tooltip" tooltipPosition="left">Left</button>
+<button twTooltip="Right tooltip" tooltipPosition="right">Right</button>
+```
+
+#### Click Outside Directive (twClickOutside)
+
+Detects clicks outside an element.
+
+```html
+<div twClickOutside (twClickOutside)="closeDropdown()">
+  Dropdown content
+</div>
+```
+
+#### Focus Trap Directive (twFocusTrap)
+
+Traps focus within an element (useful for modals).
+
+```html
+<div twFocusTrap [twFocusTrapEnabled]="isOpen">
+  <input placeholder="First focusable" />
+  <button>Second focusable</button>
+  <button>Last focusable (focus wraps to first)</button>
+</div>
+```
+
+#### Class Merge Directive (twClass)
+
+Intelligently merges Tailwind classes.
+
+```html
+<div twClass="p-4 bg-blue-500" [twClass]="dynamicClasses">
+  Classes are merged intelligently
+</div>
+```
+
+---
+
+### DX Enhancement Directives
+
+#### Auto Focus Directive (twAutoFocus)
+
+Automatically focus an element when it's rendered.
+
+```html
+<input twAutoFocus />
+<input twAutoFocus [autoFocusDelay]="100" />
+<input [twAutoFocus]="shouldFocus" [autoFocusSelect]="true" />
+```
+
+**Inputs:**
+- `twAutoFocus`: boolean - Enable/disable auto-focus
+- `autoFocusDelay`: number - Delay in ms before focusing
+- `autoFocusSelect`: boolean - Select text content (for inputs)
+- `autoFocusScroll`: boolean - Scroll element into view
+
+#### In View Directive (twInView)
+
+Detect when an element enters or leaves the viewport using IntersectionObserver.
+
+```html
+<div twInView (inView)="onVisible($event)">Lazy content</div>
+<div twInView [inViewThreshold]="0.5" (enterView)="onEnter()">50% visible trigger</div>
+<div twInView [inViewOnce]="true" (enterView)="loadOnce()">Load once</div>
+```
+
+**Inputs:**
+- `inViewRootMargin`: string - Root margin (CSS margin syntax)
+- `inViewThreshold`: number | number[] - Visibility threshold (0-1)
+- `inViewOnce`: boolean - Only trigger once
+- `inViewDisabled`: boolean - Disable observer
+
+**Outputs:**
+- `inView`: InViewEvent - Emits on any intersection change
+- `enterView`: InViewEvent - Emits when entering viewport
+- `leaveView`: InViewEvent - Emits when leaving viewport
+
+#### Long Press Directive (twLongPress)
+
+Detect long press/touch events.
+
+```html
+<button twLongPress (longPress)="onLongPress($event)">Hold me</button>
+<button twLongPress [longPressDuration]="1000" (longPress)="onLongPress($event)">Hold 1 second</button>
+```
+
+**Inputs:**
+- `longPressDuration`: number - Duration in ms to trigger (default: 500)
+- `longPressMoveTolerance`: number - Max movement allowed (default: 10px)
+- `longPressPreventDefault`: boolean - Prevent context menu
+
+**Outputs:**
+- `longPress`: LongPressEvent - Emits when long press detected
+- `pressStart`: void - Emits when press starts
+- `pressEnd`: void - Emits when press ends
+
+#### Debounce Click Directive (twDebounceClick)
+
+Debounce click events to prevent accidental double-clicks.
+
+```html
+<button twDebounceClick (debounceClick)="onSave()">Save</button>
+<button twDebounceClick [debounceTime]="500" (debounceClick)="onSubmit()">Submit</button>
+```
+
+**Inputs:**
+- `debounceTime`: number - Debounce time in ms (default: 300)
+- `debounceDisabled`: boolean - Disable debouncing
+
+**Outputs:**
+- `debounceClick`: MouseEvent - Emits debounced click
+
+#### Copy Clipboard Directive (twCopyClipboard)
+
+Copy text to clipboard on click.
+
+```html
+<button twCopyClipboard="Text to copy" (copied)="onCopied($event)">Copy</button>
+<button [twCopyClipboard]="dynamicText" (copied)="showToast($event.success ? 'Copied!' : 'Failed')">Copy</button>
+```
+
+**Inputs:**
+- `twCopyClipboard`: string - Text to copy
+- `copyDisabled`: boolean - Disable copying
+
+**Outputs:**
+- `copied`: CopyClipboardEvent - Emits with success/error status
+
+#### Keyboard Shortcut Directive (twKeyboardShortcut)
+
+Handle keyboard shortcuts.
+
+```html
+<div twKeyboardShortcut="ctrl+s" (shortcutPressed)="onSave($event)">Press Ctrl+S</div>
+<div twKeyboardShortcut="ctrl+shift+p" (shortcutPressed)="openPalette()">Command Palette</div>
+<div twKeyboardShortcut="escape" (shortcutPressed)="onEscape()">Press ESC</div>
+```
+
+**Supported modifiers:** ctrl, alt, shift, meta (cmd on Mac)
+**Key names:** Any KeyboardEvent.key value (a-z, 0-9, enter, escape, space, etc.)
+
+**Inputs:**
+- `twKeyboardShortcut`: string - Shortcut string (e.g., "ctrl+s")
+- `shortcutGlobal`: boolean - Listen globally (default: true)
+- `shortcutPreventDefault`: boolean - Prevent default browser behavior
+- `shortcutStopPropagation`: boolean - Stop event propagation
+
+**Outputs:**
+- `shortcutPressed`: KeyboardShortcutEvent - Emits when shortcut pressed
+
+#### Swipe Directive (twSwipe)
+
+Detect swipe gestures.
+
+```html
+<div twSwipe (swipe)="onSwipe($event)">Swipe me</div>
+<div twSwipe (swipeLeft)="goNext()" (swipeRight)="goPrev()">Carousel</div>
+<div twSwipe [swipeThreshold]="100" (swipeUp)="refresh()">Pull to refresh</div>
+```
+
+**Inputs:**
+- `swipeThreshold`: number - Min distance to trigger (default: 50px)
+- `swipeTimeout`: number - Max time for swipe (default: 300ms)
+- `swipeVelocity`: number - Min velocity (default: 0.3)
+
+**Outputs:**
+- `swipe`: SwipeEvent - Emits on any swipe
+- `swipeLeft`: SwipeEvent - Emits on swipe left
+- `swipeRight`: SwipeEvent - Emits on swipe right
+- `swipeUp`: SwipeEvent - Emits on swipe up
+- `swipeDown`: SwipeEvent - Emits on swipe down
+
+#### Resize Observer Directive (twResizeObserver)
+
+Observe element size changes.
+
+```html
+<div twResizeObserver (resize)="onResize($event)">Resizable content</div>
+<div twResizeObserver [resizeDebounce]="100" (resize)="onResize($event)">Debounced</div>
+```
+
+**Inputs:**
+- `resizeDebounce`: number - Debounce time in ms (default: 0)
+- `resizeDisabled`: boolean - Disable observer
+
+**Outputs:**
+- `resize`: ResizeEvent - Emits with width, height, entry
+
+#### Lazy Image Directive (twLazyImage)
+
+Lazy load images when they enter the viewport.
+
+```html
+<img twLazyImage="/image.jpg" [lazyPlaceholder]="'/placeholder.jpg'" (lazyLoaded)="onLoaded($event)" />
+<img twLazyImage="/large.jpg" lazyLoadingClass="opacity-0" lazyLoadedClass="opacity-100 transition-opacity" />
+```
+
+**Inputs:**
+- `twLazyImage`: string - Image source to lazy load
+- `lazyPlaceholder`: string - Placeholder image
+- `lazyLoadingClass`: string - CSS class while loading
+- `lazyLoadedClass`: string - CSS class after loaded
+- `lazyRootMargin`: string - Intersection observer root margin
+- `lazyNative`: boolean - Use native loading="lazy"
+
+**Outputs:**
+- `lazyLoaded`: LazyImageEvent - Emits when image loads or errors
+
+#### Scroll To Directive (twScrollTo)
+
+Smooth scroll to a target element.
+
+```html
+<a twScrollTo="#section1">Go to Section 1</a>
+<a twScrollTo="#top" [scrollOffset]="80">Back to Top</a>
+<button twScrollTo=".my-element" scrollBehavior="auto">Jump</button>
+```
+
+**Inputs:**
+- `twScrollTo`: string - Target selector or element ID
+- `scrollOffset`: number - Offset from top (for fixed headers)
+- `scrollBehavior`: 'smooth' | 'auto' - Scroll behavior
+- `scrollBlock`: ScrollLogicalPosition - Block position
+
+#### Hover Class Directive (twHoverClass)
+
+Dynamically add/remove classes on hover.
+
+```html
+<div twHoverClass="scale-105 shadow-lg">Hover me</div>
+<div twHoverClass="bg-blue-500 text-white" [hoverClassBase]="'bg-white text-black'">Toggle colors</div>
+<div twHoverClass="ring-2 ring-blue-500" [hoverDelay]="200">Delayed effect</div>
+```
+
+**Inputs:**
+- `twHoverClass`: string - Classes to add on hover
+- `hoverClassBase`: string - Classes to remove on hover (restore on leave)
+- `hoverDelay`: number - Delay before applying (ms)
+- `hoverLeaveDelay`: number - Delay before removing (ms)
+
+#### Trap Scroll Directive (twTrapScroll)
+
+Trap scroll within an element, preventing scroll propagation to parent.
+
+```html
+<div twTrapScroll class="h-64 overflow-auto">
+  <div class="h-[1000px]">Long content - scrolling won't affect parent</div>
+</div>
+```
+
+**Inputs:**
+- `trapScrollDisabled`: boolean - Disable scroll trapping
+- `trapScrollAllowHorizontal`: boolean - Allow horizontal scroll to propagate
+
+---
+
+## Customization Guide
+
+### Method 1: classOverride (Merge)
+
+Add additional classes that merge with defaults:
+
+```html
+<tw-button
+  variant="primary"
+  classOverride="rounded-full shadow-xl hover:shadow-2xl">
+  Fancy Button
+</tw-button>
+```
+
+### Method 2: classReplace (Replace)
+
+Completely replace all classes:
+
+```html
+<tw-button
+  classReplace="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-lg">
+  Gradient Button
+</tw-button>
+```
+
+### Method 3: Global Configuration
+
+Set defaults for all components:
+
+```typescript
+provideTwConfig({
+  theme: {
+    primary: 'bg-indigo-600 hover:bg-indigo-700 text-white',
+  },
+})
+```
+
+### Method 4: CSS Variables
+
+Override using CSS custom properties in your styles:
+
+```css
+:root {
+  --tw-primary-bg: theme('colors.indigo.600');
+  --tw-primary-hover: theme('colors.indigo.700');
+}
+```
+
+---
+
+## Best Practices
+
+### 1. Import Only What You Need
+
+```typescript
+// Good - tree-shakeable
+import { TwButtonComponent, TwCardComponent } from '@pegasus-heavy/ngx-tailwindcss';
+
+// Avoid - imports everything
+import * as Tw from '@pegasus-heavy/ngx-tailwindcss';
+```
+
+### 2. Use Semantic Variants
+
+```html
+<!-- Good - semantic meaning -->
+<tw-button variant="success">Save</tw-button>
+<tw-button variant="danger">Delete</tw-button>
+
+<!-- Avoid - hard to maintain -->
+<tw-button classReplace="bg-green-500 text-white">Save</tw-button>
+```
+
+### 3. Prefer classOverride Over classReplace
+
+```html
+<!-- Good - maintains base styles -->
+<tw-button classOverride="rounded-full">Rounded</tw-button>
+
+<!-- Use classReplace only when you need complete control -->
+<tw-button classReplace="custom-btn-class">Custom</tw-button>
+```
+
+### 4. Accessibility
+
+All components include proper ARIA attributes, but always add context:
+
+```html
+<tw-button [iconOnly]="true" aria-label="Delete item">
+  <fa-icon [icon]="faTrash"></fa-icon>
+</tw-button>
+```
+
+---
+
+## Common Patterns
+
+### Form with Validation
+
+```html
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <tw-input
+    formControlName="email"
+    label="Email"
+    [error]="form.get('email')?.invalid && form.get('email')?.touched"
+    errorMessage="Valid email required">
+  </tw-input>
+
+  <tw-input
+    formControlName="password"
+    type="password"
+    label="Password"
+    [error]="form.get('password')?.invalid && form.get('password')?.touched"
+    errorMessage="Password must be 8+ characters">
+  </tw-input>
+
+  <tw-button type="submit" variant="primary" [disabled]="form.invalid">
+    Submit
+  </tw-button>
+</form>
+```
+
+### Confirmation Modal
+
+```html
+<tw-modal [(open)]="showConfirm" title="Confirm Delete">
+  <p>Are you sure you want to delete this item? This action cannot be undone.</p>
+
+  <tw-modal-footer>
+    <tw-button variant="ghost" (click)="showConfirm = false">Cancel</tw-button>
+    <tw-button variant="danger" (click)="confirmDelete()">Delete</tw-button>
+  </tw-modal-footer>
+</tw-modal>
+```
+
+### Data Table with Actions
+
+```html
+<tw-table [data]="items" [columns]="columns">
+  <ng-template #actions let-row>
+    <tw-button size="sm" variant="ghost" (click)="edit(row)">
+      <fa-icon [icon]="faEdit"></fa-icon>
+    </tw-button>
+    <tw-button size="sm" variant="ghost" (click)="delete(row)">
+      <fa-icon [icon]="faTrash"></fa-icon>
+    </tw-button>
+  </ng-template>
+</tw-table>
+```
+
+---
+
+## Troubleshooting
+
+### Styles Not Applied
+
+**Problem:** Components render but without Tailwind styles.
+
+**Solution:** Ensure you've added the @source directive in your CSS:
+
+```css
+@source "../node_modules/@pegasus-heavy/ngx-tailwindcss/**/*.mjs";
+```
+
+### Class Conflicts
+
+**Problem:** Custom classes not overriding default styles.
+
+**Solution:** Use `classOverride` for merging or `classReplace` for complete override. The `TwClassService` handles most conflicts automatically, but you may need to use `!important` utilities like `!bg-red-500` for edge cases.
+
+### Injection Errors
+
+**Problem:** `NG0203: inject() must be called from an injection context`
+
+**Solution:** Ensure you're using Angular 19+ and have configured the library correctly. The library uses field initializers for dependency injection, which requires proper Angular compilation.
+
+---
+
+## Version Compatibility
+
+| ngx-tailwindcss | Angular | Tailwind CSS |
+|-----------------|---------|--------------|
+| 0.1.x           | 19, 20, 21 | 4.x |
+
+---
+
+## License
+
+MIT License - Copyright (c) 2025 Pegasus Heavy Industries LLC
+
+---
+
+## Links
+
+- **Documentation**: https://ngx-tailwindcss.dev
+- **GitHub**: https://github.com/PegasusHeavyIndustries/ngx-tailwindcss
+- **npm**: https://www.npmjs.com/package/@pegasus-heavy/ngx-tailwindcss
+- **Issues**: https://github.com/PegasusHeavyIndustries/ngx-tailwindcss/issues
+
