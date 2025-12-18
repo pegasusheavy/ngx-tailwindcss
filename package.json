@@ -82,7 +82,7 @@
     "lint:fix": "eslint projects/ --fix",
     "format": "prettier --write \"projects/**/*.{ts,html,scss,css,json}\"",
     "format:check": "prettier --check \"projects/**/*.{ts,html,scss,css,json}\"",
-    "prepare": "pnpm run build",
+    "prepare": "pnpm run build && husky install",
     "commitlint": "commitlint"
   },
   "peerDependencies": {
@@ -132,7 +132,8 @@
     "vitest": "^3.0.0",
     "zone.js": "~0.15.0",
     "@commitlint/cli": "^18.1.0",
-    "@commitlint/config-conventional": "^18.0.0"
+    "@commitlint/config-conventional": "^18.0.0",
+    "husky": "^9.0.0"
   },
   "exports": {
     ".": {
