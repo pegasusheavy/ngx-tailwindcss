@@ -23,6 +23,7 @@ export * from './lib/checkbox/index';
 export * from './lib/radio/index';
 export * from './lib/switch/index';
 export * from './lib/select/index';
+export * from './lib/multiselect/index';
 export * from './lib/slider/index';
 export * from './lib/rating/index';
 export * from './lib/chip/index';
@@ -32,6 +33,18 @@ export * from './lib/card/index';
 export * from './lib/accordion/index';
 export * from './lib/tabs/index';
 export * from './lib/divider/index';
+export * from './lib/container/index';
+export * from './lib/stack/index';
+export * from './lib/grid/index';
+export * from './lib/aspect-ratio/index';
+export * from './lib/center/index';
+export * from './lib/spacer/index';
+export * from './lib/splitter/index';
+export * from './lib/sticky/index';
+export * from './lib/scroll-area/index';
+export * from './lib/columns/index';
+export * from './lib/bleed/index';
+export * from './lib/overlay/index';
 
 // Data Display Components
 export * from './lib/badge/index';
@@ -96,6 +109,7 @@ import { TwCheckboxComponent } from './lib/checkbox/index';
 import { TwRadioButtonComponent, TwRadioGroupComponent } from './lib/radio/index';
 import { TwSwitchComponent } from './lib/switch/index';
 import { TwSelectComponent } from './lib/select/index';
+import { TwMultiSelectComponent } from './lib/multiselect/index';
 import { TwSliderComponent } from './lib/slider/index';
 import { TwRatingComponent } from './lib/rating/index';
 import { TwChipComponent, TwChipsComponent } from './lib/chip/index';
@@ -118,6 +132,20 @@ import { TwImageComponent } from './lib/image/index';
 
 // Misc components
 import { TwScrollTopComponent } from './lib/scroll-top/index';
+
+// Layout components
+import { TwContainerComponent } from './lib/container/index';
+import { TwHStackComponent, TwStackComponent, TwVStackComponent } from './lib/stack/index';
+import { TwGridComponent, TwSimpleGridComponent } from './lib/grid/index';
+import { TwAspectRatioComponent } from './lib/aspect-ratio/index';
+import { TwCenterComponent, TwCircleComponent, TwSquareComponent } from './lib/center/index';
+import { TwSpacerComponent, TwWrapComponent } from './lib/spacer/index';
+import { TwSplitterComponent, TwSplitterPaneComponent } from './lib/splitter/index';
+import { TwStickyComponent } from './lib/sticky/index';
+import { TwScrollAreaComponent } from './lib/scroll-area/index';
+import { TwColumnsComponent } from './lib/columns/index';
+import { TwBleedComponent } from './lib/bleed/index';
+import { TwOverlayComponent } from './lib/overlay/index';
 
 export const TW_AVATAR_COMPONENTS = [TwAvatarComponent, TwAvatarGroupComponent] as const;
 
@@ -151,6 +179,8 @@ export const TW_SWITCH_COMPONENTS = [TwSwitchComponent] as const;
 
 export const TW_SELECT_COMPONENTS = [TwSelectComponent] as const;
 
+export const TW_MULTISELECT_COMPONENTS = [TwMultiSelectComponent] as const;
+
 export const TW_SLIDER_COMPONENTS = [TwSliderComponent] as const;
 
 export const TW_RATING_COMPONENTS = [TwRatingComponent] as const;
@@ -175,6 +205,40 @@ export const TW_IMAGE_COMPONENTS = [TwImageComponent] as const;
 
 export const TW_SCROLL_TOP_COMPONENTS = [TwScrollTopComponent] as const;
 
+// New layout component groups
+export const TW_CONTAINER_COMPONENTS = [TwContainerComponent] as const;
+
+export const TW_STACK_COMPONENTS = [
+  TwStackComponent,
+  TwVStackComponent,
+  TwHStackComponent,
+] as const;
+
+export const TW_GRID_COMPONENTS = [TwGridComponent, TwSimpleGridComponent] as const;
+
+export const TW_ASPECT_RATIO_COMPONENTS = [TwAspectRatioComponent] as const;
+
+export const TW_CENTER_COMPONENTS = [
+  TwCenterComponent,
+  TwSquareComponent,
+  TwCircleComponent,
+] as const;
+
+export const TW_SPACER_COMPONENTS = [TwSpacerComponent, TwWrapComponent] as const;
+
+// New layout component groups
+export const TW_SPLITTER_COMPONENTS = [TwSplitterComponent, TwSplitterPaneComponent] as const;
+
+export const TW_STICKY_COMPONENTS = [TwStickyComponent] as const;
+
+export const TW_SCROLL_AREA_COMPONENTS = [TwScrollAreaComponent] as const;
+
+export const TW_COLUMNS_COMPONENTS = [TwColumnsComponent] as const;
+
+export const TW_BLEED_COMPONENTS = [TwBleedComponent] as const;
+
+export const TW_OVERLAY_COMPONENTS = [TwOverlayComponent] as const;
+
 /**
  * All ngx-tailwindcss components and directives
  * Use this for convenience when you want to import everything
@@ -198,6 +262,7 @@ export const TW_ALL = [
   ...TW_RADIO_COMPONENTS,
   ...TW_SWITCH_COMPONENTS,
   ...TW_SELECT_COMPONENTS,
+  ...TW_MULTISELECT_COMPONENTS,
   ...TW_SLIDER_COMPONENTS,
   ...TW_RATING_COMPONENTS,
   ...TW_CHIP_COMPONENTS,
@@ -206,6 +271,18 @@ export const TW_ALL = [
   ...TW_ACCORDION_COMPONENTS,
   ...TW_TABS_COMPONENTS,
   ...TW_DIVIDER_COMPONENTS,
+  ...TW_CONTAINER_COMPONENTS,
+  ...TW_STACK_COMPONENTS,
+  ...TW_GRID_COMPONENTS,
+  ...TW_ASPECT_RATIO_COMPONENTS,
+  ...TW_CENTER_COMPONENTS,
+  ...TW_SPACER_COMPONENTS,
+  ...TW_SPLITTER_COMPONENTS,
+  ...TW_STICKY_COMPONENTS,
+  ...TW_SCROLL_AREA_COMPONENTS,
+  ...TW_COLUMNS_COMPONENTS,
+  ...TW_BLEED_COMPONENTS,
+  ...TW_OVERLAY_COMPONENTS,
   // Data Display
   ...TW_BADGE_COMPONENTS,
   ...TW_AVATAR_COMPONENTS,

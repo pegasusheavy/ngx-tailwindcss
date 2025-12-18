@@ -63,9 +63,9 @@ export class TwAccordionItemComponent {
     const { variant } = this;
 
     const variantClasses: Record<string, string> = {
-      default: 'border-b border-slate-200 last:border-b-0',
-      bordered: 'border border-slate-200 rounded-lg mb-2 last:mb-0',
-      separated: 'bg-slate-50 rounded-lg mb-2 last:mb-0',
+      default: 'border-b border-slate-200 dark:border-slate-700 last:border-b-0',
+      bordered: 'border border-slate-200 dark:border-slate-700 rounded-lg mb-2 last:mb-0',
+      separated: 'bg-slate-50 dark:bg-slate-800 rounded-lg mb-2 last:mb-0',
     };
 
     return variantClasses[variant];
@@ -79,9 +79,9 @@ export class TwAccordionItemComponent {
     ];
 
     if (disabled) {
-      classes.push('text-slate-400 cursor-not-allowed');
+      classes.push('text-slate-400 dark:text-slate-500 cursor-not-allowed');
     } else {
-      classes.push('text-slate-900 hover:bg-slate-50');
+      classes.push('text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800');
     }
 
     return classes.join(' ');
@@ -91,12 +91,12 @@ export class TwAccordionItemComponent {
     const isOpen = this._open();
 
     return [
-      'w-5 h-5 text-slate-500 transition-transform duration-200',
+      'w-5 h-5 text-slate-500 dark:text-slate-400 transition-transform duration-200',
       isOpen ? 'rotate-180' : '',
     ].join(' ');
   });
 
-  protected contentClasses = computed(() => 'px-4 pb-4 text-slate-600');
+  protected contentClasses = computed(() => 'px-4 pb-4 text-slate-600 dark:text-slate-400');
 }
 
 @Component({
@@ -149,7 +149,7 @@ export class TwAccordionComponent implements AfterContentInit {
     const variant = this._variant();
 
     const variantClasses: Record<string, string> = {
-      default: 'border border-slate-200 rounded-lg divide-y divide-slate-200',
+      default: 'border border-slate-200 dark:border-slate-700 rounded-lg divide-y divide-slate-200 dark:divide-slate-700',
       bordered: '',
       separated: '',
     };

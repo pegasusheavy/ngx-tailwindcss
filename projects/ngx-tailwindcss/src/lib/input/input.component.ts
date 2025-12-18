@@ -30,8 +30,8 @@ export type InputSize = 'sm' | 'md' | 'lg';
 
 const INPUT_BASE_CLASSES = `
   w-full
-  text-slate-900
-  placeholder:text-slate-400
+  text-slate-900 dark:text-slate-100
+  placeholder:text-slate-400 dark:placeholder:text-slate-500
   transition-all duration-200
   disabled:opacity-50 disabled:cursor-not-allowed
   focus:outline-none
@@ -39,11 +39,11 @@ const INPUT_BASE_CLASSES = `
 
 const INPUT_VARIANTS: Record<InputVariant, string> = {
   default:
-    'bg-white border border-slate-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
+    'bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20',
   filled:
-    'bg-slate-100 border-2 border-transparent rounded-lg focus:bg-white focus:border-blue-500',
-  outlined: 'bg-transparent border-2 border-slate-300 rounded-lg focus:border-blue-500',
-  underlined: 'bg-transparent border-b-2 border-slate-300 rounded-none px-0 focus:border-blue-500',
+    'bg-slate-100 dark:bg-slate-700 border-2 border-transparent rounded-lg focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500',
+  outlined: 'bg-transparent border-2 border-slate-300 dark:border-slate-600 rounded-lg focus:border-blue-500',
+  underlined: 'bg-transparent border-b-2 border-slate-300 dark:border-slate-600 rounded-none px-0 focus:border-blue-500',
 };
 
 const INPUT_SIZES: Record<InputSize, string> = {
@@ -69,7 +69,7 @@ export class TwLabelDirective {
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge('block text-sm font-medium text-slate-700 mb-1.5', this.class);
+    return this.twClass.merge('block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5', this.class);
   }
 }
 
@@ -87,7 +87,7 @@ export class TwHintDirective {
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge('block text-xs text-slate-500 mt-1.5', this.class);
+    return this.twClass.merge('block text-xs text-slate-500 dark:text-slate-400 mt-1.5', this.class);
   }
 }
 
@@ -128,7 +128,7 @@ export class TwInputAffixDirective {
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge('flex items-center text-slate-500', this.class);
+    return this.twClass.merge('flex items-center text-slate-500 dark:text-slate-400', this.class);
   }
 }
 

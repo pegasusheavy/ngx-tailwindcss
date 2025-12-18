@@ -1,0 +1,362 @@
+/**
+ * ngx-tailwindcss Theme System
+ *
+ * This file provides CSS custom properties (variables) for theming the component library.
+ * The library uses Tailwind CSS classes by default, but you can override colors using
+ * these CSS variables.
+ *
+ * USAGE:
+ * ======
+ * 1. Import this file in your application's global styles:
+ *
+ *    @import '@pegasus-heavy/ngx-tailwindcss/styles/theme.css';
+ *
+ * 2. Override any variables in your own CSS to customize colors:
+ *
+ *    :root {
+ *      --tw-color-primary: #6366f1;
+ *      --tw-color-primary-hover: #4f46e5;
+ *    }
+ *
+ *    .dark {
+ *      --tw-color-primary: #818cf8;
+ *      --tw-color-primary-hover: #a5b4fc;
+ *    }
+ *
+ * DARK MODE:
+ * ==========
+ * The library supports dark mode via the 'dark' class on the <html> element.
+ * Use the TwThemeService or your own implementation to toggle dark mode:
+ *
+ *    // In your app
+ *    document.documentElement.classList.toggle('dark');
+ *
+ * Or use the provided service:
+ *
+ *    import { TwThemeService } from '@pegasus-heavy/ngx-tailwindcss';
+ *    themeService.setColorMode('dark');
+ *
+ * CUSTOMIZATION LEVELS:
+ * =====================
+ * 1. CSS Variables (this file) - Override semantic colors
+ * 2. Tailwind Config - Extend/override Tailwind's color palette
+ * 3. Component Props - Use classOverride/classReplace on individual components
+ * 4. TwThemeService - Programmatically set theme at runtime
+ */
+
+:root {
+  /* =====================================================
+     BRAND COLORS
+     These are semantic color tokens. Override these to
+     change colors throughout the library.
+     ===================================================== */
+
+  /* Primary - Main brand color used for primary actions, links, focus states */
+  --tw-color-primary: #3b82f6;
+  --tw-color-primary-hover: #2563eb;
+  --tw-color-primary-active: #1d4ed8;
+  --tw-color-primary-light: #dbeafe;
+  --tw-color-primary-dark: #1e40af;
+
+  /* Secondary - Used for secondary actions and less prominent UI elements */
+  --tw-color-secondary: #64748b;
+  --tw-color-secondary-hover: #475569;
+  --tw-color-secondary-active: #334155;
+  --tw-color-secondary-light: #f1f5f9;
+  --tw-color-secondary-dark: #1e293b;
+
+  /* =====================================================
+     SEMANTIC COLORS
+     ===================================================== */
+
+  /* Success - Positive actions, confirmations, success states */
+  --tw-color-success: #10b981;
+  --tw-color-success-hover: #059669;
+  --tw-color-success-bg: #ecfdf5;
+  --tw-color-success-text: #065f46;
+  --tw-color-success-border: #a7f3d0;
+
+  /* Warning - Cautionary states, warnings */
+  --tw-color-warning: #f59e0b;
+  --tw-color-warning-hover: #d97706;
+  --tw-color-warning-bg: #fffbeb;
+  --tw-color-warning-text: #92400e;
+  --tw-color-warning-border: #fcd34d;
+
+  /* Danger - Destructive actions, errors, critical states */
+  --tw-color-danger: #ef4444;
+  --tw-color-danger-hover: #dc2626;
+  --tw-color-danger-bg: #fef2f2;
+  --tw-color-danger-text: #991b1b;
+  --tw-color-danger-border: #fecaca;
+
+  /* Info - Informational content, help text */
+  --tw-color-info: #06b6d4;
+  --tw-color-info-hover: #0891b2;
+  --tw-color-info-bg: #ecfeff;
+  --tw-color-info-text: #155e75;
+  --tw-color-info-border: #a5f3fc;
+
+  /* =====================================================
+     NEUTRAL PALETTE
+     ===================================================== */
+
+  /* Background - Page and container backgrounds */
+  --tw-color-background: #ffffff;
+  --tw-color-background-alt: #f8fafc;
+
+  /* Surface - Card, modal, dropdown backgrounds */
+  --tw-color-surface: #ffffff;
+  --tw-color-surface-alt: #f1f5f9;
+  --tw-color-surface-hover: #f8fafc;
+
+  /* =====================================================
+     TEXT COLORS
+     ===================================================== */
+
+  --tw-color-text: #0f172a;
+  --tw-color-text-secondary: #475569;
+  --tw-color-text-muted: #94a3b8;
+  --tw-color-text-disabled: #cbd5e1;
+  --tw-color-text-inverse: #ffffff;
+  --tw-color-text-link: var(--tw-color-primary);
+  --tw-color-text-link-hover: var(--tw-color-primary-hover);
+
+  /* =====================================================
+     BORDER COLORS
+     ===================================================== */
+
+  --tw-color-border: #e2e8f0;
+  --tw-color-border-light: #f1f5f9;
+  --tw-color-border-dark: #cbd5e1;
+  --tw-color-border-focus: var(--tw-color-primary);
+
+  /* =====================================================
+     INTERACTIVE STATES
+     ===================================================== */
+
+  --tw-color-hover: #f1f5f9;
+  --tw-color-active: #e2e8f0;
+  --tw-color-disabled-bg: #f1f5f9;
+  --tw-color-disabled-text: #94a3b8;
+
+  /* Focus ring */
+  --tw-color-focus-ring: rgba(59, 130, 246, 0.5);
+  --tw-color-focus-ring-offset: #ffffff;
+
+  /* =====================================================
+     OVERLAY & BACKDROP
+     ===================================================== */
+
+  --tw-color-overlay: rgba(0, 0, 0, 0.5);
+  --tw-backdrop-blur: blur(4px);
+
+  /* =====================================================
+     SHADOWS
+     ===================================================== */
+
+  --tw-shadow-color: rgba(0, 0, 0, 0.1);
+  --tw-elevation-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --tw-elevation: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --tw-elevation-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --tw-elevation-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --tw-elevation-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  /* =====================================================
+     COMPONENT-SPECIFIC VARIABLES
+     Override these to customize individual components.
+     ===================================================== */
+
+  /* Button */
+  --tw-button-border-radius: 0.5rem;
+  --tw-button-font-weight: 500;
+  --tw-button-primary-bg: var(--tw-color-primary);
+  --tw-button-primary-text: var(--tw-color-text-inverse);
+  --tw-button-primary-hover: var(--tw-color-primary-hover);
+  --tw-button-secondary-bg: var(--tw-color-secondary);
+  --tw-button-secondary-text: var(--tw-color-text-inverse);
+  --tw-button-secondary-hover: var(--tw-color-secondary-hover);
+
+  /* Card */
+  --tw-card-bg: var(--tw-color-surface);
+  --tw-card-border: var(--tw-color-border);
+  --tw-card-border-radius: 0.75rem;
+  --tw-card-shadow: var(--tw-elevation);
+
+  /* Input */
+  --tw-input-bg: var(--tw-color-surface);
+  --tw-input-text: var(--tw-color-text);
+  --tw-input-border: var(--tw-color-border);
+  --tw-input-border-radius: 0.5rem;
+  --tw-input-placeholder: var(--tw-color-text-muted);
+  --tw-input-focus-border: var(--tw-color-border-focus);
+  --tw-input-focus-ring: var(--tw-color-focus-ring);
+
+  /* Modal */
+  --tw-modal-bg: var(--tw-color-surface);
+  --tw-modal-border-radius: 0.75rem;
+  --tw-modal-shadow: var(--tw-elevation-xl);
+  --tw-modal-overlay: var(--tw-color-overlay);
+
+  /* Dropdown */
+  --tw-dropdown-bg: var(--tw-color-surface);
+  --tw-dropdown-border: var(--tw-color-border);
+  --tw-dropdown-border-radius: 0.5rem;
+  --tw-dropdown-shadow: var(--tw-elevation-lg);
+  --tw-dropdown-item-hover: var(--tw-color-hover);
+
+  /* Tooltip */
+  --tw-tooltip-bg: #1e293b;
+  --tw-tooltip-text: #ffffff;
+  --tw-tooltip-border-radius: 0.375rem;
+
+  /* Badge */
+  --tw-badge-border-radius: 9999px;
+
+  /* Alert */
+  --tw-alert-border-radius: 0.5rem;
+
+  /* Tabs */
+  --tw-tab-bg: transparent;
+  --tw-tab-text: var(--tw-color-text-secondary);
+  --tw-tab-active-text: var(--tw-color-primary);
+  --tw-tab-active-indicator: var(--tw-color-primary);
+  --tw-tab-hover-bg: var(--tw-color-hover);
+
+  /* Select */
+  --tw-select-bg: var(--tw-color-surface);
+  --tw-select-text: var(--tw-color-text);
+  --tw-select-border: var(--tw-color-border);
+  --tw-select-option-hover: var(--tw-color-hover);
+  --tw-select-option-selected: var(--tw-color-primary-light);
+
+  /* Switch */
+  --tw-switch-track-off: var(--tw-color-border-dark);
+  --tw-switch-track-on: var(--tw-color-primary);
+  --tw-switch-thumb: var(--tw-color-surface);
+
+  /* Checkbox / Radio */
+  --tw-checkbox-border: var(--tw-color-border-dark);
+  --tw-checkbox-checked: var(--tw-color-primary);
+  --tw-checkbox-checkmark: var(--tw-color-text-inverse);
+
+  /* Progress */
+  --tw-progress-track: var(--tw-color-border);
+  --tw-progress-bar: var(--tw-color-primary);
+
+  /* Slider */
+  --tw-slider-track: var(--tw-color-border);
+  --tw-slider-range: var(--tw-color-primary);
+  --tw-slider-thumb: var(--tw-color-surface);
+  --tw-slider-thumb-border: var(--tw-color-primary);
+
+  /* Table */
+  --tw-table-header-bg: var(--tw-color-surface-alt);
+  --tw-table-row-hover: var(--tw-color-hover);
+  --tw-table-border: var(--tw-color-border);
+
+  /* Sidebar */
+  --tw-sidebar-bg: var(--tw-color-surface);
+  --tw-sidebar-border: var(--tw-color-border);
+  --tw-sidebar-item-hover: var(--tw-color-hover);
+  --tw-sidebar-item-active: var(--tw-color-primary-light);
+
+  /* Accordion */
+  --tw-accordion-bg: var(--tw-color-surface);
+  --tw-accordion-border: var(--tw-color-border);
+  --tw-accordion-header-hover: var(--tw-color-hover);
+}
+
+/* =====================================================
+   DARK MODE OVERRIDES
+   Apply .dark class to <html> element to enable.
+   ===================================================== */
+
+.dark {
+  /* Brand colors */
+  --tw-color-primary: #60a5fa;
+  --tw-color-primary-hover: #93c5fd;
+  --tw-color-primary-active: #bfdbfe;
+  --tw-color-primary-light: rgba(59, 130, 246, 0.2);
+  --tw-color-primary-dark: #3b82f6;
+
+  --tw-color-secondary: #94a3b8;
+  --tw-color-secondary-hover: #cbd5e1;
+  --tw-color-secondary-active: #e2e8f0;
+  --tw-color-secondary-light: rgba(100, 116, 139, 0.2);
+  --tw-color-secondary-dark: #64748b;
+
+  /* Semantic colors */
+  --tw-color-success: #34d399;
+  --tw-color-success-hover: #6ee7b7;
+  --tw-color-success-bg: rgba(16, 185, 129, 0.15);
+  --tw-color-success-text: #6ee7b7;
+  --tw-color-success-border: rgba(16, 185, 129, 0.3);
+
+  --tw-color-warning: #fbbf24;
+  --tw-color-warning-hover: #fcd34d;
+  --tw-color-warning-bg: rgba(245, 158, 11, 0.15);
+  --tw-color-warning-text: #fcd34d;
+  --tw-color-warning-border: rgba(245, 158, 11, 0.3);
+
+  --tw-color-danger: #f87171;
+  --tw-color-danger-hover: #fca5a5;
+  --tw-color-danger-bg: rgba(239, 68, 68, 0.15);
+  --tw-color-danger-text: #fca5a5;
+  --tw-color-danger-border: rgba(239, 68, 68, 0.3);
+
+  --tw-color-info: #22d3ee;
+  --tw-color-info-hover: #67e8f9;
+  --tw-color-info-bg: rgba(6, 182, 212, 0.15);
+  --tw-color-info-text: #67e8f9;
+  --tw-color-info-border: rgba(6, 182, 212, 0.3);
+
+  /* Neutral palette */
+  --tw-color-background: #0f172a;
+  --tw-color-background-alt: #1e293b;
+
+  --tw-color-surface: #1e293b;
+  --tw-color-surface-alt: #334155;
+  --tw-color-surface-hover: #334155;
+
+  /* Text colors */
+  --tw-color-text: #f8fafc;
+  --tw-color-text-secondary: #94a3b8;
+  --tw-color-text-muted: #64748b;
+  --tw-color-text-disabled: #475569;
+  --tw-color-text-inverse: #0f172a;
+
+  /* Border colors */
+  --tw-color-border: #334155;
+  --tw-color-border-light: #475569;
+  --tw-color-border-dark: #1e293b;
+
+  /* Interactive states */
+  --tw-color-hover: #334155;
+  --tw-color-active: #475569;
+  --tw-color-disabled-bg: #1e293b;
+  --tw-color-disabled-text: #475569;
+
+  /* Focus ring */
+  --tw-color-focus-ring: rgba(96, 165, 250, 0.5);
+  --tw-color-focus-ring-offset: #0f172a;
+
+  /* Overlay */
+  --tw-color-overlay: rgba(0, 0, 0, 0.7);
+
+  /* Shadows (darker for dark mode) */
+  --tw-shadow-color: rgba(0, 0, 0, 0.4);
+  --tw-elevation-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --tw-elevation: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --tw-elevation-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --tw-elevation-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --tw-elevation-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+
+  /* Component-specific dark mode overrides */
+  --tw-card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --tw-tooltip-bg: #f1f5f9;
+  --tw-tooltip-text: #0f172a;
+  --tw-select-option-selected: rgba(59, 130, 246, 0.3);
+  --tw-sidebar-item-active: rgba(59, 130, 246, 0.2);
+}
+

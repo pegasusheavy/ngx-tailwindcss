@@ -44,7 +44,7 @@
 
         <!-- Horizontal connector (inline between steps) -->
         @if (!last && orientation === 'horizontal') {
-          <div [class]="connectorClasses(i)"></div>
+          <div [class]="connectorClasses(i)" [ngStyle]="getHorizontalConnectorStyle()"></div>
         }
       </li>
 

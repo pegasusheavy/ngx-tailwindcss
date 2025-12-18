@@ -165,7 +165,7 @@ export class TwTableComponent {
 
   protected containerClasses = computed(() => {
     return this.twClass.merge(
-      'bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden',
+      'bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden',
       this.classOverride
     );
   });
@@ -181,29 +181,29 @@ export class TwTableComponent {
     );
   });
 
-  protected theadClasses = computed(() => 'bg-slate-50 border-b border-slate-200');
+  protected theadClasses = computed(() => 'bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700');
 
   protected thClasses(col: TableColumn) {
     const sizeClasses = TABLE_SIZES[this.size].cell;
     const alignClasses =
       col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left';
     return this.twClass.merge(
-      'font-semibold text-slate-700 whitespace-nowrap',
+      'font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap',
       sizeClasses,
       alignClasses,
-      col.sortable === false ? '' : 'cursor-pointer hover:bg-slate-100 select-none'
+      col.sortable === false ? '' : 'cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 select-none'
     );
   }
 
-  protected tbodyClasses = computed(() => 'divide-y divide-slate-100');
+  protected tbodyClasses = computed(() => 'divide-y divide-slate-100 dark:divide-slate-700');
 
   protected trClasses(row: any, isOdd: boolean) {
     const isSelected = this.isSelected(row);
     return this.twClass.merge(
       'transition-colors',
-      this.variant === 'striped' && isOdd ? 'bg-slate-50' : 'bg-white',
-      this.hoverable ? 'hover:bg-slate-50' : '',
-      isSelected ? 'bg-blue-50' : '',
+      this.variant === 'striped' && isOdd ? 'bg-slate-50 dark:bg-slate-900/50' : 'bg-white dark:bg-slate-800',
+      this.hoverable ? 'hover:bg-slate-50 dark:hover:bg-slate-700' : '',
+      isSelected ? 'bg-blue-50 dark:bg-blue-900/30' : '',
       this.selectable ? 'cursor-pointer' : ''
     );
   }
@@ -213,10 +213,10 @@ export class TwTableComponent {
     const alignClasses =
       col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left';
     return this.twClass.merge(
-      'text-slate-600',
+      'text-slate-600 dark:text-slate-400',
       sizeClasses,
       alignClasses,
-      this.variant === 'bordered' ? 'border border-slate-200' : ''
+      this.variant === 'bordered' ? 'border border-slate-200 dark:border-slate-700' : ''
     );
   }
 
@@ -226,7 +226,7 @@ export class TwTableComponent {
       'w-8 h-8 text-sm font-medium rounded-lg transition-colors',
       isCurrent
         ? 'bg-blue-600 text-white'
-        : 'text-slate-600 bg-white border border-slate-300 hover:bg-slate-50'
+        : 'text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700'
     );
   }
 

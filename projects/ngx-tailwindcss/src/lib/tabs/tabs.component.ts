@@ -27,24 +27,24 @@ export type TabsOrientation = 'horizontal' | 'vertical';
 
 const TABS_VARIANTS: Record<TabsVariant, { list: string; tab: string; activeTab: string }> = {
   line: {
-    list: 'border-b border-slate-200 gap-2',
-    tab: 'border-b-2 border-transparent -mb-px text-slate-600 hover:text-slate-900 hover:border-slate-300',
-    activeTab: 'border-blue-500 text-blue-600',
+    list: 'border-b border-slate-200 dark:border-slate-700 gap-2',
+    tab: 'border-b-2 border-transparent -mb-px text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:border-slate-300 dark:hover:border-slate-600',
+    activeTab: 'border-blue-500 text-blue-600 dark:text-blue-400',
   },
   enclosed: {
-    list: 'border-b border-slate-200 gap-1',
-    tab: 'border border-transparent rounded-t-lg -mb-px text-slate-600 hover:text-slate-900 hover:bg-slate-50',
-    activeTab: 'bg-white border-slate-200 border-b-white text-slate-900',
+    list: 'border-b border-slate-200 dark:border-slate-700 gap-1',
+    tab: 'border border-transparent rounded-t-lg -mb-px text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800',
+    activeTab: 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 border-b-white dark:border-b-slate-800 text-slate-900 dark:text-slate-100',
   },
   pills: {
     list: 'gap-2',
-    tab: 'rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100',
+    tab: 'rounded-lg text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800',
     activeTab: 'bg-blue-600 text-white hover:bg-blue-700 hover:text-white',
   },
   'soft-rounded': {
-    list: 'bg-slate-100 p-1.5 rounded-lg gap-2',
-    tab: 'rounded-md text-slate-600 hover:text-slate-900',
-    activeTab: 'bg-white text-slate-900 shadow-sm',
+    list: 'bg-slate-100 dark:bg-slate-800 p-1.5 rounded-lg gap-2',
+    tab: 'rounded-md text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100',
+    activeTab: 'bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 shadow-sm',
   },
 };
 

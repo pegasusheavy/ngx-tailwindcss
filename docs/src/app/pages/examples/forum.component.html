@@ -1,0 +1,438 @@
+<div class="min-h-screen bg-gradient-to-b from-orange-50 via-rose-50/30 to-white">
+  <!-- Header -->
+  <header class="bg-white/80 backdrop-blur-xl border-b border-orange-200/50 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Back to Docs & Logo -->
+        <div class="flex items-center gap-3">
+          <a routerLink="/" class="flex items-center gap-2 px-3 py-2 text-orange-700 hover:text-orange-900 hover:bg-orange-100 rounded-lg font-medium transition-colors">
+            <fa-icon [icon]="icons.arrowLeft" class="w-5 h-5"></fa-icon>
+            <span class="hidden sm:inline">Docs</span>
+          </a>
+
+          <div class="h-6 w-px bg-orange-300"></div>
+
+          <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-rose-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-orange-500/30">
+            F
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-orange-900">ForumHub</h1>
+            <p class="text-xs text-orange-600">Community Discussion</p>
+          </div>
+        </div>
+
+        <!-- Search -->
+        <div class="flex-1 max-w-2xl mx-8">
+          <tw-input
+            [(ngModel)]="searchQuery"
+            placeholder="Search threads, posts, or tags..."
+            size="md">
+            <fa-icon prefix [icon]="icons.search" class="w-5 h-5 text-slate-400"></fa-icon>
+          </tw-input>
+        </div>
+
+        <!-- User Menu -->
+        <div class="flex items-center gap-3">
+          <app-theme-toggle></app-theme-toggle>
+          <tw-button variant="ghost" size="sm">
+            <fa-icon [icon]="icons.bell" class="w-5 h-5"></fa-icon>
+          </tw-button>
+          <tw-avatar [initials]="currentUser.avatar" size="md"></tw-avatar>
+          <div class="hidden md:block">
+            <p class="text-sm font-semibold text-slate-900">{{ currentUser.username }}</p>
+            <p class="text-xs text-slate-500">{{ currentUser.reputation }} rep</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb & Actions -->
+    <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center gap-2 text-sm">
+        @if (currentView() === 'categories') {
+          <span class="text-slate-900 font-semibold">Categories</span>
+        } @else if (currentView() === 'threads') {
+          <button class="text-slate-600 hover:text-slate-900" (click)="backToCategories()">Categories</button>
+          <span class="text-slate-400">/</span>
+          <span class="text-slate-900 font-semibold">{{ getCategoryName(selectedCategory()!) }}</span>
+        } @else {
+          <button class="text-slate-600 hover:text-slate-900" (click)="backToCategories()">Categories</button>
+          <span class="text-slate-400">/</span>
+          <button class="text-slate-600 hover:text-slate-900" (click)="backToThreads()">{{ getCategoryName(selectedThread()!.category) }}</button>
+          <span class="text-slate-400">/</span>
+          <span class="text-slate-900 font-semibold truncate max-w-md">{{ selectedThread()!.title }}</span>
+        }
+      </div>
+
+      @if (currentView() !== 'thread') {
+        <tw-button (click)="openNewThread()">
+          <fa-icon [icon]="icons.plus" class="mr-2"></fa-icon>
+          New Thread
+        </tw-button>
+      }
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+      @for (stat of stats; track stat.label) {
+        <tw-card [padded]="true">
+          <div class="text-center">
+            <div class="text-2xl font-bold text-slate-900">{{ stat.value }}</div>
+            <div class="text-sm text-slate-600">{{ stat.label }}</div>
+          </div>
+        </tw-card>
+      }
+    </div>
+
+    <!-- Categories View -->
+    @if (currentView() === 'categories') {
+      <div class="space-y-4">
+        <h2 class="text-2xl font-bold text-slate-900 mb-4">Forum Categories</h2>
+
+        @for (category of categories; track category.id) {
+          <tw-card class="hover:shadow-lg transition-shadow cursor-pointer" [padded]="true" (click)="selectCategory(category.id)">
+            <div class="flex items-start gap-4">
+              <div class="w-16 h-16 rounded-xl bg-gradient-to-br {{ category.color }} flex items-center justify-center text-4xl flex-shrink-0">
+                {{ category.icon }}
+              </div>
+
+              <div class="flex-1">
+                <div class="flex items-center justify-between mb-2">
+                  <h3 class="text-xl font-bold text-slate-900">{{ category.name }}</h3>
+                  <fa-icon [icon]="icons.chevronRight" class="w-6 h-6 text-slate-400"></fa-icon>
+                </div>
+                <p class="text-slate-600 mb-3">{{ category.description }}</p>
+                <div class="flex gap-4 text-sm text-slate-500">
+                  <span>📝 {{ category.threads }} threads</span>
+                  <span>💬 {{ category.posts }} posts</span>
+                </div>
+              </div>
+            </div>
+          </tw-card>
+        }
+      </div>
+    }
+
+    <!-- Threads List View -->
+    @if (currentView() === 'threads') {
+      <div>
+        <!-- Filters -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center gap-3">
+            <tw-select
+              [(ngModel)]="sortBy"
+              [options]="sortOptions"
+              size="sm">
+            </tw-select>
+          </div>
+          <p class="text-sm text-slate-600">{{ filteredThreads().length }} threads</p>
+        </div>
+
+        <!-- Thread List -->
+        <div class="space-y-3">
+          @for (thread of paginatedThreads(); track thread.id) {
+            <tw-card class="hover:shadow-lg transition-shadow cursor-pointer" [padded]="true" (click)="viewThread(thread)">
+              <div class="flex gap-4">
+                <tw-avatar [initials]="thread.author.avatar" size="lg"></tw-avatar>
+
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between mb-2">
+                    <div class="flex-1">
+                      <div class="flex items-center gap-2 mb-1">
+                        @if (thread.isPinned) {
+                          <tw-badge variant="warning" size="sm">📌 Pinned</tw-badge>
+                        }
+                        @if (thread.isLocked) {
+                          <tw-badge  size="sm">🔒 Locked</tw-badge>
+                        }
+                        @if (thread.isSolved) {
+                          <tw-badge variant="success" size="sm">✓ Solved</tw-badge>
+                        }
+                      </div>
+                      <h3 class="text-lg font-semibold text-slate-900 hover:text-indigo-600 transition-colors line-clamp-1">
+                        {{ thread.title }}
+                      </h3>
+                      <p class="text-sm text-slate-600 mt-1 line-clamp-2">{{ thread.content }}</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-4 mt-3 text-sm text-slate-500">
+                    <div class="flex items-center gap-1">
+                      <span class="font-medium text-slate-700">{{ thread.author.username }}</span>
+                      <tw-badge [variant]="getRoleBadgeVariant(thread.author.role)" size="sm">
+                        {{ thread.author.role }}
+                      </tw-badge>
+                    </div>
+                    <span>👁️ {{ thread.views }}</span>
+                    <span>💬 {{ thread.replies }} replies</span>
+                    <span>❤️ {{ thread.likes }} likes</span>
+                    <span>🕐 {{ thread.lastActivity }}</span>
+                  </div>
+
+                  @if (thread.tags.length > 0) {
+                    <div class="flex flex-wrap gap-1 mt-3">
+                      @for (tag of thread.tags; track tag) {
+                        <tw-badge  size="sm">#{{ tag }}</tw-badge>
+                      }
+                    </div>
+                  }
+                </div>
+              </div>
+            </tw-card>
+          }
+        </div>
+
+        <!-- Pagination -->
+        @if (totalPages() > 1) {
+          <div class="mt-6 flex justify-center">
+            <tw-pagination
+              [currentPage]="currentPage()"
+              [totalPages]="totalPages()"
+              (pageChange)="onPageChange($event)">
+            </tw-pagination>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Thread Detail View -->
+    @if (currentView() === 'thread' && selectedThread()) {
+      <div class="space-y-6">
+        <!-- Original Post -->
+        <tw-card [padded]="true">
+          <div class="flex gap-4">
+            <!-- Author Sidebar -->
+            <div class="w-32 flex-shrink-0 text-center">
+              <tw-avatar [initials]="selectedThread()!.author.avatar" size="xl" class="mx-auto mb-3"></tw-avatar>
+              <p class="font-semibold text-slate-900">{{ selectedThread()!.author.username }}</p>
+              <tw-badge [variant]="getRoleBadgeVariant(selectedThread()!.author.role)" size="sm" class="mt-1">
+                {{ selectedThread()!.author.role }}
+              </tw-badge>
+              <div class="mt-3 text-sm text-slate-600">
+                <p>⭐ {{ selectedThread()!.author.reputation }}</p>
+                <p>📝 {{ selectedThread()!.author.posts }} posts</p>
+                <p class="text-xs mt-2">Joined {{ selectedThread()!.author.joinDate }}</p>
+              </div>
+              <div class="flex justify-center gap-1 mt-2">
+                @for (badge of selectedThread()!.author.badges; track badge) {
+                  <span class="text-xl">{{ badge }}</span>
+                }
+              </div>
+            </div>
+
+            <tw-divider orientation="vertical"></tw-divider>
+
+            <!-- Post Content -->
+            <div class="flex-1">
+              <div class="flex items-start justify-between mb-4">
+                <div>
+                  <h1 class="text-2xl font-bold text-slate-900 mb-2">{{ selectedThread()!.title }}</h1>
+                  <div class="flex flex-wrap gap-2">
+                    @if (selectedThread()!.isPinned) {
+                      <tw-badge variant="warning">📌 Pinned</tw-badge>
+                    }
+                    @if (selectedThread()!.isLocked) {
+                      <tw-badge >🔒 Locked</tw-badge>
+                    }
+                    @if (selectedThread()!.isSolved) {
+                      <tw-badge variant="success">✓ Solved</tw-badge>
+                    }
+                    @for (tag of selectedThread()!.tags; track tag) {
+                      <tw-badge size="sm">#{{ tag }}</tw-badge>
+                    }
+                  </div>
+                </div>
+              </div>
+
+              <div class="prose max-w-none mb-6">
+                <p class="text-slate-700">{{ selectedThread()!.content }}</p>
+              </div>
+
+              <tw-divider></tw-divider>
+
+              <div class="flex items-center justify-between mt-4">
+                <div class="flex items-center gap-4 text-sm text-slate-500">
+                  <span>Posted {{ selectedThread()!.createdAt }}</span>
+                  <span>👁️ {{ selectedThread()!.views }} views</span>
+                </div>
+                <div class="flex gap-2">
+                  <tw-button variant="outline" size="sm" (click)="likeThread(selectedThread()!)">
+                    ❤️ {{ selectedThread()!.likes }}
+                  </tw-button>
+                  <tw-button variant="outline" size="sm">
+                    🔖 Bookmark
+                  </tw-button>
+                  <tw-button variant="outline" size="sm">
+                    🔗 Share
+                  </tw-button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </tw-card>
+
+        <!-- Replies -->
+        <div>
+          <h3 class="text-xl font-bold text-slate-900 mb-4">
+            💬 {{ selectedThread()!.replies }} Replies
+          </h3>
+
+          <div class="space-y-4">
+            @for (reply of replies; track reply.id) {
+              <tw-card [class]="reply.isAccepted ? 'ring-2 ring-green-500' : ''" [padded]="true">
+                @if (reply.isAccepted) {
+                  <div class="absolute -top-3 left-4">
+                    <tw-badge variant="success" size="sm">✓ Accepted Answer</tw-badge>
+                  </div>
+                }
+
+                <div class="flex gap-4">
+                  <!-- Author Sidebar -->
+                  <div class="w-32 flex-shrink-0 text-center">
+                    <tw-avatar [initials]="reply.author.avatar" size="lg" class="mx-auto mb-2"></tw-avatar>
+                    <p class="font-semibold text-slate-900 text-sm">{{ reply.author.username }}</p>
+                    <tw-badge [variant]="getRoleBadgeVariant(reply.author.role)" size="sm" class="mt-1">
+                      {{ reply.author.role }}
+                    </tw-badge>
+                    <div class="mt-2 text-xs text-slate-600">
+                      <p>⭐ {{ reply.author.reputation }}</p>
+                      <p>📝 {{ reply.author.posts }} posts</p>
+                    </div>
+                  </div>
+
+                  <tw-divider orientation="vertical"></tw-divider>
+
+                  <!-- Reply Content -->
+                  <div class="flex-1">
+                    <div class="prose max-w-none mb-4">
+                      <p class="text-slate-700">{{ reply.content }}</p>
+                    </div>
+
+                    @if (reply.edited) {
+                      <p class="text-xs text-slate-500 mb-3 italic">Edited</p>
+                    }
+
+                    <tw-divider></tw-divider>
+
+                    <div class="flex items-center justify-between mt-3">
+                      <span class="text-sm text-slate-500">{{ reply.createdAt }}</span>
+                      <div class="flex gap-2">
+                        <tw-button variant="outline" size="sm" (click)="likeReply(reply)">
+                          ❤️ {{ reply.likes }}
+                        </tw-button>
+                        <tw-button variant="outline" size="sm">
+                          💬 Quote
+                        </tw-button>
+                        <tw-button variant="outline" size="sm">
+                          🚩 Report
+                        </tw-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </tw-card>
+            }
+          </div>
+        </div>
+
+        <!-- Reply Form -->
+        @if (!selectedThread()!.isLocked) {
+          <tw-card [padded]="true">
+            <h4 class="text-lg font-semibold text-slate-900 mb-4">Post a Reply</h4>
+
+            <textarea
+              [(ngModel)]="replyContent"
+              rows="6"
+              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+              placeholder="Write your reply..."></textarea>
+
+            <div class="flex items-center justify-between mt-4">
+              <div class="flex gap-2">
+                <tw-button variant="outline" size="sm">
+                  📎 Attach
+                </tw-button>
+                <tw-button variant="outline" size="sm">
+                  😊 Emoji
+                </tw-button>
+              </div>
+              <tw-button (click)="submitReply()" [disabled]="loading()">
+                @if (loading()) {
+                  <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+                }
+                Post Reply
+              </tw-button>
+            </div>
+          </tw-card>
+        } @else {
+          <tw-alert variant="warning">
+            This thread is locked. No new replies can be posted.
+          </tw-alert>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- New Thread Modal -->
+  <tw-modal
+    [(open)]="newThreadModalOpen"
+    title="Create New Thread"
+    [showCloseButton]="true"
+    size="lg">
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Category</label>
+        <select
+          [(ngModel)]="newThreadCategory"
+          class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          @for (category of categories; track category.id) {
+            <option [value]="category.id">{{ category.icon }} {{ category.name }}</option>
+          }
+        </select>
+      </div>
+
+      <tw-input
+        [(ngModel)]="newThreadTitle"
+        label="Thread Title"
+        placeholder="Enter a descriptive title..."
+        required>
+      </tw-input>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Content</label>
+        <textarea
+          [(ngModel)]="newThreadContent"
+          rows="8"
+          class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+          placeholder="Describe your topic in detail..."></textarea>
+      </div>
+
+      <tw-input
+        [(ngModel)]="newThreadTags"
+        label="Tags (comma-separated)"
+        placeholder="help, tutorial, javascript">
+      </tw-input>
+
+      <tw-alert variant="info">
+        <ul class="text-sm space-y-1">
+          <li>✓ Be clear and specific in your title</li>
+          <li>✓ Provide detailed information</li>
+          <li>✓ Use relevant tags for better discoverability</li>
+          <li>✓ Follow community guidelines</li>
+        </ul>
+      </tw-alert>
+    </div>
+
+    <div footer class="flex gap-3">
+      <tw-button variant="outline" (click)="closeNewThread()">Cancel</tw-button>
+      <tw-button (click)="submitNewThread()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="inline-block w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+        }
+        Create Thread
+      </tw-button>
+    </div>
+  </tw-modal>
+</div>

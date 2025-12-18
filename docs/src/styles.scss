@@ -3,6 +3,9 @@
 /* Scan the ngx-tailwindcss library for Tailwind classes */
 @source "../node_modules/@pegasus-heavy/ngx-tailwindcss/fesm2022/*.mjs";
 
+/* Include safelist for dark mode classes that @source may not properly extract */
+@source "./tailwind-safelist.ts";
+
 /* Custom theme configuration */
 @theme {
   /* You can extend the default Tailwind theme here */
@@ -10,6 +13,9 @@
   --font-body: "Inter", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
 }
+
+/* Dark mode variant - use class strategy */
+@variant dark (&:where(.dark, .dark *));
 
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -25,6 +31,8 @@
   body {
     font-family: var(--font-body);
     @apply bg-slate-50 text-slate-900;
+    @apply dark:bg-slate-900 dark:text-slate-100;
+    transition: background-color 0.2s ease, color 0.2s ease;
   }
 
   ::selection {
@@ -38,15 +46,15 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-slate-100;
+    @apply bg-slate-100 dark:bg-slate-800;
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-slate-300 rounded-full;
+    @apply bg-slate-300 dark:bg-slate-600 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-slate-400;
+    @apply bg-slate-400 dark:bg-slate-500;
   }
 
   /* Code blocks */
@@ -62,6 +70,6 @@
   }
 
   .glass {
-    @apply bg-white/80 backdrop-blur-lg border border-white/20;
+    @apply bg-white/80 dark:bg-slate-800/80 backdrop-blur-lg border border-white/20 dark:border-slate-700/20;
   }
 }

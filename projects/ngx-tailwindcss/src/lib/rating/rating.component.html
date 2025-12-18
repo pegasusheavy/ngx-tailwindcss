@@ -8,8 +8,8 @@
       (click)="onStarClick($index)"
       (mouseenter)="onStarHover($index)"
       (mouseleave)="onStarLeave()"
-      (focus)="onFocus.emit($event)"
-      (blur)="onInputBlur()"
+      (focus)="focus.emit($event)"
+      (blur)="onInputBlur($event)"
     >
       @if ($index < getFilledStars($index)) {
         <!-- Filled star -->

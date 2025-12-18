@@ -74,6 +74,9 @@ const MODAL_SIZES: Record<ModalSize, string> = {
   ],
 })
 export class TwModalComponent implements OnDestroy {
+  /** Expose sizes to template for JIT detection */
+  protected readonly MODAL_SIZES = MODAL_SIZES;
+
   private readonly twClass = inject(TwClassService);
   private readonly document = inject(DOCUMENT);
 
@@ -182,10 +185,18 @@ export class TwModalComponent implements OnDestroy {
 
   protected readonly panelClasses = computed(() => {
     return this.twClass.merge(
-      'relative w-full bg-white rounded-xl shadow-2xl',
+      'relative w-full bg-white dark:bg-slate-800 rounded-xl shadow-2xl',
       MODAL_SIZES[this._size()],
       this._panelClass()
     );
+  });
+
+  /**
+   * Returns only the size and custom panel classes (not base styling)
+   * Base styling with dark: variants is in the template for Tailwind JIT detection
+   */
+  protected readonly sizeAndCustomClasses = computed(() => {
+    return this.twClass.merge(MODAL_SIZES[this._size()], this._panelClass());
   });
 
   protected onBackdropClick(): void {
@@ -222,7 +233,7 @@ export class TwModalComponent implements OnDestroy {
   selector: 'tw-modal-header',
   standalone: true,
   host: {
-    class: 'block px-6 py-4 border-b border-slate-100',
+    class: 'block px-6 py-4 border-b border-slate-100 dark:border-slate-700',
   },
   template: `<ng-content></ng-content>`,
 })
@@ -235,7 +246,7 @@ export class TwModalHeaderComponent {}
   selector: 'tw-modal-title',
   standalone: true,
   host: {
-    class: 'block text-lg font-semibold text-slate-900',
+    class: 'block text-lg font-semibold text-slate-900 dark:text-slate-100',
   },
   template: `<ng-content></ng-content>`,
 })
@@ -289,7 +300,7 @@ export class TwModalFooterComponent {
     };
 
     return this.twClass.merge(
-      'flex items-center gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50 rounded-b-xl',
+      'flex items-center gap-3 px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50 rounded-b-xl',
       alignClasses[this._align()],
       this._classOverride()
     );

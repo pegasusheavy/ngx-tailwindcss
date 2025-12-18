@@ -92,13 +92,13 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
 
       if (event.shiftKey) {
         // Shift+Tab: if on first element, go to last
-        if (document.activeElement === firstElement) {
+        if (document.activeElement === firstElement && lastElement) {
           event.preventDefault();
           lastElement.focus();
         }
       } else {
         // Tab: if on last element, go to first
-        if (document.activeElement === lastElement) {
+        if (document.activeElement === lastElement && firstElement) {
           event.preventDefault();
           firstElement.focus();
         }

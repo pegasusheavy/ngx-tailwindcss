@@ -7,8 +7,8 @@
   <!-- Basic -->
   <app-demo-section title="Basic Usage" [code]="basicCode">
     <tw-popover>
-      <tw-button trigger>Open Popover</tw-button>
-      <div content class="p-4">
+      <tw-button twPopoverTrigger>Open Popover</tw-button>
+      <div class="p-4">
         <h4 class="font-semibold text-slate-900 mb-2">Popover Title</h4>
         <p class="text-sm text-slate-600">This is the popover content. You can put any content here.</p>
       </div>
@@ -19,26 +19,26 @@
   <app-demo-section title="Positions" [code]="positionsCode">
     <div class="flex flex-wrap gap-4">
       <tw-popover position="top">
-        <tw-button trigger variant="outline">Top</tw-button>
-        <div content class="p-3">
+        <tw-button twPopoverTrigger variant="outline">Top</tw-button>
+        <div class="p-3">
           <p class="text-sm">Popover on top</p>
         </div>
       </tw-popover>
       <tw-popover position="bottom">
-        <tw-button trigger variant="outline">Bottom</tw-button>
-        <div content class="p-3">
+        <tw-button twPopoverTrigger variant="outline">Bottom</tw-button>
+        <div class="p-3">
           <p class="text-sm">Popover on bottom</p>
         </div>
       </tw-popover>
       <tw-popover position="left">
-        <tw-button trigger variant="outline">Left</tw-button>
-        <div content class="p-3">
+        <tw-button twPopoverTrigger variant="outline">Left</tw-button>
+        <div class="p-3">
           <p class="text-sm">Popover on left</p>
         </div>
       </tw-popover>
       <tw-popover position="right">
-        <tw-button trigger variant="outline">Right</tw-button>
-        <div content class="p-3">
+        <tw-button twPopoverTrigger variant="outline">Right</tw-button>
+        <div class="p-3">
           <p class="text-sm">Popover on right</p>
         </div>
       </tw-popover>
@@ -48,15 +48,15 @@
   <!-- Trigger Types -->
   <app-demo-section title="Trigger Types" [code]="triggersCode">
     <div class="flex flex-wrap gap-4">
-      <tw-popover triggerType="click">
-        <tw-button trigger>Click to open</tw-button>
-        <div content class="p-3">
+      <tw-popover trigger="click">
+        <tw-button twPopoverTrigger>Click to open</tw-button>
+        <div class="p-3">
           <p class="text-sm">Triggered by click</p>
         </div>
       </tw-popover>
-      <tw-popover triggerType="hover">
-        <tw-button trigger variant="outline">Hover to open</tw-button>
-        <div content class="p-3">
+      <tw-popover trigger="hover">
+        <tw-button twPopoverTrigger variant="outline">Hover to open</tw-button>
+        <div class="p-3">
           <p class="text-sm">Triggered by hover</p>
         </div>
       </tw-popover>
@@ -66,8 +66,8 @@
   <!-- Rich Content -->
   <app-demo-section title="Rich Content" [code]="basicCode">
     <tw-popover>
-      <tw-button trigger variant="primary">User Profile</tw-button>
-      <div content class="p-4 w-64">
+      <tw-button twPopoverTrigger variant="primary">User Profile</tw-button>
+      <div class="p-4 w-64">
         <div class="flex items-center gap-3 mb-3">
           <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
             <span class="text-blue-600 font-semibold">JD</span>

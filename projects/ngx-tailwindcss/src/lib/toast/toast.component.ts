@@ -121,7 +121,7 @@ export class TwToastComponent {
 
   protected toastClasses = computed(() => {
     return [
-      'w-full max-w-sm bg-white rounded-xl shadow-lg border border-slate-200 p-4',
+      'w-full max-w-sm bg-white dark:bg-slate-800 rounded-xl shadow-lg dark:shadow-slate-900/50 border border-slate-200 dark:border-slate-700 p-4',
       'animate-[toast-in_0.3s_ease-out]',
     ].join(' ');
   });

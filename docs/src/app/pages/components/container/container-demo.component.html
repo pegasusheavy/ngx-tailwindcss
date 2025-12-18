@@ -1,0 +1,98 @@
+<app-page-header
+  title="Container"
+  description="A component for creating centered, max-width layouts. Perfect for page content areas.">
+</app-page-header>
+
+<!-- Basic Usage -->
+<app-demo-section title="Basic Usage" [code]="basicCode">
+  <div class="bg-slate-200/60 dark:bg-slate-900 p-2 rounded-xl">
+    <tw-container size="lg">
+      <div class="bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 p-6 rounded shadow-sm border border-slate-200 dark:border-slate-700">
+        <h3 class="text-lg font-semibold mb-2">Centered Content</h3>
+        <p class="text-slate-600 dark:text-slate-300">This content is inside a large centered container. Try resizing your browser to see how it behaves.</p>
+      </div>
+    </tw-container>
+  </div>
+</app-demo-section>
+
+<!-- Sizes -->
+<app-demo-section title="Container Sizes" [code]="sizesCode">
+  <div class="space-y-4 bg-slate-200/60 dark:bg-slate-900/50 p-2 rounded-2xl">
+    <tw-container size="sm">
+      <div class="bg-blue-100 dark:bg-blue-900/40 border border-blue-200 dark:border-blue-800 p-4 rounded text-center text-slate-800 dark:text-slate-100">
+        <span class="font-medium">sm</span> - max-w-screen-sm (640px)
+      </div>
+    </tw-container>
+
+    <tw-container size="md">
+      <div class="bg-green-100 dark:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-700 p-4 rounded text-center text-slate-800 dark:text-slate-100">
+        <span class="font-medium">md</span> - max-w-screen-md (768px)
+      </div>
+    </tw-container>
+
+    <tw-container size="lg">
+      <div class="bg-yellow-100 dark:bg-amber-900/50 border border-amber-200 dark:border-amber-700 p-4 rounded text-center text-slate-800 dark:text-slate-100">
+        <span class="font-medium">lg</span> - max-w-screen-lg (1024px)
+      </div>
+    </tw-container>
+
+    <tw-container size="xl">
+      <div class="bg-orange-100 dark:bg-orange-900/60 border border-orange-200 dark:border-orange-700 p-4 rounded text-center text-slate-800 dark:text-slate-100">
+        <span class="font-medium">xl</span> - max-w-screen-xl (1280px)
+      </div>
+    </tw-container>
+
+    <tw-container size="prose">
+      <div class="bg-purple-100 dark:bg-purple-900/60 border border-purple-200 dark:border-purple-700 p-4 rounded text-center text-slate-800 dark:text-slate-100">
+        <span class="font-medium">prose</span> - max-w-prose (65ch) - ideal for reading
+      </div>
+    </tw-container>
+  </div>
+</app-demo-section>
+
+<!-- Padding -->
+<app-demo-section title="Padding Options" [code]="paddingCode">
+  <div class="space-y-4 bg-slate-200/60 dark:bg-slate-900/80 p-2 rounded-xl">
+    <tw-container size="lg" padding="none">
+      <div class="bg-rose-100 dark:bg-rose-900/60 border border-rose-200 dark:border-rose-700 p-4 text-slate-800 dark:text-slate-100">
+        <span class="font-medium">padding="none"</span> - No horizontal padding
+      </div>
+    </tw-container>
+
+    <tw-container size="lg" padding="sm">
+      <div class="bg-cyan-100 dark:bg-cyan-900/60 border border-cyan-200 dark:border-cyan-700 p-4 text-slate-800 dark:text-slate-100">
+        <span class="font-medium">padding="sm"</span> - Small padding (px-2 sm:px-4)
+      </div>
+    </tw-container>
+
+    <tw-container size="lg" padding="md">
+      <div class="bg-lime-100 dark:bg-lime-900/50 border border-lime-200 dark:border-lime-700 p-4 text-slate-800 dark:text-slate-100">
+        <span class="font-medium">padding="md"</span> - Medium padding (default)
+      </div>
+    </tw-container>
+
+    <tw-container size="lg" padding="lg">
+      <div class="bg-amber-100 dark:bg-amber-900/70 border border-amber-200 dark:border-amber-700 p-4 text-slate-800 dark:text-slate-100">
+        <span class="font-medium">padding="lg"</span> - Large padding
+      </div>
+    </tw-container>
+  </div>
+</app-demo-section>
+
+<!-- Alignment -->
+<app-demo-section title="Alignment" [code]="alignmentCode">
+  <div class="space-y-4 bg-slate-200/60 dark:bg-slate-900/70 p-2 rounded-xl">
+    <tw-container size="md" [centered]="true">
+      <div class="bg-indigo-100 dark:bg-indigo-900/40 border border-indigo-200 dark:border-indigo-700 p-4 rounded text-center text-slate-800 dark:text-slate-100">
+        Centered container (default)
+      </div>
+    </tw-container>
+
+    <tw-container size="md" [centered]="false">
+      <div class="bg-pink-100 dark:bg-pink-900/50 border border-pink-200 dark:border-pink-700 p-4 rounded text-center text-slate-800 dark:text-slate-100">
+        Left-aligned container
+      </div>
+    </tw-container>
+  </div>
+</app-demo-section>
+

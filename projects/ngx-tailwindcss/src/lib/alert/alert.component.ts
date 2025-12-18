@@ -30,27 +30,27 @@ const ALERT_SOLID_VARIANTS: Record<AlertVariant, string> = {
 };
 
 const ALERT_SOFT_VARIANTS: Record<AlertVariant, string> = {
-  info: 'bg-blue-50 text-blue-800 border border-blue-200',
-  success: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
-  warning: 'bg-amber-50 text-amber-800 border border-amber-200',
-  danger: 'bg-rose-50 text-rose-800 border border-rose-200',
-  neutral: 'bg-slate-50 text-slate-800 border border-slate-200',
+  info: 'bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border border-blue-200 dark:border-blue-800',
+  success: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800',
+  warning: 'bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800',
+  danger: 'bg-rose-50 dark:bg-rose-900/30 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800',
+  neutral: 'bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700',
 };
 
 const ALERT_OUTLINED_VARIANTS: Record<AlertVariant, string> = {
-  info: 'bg-transparent text-blue-700 border-2 border-blue-500',
-  success: 'bg-transparent text-emerald-700 border-2 border-emerald-500',
-  warning: 'bg-transparent text-amber-700 border-2 border-amber-500',
-  danger: 'bg-transparent text-rose-700 border-2 border-rose-500',
-  neutral: 'bg-transparent text-slate-700 border-2 border-slate-400',
+  info: 'bg-transparent text-blue-700 dark:text-blue-400 border-2 border-blue-500 dark:border-blue-600',
+  success: 'bg-transparent text-emerald-700 dark:text-emerald-400 border-2 border-emerald-500 dark:border-emerald-600',
+  warning: 'bg-transparent text-amber-700 dark:text-amber-400 border-2 border-amber-500 dark:border-amber-600',
+  danger: 'bg-transparent text-rose-700 dark:text-rose-400 border-2 border-rose-500 dark:border-rose-600',
+  neutral: 'bg-transparent text-slate-700 dark:text-slate-400 border-2 border-slate-400 dark:border-slate-600',
 };
 
 const ALERT_ACCENT_VARIANTS: Record<AlertVariant, string> = {
-  info: 'bg-blue-50 text-blue-800 border-l-4 border-blue-500 rounded-l-none',
-  success: 'bg-emerald-50 text-emerald-800 border-l-4 border-emerald-500 rounded-l-none',
-  warning: 'bg-amber-50 text-amber-800 border-l-4 border-amber-500 rounded-l-none',
-  danger: 'bg-rose-50 text-rose-800 border-l-4 border-rose-500 rounded-l-none',
-  neutral: 'bg-slate-50 text-slate-800 border-l-4 border-slate-500 rounded-l-none',
+  info: 'bg-blue-50 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 border-l-4 border-blue-500 rounded-l-none',
+  success: 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300 border-l-4 border-emerald-500 rounded-l-none',
+  warning: 'bg-amber-50 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 border-l-4 border-amber-500 rounded-l-none',
+  danger: 'bg-rose-50 dark:bg-rose-900/30 text-rose-800 dark:text-rose-300 border-l-4 border-rose-500 rounded-l-none',
+  neutral: 'bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border-l-4 border-slate-500 rounded-l-none',
 };
 
 const ICON_COLORS: Record<AlertVariant, Record<AlertStyle, string>> = {

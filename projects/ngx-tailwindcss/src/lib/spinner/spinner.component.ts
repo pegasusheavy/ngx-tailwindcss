@@ -232,12 +232,12 @@ export class TwLoadingOverlayComponent {
     const ovl = this._overlay();
 
     const overlayStyles: Record<string, string> = {
-      full: 'fixed inset-0 z-50 bg-white/80 backdrop-blur-sm',
-      inline: 'absolute inset-0 bg-white/80 backdrop-blur-sm rounded-inherit',
+      full: 'fixed inset-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm',
+      inline: 'absolute inset-0 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-inherit',
     };
 
     return ['flex items-center justify-center', overlayStyles[ovl]].join(' ');
   });
 
-  protected messageClasses = computed(() => 'text-sm font-medium text-slate-600');
+  protected messageClasses = computed(() => 'text-sm font-medium text-slate-600 dark:text-slate-400');
 }

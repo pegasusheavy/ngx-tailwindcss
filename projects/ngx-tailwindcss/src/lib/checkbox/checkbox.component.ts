@@ -17,11 +17,11 @@ export type CheckboxVariant = 'primary' | 'secondary' | 'success' | 'warning' | 
 export type CheckboxSize = 'sm' | 'md' | 'lg';
 
 const CHECKBOX_VARIANTS: Record<CheckboxVariant, string> = {
-  primary: 'text-blue-600 focus:ring-blue-500 border-slate-300',
-  secondary: 'text-slate-600 focus:ring-slate-500 border-slate-300',
-  success: 'text-emerald-600 focus:ring-emerald-500 border-slate-300',
-  warning: 'text-amber-500 focus:ring-amber-500 border-slate-300',
-  danger: 'text-rose-600 focus:ring-rose-500 border-slate-300',
+  primary: 'text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-600',
+  secondary: 'text-slate-600 focus:ring-slate-500 border-slate-300 dark:border-slate-600',
+  success: 'text-emerald-600 focus:ring-emerald-500 border-slate-300 dark:border-slate-600',
+  warning: 'text-amber-500 focus:ring-amber-500 border-slate-300 dark:border-slate-600',
+  danger: 'text-rose-600 focus:ring-rose-500 border-slate-300 dark:border-slate-600',
 };
 
 const CHECKBOX_SIZES: Record<CheckboxSize, { box: string; label: string }> = {
@@ -100,8 +100,8 @@ export class TwCheckboxComponent implements ControlValueAccessor {
     const sizeClasses = CHECKBOX_SIZES[this.size()].box;
 
     return this.twClass.merge(
-      'rounded border-2 bg-white transition-colors duration-150',
-      'focus:ring-2 focus:ring-offset-2',
+      'rounded border-2 bg-white dark:bg-slate-800 transition-colors duration-150',
+      'focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
       'disabled:opacity-50 disabled:cursor-not-allowed',
       variantClasses,
       sizeClasses
@@ -110,9 +110,9 @@ export class TwCheckboxComponent implements ControlValueAccessor {
 
   protected readonly labelTextClasses = computed(() => {
     return this.twClass.merge(
-      'text-slate-700 select-none',
+      'text-slate-700 dark:text-slate-300 select-none',
       CHECKBOX_SIZES[this.size()].label,
-      this._disabled() ? 'text-slate-400' : ''
+      this._disabled() ? 'text-slate-400 dark:text-slate-500' : ''
     );
   });
 

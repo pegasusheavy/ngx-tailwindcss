@@ -1,8 +1,11 @@
 {
   "name": "@pegasus-heavy/ngx-tailwindcss",
-  "version": "0.1.0",
+  "version": "0.1.0-beta.1",
   "description": "A highly customizable Angular component library for Tailwind CSS 4+. Build beautiful, accessible UI components with full theming support, intelligent class merging, and zero bundled CSS. Features 30+ components including buttons, cards, modals, forms, tables, and more.",
   "license": "MIT",
+  "exports": {
+    "./styles/theme.css": "./styles/theme.css"
+  },
   "author": {
     "name": "Pegasus Heavy Industries LLC",
     "url": "https://pegasusheavy.github.io/ngx-tailwindcss"

@@ -1,6 +1,6 @@
 <app-page-header
   title="Select"
-  description="Dropdown select component with search, filtering, and selection support.">
+  description="Dropdown select component with search, filtering, grouped options, and selection support.">
 </app-page-header>
 
 <div class="space-y-8">
@@ -13,6 +13,32 @@
         placeholder="Select a country">
       </tw-select>
       <p class="mt-2 text-sm text-slate-600">Selected: {{ selectedCountry || 'None' }}</p>
+    </div>
+  </app-demo-section>
+
+  <!-- Grouped Options -->
+  <app-demo-section title="Grouped Options" [code]="groupedCode">
+    <div class="max-w-sm">
+      <tw-select
+        [groups]="countryGroups"
+        [(ngModel)]="selectedGroupedCountry"
+        placeholder="Select a country">
+      </tw-select>
+      <p class="mt-2 text-sm text-slate-600">Selected: {{ selectedGroupedCountry || 'None' }}</p>
+    </div>
+  </app-demo-section>
+
+  <!-- With Filter -->
+  <app-demo-section title="With Filter/Search" [code]="filterCode">
+    <div class="max-w-sm">
+      <tw-select
+        [groups]="countryGroups"
+        [(ngModel)]="selectedFilterCountry"
+        [filter]="true"
+        filterPlaceholder="Search countries..."
+        placeholder="Select a country">
+      </tw-select>
+      <p class="mt-2 text-sm text-slate-600">Selected: {{ selectedFilterCountry || 'None' }}</p>
     </div>
   </app-demo-section>
 

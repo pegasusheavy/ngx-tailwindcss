@@ -9,6 +9,34 @@ export type ProgressVariant = 'primary' | 'secondary' | 'success' | 'warning' | 
   standalone: true,
   imports: [CommonModule],
   templateUrl: './progress.component.html',
+  styles: [
+    `
+      @keyframes progress-stripes {
+        0% {
+          background-position: 1rem 0;
+        }
+        100% {
+          background-position: 0 0;
+        }
+      }
+      @keyframes progress-indeterminate {
+        0% {
+          width: 30%;
+          margin-left: -30%;
+        }
+        100% {
+          width: 30%;
+          margin-left: 100%;
+        }
+      }
+      .progress-stripes-animated {
+        animation: progress-stripes 1s linear infinite;
+      }
+      .progress-indeterminate-animated {
+        animation: progress-indeterminate 1.5s ease-in-out infinite;
+      }
+    `,
+  ],
 })
 export class TwProgressComponent {
   @Input() set value(val: number) {
@@ -77,7 +105,7 @@ export class TwProgressComponent {
       lg: 'h-4',
     };
 
-    return ['w-full overflow-hidden rounded-full bg-slate-200', sizeClasses[size]].join(' ');
+    return ['w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700', sizeClasses[size]].join(' ');
   });
 
   protected barClasses = computed(() => {
@@ -121,11 +149,11 @@ export class TwProgressComponent {
     }
 
     if (animated && striped) {
-      classes.push('animate-[progress-stripes_1s_linear_infinite]');
+      classes.push('progress-stripes-animated');
     }
 
     if (indeterminate) {
-      classes.push('animate-[progress-indeterminate_1.5s_ease-in-out_infinite]');
+      classes.push('progress-indeterminate-animated');
     }
 
     return classes.join(' ');
@@ -241,6 +269,6 @@ export class TwProgressCircularComponent {
     const sz = this._size();
     const fontSize =
       sz < 40 ? 'text-[10px]' : sz < 56 ? 'text-xs' : sz < 72 ? 'text-sm' : 'text-base';
-    return `absolute inset-0 flex items-center justify-center font-semibold text-slate-700 ${fontSize}`;
+    return `absolute inset-0 flex items-center justify-center font-semibold text-slate-700 dark:text-slate-300 ${fontSize}`;
   });
 }

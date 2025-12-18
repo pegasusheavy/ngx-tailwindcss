@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TwSelectComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwSelectComponent, SelectGroup } from '@pegasus-heavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -19,6 +19,8 @@ import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-
 export class SelectDemoComponent {
   selectedCountry = '';
   selectedSize = 'md';
+  selectedGroupedCountry = '';
+  selectedFilterCountry = '';
 
   countries = [
     { label: 'United States', value: 'us' },
@@ -27,6 +29,36 @@ export class SelectDemoComponent {
     { label: 'Germany', value: 'de' },
     { label: 'France', value: 'fr' },
     { label: 'Japan', value: 'jp' },
+  ];
+
+  countryGroups: SelectGroup[] = [
+    {
+      label: 'North America',
+      options: [
+        { label: 'United States', value: 'us' },
+        { label: 'Canada', value: 'ca' },
+        { label: 'Mexico', value: 'mx' },
+      ],
+    },
+    {
+      label: 'Europe',
+      options: [
+        { label: 'United Kingdom', value: 'uk' },
+        { label: 'Germany', value: 'de' },
+        { label: 'France', value: 'fr' },
+        { label: 'Spain', value: 'es' },
+        { label: 'Italy', value: 'it' },
+      ],
+    },
+    {
+      label: 'Asia',
+      options: [
+        { label: 'Japan', value: 'jp' },
+        { label: 'South Korea', value: 'kr' },
+        { label: 'China', value: 'cn' },
+        { label: 'India', value: 'in' },
+      ],
+    },
   ];
 
   sizes = [
@@ -39,6 +71,41 @@ export class SelectDemoComponent {
   basicCode = `<tw-select
   [options]="countries"
   [(ngModel)]="selectedCountry"
+  placeholder="Select a country">
+</tw-select>`;
+
+  groupedCode = `// Define grouped options
+countryGroups: SelectGroup[] = [
+  {
+    label: 'North America',
+    options: [
+      { label: 'United States', value: 'us' },
+      { label: 'Canada', value: 'ca' },
+      { label: 'Mexico', value: 'mx' },
+    ],
+  },
+  {
+    label: 'Europe',
+    options: [
+      { label: 'United Kingdom', value: 'uk' },
+      { label: 'Germany', value: 'de' },
+      { label: 'France', value: 'fr' },
+    ],
+  },
+];
+
+// In template - use [groups] instead of [options]
+<tw-select
+  [groups]="countryGroups"
+  [(ngModel)]="selectedCountry"
+  placeholder="Select a country">
+</tw-select>`;
+
+  filterCode = `<tw-select
+  [groups]="countryGroups"
+  [(ngModel)]="selectedCountry"
+  [filter]="true"
+  filterPlaceholder="Search countries..."
   placeholder="Select a country">
 </tw-select>`;
 

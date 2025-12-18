@@ -89,7 +89,7 @@ export class TwAvatarComponent {
       square: 'rounded-none',
     };
 
-    const baseColor = clr || 'bg-slate-200 text-slate-600';
+    const baseColor = clr || 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
 
     return [
       'w-full h-full flex items-center justify-center overflow-hidden',
@@ -123,7 +123,7 @@ export class TwAvatarComponent {
     };
 
     return [
-      'absolute bottom-0 right-0 rounded-full border-white',
+      'absolute bottom-0 right-0 rounded-full border-white dark:border-slate-800',
       sizeClasses[sz],
       statusColors[stat],
     ].join(' ');
@@ -193,7 +193,7 @@ export class TwAvatarGroupComponent {
       loose: '-space-x-1',
     };
 
-    return ['flex items-center', spacingClasses[sp], '[&>*]:ring-2 [&>*]:ring-white'].join(' ');
+    return ['flex items-center', spacingClasses[sp], '[&>*]:ring-2 [&>*]:ring-white dark:[&>*]:ring-slate-800'].join(' ');
   });
 
   protected overflowClasses = computed(() => {
@@ -209,7 +209,7 @@ export class TwAvatarGroupComponent {
     };
 
     return [
-      'flex items-center justify-center rounded-full bg-slate-100 text-slate-600 font-medium ring-2 ring-white',
+      'flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-medium ring-2 ring-white dark:ring-slate-800',
       sizeClasses[sz],
     ].join(' ');
   });

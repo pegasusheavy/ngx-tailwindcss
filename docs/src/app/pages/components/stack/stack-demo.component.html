@@ -1,0 +1,192 @@
+<app-page-header
+  title="Stack"
+  description="Arrange elements vertically or horizontally with consistent spacing. Includes VStack and HStack shorthand components.">
+</app-page-header>
+
+<!-- Basic Usage -->
+<app-demo-section title="Basic Usage" [code]="basicCode">
+  <div class="grid md:grid-cols-2 gap-8">
+    <div>
+      <h4 class="font-medium mb-3 text-slate-700 dark:text-slate-100">Vertical Stack (default)</h4>
+      <tw-stack spacing="md">
+        <div class="bg-blue-100 dark:bg-blue-900/60 text-slate-900 dark:text-slate-100 border border-blue-200 dark:border-blue-800 p-4 rounded text-center transition-colors">Item 1</div>
+        <div class="bg-blue-100 dark:bg-blue-900/60 text-slate-900 dark:text-slate-100 border border-blue-200 dark:border-blue-800 p-4 rounded text-center transition-colors">Item 2</div>
+        <div class="bg-blue-100 dark:bg-blue-900/60 text-slate-900 dark:text-slate-100 border border-blue-200 dark:border-blue-800 p-4 rounded text-center transition-colors">Item 3</div>
+      </tw-stack>
+    </div>
+
+    <div>
+      <h4 class="font-medium mb-3 text-slate-700 dark:text-slate-100">Horizontal Stack</h4>
+      <tw-stack direction="horizontal" spacing="md">
+        <div class="bg-green-100 dark:bg-emerald-900/60 text-slate-900 dark:text-slate-100 border border-emerald-200 dark:border-emerald-700 p-4 rounded text-center transition-colors">Item 1</div>
+        <div class="bg-green-100 dark:bg-emerald-900/60 text-slate-900 dark:text-slate-100 border border-emerald-200 dark:border-emerald-700 p-4 rounded text-center transition-colors">Item 2</div>
+        <div class="bg-green-100 dark:bg-emerald-900/60 text-slate-900 dark:text-slate-100 border border-emerald-200 dark:border-emerald-700 p-4 rounded text-center transition-colors">Item 3</div>
+      </tw-stack>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- VStack and HStack Shorthand -->
+<app-demo-section title="VStack & HStack Shorthand" [code]="shorthandCode">
+  <div class="grid md:grid-cols-2 gap-8">
+    <div>
+      <h4 class="font-medium mb-3 text-slate-700 dark:text-slate-100">tw-vstack</h4>
+      <tw-vstack spacing="sm">
+        <div class="bg-purple-100 dark:bg-purple-900/60 text-slate-900 dark:text-slate-100 border border-purple-200 dark:border-purple-700 p-3 rounded text-center transition-colors">Vertical 1</div>
+        <div class="bg-purple-100 dark:bg-purple-900/60 text-slate-900 dark:text-slate-100 border border-purple-200 dark:border-purple-700 p-3 rounded text-center transition-colors">Vertical 2</div>
+        <div class="bg-purple-100 dark:bg-purple-900/60 text-slate-900 dark:text-slate-100 border border-purple-200 dark:border-purple-700 p-3 rounded text-center transition-colors">Vertical 3</div>
+      </tw-vstack>
+    </div>
+
+    <div>
+      <h4 class="font-medium mb-3 text-slate-700 dark:text-slate-100">tw-hstack</h4>
+      <tw-hstack spacing="sm">
+        <div class="bg-rose-100 dark:bg-rose-900/50 text-slate-900 dark:text-slate-100 border border-rose-200 dark:border-rose-700 p-3 rounded text-center transition-colors">Horiz 1</div>
+        <div class="bg-rose-100 dark:bg-rose-900/50 text-slate-900 dark:text-slate-100 border border-rose-200 dark:border-rose-700 p-3 rounded text-center transition-colors">Horiz 2</div>
+        <div class="bg-rose-100 dark:bg-rose-900/50 text-slate-900 dark:text-slate-100 border border-rose-200 dark:border-rose-700 p-3 rounded text-center transition-colors">Horiz 3</div>
+      </tw-hstack>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Spacing Options -->
+<app-demo-section title="Spacing Options" [code]="spacingCode">
+  <div class="space-y-6">
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">spacing="xs"</span>
+      <tw-hstack spacing="xs">
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">A</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">B</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">C</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">spacing="sm"</span>
+      <tw-hstack spacing="sm">
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">A</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">B</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">C</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">spacing="md" (default)</span>
+      <tw-hstack spacing="md">
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">A</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">B</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">C</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">spacing="lg"</span>
+      <tw-hstack spacing="lg">
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">A</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">B</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">C</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">spacing="xl"</span>
+      <tw-hstack spacing="xl">
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">A</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">B</div>
+        <div class="bg-amber-100 dark:bg-amber-900/50 text-slate-800 dark:text-slate-100 px-3 py-2 rounded border border-amber-200 dark:border-amber-700">C</div>
+      </tw-hstack>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Alignment -->
+<app-demo-section title="Alignment (Cross Axis)" [code]="alignCode">
+  <div class="space-y-6">
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">align="start"</span>
+      <tw-hstack spacing="md" align="start" class="bg-slate-100 dark:bg-slate-900/40 p-4 rounded border border-slate-200 dark:border-slate-700">
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded h-8">Short</div>
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded h-16">Medium</div>
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded h-24">Tall</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">align="center"</span>
+      <tw-hstack spacing="md" align="center" class="bg-slate-100 dark:bg-slate-900/40 p-4 rounded border border-slate-200 dark:border-slate-700">
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded h-8">Short</div>
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded h-16">Medium</div>
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded h-24">Tall</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">align="end"</span>
+      <tw-hstack spacing="md" align="end" class="bg-slate-100 dark:bg-slate-900/40 p-4 rounded border border-slate-200 dark:border-slate-700">
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded h-8">Short</div>
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded h-16">Medium</div>
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded h-24">Tall</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">align="stretch" (default)</span>
+      <tw-hstack spacing="md" align="stretch" class="bg-slate-100 dark:bg-slate-900/40 p-4 rounded border border-slate-200 dark:border-slate-700 h-24">
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded flex items-center">Stretched</div>
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded flex items-center">Stretched</div>
+        <div class="bg-cyan-200 dark:bg-cyan-900/60 text-slate-800 dark:text-slate-100 p-2 rounded flex items-center">Stretched</div>
+      </tw-hstack>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Justification -->
+<app-demo-section title="Justification (Main Axis)" [code]="justifyCode">
+  <div class="space-y-6">
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">justify="start" (default)</span>
+      <tw-hstack spacing="md" justify="start" class="bg-slate-100 dark:bg-slate-900/40 p-4 rounded border border-slate-200 dark:border-slate-700">
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">A</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">B</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">C</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">justify="center"</span>
+      <tw-hstack spacing="md" justify="center" class="bg-slate-100 dark:bg-slate-900/40 p-4 rounded border border-slate-200 dark:border-slate-700">
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">A</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">B</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">C</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">justify="end"</span>
+      <tw-hstack spacing="md" justify="end" class="bg-slate-100 dark:bg-slate-900/40 p-4 rounded border border-slate-200 dark:border-slate-700">
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">A</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">B</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">C</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">justify="between"</span>
+      <tw-hstack spacing="md" justify="between" class="bg-slate-100 dark:bg-slate-900/40 p-4 rounded border border-slate-200 dark:border-slate-700">
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">A</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">B</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">C</div>
+      </tw-hstack>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">justify="around"</span>
+      <tw-hstack spacing="md" justify="around" class="bg-slate-100 dark:bg-slate-900/40 p-4 rounded border border-slate-200 dark:border-slate-700">
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">A</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">B</div>
+        <div class="bg-lime-200 dark:bg-lime-900/60 text-slate-800 dark:text-slate-100 p-2 rounded">C</div>
+      </tw-hstack>
+    </div>
+  </div>
+</app-demo-section>
+

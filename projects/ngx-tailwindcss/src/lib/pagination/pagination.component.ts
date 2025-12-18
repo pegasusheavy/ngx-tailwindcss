@@ -117,11 +117,11 @@ export class TwPaginationComponent {
     ];
 
     if (disabled) {
-      baseClasses.push('text-slate-300 cursor-not-allowed');
+      baseClasses.push('text-slate-300 dark:text-slate-600 cursor-not-allowed');
     } else if (variant === 'outlined') {
-      baseClasses.push('text-slate-600 hover:bg-slate-100 border border-slate-300');
+      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-600');
     } else {
-      baseClasses.push('text-slate-600 hover:bg-slate-100');
+      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800');
     }
 
     return baseClasses.join(' ');
@@ -145,9 +145,9 @@ export class TwPaginationComponent {
     if (isActive) {
       baseClasses.push('bg-blue-600 text-white');
     } else if (variant === 'outlined') {
-      baseClasses.push('text-slate-600 hover:bg-slate-100 border border-slate-300');
+      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-600');
     } else {
-      baseClasses.push('text-slate-600 hover:bg-slate-100');
+      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800');
     }
 
     return baseClasses.join(' ');
@@ -162,7 +162,7 @@ export class TwPaginationComponent {
       lg: 'w-11 h-11 text-base',
     };
 
-    return `flex items-center justify-center text-slate-400 ${sizeClasses[size]}`;
+    return `flex items-center justify-center text-slate-400 dark:text-slate-500 ${sizeClasses[size]}`;
   }
 
   protected simpleButtonClasses(disabled: boolean): string {
@@ -171,9 +171,9 @@ export class TwPaginationComponent {
     ];
 
     if (disabled) {
-      baseClasses.push('text-slate-300 cursor-not-allowed');
+      baseClasses.push('text-slate-300 dark:text-slate-600 cursor-not-allowed');
     } else {
-      baseClasses.push('text-slate-600 hover:bg-slate-100');
+      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800');
     }
 
     return baseClasses.join(' ');

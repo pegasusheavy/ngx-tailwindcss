@@ -105,7 +105,7 @@ export class TwPopoverComponent implements OnDestroy {
 
   protected popoverClasses = computed(() => {
     return this.twClass.merge(
-      'min-w-48 bg-white rounded-lg shadow-lg border border-slate-200',
+      'min-w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700',
       this.classOverride
     );
   });
@@ -302,8 +302,10 @@ export class TwPopoverComponent implements OnDestroy {
       this.renderer.addClass(headerEl, 'py-2');
       this.renderer.addClass(headerEl, 'border-b');
       this.renderer.addClass(headerEl, 'border-slate-200');
+      this.renderer.addClass(headerEl, 'dark:border-slate-700');
       this.renderer.addClass(headerEl, 'font-semibold');
       this.renderer.addClass(headerEl, 'text-slate-900');
+      this.renderer.addClass(headerEl, 'dark:text-slate-100');
       const headerText = this.renderer.createText(this.header);
       this.renderer.appendChild(headerEl, headerText);
       this.renderer.appendChild(this.portalElement, headerEl);
@@ -331,7 +333,9 @@ export class TwPopoverComponent implements OnDestroy {
       this.renderer.addClass(footerWrapper, 'py-2');
       this.renderer.addClass(footerWrapper, 'border-t');
       this.renderer.addClass(footerWrapper, 'border-slate-200');
+      this.renderer.addClass(footerWrapper, 'dark:border-slate-700');
       this.renderer.addClass(footerWrapper, 'bg-slate-50');
+      this.renderer.addClass(footerWrapper, 'dark:bg-slate-900');
       const footerClone = footerSource.cloneNode(true) as HTMLElement;
       this.renderer.appendChild(footerWrapper, footerClone);
       this.renderer.appendChild(this.portalElement, footerWrapper);
@@ -339,12 +343,12 @@ export class TwPopoverComponent implements OnDestroy {
   }
 
   private getArrowClasses(): string {
-    const baseClasses = 'absolute w-3 h-3 bg-white border-slate-200 rotate-45';
+    const baseClasses = 'absolute w-2.5 h-2.5 bg-white dark:bg-slate-800 rotate-45 shadow-sm';
     const positionClasses: Record<PopoverPosition, string> = {
-      top: 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-b border-r',
-      bottom: 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 border-t border-l',
-      left: 'right-0 top-1/2 -translate-y-1/2 translate-x-1/2 border-t border-r',
-      right: 'left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 border-b border-l',
+      top: 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-b border-r border-slate-200 dark:border-slate-700',
+      bottom: 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 border-t border-l border-slate-200 dark:border-slate-700',
+      left: 'right-0 top-1/2 -translate-y-1/2 translate-x-1/2 border-t border-r border-slate-200 dark:border-slate-700',
+      right: 'left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 border-b border-l border-slate-200 dark:border-slate-700',
     };
     return this.twClass.merge(baseClasses, positionClasses[this.position]);
   }

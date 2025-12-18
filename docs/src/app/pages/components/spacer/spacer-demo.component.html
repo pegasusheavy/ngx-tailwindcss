@@ -1,0 +1,155 @@
+<app-page-header
+  title="Spacer"
+  description="Components for adding space between elements. Includes Spacer and Wrap components.">
+</app-page-header>
+
+<!-- Vertical Spacer -->
+<app-demo-section title="Vertical Spacer" [code]="basicCode">
+  <div class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 p-4 rounded-xl">
+    <div class="bg-blue-500 text-white p-4 rounded">Item 1</div>
+    <tw-spacer axis="vertical" size="lg"></tw-spacer>
+    <div class="bg-blue-500 text-white p-4 rounded">Item 2</div>
+    <tw-spacer axis="vertical" size="lg"></tw-spacer>
+    <div class="bg-blue-500 text-white p-4 rounded">Item 3</div>
+  </div>
+</app-demo-section>
+
+<!-- Horizontal Spacer -->
+<app-demo-section title="Horizontal Spacer (Flex Space)" [code]="horizontalCode">
+  <div class="space-y-4 bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 p-4 rounded-2xl">
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">size="auto" - pushes elements apart</span>
+      <div class="flex items-center bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white p-4 rounded-lg">
+        <span class="bg-green-500 text-white px-4 py-2 rounded">Left</span>
+        <tw-spacer axis="horizontal" size="auto" class="flex-1"></tw-spacer>
+        <span class="bg-green-500 text-white px-4 py-2 rounded">Right</span>
+      </div>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">Fixed horizontal spacing</span>
+      <div class="flex items-center bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white p-4 rounded-lg">
+        <span class="bg-purple-500 text-white px-4 py-2 rounded">A</span>
+        <tw-spacer axis="horizontal" size="md"></tw-spacer>
+        <span class="bg-purple-500 text-white px-4 py-2 rounded">B</span>
+        <tw-spacer axis="horizontal" size="xl"></tw-spacer>
+        <span class="bg-purple-500 text-white px-4 py-2 rounded">C</span>
+      </div>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">Header-style layout with auto spacer</span>
+      <div class="flex items-center bg-slate-800 text-white p-4 rounded-lg border border-slate-700">
+        <span class="font-bold text-lg">Logo</span>
+        <tw-spacer axis="horizontal" size="auto"></tw-spacer>
+        <nav class="flex gap-6 text-sm font-medium tracking-wide">
+          <a
+            href="#"
+            class="px-3 py-2 rounded-lg transition-colors text-slate-200 hover:text-white border border-transparent hover:border-current">
+            Home
+          </a>
+          <a
+            href="#"
+            class="px-3 py-2 rounded-lg transition-colors text-slate-200 hover:text-white border border-transparent hover:border-current">
+            About
+          </a>
+          <a
+            href="#"
+            class="px-3 py-2 rounded-lg transition-colors text-slate-200 hover:text-white border border-transparent hover:border-current">
+            Contact
+          </a>
+        </nav>
+      </div>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Spacer Sizes -->
+<app-demo-section title="Vertical Spacer Sizes" [code]="sizesCode">
+  <div class="space-y-8 bg-slate-100/60 dark:bg-slate-900/70 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+    @for (size of spacerSizes; track size) {
+      <div>
+        <span class="text-sm text-slate-500 dark:text-slate-300 mb-1 block">size="{{ size }}"</span>
+        <div class="bg-slate-100/80 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-700 p-2 rounded">
+          <div class="bg-amber-500 text-white p-2 rounded text-center text-sm">Above</div>
+          <tw-spacer axis="vertical" [size]="size"></tw-spacer>
+          <div class="bg-amber-500 text-white p-2 rounded text-center text-sm">Below</div>
+        </div>
+      </div>
+    }
+  </div>
+</app-demo-section>
+
+<!-- Wrap Component -->
+<app-demo-section title="Wrap Component" [code]="wrapCode">
+  <div class="space-y-6 bg-slate-100/60 dark:bg-slate-900/70 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">spacing="sm"</span>
+      <tw-wrap spacing="sm">
+        @for (tag of ['JavaScript', 'TypeScript', 'Angular', 'React', 'Vue', 'Svelte', 'Node.js', 'Python']; track tag) {
+      <span class="bg-blue-100 dark:bg-blue-900/60 text-blue-800 dark:text-blue-200 px-3 py-1 rounded-full text-sm">{{ tag }}</span>
+        }
+      </tw-wrap>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">spacing="md" (default)</span>
+      <tw-wrap spacing="md">
+        @for (tag of ['Design', 'Development', 'Testing', 'Deployment', 'Monitoring', 'Analytics']; track tag) {
+          <span class="bg-green-100 dark:bg-emerald-900/60 text-green-800 dark:text-emerald-200 px-4 py-2 rounded-lg font-medium">{{ tag }}</span>
+        }
+      </tw-wrap>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">spacing="lg" with justify="center"</span>
+      <tw-wrap spacing="lg" justify="center">
+        @for (tag of ['Featured', 'Popular', 'New', 'Sale']; track tag) {
+          <span class="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 py-3 rounded-xl font-bold shadow-md">{{ tag }}</span>
+        }
+      </tw-wrap>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Wrap Alignment -->
+<app-demo-section title="Wrap Alignment & Justification" [code]="wrapCode">
+  <div class="space-y-6 bg-slate-100/60 dark:bg-slate-900/70 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">justify="start" (default)</span>
+      <tw-wrap spacing="md" justify="start" class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 p-4 rounded-lg text-slate-900 dark:text-slate-100">
+        <span class="bg-rose-500 text-white px-4 py-2 rounded">Item 1</span>
+        <span class="bg-rose-500 text-white px-4 py-2 rounded">Item 2</span>
+        <span class="bg-rose-500 text-white px-4 py-2 rounded">Item 3</span>
+      </tw-wrap>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">justify="center"</span>
+      <tw-wrap spacing="md" justify="center" class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 p-4 rounded-lg text-slate-900 dark:text-slate-100">
+        <span class="bg-cyan-500 text-white px-4 py-2 rounded">Item 1</span>
+        <span class="bg-cyan-500 text-white px-4 py-2 rounded">Item 2</span>
+        <span class="bg-cyan-500 text-white px-4 py-2 rounded">Item 3</span>
+      </tw-wrap>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">justify="end"</span>
+      <tw-wrap spacing="md" justify="end" class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 p-4 rounded-lg text-slate-900 dark:text-slate-100">
+        <span class="bg-lime-500 text-white px-4 py-2 rounded">Item 1</span>
+        <span class="bg-lime-500 text-white px-4 py-2 rounded">Item 2</span>
+        <span class="bg-lime-500 text-white px-4 py-2 rounded">Item 3</span>
+      </tw-wrap>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">justify="between"</span>
+      <tw-wrap spacing="md" justify="between" class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 p-4 rounded-lg text-slate-900 dark:text-slate-100">
+        <span class="bg-indigo-500 text-white px-4 py-2 rounded">Item 1</span>
+        <span class="bg-indigo-500 text-white px-4 py-2 rounded">Item 2</span>
+        <span class="bg-indigo-500 text-white px-4 py-2 rounded">Item 3</span>
+      </tw-wrap>
+    </div>
+  </div>
+</app-demo-section>
+

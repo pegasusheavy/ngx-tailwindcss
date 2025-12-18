@@ -34,6 +34,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/components/select/select-demo.component').then(m => m.SelectDemoComponent),
       },
       {
+        path: 'multiselect',
+        loadComponent: () => import('./pages/components/multiselect/multiselect-demo.component').then(m => m.MultiselectDemoComponent),
+      },
+      {
         path: 'slider',
         loadComponent: () => import('./pages/components/slider/slider-demo.component').then(m => m.SliderDemoComponent),
       },
@@ -149,6 +153,54 @@ export const routes: Routes = [
         path: 'divider',
         loadComponent: () => import('./pages/components/divider/divider-demo.component').then(m => m.DividerDemoComponent),
       },
+      {
+        path: 'container',
+        loadComponent: () => import('./pages/components/container/container-demo.component').then(m => m.ContainerDemoComponent),
+      },
+      {
+        path: 'stack',
+        loadComponent: () => import('./pages/components/stack/stack-demo.component').then(m => m.StackDemoComponent),
+      },
+      {
+        path: 'grid',
+        loadComponent: () => import('./pages/components/grid/grid-demo.component').then(m => m.GridDemoComponent),
+      },
+      {
+        path: 'aspect-ratio',
+        loadComponent: () => import('./pages/components/aspect-ratio/aspect-ratio-demo.component').then(m => m.AspectRatioDemoComponent),
+      },
+      {
+        path: 'center',
+        loadComponent: () => import('./pages/components/center/center-demo.component').then(m => m.CenterDemoComponent),
+      },
+      {
+        path: 'spacer',
+        loadComponent: () => import('./pages/components/spacer/spacer-demo.component').then(m => m.SpacerDemoComponent),
+      },
+      {
+        path: 'splitter',
+        loadComponent: () => import('./pages/components/splitter/splitter-demo.component').then(m => m.SplitterDemoComponent),
+      },
+      {
+        path: 'sticky',
+        loadComponent: () => import('./pages/components/sticky/sticky-demo.component').then(m => m.StickyDemoComponent),
+      },
+      {
+        path: 'scroll-area',
+        loadComponent: () => import('./pages/components/scroll-area/scroll-area-demo.component').then(m => m.ScrollAreaDemoComponent),
+      },
+      {
+        path: 'columns',
+        loadComponent: () => import('./pages/components/columns/columns-demo.component').then(m => m.ColumnsDemoComponent),
+      },
+      {
+        path: 'bleed',
+        loadComponent: () => import('./pages/components/bleed/bleed-demo.component').then(m => m.BleedDemoComponent),
+      },
+      {
+        path: 'overlay',
+        loadComponent: () => import('./pages/components/overlay/overlay-demo.component').then(m => m.OverlayDemoComponent),
+      },
     ],
   },
   {
@@ -162,6 +214,39 @@ export const routes: Routes = [
   {
     path: 'i18n',
     loadComponent: () => import('./pages/i18n/i18n-demo.component').then(m => m.I18nDemoComponent),
+  },
+  {
+    path: 'theming',
+    loadComponent: () => import('./pages/theming/theming-demo.component').then(m => m.ThemingDemoComponent),
+  },
+  {
+    path: 'examples',
+    children: [
+      {
+        path: 'saas-landing',
+        loadComponent: () => import('./pages/examples/saas-landing.component').then(m => m.SaasLandingComponent),
+      },
+      {
+        path: 'forum',
+        loadComponent: () => import('./pages/examples/forum.component').then(m => m.ForumComponent),
+      },
+      {
+        path: 'social-network',
+        loadComponent: () => import('./pages/examples/social-network.component').then(m => m.SocialNetworkComponent),
+      },
+      {
+        path: 'admin-dashboard',
+        loadComponent: () => import('./pages/examples/admin-dashboard.component').then(m => m.AdminDashboardComponent),
+      },
+      {
+        path: 'ecommerce',
+        loadComponent: () => import('./pages/examples/ecommerce.component').then(m => m.EcommerceComponent),
+      },
+      {
+        path: 'portfolio',
+        loadComponent: () => import('./pages/examples/portfolio.component').then(m => m.PortfolioComponent),
+      },
+    ],
   },
   {
     path: '**',

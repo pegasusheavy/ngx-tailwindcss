@@ -1,0 +1,186 @@
+<app-page-header
+  title="Center"
+  description="Components for centering content. Includes Center, Square, and Circle helpers.">
+</app-page-header>
+
+<!-- Basic Center -->
+<app-demo-section title="Basic Center" [code]="basicCode">
+  <tw-center class="h-40 bg-slate-100 rounded-lg">
+    <div class="bg-blue-500 text-white px-6 py-3 rounded-lg shadow-lg">
+      Centered content
+    </div>
+  </tw-center>
+</app-demo-section>
+
+<!-- Axis Control -->
+<app-demo-section title="Axis Control" [code]="axisCode">
+  <div class="space-y-6">
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">Horizontal only ([vertical]="false")</span>
+      <tw-center [vertical]="false" class="h-24 bg-slate-100 rounded-lg">
+        <div class="bg-green-500 text-white px-4 py-2 rounded">Centered horizontally</div>
+      </tw-center>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">Vertical only ([horizontal]="false")</span>
+      <tw-center [horizontal]="false" class="h-24 bg-slate-100 rounded-lg">
+        <div class="bg-purple-500 text-white px-4 py-2 rounded">Centered vertically</div>
+      </tw-center>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">Both (default)</span>
+      <tw-center class="h-24 bg-slate-100 rounded-lg">
+        <div class="bg-amber-500 text-white px-4 py-2 rounded">Centered both ways</div>
+      </tw-center>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Square Component -->
+<app-demo-section title="Square" [code]="squareCode">
+  <div class="flex flex-wrap gap-6 items-end">
+    <div class="text-center">
+      <tw-square size="40px" class="bg-gradient-to-br from-blue-500 to-purple-500 rounded">
+        <span class="text-white font-bold text-sm">S</span>
+      </tw-square>
+      <span class="text-xs text-slate-500 mt-2 block">40px</span>
+    </div>
+
+    <div class="text-center">
+      <tw-square size="56px" class="bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg">
+        <span class="text-white font-bold">M</span>
+      </tw-square>
+      <span class="text-xs text-slate-500 mt-2 block">56px</span>
+    </div>
+
+    <div class="text-center">
+      <tw-square size="72px" class="bg-gradient-to-br from-amber-500 to-orange-500 rounded-lg">
+        <span class="text-white font-bold text-xl">L</span>
+      </tw-square>
+      <span class="text-xs text-slate-500 mt-2 block">72px</span>
+    </div>
+
+    <div class="text-center">
+      <tw-square size="96px" class="bg-gradient-to-br from-rose-500 to-pink-500 rounded-xl">
+        <span class="text-white font-bold text-2xl">XL</span>
+      </tw-square>
+      <span class="text-xs text-slate-500 mt-2 block">96px</span>
+    </div>
+
+    <div class="text-center">
+      <tw-square size="6rem" class="bg-gradient-to-br from-indigo-500 to-violet-500 rounded-2xl shadow-lg">
+        <span class="text-white font-bold text-2xl">2XL</span>
+      </tw-square>
+      <span class="text-xs text-slate-500 mt-2 block">6rem</span>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Circle Component -->
+<app-demo-section title="Circle" [code]="circleCode">
+  <div class="flex flex-wrap gap-6 items-end">
+    <div class="text-center">
+      <tw-circle size="32px" class="bg-gradient-to-br from-cyan-400 to-cyan-600">
+        <span class="text-white text-xs font-bold">1</span>
+      </tw-circle>
+      <span class="text-xs text-slate-500 mt-2 block">32px</span>
+    </div>
+
+    <div class="text-center">
+      <tw-circle size="48px" class="bg-gradient-to-br from-blue-400 to-blue-600">
+        <span class="text-white font-bold">AB</span>
+      </tw-circle>
+      <span class="text-xs text-slate-500 mt-2 block">48px</span>
+    </div>
+
+    <div class="text-center">
+      <tw-circle size="64px" class="bg-gradient-to-br from-purple-400 to-purple-600">
+        <span class="text-white font-bold text-xl">JD</span>
+      </tw-circle>
+      <span class="text-xs text-slate-500 mt-2 block">64px</span>
+    </div>
+
+    <div class="text-center">
+      <tw-circle size="80px" class="bg-gradient-to-br from-pink-400 to-rose-500 shadow-lg">
+        <span class="text-white font-bold text-2xl">ME</span>
+      </tw-circle>
+      <span class="text-xs text-slate-500 mt-2 block">80px</span>
+    </div>
+
+    <div class="text-center">
+      <tw-circle size="100px" class="bg-gradient-to-br from-amber-400 to-orange-500 shadow-xl">
+        <span class="text-white font-bold text-3xl">XL</span>
+      </tw-circle>
+      <span class="text-xs text-slate-500 mt-2 block">100px</span>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Use Cases -->
+<app-demo-section title="Common Use Cases" [code]="basicCode">
+  <div class="space-y-6">
+    <!-- Avatar-like circles -->
+    <div>
+      <h4 class="font-medium mb-3 text-slate-700">Avatar-style initials</h4>
+      <div class="flex gap-4">
+        <tw-circle size="48px" class="bg-blue-500">
+          <span class="text-white font-semibold">JS</span>
+        </tw-circle>
+        <tw-circle size="48px" class="bg-green-500">
+          <span class="text-white font-semibold">AR</span>
+        </tw-circle>
+        <tw-circle size="48px" class="bg-purple-500">
+          <span class="text-white font-semibold">MK</span>
+        </tw-circle>
+        <tw-circle size="48px" class="bg-rose-500">
+          <span class="text-white font-semibold">TN</span>
+        </tw-circle>
+      </div>
+    </div>
+
+    <!-- Icon buttons -->
+    <div>
+      <h4 class="font-medium mb-3 text-slate-700">Icon button containers</h4>
+      <div class="flex gap-4">
+        <tw-square size="44px" class="bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer transition-colors">
+          <span class="text-slate-600 text-lg">🏠</span>
+        </tw-square>
+        <tw-square size="44px" class="bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer transition-colors">
+          <span class="text-slate-600 text-lg">⚙️</span>
+        </tw-square>
+        <tw-square size="44px" class="bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer transition-colors">
+          <span class="text-slate-600 text-lg">🔔</span>
+        </tw-square>
+        <tw-square size="44px" class="bg-slate-100 hover:bg-slate-200 rounded-lg cursor-pointer transition-colors">
+          <span class="text-slate-600 text-lg">👤</span>
+        </tw-square>
+      </div>
+    </div>
+
+    <!-- Status indicators -->
+    <div>
+      <h4 class="font-medium mb-3 text-slate-700">Status indicators</h4>
+      <div class="flex gap-6 items-center">
+        <div class="flex items-center gap-2">
+          <tw-circle size="12px" class="bg-green-500"></tw-circle>
+          <span class="text-sm">Online</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <tw-circle size="12px" class="bg-yellow-500"></tw-circle>
+          <span class="text-sm">Away</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <tw-circle size="12px" class="bg-red-500"></tw-circle>
+          <span class="text-sm">Offline</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <tw-circle size="12px" class="bg-slate-400"></tw-circle>
+          <span class="text-sm">Unknown</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</app-demo-section>
+

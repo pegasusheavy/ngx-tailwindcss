@@ -21,11 +21,11 @@ export type RadioVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'da
 export type RadioSize = 'sm' | 'md' | 'lg';
 
 const RADIO_VARIANTS: Record<RadioVariant, string> = {
-  primary: 'text-blue-600 focus:ring-blue-500 border-slate-300',
-  secondary: 'text-slate-600 focus:ring-slate-500 border-slate-300',
-  success: 'text-emerald-600 focus:ring-emerald-500 border-slate-300',
-  warning: 'text-amber-500 focus:ring-amber-500 border-slate-300',
-  danger: 'text-rose-600 focus:ring-rose-500 border-slate-300',
+  primary: 'text-blue-600 focus:ring-blue-500 border-slate-300 dark:border-slate-600',
+  secondary: 'text-slate-600 focus:ring-slate-500 border-slate-300 dark:border-slate-600',
+  success: 'text-emerald-600 focus:ring-emerald-500 border-slate-300 dark:border-slate-600',
+  warning: 'text-amber-500 focus:ring-amber-500 border-slate-300 dark:border-slate-600',
+  danger: 'text-rose-600 focus:ring-rose-500 border-slate-300 dark:border-slate-600',
 };
 
 const RADIO_SIZES: Record<RadioSize, { radio: string; label: string }> = {
@@ -96,8 +96,8 @@ export class TwRadioButtonComponent {
     const sizeClasses = RADIO_SIZES[this.size].radio;
 
     return this.twClass.merge(
-      'rounded-full border-2 bg-white transition-colors duration-150',
-      'focus:ring-2 focus:ring-offset-2',
+      'rounded-full border-2 bg-white dark:bg-slate-800 transition-colors duration-150',
+      'focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-slate-900',
       'disabled:opacity-50 disabled:cursor-not-allowed',
       variantClasses,
       sizeClasses
@@ -106,9 +106,9 @@ export class TwRadioButtonComponent {
 
   protected labelTextClasses = computed(() => {
     return this.twClass.merge(
-      'text-slate-700 select-none',
+      'text-slate-700 dark:text-slate-300 select-none',
       RADIO_SIZES[this.size].label,
-      this.disabled ? 'text-slate-400' : ''
+      this.disabled ? 'text-slate-400 dark:text-slate-500' : ''
     );
   });
 

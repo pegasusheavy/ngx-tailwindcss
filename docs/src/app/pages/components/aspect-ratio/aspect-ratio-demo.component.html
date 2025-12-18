@@ -1,0 +1,127 @@
+<app-page-header
+  title="Aspect Ratio"
+  description="Maintain consistent aspect ratios for images, videos, and other media. Supports preset and custom ratios.">
+</app-page-header>
+
+<!-- Basic Usage -->
+<app-demo-section title="Basic Usage" [code]="basicCode">
+  <div class="max-w-md">
+    <tw-aspect-ratio ratio="video">
+      <div class="bg-gradient-to-br from-blue-500 to-purple-600 w-full h-full flex items-center justify-center text-white font-medium">
+        16:9 Video Ratio
+      </div>
+    </tw-aspect-ratio>
+  </div>
+</app-demo-section>
+
+<!-- Preset Ratios -->
+<app-demo-section title="Preset Ratios" [code]="presetsCode">
+  <div class="grid md:grid-cols-3 gap-6">
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">ratio="square" (1:1)</span>
+      <tw-aspect-ratio ratio="square">
+        <div class="bg-gradient-to-br from-rose-400 to-rose-600 w-full h-full flex items-center justify-center text-white font-medium">
+          1:1
+        </div>
+      </tw-aspect-ratio>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">ratio="video" (16:9)</span>
+      <tw-aspect-ratio ratio="video">
+        <div class="bg-gradient-to-br from-blue-400 to-blue-600 w-full h-full flex items-center justify-center text-white font-medium">
+          16:9
+        </div>
+      </tw-aspect-ratio>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">ratio="portrait" (3:4)</span>
+      <tw-aspect-ratio ratio="portrait">
+        <div class="bg-gradient-to-br from-green-400 to-green-600 w-full h-full flex items-center justify-center text-white font-medium">
+          3:4
+        </div>
+      </tw-aspect-ratio>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">ratio="wide" (2:1)</span>
+      <tw-aspect-ratio ratio="wide">
+        <div class="bg-gradient-to-br from-amber-400 to-amber-600 w-full h-full flex items-center justify-center text-white font-medium">
+          2:1
+        </div>
+      </tw-aspect-ratio>
+    </div>
+
+    <div class="md:col-span-2">
+      <span class="text-sm text-slate-500 mb-2 block">ratio="ultrawide" (21:9)</span>
+      <tw-aspect-ratio ratio="ultrawide">
+        <div class="bg-gradient-to-br from-purple-400 to-purple-600 w-full h-full flex items-center justify-center text-white font-medium">
+          21:9
+        </div>
+      </tw-aspect-ratio>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Custom Ratio -->
+<app-demo-section title="Custom Ratio" [code]="customCode">
+  <div class="grid md:grid-cols-2 gap-6">
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">customRatio="4/3" (1.333...)</span>
+      <tw-aspect-ratio ratio="custom" [customRatio]="4/3">
+        <div class="bg-gradient-to-br from-cyan-400 to-cyan-600 w-full h-full flex items-center justify-center text-white font-medium">
+          4:3
+        </div>
+      </tw-aspect-ratio>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">customRatio="3/2" (1.5)</span>
+      <tw-aspect-ratio ratio="custom" [customRatio]="3/2">
+        <div class="bg-gradient-to-br from-pink-400 to-pink-600 w-full h-full flex items-center justify-center text-white font-medium">
+          3:2
+        </div>
+      </tw-aspect-ratio>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- With Images -->
+<app-demo-section title="With Images" [code]="basicCode">
+  <div class="grid md:grid-cols-3 gap-6">
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">Square thumbnail</span>
+      <tw-aspect-ratio ratio="square" class="rounded-lg overflow-hidden shadow-md">
+        <img
+          src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=400&fit=crop"
+          alt="Mountain landscape"
+          class="w-full h-full object-cover"
+        />
+      </tw-aspect-ratio>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">Video preview</span>
+      <tw-aspect-ratio ratio="video" class="rounded-lg overflow-hidden shadow-md">
+        <img
+          src="https://images.unsplash.com/photo-1551632811-561732d1e306?w=800&h=450&fit=crop"
+          alt="Hiking trail"
+          class="w-full h-full object-cover"
+        />
+      </tw-aspect-ratio>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 mb-2 block">Portrait photo</span>
+      <tw-aspect-ratio ratio="portrait" class="rounded-lg overflow-hidden shadow-md">
+        <img
+          src="https://images.unsplash.com/photo-1517021897933-0e0319cfbc28?w=300&h=400&fit=crop"
+          alt="Forest path"
+          class="w-full h-full object-cover"
+        />
+      </tw-aspect-ratio>
+    </div>
+  </div>
+</app-demo-section>
+

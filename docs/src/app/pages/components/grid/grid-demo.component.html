@@ -1,0 +1,119 @@
+<app-page-header
+  title="Grid"
+  description="CSS Grid layout components for creating responsive grid layouts. Includes SimpleGrid for auto-fit grids.">
+</app-page-header>
+
+<!-- Basic Usage -->
+<app-demo-section title="Basic Grid" [code]="basicCode">
+  <div class="rounded-2xl bg-slate-100/60 dark:bg-slate-900/70 p-4">
+    <tw-grid [cols]="3" gap="md">
+      @for (i of [1,2,3,4,5,6]; track i) {
+        <div class="bg-blue-100 dark:bg-blue-900/60 text-slate-900 dark:text-white border border-blue-200 dark:border-blue-800 p-4 rounded text-center font-medium">
+          {{ i }}
+        </div>
+      }
+    </tw-grid>
+  </div>
+</app-demo-section>
+
+<!-- Responsive Grid -->
+<app-demo-section title="Responsive Grid" [code]="responsiveCode">
+  <p class="text-sm text-slate-500 dark:text-slate-300 mb-4">Resize your browser to see the grid adapt: 1 col → 2 cols → 3 cols → 4 cols</p>
+  <div class="rounded-2xl bg-slate-100/60 dark:bg-slate-900/70 p-4">
+    <tw-grid [cols]="1" [colsSm]="2" [colsMd]="3" [colsLg]="4" gap="md">
+      @for (i of [1,2,3,4,5,6,7,8]; track i) {
+        <div class="bg-green-100 dark:bg-emerald-900/60 text-slate-900 dark:text-white border border-emerald-200 dark:border-emerald-700 p-4 rounded text-center">
+          <span class="font-medium block">Card {{ i }}</span>
+          <span class="text-sm text-slate-500 dark:text-slate-300">Responsive</span>
+        </div>
+      }
+    </tw-grid>
+  </div>
+</app-demo-section>
+
+<!-- Simple Grid -->
+<app-demo-section title="SimpleGrid (Auto-fit)" [code]="simpleGridCode">
+  <p class="text-sm text-slate-500 dark:text-slate-300 mb-4">Automatically creates as many columns as fit, with a minimum width of 200px per column</p>
+  <div class="rounded-2xl bg-slate-100/50 dark:bg-slate-900/70 p-4">
+    <tw-simple-grid minChildWidth="200px" gap="md">
+      @for (i of [1,2,3,4,5]; track i) {
+        <div class="bg-purple-100 dark:bg-purple-900/60 border border-purple-200 dark:border-purple-700 p-6 rounded">
+          <h4 class="font-medium mb-1 text-slate-900 dark:text-white">Feature {{ i }}</h4>
+          <p class="text-sm text-slate-600 dark:text-slate-300">Auto-sized card</p>
+        </div>
+      }
+    </tw-simple-grid>
+  </div>
+</app-demo-section>
+
+<!-- Gap Options -->
+<app-demo-section title="Gap Options" [code]="gapCode">
+  <div class="space-y-8 bg-slate-100/60 dark:bg-slate-900/70 p-4 rounded-2xl">
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">gap="xs"</span>
+      <tw-grid [cols]="4" gap="xs">
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">1</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">2</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">3</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">4</div>
+      </tw-grid>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">gap="sm"</span>
+      <tw-grid [cols]="4" gap="sm">
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">1</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">2</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">3</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">4</div>
+      </tw-grid>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">gap="md" (default)</span>
+      <tw-grid [cols]="4" gap="md">
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">1</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">2</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">3</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">4</div>
+      </tw-grid>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">gap="lg"</span>
+      <tw-grid [cols]="4" gap="lg">
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">1</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">2</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">3</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">4</div>
+      </tw-grid>
+    </div>
+
+    <div>
+      <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">gap="xl"</span>
+      <tw-grid [cols]="4" gap="xl">
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">1</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">2</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">3</div>
+        <div class="bg-amber-100 dark:bg-amber-900/60 text-slate-900 dark:text-white border border-amber-200 dark:border-amber-700 p-2 rounded text-center text-sm">4</div>
+      </tw-grid>
+    </div>
+  </div>
+</app-demo-section>
+
+<!-- Column Counts -->
+<app-demo-section title="Column Counts" [code]="basicCode">
+  <div class="space-y-8 bg-slate-100/60 dark:bg-slate-900/70 p-4 rounded-2xl">
+    @for (cols of columnCounts; track cols) {
+      <div>
+        <span class="text-sm text-slate-500 dark:text-slate-300 mb-2 block">cols="{{ cols }}"</span>
+        <tw-grid [cols]="cols" gap="sm">
+          @for (i of [1,2,3,4,5,6,7,8,9,10,11,12].slice(0, +cols * 2); track i) {
+            <div class="bg-cyan-100 dark:bg-cyan-900/60 text-slate-900 dark:text-white border border-cyan-200 dark:border-cyan-700 p-2 rounded text-center text-sm">{{ i }}</div>
+          }
+        </tw-grid>
+      </div>
+    }
+  </div>
+</app-demo-section>
+

@@ -17,18 +17,24 @@ import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-
 })
 export class PopoverDemoComponent {
   basicCode = `<tw-popover>
-  <tw-button trigger>Open Popover</tw-button>
-  <div content>
+  <tw-button twPopoverTrigger>Open Popover</tw-button>
+  <div>
     Popover content goes here
   </div>
 </tw-popover>`;
 
-  positionsCode = `<tw-popover position="top">...</tw-popover>
+  positionsCode = `<tw-popover position="top">
+  <tw-button twPopoverTrigger>Top</tw-button>
+  <div>...</div>
+</tw-popover>
 <tw-popover position="bottom">...</tw-popover>
 <tw-popover position="left">...</tw-popover>
 <tw-popover position="right">...</tw-popover>`;
 
-  triggersCode = `<tw-popover trigger="click">...</tw-popover>
+  triggersCode = `<tw-popover trigger="click">
+  <tw-button twPopoverTrigger>Click to open</tw-button>
+  <div>...</div>
+</tw-popover>
 <tw-popover trigger="hover">...</tw-popover>`;
 }
 

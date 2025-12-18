@@ -113,7 +113,7 @@ export class DropdownDemoComponent {
 
   iconCode = `<tw-dropdown>
   <tw-button twDropdownTrigger variant="ghost" [iconOnly]="true">
-    <fa-icon [icon]="faEllipsisVertical"></fa-icon>
+    <fa-icon twButtonIcon [icon]="faEllipsisVertical"></fa-icon>
   </tw-button>
   <tw-dropdown-menu>
     <button twDropdownItem>View Details</button>

@@ -35,7 +35,7 @@ export type DropdownPosition =
   standalone: true,
   host: {
     class:
-      'block w-full px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100 focus:text-slate-900 focus:outline-none disabled:opacity-50 disabled:pointer-events-none transition-colors cursor-pointer',
+      'block w-full px-4 py-2 text-left text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 focus:bg-slate-100 dark:focus:bg-slate-700 focus:text-slate-900 dark:focus:text-slate-100 focus:outline-none disabled:opacity-50 disabled:pointer-events-none transition-colors cursor-pointer',
     role: 'menuitem',
     '[attr.tabindex]': 'disabled ? -1 : 0',
     '[attr.aria-disabled]': 'disabled',
@@ -52,7 +52,7 @@ export class TwDropdownItemDirective {
   selector: 'tw-dropdown-divider',
   standalone: true,
   host: {
-    class: 'block my-1 border-t border-slate-200',
+    class: 'block my-1 border-t border-slate-200 dark:border-slate-700',
     role: 'separator',
   },
   template: ``,
@@ -66,7 +66,7 @@ export class TwDropdownDividerComponent {}
   selector: 'tw-dropdown-header',
   standalone: true,
   host: {
-    class: 'block px-4 py-2 text-xs font-semibold text-slate-500 uppercase tracking-wider',
+    class: 'block px-4 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
   },
   template: `<ng-content></ng-content>`,
 })
@@ -137,16 +137,18 @@ export class TwDropdownComponent implements OnDestroy {
   // Portal elements
   private portalHost: HTMLElement | null = null;
   private portalElement: HTMLElement | null = null;
+  private menuContentElement: HTMLElement | null = null;
   private clickOutsideListener: (() => void) | null = null;
   private scrollListener: (() => void) | null = null;
   private resizeListener: (() => void) | null = null;
   private keydownListener: (() => void) | null = null;
+  private menuClickListener: (() => void) | null = null;
 
   protected menuClasses = computed(() => {
     const widthClass = this.width === 'auto' ? 'min-w-[10rem]' : this.width === 'trigger' ? '' : '';
 
     return this.twClass.merge(
-      'rounded-lg bg-white shadow-lg ring-1 ring-black/5 overflow-auto py-1',
+      'rounded-lg bg-white dark:bg-slate-800 shadow-lg ring-1 ring-black/5 dark:ring-slate-700 overflow-auto py-1',
       widthClass,
       this.menuClass
     );
@@ -227,11 +229,10 @@ export class TwDropdownComponent implements OnDestroy {
 
     this.renderer.appendChild(this.portalHost, this.portalElement);
 
-    // Move menu content to portal
-    const menuContent = this.elementRef.nativeElement.querySelector('tw-dropdown-menu');
-    if (menuContent) {
-      const clone = menuContent.cloneNode(true) as HTMLElement;
-      this.renderer.appendChild(this.portalElement, clone);
+    // Move menu content to portal (not clone, to preserve Angular bindings)
+    this.menuContentElement = this.elementRef.nativeElement.querySelector('tw-dropdown-menu');
+    if (this.menuContentElement) {
+      this.renderer.appendChild(this.portalElement, this.menuContentElement);
     }
 
     // Position the dropdown
@@ -273,16 +274,23 @@ export class TwDropdownComponent implements OnDestroy {
 
     // Handle clicks on dropdown items
     if (this.closeOnSelect && this.portalElement) {
-      this.renderer.listen(this.portalElement, 'click', (event: MouseEvent) => {
+      this.menuClickListener = this.renderer.listen(this.portalElement, 'click', (event: MouseEvent) => {
         const target = event.target as HTMLElement;
         if (target.hasAttribute('twdropdownitem') || target.closest('[twdropdownitem]')) {
-          this.close();
+          // Use setTimeout to allow the Angular click handler to fire first
+          setTimeout(() => { this.close(); }, 0);
         }
       });
     }
   }
 
   private destroyPortal(): void {
+    // Move menu content back to original location before destroying portal
+    if (this.menuContentElement && this.elementRef.nativeElement) {
+      this.renderer.appendChild(this.elementRef.nativeElement, this.menuContentElement);
+    }
+    this.menuContentElement = null;
+
     if (this.portalHost && this.document.body.contains(this.portalHost)) {
       this.renderer.removeChild(this.document.body, this.portalHost);
     }
@@ -304,6 +312,10 @@ export class TwDropdownComponent implements OnDestroy {
     if (this.keydownListener) {
       this.keydownListener();
       this.keydownListener = null;
+    }
+    if (this.menuClickListener) {
+      this.menuClickListener();
+      this.menuClickListener = null;
     }
   }
 

@@ -6,25 +6,30 @@
 <div class="space-y-8">
   <!-- Basic -->
   <app-demo-section title="Basic Usage" [code]="basicCode">
-    <tw-accordion>
+    <div class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-lg">
+      <tw-accordion class="bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-md">
       <tw-accordion-item itemTitle="What is ngx-tailwindcss?">
         ngx-tailwindcss is a highly customizable Angular component library designed for Tailwind CSS 4+.
         It provides beautiful, accessible components that integrate seamlessly with your Tailwind configuration.
       </tw-accordion-item>
-      <tw-accordion-item itemTitle="How do I install it?">
+        <tw-accordion-item itemTitle="How do I install it?">
         You can install ngx-tailwindcss using npm or pnpm:
-        <code class="block mt-2 p-2 bg-slate-100 rounded text-sm">pnpm add &#64;pegasus-heavy/ngx-tailwindcss</code>
+        <code class="block mt-2 p-2 bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 rounded text-sm">pnpm add &#64;pegasus-heavy/ngx-tailwindcss</code>
       </tw-accordion-item>
-      <tw-accordion-item itemTitle="Is it compatible with Angular 19+?">
+        <tw-accordion-item itemTitle="Is it compatible with Angular 19+?">
         Yes! ngx-tailwindcss supports Angular 19, 20, and 21. It uses the latest Angular features
         including signals, standalone components, and the new control flow syntax.
       </tw-accordion-item>
-    </tw-accordion>
+      </tw-accordion>
+    </div>
   </app-demo-section>
 
   <!-- Multiple Open -->
   <app-demo-section title="Multiple Open" [code]="multipleCode">
-    <tw-accordion [allowMultiple]="true">
+    <div class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-lg">
+      <tw-accordion
+        [allowMultiple]="true"
+        class="bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-md">
       <tw-accordion-item itemTitle="First Section" [open]="true">
         This accordion allows multiple panels to be open at the same time.
       </tw-accordion-item>
@@ -34,29 +39,36 @@
       <tw-accordion-item itemTitle="Third Section">
         Click to expand this section as well.
       </tw-accordion-item>
-    </tw-accordion>
+      </tw-accordion>
+    </div>
   </app-demo-section>
 
   <!-- Variants -->
   <app-demo-section title="Variants" [code]="variantsCode">
-    <div class="space-y-6">
+    <div class="space-y-6 bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-lg">
       <div>
-        <p class="text-sm font-medium text-slate-700 mb-2">Default</p>
-        <tw-accordion variant="default">
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-100 mb-2">Default</p>
+        <tw-accordion
+          variant="default"
+          class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md">
           <tw-accordion-item itemTitle="Default Style">Default accordion styling</tw-accordion-item>
           <tw-accordion-item itemTitle="Another Panel">More content here</tw-accordion-item>
         </tw-accordion>
       </div>
       <div>
-        <p class="text-sm font-medium text-slate-700 mb-2">Bordered</p>
-        <tw-accordion variant="bordered">
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-100 mb-2">Bordered</p>
+        <tw-accordion
+          variant="bordered"
+          class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md">
           <tw-accordion-item itemTitle="Bordered Style">Bordered accordion styling</tw-accordion-item>
           <tw-accordion-item itemTitle="Another Panel">More content here</tw-accordion-item>
         </tw-accordion>
       </div>
       <div>
-        <p class="text-sm font-medium text-slate-700 mb-2">Separated</p>
-        <tw-accordion variant="separated">
+        <p class="text-sm font-medium text-slate-700 dark:text-slate-100 mb-2">Separated</p>
+        <tw-accordion
+          variant="separated"
+          class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md">
           <tw-accordion-item itemTitle="Separated Style">Separated accordion styling</tw-accordion-item>
           <tw-accordion-item itemTitle="Another Panel">More content here</tw-accordion-item>
         </tw-accordion>

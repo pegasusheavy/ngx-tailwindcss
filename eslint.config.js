@@ -4,6 +4,7 @@ import tseslint from 'typescript-eslint';
 import angular from 'angular-eslint';
 import eslintPluginUnicorn from 'eslint-plugin-unicorn';
 import eslintPluginJsdoc from 'eslint-plugin-jsdoc';
+import eslintPluginAccess from '@pegasusheavy/eslint-typescript-access';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default tseslint.config(
@@ -39,6 +40,7 @@ export default tseslint.config(
     plugins: {
       unicorn: eslintPluginUnicorn,
       jsdoc: eslintPluginJsdoc,
+      '@pegasusheavy/typescript-access': eslintPluginAccess,
     },
     processor: angular.processInlineTemplates,
     rules: {
@@ -98,15 +100,8 @@ export default tseslint.config(
           allowDirectConstAssertionInArrowFunctions: true,
         },
       ],
-      '@typescript-eslint/explicit-member-accessibility': [
-        'error',
-        {
-          accessibility: 'no-public',
-          overrides: {
-            parameterProperties: 'explicit',
-          },
-        },
-      ],
+      // Disabled in favor of @pegasusheavy/typescript-access/explicit-member-accessibility
+      '@typescript-eslint/explicit-member-accessibility': 'off',
       '@typescript-eslint/member-ordering': [
         'error',
         {
@@ -225,6 +220,30 @@ export default tseslint.config(
       ],
       '@typescript-eslint/strict-boolean-expressions': 'off', // Too strict for general use
       '@typescript-eslint/unified-signatures': 'error',
+
+      // ============================================
+      // TypeScript Access Modifier Rules
+      // ============================================
+      '@pegasusheavy/typescript-access/explicit-member-accessibility': [
+        'error',
+        {
+          accessibility: 'explicit',
+          overrides: {
+            constructors: 'explicit',
+            methods: 'explicit',
+            properties: 'explicit',
+            parameterProperties: 'explicit',
+            accessors: 'explicit',
+          },
+        },
+      ],
+      '@pegasusheavy/typescript-access/member-accessibility-order': [
+        'error',
+        {
+          order: ['public', 'protected', 'private'],
+          groupByKind: true,
+        },
+      ],
 
       // ============================================
       // Unicorn Rules (Best Practices)

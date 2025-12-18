@@ -143,7 +143,7 @@ export class TwSliderComponent implements ControlValueAccessor {
   });
 
   protected labelClasses = computed(() => {
-    return 'text-sm font-medium text-slate-700';
+    return 'text-sm font-medium text-slate-700 dark:text-slate-300';
   });
 
   protected sliderContainerClasses = computed(() => {
@@ -153,7 +153,7 @@ export class TwSliderComponent implements ControlValueAccessor {
   protected trackClasses = computed(() => {
     const sizeClasses = SLIDER_SIZES[this.size].track;
     return this.twClass.merge(
-      'w-full rounded-full bg-slate-200',
+      'w-full rounded-full bg-slate-200 dark:bg-slate-700',
       sizeClasses,
       this.disabled ? 'opacity-50' : ''
     );

@@ -17,11 +17,11 @@ export type SwitchVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'd
 export type SwitchSize = 'sm' | 'md' | 'lg';
 
 const SWITCH_VARIANTS: Record<SwitchVariant, { on: string; off: string }> = {
-  primary: { on: 'bg-blue-600', off: 'bg-slate-300' },
-  secondary: { on: 'bg-slate-600', off: 'bg-slate-300' },
-  success: { on: 'bg-emerald-600', off: 'bg-slate-300' },
-  warning: { on: 'bg-amber-500', off: 'bg-slate-300' },
-  danger: { on: 'bg-rose-600', off: 'bg-slate-300' },
+  primary: { on: 'bg-blue-600', off: 'bg-slate-300 dark:bg-slate-600' },
+  secondary: { on: 'bg-slate-600', off: 'bg-slate-300 dark:bg-slate-600' },
+  success: { on: 'bg-emerald-600', off: 'bg-slate-300 dark:bg-slate-600' },
+  warning: { on: 'bg-amber-500', off: 'bg-slate-300 dark:bg-slate-600' },
+  danger: { on: 'bg-rose-600', off: 'bg-slate-300 dark:bg-slate-600' },
 };
 
 const SWITCH_SIZES: Record<
@@ -92,7 +92,7 @@ export class TwSwitchComponent implements ControlValueAccessor {
 
     return this.twClass.merge(
       'relative inline-flex items-center rounded-full transition-colors duration-200 ease-in-out',
-      'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500',
+      'focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 focus-visible:ring-blue-500',
       'disabled:cursor-not-allowed',
       this.checked() ? variant.on : variant.off,
       sizeClasses
@@ -112,9 +112,9 @@ export class TwSwitchComponent implements ControlValueAccessor {
 
   protected readonly labelClasses = computed(() => {
     return this.twClass.merge(
-      'text-slate-700 select-none',
+      'text-slate-700 dark:text-slate-300 select-none',
       SWITCH_SIZES[this.size()].label,
-      this._disabled() ? 'text-slate-400' : ''
+      this._disabled() ? 'text-slate-400 dark:text-slate-500' : ''
     );
   });
 

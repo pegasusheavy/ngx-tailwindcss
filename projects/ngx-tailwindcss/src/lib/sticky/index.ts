@@ -1,0 +1,2 @@
+export * from './sticky.component';
+

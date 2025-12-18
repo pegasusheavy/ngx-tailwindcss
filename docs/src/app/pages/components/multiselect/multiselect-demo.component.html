@@ -1,0 +1,149 @@
+<app-page-header
+  title="Multiselect"
+  description="Multi-selection dropdown with search, grouping, and selection controls.">
+</app-page-header>
+
+<div class="space-y-8">
+  <!-- Basic -->
+  <app-demo-section title="Basic Usage" [code]="basicCode">
+    <div class="max-w-sm">
+      <tw-multiselect
+        [options]="fruits"
+        [(ngModel)]="selectedFruits"
+        placeholder="Select fruits">
+      </tw-multiselect>
+      <p class="mt-2 text-sm text-slate-600">
+        Selected: {{ selectedFruits().length > 0 ? selectedFruits().join(', ') : 'None' }}
+      </p>
+    </div>
+  </app-demo-section>
+
+  <!-- Grouped Options -->
+  <app-demo-section title="Grouped Options" [code]="groupedCode">
+    <div class="max-w-sm">
+      <tw-multiselect
+        [groups]="countryGroups"
+        [(ngModel)]="selectedCountries"
+        placeholder="Select countries">
+      </tw-multiselect>
+      <p class="mt-2 text-sm text-slate-600">
+        Selected: {{ selectedCountries().length > 0 ? selectedCountries().join(', ') : 'None' }}
+      </p>
+    </div>
+  </app-demo-section>
+
+  <!-- With Filter -->
+  <app-demo-section title="With Filter/Search" [code]="filterCode">
+    <div class="max-w-sm">
+      <tw-multiselect
+        [options]="technologies"
+        [(ngModel)]="selectedTechnologies"
+        [filter]="true"
+        placeholder="Search technologies...">
+      </tw-multiselect>
+      <p class="mt-2 text-sm text-slate-600">
+        Selected: {{ selectedTechnologies().length > 0 ? selectedTechnologies().join(', ') : 'None' }}
+      </p>
+    </div>
+  </app-demo-section>
+
+  <!-- Max Selections -->
+  <app-demo-section title="Max Selections" [code]="maxSelectionsCode">
+    <div class="max-w-sm">
+      <tw-multiselect
+        [options]="colors"
+        [(ngModel)]="selectedColors"
+        [maxSelections]="3"
+        placeholder="Select up to 3 colors">
+      </tw-multiselect>
+      <p class="mt-2 text-sm text-slate-600">
+        Selected {{ selectedColors().length }}/3: {{ selectedColors().length > 0 ? selectedColors().join(', ') : 'None' }}
+      </p>
+    </div>
+  </app-demo-section>
+
+  <!-- Sizes -->
+  <app-demo-section title="Sizes" [code]="sizesCode">
+    <div class="flex flex-wrap items-start gap-4 max-w-3xl">
+      <div class="w-40">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Small</label>
+        <tw-multiselect size="sm" [options]="fruits" placeholder="Small"></tw-multiselect>
+      </div>
+      <div class="w-48">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Medium</label>
+        <tw-multiselect size="md" [options]="fruits" placeholder="Medium"></tw-multiselect>
+      </div>
+      <div class="w-56">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Large</label>
+        <tw-multiselect size="lg" [options]="fruits" placeholder="Large"></tw-multiselect>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Variants -->
+  <app-demo-section title="Variants" [code]="variantsCode">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Default</label>
+        <tw-multiselect variant="default" [options]="fruits" placeholder="Select fruits"></tw-multiselect>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Filled</label>
+        <tw-multiselect variant="filled" [options]="fruits" placeholder="Select fruits"></tw-multiselect>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- States -->
+  <app-demo-section title="States" [code]="statesCode">
+    <div class="flex flex-wrap gap-4 max-w-2xl">
+      <div class="w-48">
+        <label class="block text-sm font-medium text-slate-700 mb-1">Disabled</label>
+        <tw-multiselect [disabled]="true" [options]="fruits" placeholder="Disabled"></tw-multiselect>
+      </div>
+      <div class="w-56">
+        <label class="block text-sm font-medium text-slate-700 mb-1">With Disabled Options</label>
+        <tw-multiselect [options]="disabledOptions" placeholder="Some options disabled"></tw-multiselect>
+      </div>
+    </div>
+  </app-demo-section>
+
+  <!-- Features -->
+  <app-demo-section title="Features" [code]="''">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">With Select All</label>
+        <tw-multiselect
+          [options]="fruits"
+          [showSelectAll]="true"
+          placeholder="Select fruits">
+        </tw-multiselect>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Without Checkboxes</label>
+        <tw-multiselect
+          [options]="fruits"
+          [showCheckbox]="false"
+          placeholder="Select fruits">
+        </tw-multiselect>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">Without Select All</label>
+        <tw-multiselect
+          [options]="fruits"
+          [showSelectAll]="false"
+          placeholder="Select fruits">
+        </tw-multiselect>
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-1">With Label</label>
+        <tw-multiselect
+          [options]="fruits"
+          label="Favorite Fruits"
+          placeholder="Select fruits">
+        </tw-multiselect>
+      </div>
+    </div>
+  </app-demo-section>
+</div>
+

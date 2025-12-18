@@ -111,7 +111,7 @@ export class TwSidebarComponent {
     const transformClasses = this.getTransformClasses();
 
     return this.twClass.merge(
-      'fixed z-50 bg-white shadow-xl flex flex-col transition-transform duration-300 ease-out',
+      'fixed z-50 bg-white dark:bg-slate-800 shadow-xl dark:shadow-slate-900/50 flex flex-col transition-transform duration-300 ease-out',
       sizeClasses,
       positionClasses,
       transformClasses,
@@ -120,15 +120,15 @@ export class TwSidebarComponent {
   });
 
   protected headerClasses = computed(() => {
-    return 'flex items-center justify-between px-6 py-4 border-b border-slate-200';
+    return 'flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700 text-slate-900 dark:text-slate-100';
   });
 
   protected contentClasses = computed(() => {
-    return 'flex-1 overflow-auto p-6';
+    return 'flex-1 overflow-auto p-6 text-slate-700 dark:text-slate-300';
   });
 
   protected footerClasses = computed(() => {
-    return 'px-6 py-4 border-t border-slate-200';
+    return 'px-6 py-4 border-t border-slate-200 dark:border-slate-700';
   });
 
   private getSizeClasses(): string {

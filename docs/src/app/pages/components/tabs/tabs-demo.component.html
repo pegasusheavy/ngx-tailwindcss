@@ -7,36 +7,47 @@
   title="Basic Tabs"
   description="Simple tab navigation with line style."
   [code]="basicCode">
-  <tw-tabs [(value)]="activeTab" variant="line">
+  <div class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-lg">
+    <tw-tabs
+      [(value)]="activeTab"
+      variant="line"
+      class="bg-white dark:bg-slate-900/80 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-md">
     <tw-tab-panel value="tab1" label="Overview">
-      <p class="text-slate-600">
+      <p class="text-slate-600 dark:text-slate-300">
         This is the overview tab content. It provides a summary of the main information
         and key highlights that users need to know.
       </p>
     </tw-tab-panel>
     <tw-tab-panel value="tab2" label="Features">
-      <p class="text-slate-600">
-        This is the features tab content. Here you can list all the amazing features
-        and capabilities of your product or service.
+      <p class="text-slate-600 dark:text-slate-300">
+        This is the features tab content. Here you can list all the amazing capabilities,
+        integrations, and differentiators that make your product stand out.
+      </p>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+        Feature list: Responsive design, accessible markup, composable APIs.
       </p>
     </tw-tab-panel>
     <tw-tab-panel value="tab3" label="Pricing">
-      <p class="text-slate-600">
-        This is the pricing tab content. Display your pricing plans, tiers, and
-        what's included in each option.
+      <p class="text-slate-600 dark:text-slate-300">
+        This is the pricing tab content. Display your plans, billing cycles, and
+        what every tier unlocks so buyers can compare quickly.
+      </p>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">
+        Pricing notes: Monthly and annual options, priority support for premium tier.
       </p>
     </tw-tab-panel>
   </tw-tabs>
+</div>
 </app-demo-section>
 
 <app-demo-section
   title="Tab Variants"
   description="Different visual styles for tabs."
   [code]="variantsCode">
-  <div class="space-y-8">
+  <div class="space-y-8 bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-lg">
     <div>
-      <p class="text-sm font-medium text-slate-700 mb-3">Line Style</p>
-      <tw-tabs variant="line">
+      <p class="text-sm font-medium text-slate-700 dark:text-slate-100 mb-3">Line Style</p>
+      <tw-tabs variant="line" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md">
         <tw-tab-panel value="line1" label="Tab 1">Line style content 1</tw-tab-panel>
         <tw-tab-panel value="line2" label="Tab 2">Line style content 2</tw-tab-panel>
         <tw-tab-panel value="line3" label="Tab 3">Line style content 3</tw-tab-panel>
@@ -44,8 +55,8 @@
     </div>
 
     <div>
-      <p class="text-sm font-medium text-slate-700 mb-3">Enclosed Style</p>
-      <tw-tabs variant="enclosed">
+      <p class="text-sm font-medium text-slate-700 dark:text-slate-100 mb-3">Enclosed Style</p>
+      <tw-tabs variant="enclosed" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md">
         <tw-tab-panel value="enc1" label="Tab 1">Enclosed style content 1</tw-tab-panel>
         <tw-tab-panel value="enc2" label="Tab 2">Enclosed style content 2</tw-tab-panel>
         <tw-tab-panel value="enc3" label="Tab 3">Enclosed style content 3</tw-tab-panel>
@@ -53,8 +64,8 @@
     </div>
 
     <div>
-      <p class="text-sm font-medium text-slate-700 mb-3">Pills Style</p>
-      <tw-tabs variant="pills">
+      <p class="text-sm font-medium text-slate-700 dark:text-slate-100 mb-3">Pills Style</p>
+      <tw-tabs variant="pills" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md">
         <tw-tab-panel value="pill1" label="Tab 1">Pills style content 1</tw-tab-panel>
         <tw-tab-panel value="pill2" label="Tab 2">Pills style content 2</tw-tab-panel>
         <tw-tab-panel value="pill3" label="Tab 3">Pills style content 3</tw-tab-panel>
@@ -62,8 +73,8 @@
     </div>
 
     <div>
-      <p class="text-sm font-medium text-slate-700 mb-3">Soft Rounded Style</p>
-      <tw-tabs variant="soft-rounded">
+      <p class="text-sm font-medium text-slate-700 dark:text-slate-100 mb-3">Soft Rounded Style</p>
+      <tw-tabs variant="soft-rounded" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md">
         <tw-tab-panel value="soft1" label="Tab 1">Soft rounded content 1</tw-tab-panel>
         <tw-tab-panel value="soft2" label="Tab 2">Soft rounded content 2</tw-tab-panel>
         <tw-tab-panel value="soft3" label="Tab 3">Soft rounded content 3</tw-tab-panel>
@@ -76,20 +87,29 @@
   title="Disabled Tab"
   description="Tabs can be individually disabled."
   [code]="disabledCode">
-  <tw-tabs variant="line">
-    <tw-tab-panel value="active1" label="Active Tab">This tab is active and clickable.</tw-tab-panel>
-    <tw-tab-panel value="active2" label="Another Tab">This tab is also active.</tw-tab-panel>
-    <tw-tab-panel value="disabled" label="Disabled" [disabled]="true">This content won't be shown.</tw-tab-panel>
-  </tw-tabs>
+  <div class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-lg">
+    <tw-tabs
+      variant="line"
+      class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md">
+      <tw-tab-panel value="active1" label="Active Tab">This tab is active and clickable.</tw-tab-panel>
+      <tw-tab-panel value="active2" label="Another Tab">This tab is also active.</tw-tab-panel>
+      <tw-tab-panel value="disabled" label="Disabled" [disabled]="true">This content won't be shown.</tw-tab-panel>
+    </tw-tabs>
+  </div>
 </app-demo-section>
 
 <app-demo-section
   title="Full Width Tabs"
   description="Tabs that span the full container width."
   [code]="fullWidthCode">
-  <tw-tabs variant="soft-rounded" [fullWidth]="true">
-    <tw-tab-panel value="fw1" label="First">First tab content with full width tabs.</tw-tab-panel>
-    <tw-tab-panel value="fw2" label="Second">Second tab content with full width tabs.</tw-tab-panel>
-    <tw-tab-panel value="fw3" label="Third">Third tab content with full width tabs.</tw-tab-panel>
-  </tw-tabs>
+  <div class="bg-slate-100/60 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 shadow-lg">
+    <tw-tabs
+      variant="soft-rounded"
+      [fullWidth]="true"
+      class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-md">
+      <tw-tab-panel value="fw1" label="First">First tab content with full width tabs.</tw-tab-panel>
+      <tw-tab-panel value="fw2" label="Second">Second tab content with full width tabs.</tw-tab-panel>
+      <tw-tab-panel value="fw3" label="Third">Third tab content with full width tabs.</tw-tab-panel>
+    </tw-tabs>
+  </div>
 </app-demo-section>

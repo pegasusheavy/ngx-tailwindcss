@@ -1,0 +1,528 @@
+<div class="min-h-screen bg-gradient-to-b from-emerald-50 via-teal-50/30 to-white">
+  <!-- Top Navigation -->
+  <header class="bg-white/80 backdrop-blur-xl border-b border-emerald-200/50 sticky top-0 z-40 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Top Bar -->
+      <div class="flex items-center justify-between h-16">
+        <!-- Back to Docs & Logo -->
+        <div class="flex items-center gap-3">
+          <a routerLink="/" class="flex items-center gap-2 px-3 py-2 text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100 rounded-lg font-medium transition-colors">
+            <fa-icon [icon]="icons.arrowLeft" class="text-sm"></fa-icon>
+            <span class="hidden sm:inline">Docs</span>
+          </a>
+
+          <div class="h-6 w-px bg-emerald-300"></div>
+
+          <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-500/30">
+            S
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-emerald-900">ShopHub</h1>
+            <p class="text-xs text-emerald-600">Premium Boutique</p>
+          </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="flex-1 max-w-2xl mx-8">
+          <tw-input
+            [(ngModel)]="searchQuery"
+            placeholder="Search products..."
+            size="md">
+            <fa-icon prefix [icon]="icons.search" class="text-slate-400"></fa-icon>
+          </tw-input>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-3">
+          <app-theme-toggle></app-theme-toggle>
+
+          <tw-button variant="ghost" size="sm">
+            <fa-icon [icon]="icons.heart"></fa-icon>
+            <span class="ml-1">Wishlist</span>
+          </tw-button>
+
+          <tw-button variant="ghost" size="sm">
+            <fa-icon [icon]="icons.user"></fa-icon>
+            <span class="ml-1">Account</span>
+          </tw-button>
+
+          <tw-button size="sm" (click)="toggleCart()">
+            <fa-icon [icon]="icons.cart"></fa-icon>
+            <span class="ml-1">Cart ({{ cartItemCount() }})</span>
+          </tw-button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-12 gap-8">
+      <!-- Filters Sidebar -->
+      <aside class="col-span-12 lg:col-span-3">
+        <tw-card [padded]="true">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-semibold text-slate-900">Filters</h3>
+            <tw-button variant="ghost" size="sm" (click)="clearFilters()">Clear</tw-button>
+          </div>
+
+          <div class="space-y-6">
+            <!-- Categories -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Categories</label>
+              <tw-multiselect
+                [(ngModel)]="selectedCategories"
+                [groups]="categoryGroups"
+                [showSelectAll]="false"
+                size="sm"
+                placeholder="All categories">
+              </tw-multiselect>
+            </div>
+
+            <tw-divider></tw-divider>
+
+            <!-- Brands -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Brands</label>
+              <tw-multiselect
+                [(ngModel)]="selectedBrands"
+                [groups]="brandOptions"
+                [filter]="true"
+                [showSelectAll]="false"
+                size="sm"
+                placeholder="All brands">
+              </tw-multiselect>
+            </div>
+
+            <tw-divider></tw-divider>
+
+            <!-- Price Range -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">
+                Price Range: ${{ priceRange()[0] }} - ${{ priceRange()[1] }}
+              </label>
+              <tw-slider
+                [min]="0"
+                [max]="1000"
+                [step]="10"
+
+                [(ngModel)]="priceRange">
+              </tw-slider>
+            </div>
+
+            <tw-divider></tw-divider>
+
+            <!-- Rating Filter -->
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-3">Minimum Rating</label>
+              <div class="space-y-2">
+                @for (rating of [5, 4, 3, 2]; track rating) {
+                  <button class="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                    <tw-rating [ngModel]="rating" readonly size="sm"></tw-rating>
+                    <span class="text-sm text-slate-600">& Up</span>
+                  </button>
+                }
+              </div>
+            </div>
+          </div>
+        </tw-card>
+
+        <!-- Promotions -->
+        <div class="mt-6 p-6 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-xl shadow-emerald-500/20">
+          <div class="text-center">
+            <div class="text-4xl mb-2">🎉</div>
+            <h4 class="font-bold text-white mb-1">Holiday Sale!</h4>
+            <p class="text-sm text-emerald-100 mb-4">Up to 40% off selected items</p>
+            <button class="w-full py-2.5 bg-white text-emerald-700 font-semibold rounded-lg hover:bg-emerald-50 transition-colors">
+              Shop Now
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Products Grid -->
+      <main class="col-span-12 lg:col-span-9">
+        <!-- Toolbar -->
+        <div class="flex items-center justify-between mb-6">
+          <div>
+            <h2 class="text-2xl font-bold text-slate-900">Products</h2>
+            <p class="text-sm text-slate-600">{{ filteredProducts().length }} items found</p>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <!-- View Toggle -->
+            <div class="flex gap-1 bg-slate-100 p-1 rounded-lg">
+              <tw-button
+                [variant]="viewMode() === 'grid' ? 'primary' : 'ghost'"
+                size="sm"
+                (click)="viewMode.set('grid')">
+                <fa-icon [icon]="icons.grid" class="text-sm"></fa-icon>
+              </tw-button>
+              <tw-button
+                [variant]="viewMode() === 'list' ? 'primary' : 'ghost'"
+                size="sm"
+                (click)="viewMode.set('list')">
+                <fa-icon [icon]="icons.list" class="text-sm"></fa-icon>
+              </tw-button>
+            </div>
+
+            <!-- Sort -->
+            <tw-select
+              [(ngModel)]="sortBy"
+              [options]="sortOptions"
+              size="sm">
+            </tw-select>
+          </div>
+        </div>
+
+        <!-- Active Filters -->
+        @if (selectedCategories().length > 0 || selectedBrands().length > 0) {
+          <div class="mb-6">
+            <tw-alert variant="info">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span class="text-sm font-medium">Active filters:</span>
+                  <tw-chips>
+                    @for (cat of selectedCategories(); track cat) {
+                      <tw-chip>{{ cat }}</tw-chip>
+                    }
+                    @for (brand of selectedBrands(); track brand) {
+                      <tw-chip variant="secondary">{{ brand }}</tw-chip>
+                    }
+                  </tw-chips>
+                </div>
+                <tw-button variant="ghost" size="sm" (click)="clearFilters()">Clear All</tw-button>
+              </div>
+            </tw-alert>
+          </div>
+        }
+
+        <!-- Products Grid/List -->
+        @if (filteredProducts().length === 0) {
+          <tw-card class="text-center" [padded]="true">
+            <div class="py-8">
+              <div class="text-6xl mb-4">🔍</div>
+              <h3 class="text-xl font-semibold text-slate-900 mb-2">No products found</h3>
+              <p class="text-slate-600 mb-4">Try adjusting your filters or search query</p>
+              <tw-button (click)="clearFilters()">Clear Filters</tw-button>
+            </div>
+          </tw-card>
+        } @else {
+          <div [class]="viewMode() === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'">
+            @for (product of filteredProducts(); track product.id) {
+              <tw-card [class]="viewMode() === 'list' ? 'hover:shadow-lg transition-shadow' : ''" [padded]="true">
+                <div [class]="viewMode() === 'list' ? 'flex gap-6' : ''">
+                  <!-- Product Image -->
+                  <div [class]="viewMode() === 'list' ? 'w-48 flex-shrink-0' : 'relative -mx-6 -mt-6 mb-4'">
+                    <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-7xl cursor-pointer hover:scale-105 transition-transform"
+                         [class]="viewMode() === 'list' ? 'rounded-lg' : 'rounded-t-xl'"
+                         (click)="openProductDetail(product)">
+                      {{ product.image }}
+                    </div>
+
+                    <!-- Badges -->
+                    <div class="absolute top-2 left-2 flex flex-col gap-2" [class]="viewMode() === 'list' ? '' : 'left-0 top-4 ml-2'">
+                      @if (product.originalPrice) {
+                        <tw-badge variant="danger">-{{ getDiscount(product) }}%</tw-badge>
+                      }
+                      @if (!product.inStock) {
+                        <tw-badge >Out of Stock</tw-badge>
+                      }
+                    </div>
+                  </div>
+
+                  <!-- Product Info -->
+                  <div [class]="viewMode() === 'list' ? 'flex-1' : ''">
+                    <div class="flex items-start justify-between mb-2">
+                      <div class="flex-1">
+                        <h3 class="font-semibold text-slate-900 hover:text-purple-600 cursor-pointer transition-colors"
+                            (click)="openProductDetail(product)">
+                          {{ product.name }}
+                        </h3>
+                        <p class="text-sm text-slate-600 mt-1">{{ product.brand }}</p>
+                      </div>
+                      <tw-button variant="ghost" size="sm">
+                        <fa-icon [icon]="icons.heartEmpty"></fa-icon>
+                      </tw-button>
+                    </div>
+
+                    @if (viewMode() === 'list') {
+                      <p class="text-sm text-slate-600 mb-3">{{ product.description }}</p>
+                    }
+
+                    <!-- Rating -->
+                    <div class="flex items-center gap-2 mb-3">
+                      <tw-rating [(ngModel)]="product.rating" readonly size="sm"></tw-rating>
+                      <span class="text-sm text-slate-600">({{ product.reviews }})</span>
+                    </div>
+
+                    <!-- Tags -->
+                    <div class="flex flex-wrap gap-1 mb-3">
+                      @for (tag of product.tags.slice(0, 3); track tag) {
+                        <tw-badge  size="sm">{{ tag }}</tw-badge>
+                      }
+                    </div>
+
+                    <!-- Price & Action -->
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <div class="flex items-baseline gap-2">
+                          <span class="text-2xl font-bold text-slate-900">${{ product.price }}</span>
+                          @if (product.originalPrice) {
+                            <span class="text-sm text-slate-500 line-through">${{ product.originalPrice }}</span>
+                          }
+                        </div>
+                      </div>
+                      <tw-button
+                        [variant]="product.inStock ? 'primary' : 'outline'"
+                        size="sm"
+                        [disabled]="!product.inStock"
+                        (click)="openProductDetail(product)">
+                        {{ product.inStock ? 'View Details' : 'Out of Stock' }}
+                      </tw-button>
+                    </div>
+                  </div>
+                </div>
+              </tw-card>
+            }
+          </div>
+        }
+      </main>
+    </div>
+  </div>
+
+  <!-- Shopping Cart Sidebar -->
+  <tw-sidebar
+    [visibleInput]="cartOpen()"
+    (visibleChange)="cartOpen.set($event)"
+    position="right"
+    width="500px">
+    <div header>
+      <h2 class="text-xl font-bold text-slate-900">Shopping Cart</h2>
+      <p class="text-sm text-slate-600">{{ cartItemCount() }} items</p>
+    </div>
+
+    @if (cart().length === 0) {
+      <div class="flex flex-col items-center justify-center h-full text-center py-12">
+        <div class="text-6xl mb-4">🛒</div>
+        <h3 class="text-lg font-semibold text-slate-900 mb-2">Your cart is empty</h3>
+        <p class="text-slate-600 mb-4">Add some products to get started!</p>
+        <tw-button (click)="toggleCart()">Continue Shopping</tw-button>
+      </div>
+    } @else {
+      <div class="space-y-4">
+        @for (item of cart(); track item) {
+          <tw-card [padded]="true">
+            <div class="flex gap-4">
+              <div class="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">
+                {{ item.product.image }}
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <h4 class="font-semibold text-slate-900 truncate">{{ item.product.name }}</h4>
+                <p class="text-sm text-slate-600">{{ item.product.brand }}</p>
+
+                @if (item.selectedColor) {
+                  <tw-badge  size="sm" class="mt-1">{{ item.selectedColor }}</tw-badge>
+                }
+                @if (item.selectedSize) {
+                  <tw-badge  size="sm" class="mt-1 ml-1">Size: {{ item.selectedSize }}</tw-badge>
+                }
+
+                <div class="flex items-center justify-between mt-2">
+                  <div class="flex items-center gap-2">
+                    <tw-button variant="outline" size="sm" (click)="updateQuantity(item, item.quantity - 1)">-</tw-button>
+                    <span class="text-sm font-medium w-8 text-center">{{ item.quantity }}</span>
+                    <tw-button variant="outline" size="sm" (click)="updateQuantity(item, item.quantity + 1)">+</tw-button>
+                  </div>
+
+                  <div class="text-right">
+                    <p class="font-bold text-slate-900">${{ (item.product.price * item.quantity).toFixed(2) }}</p>
+                    <tw-button variant="ghost" size="sm" (click)="removeFromCart(item)">
+                      <fa-icon [icon]="icons.trash" class="text-rose-600"></fa-icon>
+                    </tw-button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </tw-card>
+        }
+      </div>
+    }
+
+    @if (cart().length > 0) {
+      <div footer>
+        <tw-divider class="mb-4"></tw-divider>
+
+        <div class="space-y-2 mb-4">
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-600">Subtotal</span>
+            <span class="font-medium">${{ cartTotal().toFixed(2) }}</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-600">Shipping</span>
+            <span class="font-medium">$10.00</span>
+          </div>
+          <div class="flex justify-between text-sm">
+            <span class="text-slate-600">Tax</span>
+            <span class="font-medium">${{ (cartTotal() * 0.1).toFixed(2) }}</span>
+          </div>
+          <tw-divider class="my-2"></tw-divider>
+          <div class="flex justify-between text-lg">
+            <span class="font-bold text-slate-900">Total</span>
+            <span class="font-bold text-slate-900">${{ (cartTotal() + 10 + cartTotal() * 0.1).toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <tw-button size="lg" fullWidth (click)="checkout()">
+          Proceed to Checkout
+        </tw-button>
+      </div>
+    }
+  </tw-sidebar>
+
+  <!-- Product Detail Modal -->
+  @if (selectedProduct()) {
+    <tw-modal
+      [(open)]="productDetailOpen"
+      [showCloseButton]="true"
+      size="lg">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <!-- Product Image -->
+        <div>
+          <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center text-9xl mb-4">
+            {{ selectedProduct()!.image }}
+          </div>
+
+          @if (selectedProduct()!.colors && selectedProduct()!.colors!.length > 0) {
+            <div class="mb-4">
+              <label class="block text-sm font-medium text-slate-700 mb-2">Color</label>
+              <div class="flex gap-2">
+                @for (color of selectedProduct()!.colors; track color) {
+                  <tw-button
+                    [variant]="selectedColor() === color ? 'primary' : 'outline'"
+                    size="sm"
+                    (click)="selectedColor.set(color)">
+                    {{ color }}
+                  </tw-button>
+                }
+              </div>
+            </div>
+          }
+
+          @if (selectedProduct()!.sizes && selectedProduct()!.sizes!.length > 0) {
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-2">Size</label>
+              <div class="flex gap-2">
+                @for (size of selectedProduct()!.sizes; track size) {
+                  <tw-button
+                    [variant]="selectedSize() === size ? 'primary' : 'outline'"
+                    size="sm"
+                    (click)="selectedSize.set(size)">
+                    {{ size }}
+                  </tw-button>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Product Info -->
+        <div>
+          <div class="mb-2">
+            <tw-badge >{{ selectedProduct()!.category }}</tw-badge>
+          </div>
+
+          <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ selectedProduct()!.name }}</h2>
+          <p class="text-slate-600 mb-4">{{ selectedProduct()!.brand }}</p>
+
+          <div class="flex items-center gap-3 mb-6">
+            <tw-rating [(ngModel)]="selectedProduct()!.rating" readonly></tw-rating>
+            <span class="text-sm text-slate-600">{{ selectedProduct()!.reviews }} reviews</span>
+          </div>
+
+          <p class="text-slate-700 mb-6">{{ selectedProduct()!.description }}</p>
+
+          <div class="flex items-baseline gap-3 mb-6">
+            <span class="text-4xl font-bold text-slate-900">${{ selectedProduct()!.price }}</span>
+            @if (selectedProduct()!.originalPrice) {
+              <span class="text-xl text-slate-500 line-through">${{ selectedProduct()!.originalPrice }}</span>
+              <tw-badge variant="danger">Save {{ getDiscount(selectedProduct()!) }}%</tw-badge>
+            }
+          </div>
+
+          <tw-alert [variant]="selectedProduct()!.inStock ? 'success' : 'warning'" class="mb-6">
+            {{ selectedProduct()!.inStock ? '✓ In Stock - Ships in 2-3 days' : '⚠ Out of Stock' }}
+          </tw-alert>
+
+          <tw-button
+
+            size="lg"
+            fullWidth
+            [disabled]="!selectedProduct()!.inStock"
+            (click)="addToCart(selectedProduct()!)">
+            <fa-icon [icon]="icons.cart" class="mr-2"></fa-icon>
+            Add to Cart
+          </tw-button>
+
+          <tw-divider class="my-6"></tw-divider>
+
+          <!-- Product Details Accordion -->
+          <tw-accordion>
+            <tw-accordion-item itemTitle="Product Details" [open]="true">
+              <ul class="list-disc list-inside space-y-1 text-sm text-slate-700">
+                <li>Premium quality materials</li>
+                <li>1-year manufacturer warranty</li>
+                <li>Free shipping on orders over $50</li>
+                <li>30-day money-back guarantee</li>
+              </ul>
+            </tw-accordion-item>
+
+            <tw-accordion-item itemTitle="Shipping Information">
+              <p class="text-sm text-slate-700">
+                Standard shipping (5-7 business days): $10<br>
+                Express shipping (2-3 business days): $25<br>
+                Free shipping on orders over $100
+              </p>
+            </tw-accordion-item>
+
+            <tw-accordion-item itemTitle="Return Policy">
+              <p class="text-sm text-slate-700">
+                We offer a 30-day return policy for all unused items in original packaging.
+                Return shipping is free for defective items.
+              </p>
+            </tw-accordion-item>
+          </tw-accordion>
+
+          <tw-divider class="my-6"></tw-divider>
+
+          <!-- Customer Reviews -->
+          <div>
+            <h3 class="text-lg font-semibold text-slate-900 mb-4">Customer Reviews</h3>
+            <div class="space-y-4">
+              @for (review of reviews.slice(0, 3); track review.id) {
+                <div class="border-b border-slate-200 pb-4 last:border-0">
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                      <tw-avatar [initials]="review.author[0]" size="sm"></tw-avatar>
+                      <div>
+                        <p class="font-medium text-sm">{{ review.author }}</p>
+                        <tw-rating [(ngModel)]="review.rating" readonly size="sm"></tw-rating>
+                      </div>
+                    </div>
+                    <span class="text-xs text-slate-500">{{ review.date }}</span>
+                  </div>
+                  <p class="text-sm text-slate-700">{{ review.comment }}</p>
+                  <button class="text-xs text-slate-500 hover:text-slate-700 mt-2">
+                    👍 Helpful ({{ review.helpful }})
+                  </button>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </tw-modal>
+  }
+</div>
+

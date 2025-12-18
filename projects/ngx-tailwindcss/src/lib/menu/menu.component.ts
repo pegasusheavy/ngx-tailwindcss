@@ -68,9 +68,9 @@ export class TwMenuComponent {
 
   protected containerClasses = computed(() => {
     const variantClasses = {
-      default: 'bg-white',
-      bordered: 'bg-white border border-slate-200 rounded-lg',
-      elevated: 'bg-white rounded-lg shadow-lg border border-slate-100',
+      default: 'bg-white dark:bg-slate-800',
+      bordered: 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg',
+      elevated: 'bg-white dark:bg-slate-800 rounded-lg shadow-lg dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700',
     };
 
     return this.twClass.merge('py-1 min-w-48', variantClasses[this.variant], this.classOverride);
@@ -79,27 +79,27 @@ export class TwMenuComponent {
   protected itemClasses(item: MenuItem) {
     return this.twClass.merge(
       'w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition-colors',
-      'focus:outline-none focus:bg-slate-50',
+      'focus:outline-none focus:bg-slate-50 dark:focus:bg-slate-700',
       item.disabled
-        ? 'text-slate-400 cursor-not-allowed'
-        : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900 cursor-pointer',
+        ? 'text-slate-400 dark:text-slate-500 cursor-not-allowed'
+        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 dark:hover:text-slate-100 cursor-pointer',
       item.styleClass || ''
     );
   }
 
   protected separatorClasses() {
-    return 'my-1 border-t border-slate-200';
+    return 'my-1 border-t border-slate-200 dark:border-slate-700';
   }
 
   protected submenuClasses() {
     return this.twClass.merge(
-      'absolute left-full top-0 ml-1 py-1 min-w-48 bg-white rounded-lg shadow-lg border border-slate-100',
+      'absolute left-full top-0 ml-1 py-1 min-w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700',
       'animate-in fade-in-0 zoom-in-95 duration-100'
     );
   }
 
   protected badgeClasses() {
-    return 'ml-auto px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700';
+    return 'ml-auto px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300';
   }
 
   onSubmenuEnter(item: MenuItem): void {

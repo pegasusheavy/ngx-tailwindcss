@@ -40,23 +40,23 @@ const BADGE_SOLID_VARIANTS: Record<BadgeVariant, string> = {
 };
 
 const BADGE_SOFT_VARIANTS: Record<BadgeVariant, string> = {
-  primary: 'bg-blue-100 text-blue-800',
-  secondary: 'bg-slate-100 text-slate-800',
-  success: 'bg-emerald-100 text-emerald-800',
-  warning: 'bg-amber-100 text-amber-800',
-  danger: 'bg-rose-100 text-rose-800',
-  info: 'bg-cyan-100 text-cyan-800',
-  neutral: 'bg-slate-100 text-slate-600',
+  primary: 'bg-blue-100 dark:bg-blue-900/40 text-blue-800 dark:text-blue-300',
+  secondary: 'bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-300',
+  success: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300',
+  warning: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300',
+  danger: 'bg-rose-100 dark:bg-rose-900/40 text-rose-800 dark:text-rose-300',
+  info: 'bg-cyan-100 dark:bg-cyan-900/40 text-cyan-800 dark:text-cyan-300',
+  neutral: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300',
 };
 
 const BADGE_OUTLINE_VARIANTS: Record<BadgeVariant, string> = {
-  primary: 'bg-transparent border border-blue-600 text-blue-600',
-  secondary: 'bg-transparent border border-slate-600 text-slate-600',
-  success: 'bg-transparent border border-emerald-600 text-emerald-600',
-  warning: 'bg-transparent border border-amber-500 text-amber-600',
-  danger: 'bg-transparent border border-rose-600 text-rose-600',
-  info: 'bg-transparent border border-cyan-600 text-cyan-600',
-  neutral: 'bg-transparent border border-slate-400 text-slate-600',
+  primary: 'bg-transparent border border-blue-600 dark:border-blue-400 text-blue-600 dark:text-blue-400',
+  secondary: 'bg-transparent border border-slate-600 dark:border-slate-400 text-slate-600 dark:text-slate-400',
+  success: 'bg-transparent border border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400',
+  warning: 'bg-transparent border border-amber-500 dark:border-amber-400 text-amber-600 dark:text-amber-400',
+  danger: 'bg-transparent border border-rose-600 dark:border-rose-400 text-rose-600 dark:text-rose-400',
+  info: 'bg-transparent border border-cyan-600 dark:border-cyan-400 text-cyan-600 dark:text-cyan-400',
+  neutral: 'bg-transparent border border-slate-400 dark:border-slate-500 text-slate-600 dark:text-slate-400',
 };
 
 const BADGE_DOT_COLORS: Record<BadgeVariant, string> = {

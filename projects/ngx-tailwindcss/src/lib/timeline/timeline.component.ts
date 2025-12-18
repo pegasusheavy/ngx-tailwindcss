@@ -91,17 +91,47 @@ export class TwTimelineComponent {
   }
 
   protected connectorClasses() {
-    const size = this.MARKER_SIZES[this.markerSize];
     if (this.layout === 'horizontal') {
       return this.twClass.merge(
-        'absolute top-4 left-full w-full h-0.5 bg-slate-200',
+        'absolute top-4 left-full w-full h-0.5 bg-slate-300',
         '-translate-x-1/2'
       );
     }
+
+    // Line runs through the CENTER of the marker (not starting at the bottom)
+    // This creates a continuous visual connection through all markers
+    // The markers have z-10, so they appear ON TOP of the line
+
+    // Position line at the vertical center of the marker
+    // sm (w-3 = 12px): center at 6px
+    // md (w-4 = 16px): center at 8px
+    // lg (w-5 = 20px): center at 10px
+    const topPosition = {
+      sm: 'top-[6px]',
+      md: 'top-[8px]',
+      lg: 'top-[10px]',
+    };
+
+    // Calculate the left position to center the 2px line (w-0.5) with the marker dot
+    // sm (w-3 = 12px): center at 6px, line at 6px - 1px = 5px
+    // md (w-4 = 16px): center at 8px, line at 8px - 1px = 7px
+    // lg (w-5 = 20px): center at 10px, line at 10px - 1px = 9px
+    const leftPosition = {
+      sm: 'left-[5px]',
+      md: 'left-[7px]',
+      lg: 'left-[9px]',
+    };
+
+    const rightPosition = {
+      sm: 'right-[5px]',
+      md: 'right-[7px]',
+      lg: 'right-[9px]',
+    };
+
     return this.twClass.merge(
-      'absolute top-6 w-0.5 h-full bg-slate-200',
-      this.align === 'right' ? 'right-2' : 'left-2',
-      this.markerSize === 'sm' ? 'left-1.5' : this.markerSize === 'lg' ? 'left-2.5' : ''
+      'absolute w-0.5 bg-slate-300 bottom-0',
+      topPosition[this.markerSize],
+      this.align === 'right' ? rightPosition[this.markerSize] : leftPosition[this.markerSize]
     );
   }
 

@@ -27,6 +27,11 @@ export interface SelectOption {
   icon?: string;
 }
 
+export interface SelectGroup {
+  label: string;
+  options: SelectOption[];
+}
+
 export type SelectSize = 'sm' | 'md' | 'lg';
 export type SelectVariant = 'default' | 'filled';
 export type SelectAppendTo = 'body' | 'self';
@@ -69,8 +74,11 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
 
   @ViewChild('triggerButton') triggerButton!: ElementRef<HTMLButtonElement>;
 
-  /** Options to display */
+  /** Options to display (flat list) */
   @Input() options: SelectOption[] = [];
+
+  /** Grouped options to display */
+  @Input() groups: SelectGroup[] = [];
 
   /** Placeholder text */
   @Input() placeholder = 'Select an option';
@@ -138,8 +146,15 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   private scrollListener: (() => void) | null = null;
   private resizeListener: (() => void) | null = null;
 
+  protected allOptions = computed(() => {
+    if (this.groups.length > 0) {
+      return this.groups.flatMap(g => g.options);
+    }
+    return this.options;
+  });
+
   protected selectedOption = computed(() => {
-    return this.options.find(opt => opt.value === this.selectedValue()) || null;
+    return this.allOptions().find(opt => opt.value === this.selectedValue()) || null;
   });
 
   protected filteredOptions = computed(() => {
@@ -148,12 +163,24 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
     return this.options.filter(opt => opt.label.toLowerCase().includes(filter));
   });
 
+  protected filteredGroups = computed(() => {
+    const filter = this.filterValue().toLowerCase();
+    if (!filter) return this.groups;
+
+    return this.groups
+      .map(group => ({
+        ...group,
+        options: group.options.filter(opt => opt.label.toLowerCase().includes(filter)),
+      }))
+      .filter(group => group.options.length > 0);
+  });
+
   protected containerClasses = computed(() => {
     return this.twClass.merge('relative', this.classOverride);
   });
 
   protected labelClasses = computed(() => {
-    return 'block text-sm font-medium text-slate-700 mb-1.5';
+    return 'block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5';
   });
 
   protected triggerClasses = computed(() => {
@@ -161,14 +188,14 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
     const hasError = !!this.error;
 
     return this.twClass.merge(
-      'w-full flex items-center justify-between rounded-lg border bg-white transition-all duration-200',
+      'w-full flex items-center justify-between rounded-lg border bg-white dark:bg-slate-800 transition-all duration-200',
       'focus:outline-none focus:ring-2 focus:ring-offset-0',
       sizeClasses.trigger,
       sizeClasses.text,
       hasError
         ? 'border-rose-500 focus:ring-rose-500 focus:border-rose-500'
-        : 'border-slate-300 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400',
-      this.disabled ? 'opacity-50 cursor-not-allowed bg-slate-50' : 'cursor-pointer',
+        : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 dark:hover:border-slate-500',
+      this.disabled ? 'opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900' : 'cursor-pointer',
       this.isOpen() ? 'ring-2 ring-blue-500 border-blue-500' : ''
     );
   });
@@ -176,7 +203,7 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   protected valueDisplayClasses = computed(() => {
     return this.twClass.merge(
       'truncate text-left',
-      this.selectedOption() ? 'text-slate-900' : 'text-slate-400'
+      this.selectedOption() ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500'
     );
   });
 
@@ -189,7 +216,7 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
 
   protected dropdownClasses = computed(() => {
     const baseClasses = this.twClass.merge(
-      'bg-white border border-slate-200 rounded-lg shadow-lg',
+      'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg',
       'animate-in fade-in-0 zoom-in-95 duration-100'
     );
 
@@ -217,7 +244,9 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
     const isSelected = this.isSelected(option);
     return this.twClass.merge(
       'w-full flex items-center px-4 py-2.5 text-left text-sm transition-colors',
-      isSelected ? 'bg-blue-50 text-blue-700' : 'text-slate-700 hover:bg-slate-50',
+      isSelected
+        ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
+        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700',
       option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
     );
   }

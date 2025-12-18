@@ -46,7 +46,7 @@ export class TwSkeletonComponent {
       rounded: 'rounded-lg',
     };
 
-    const classes = ['bg-slate-200', 'block', variantClasses[variant]];
+    const classes = ['bg-slate-200 dark:bg-slate-700', 'block', variantClasses[variant]];
 
     if (animated) {
       classes.push('animate-pulse');

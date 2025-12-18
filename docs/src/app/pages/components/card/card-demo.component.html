@@ -8,28 +8,36 @@
   description="Different visual styles for various use cases."
   [code]="variantsCode">
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-    <tw-card variant="elevated">
+    <tw-card
+      variant="elevated"
+      class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Elevated</h3>
-        <p class="text-sm text-slate-600">Card with shadow</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Elevated</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Card with shadow</p>
       </tw-card-body>
     </tw-card>
-    <tw-card variant="outlined">
+    <tw-card
+      variant="outlined"
+      class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Outlined</h3>
-        <p class="text-sm text-slate-600">Card with border</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Outlined</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Card with border</p>
       </tw-card-body>
     </tw-card>
-    <tw-card variant="filled">
+    <tw-card
+      variant="filled"
+      class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Filled</h3>
-        <p class="text-sm text-slate-600">Card with background</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Filled</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Card with background</p>
       </tw-card-body>
     </tw-card>
-    <tw-card variant="ghost">
+    <tw-card
+      variant="ghost"
+      class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Ghost</h3>
-        <p class="text-sm text-slate-600">Transparent card</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Ghost</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Transparent card</p>
       </tw-card-body>
     </tw-card>
   </div>
@@ -40,13 +48,15 @@
   description="Structured card with header, body, and footer sections."
   [code]="headerFooterCode">
   <div class="max-w-md">
-    <tw-card variant="elevated">
+    <tw-card
+      variant="elevated"
+      class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-header>
-        <tw-card-title>Card Title</tw-card-title>
-        <tw-card-subtitle>Supporting text below the title</tw-card-subtitle>
+        <tw-card-title class="dark:text-white">Card Title</tw-card-title>
+        <tw-card-subtitle class="dark:text-slate-300">Supporting text below the title</tw-card-subtitle>
       </tw-card-header>
       <tw-card-body>
-        <p class="text-slate-600">
+        <p class="text-slate-600 dark:text-slate-300">
           This is the main content area of the card. You can put any content here,
           including text, images, forms, or other components.
         </p>
@@ -64,7 +74,7 @@
   description="Cards with images or other media content."
   [code]="mediaCode">
   <div class="grid md:grid-cols-3 gap-6">
-    <tw-card variant="elevated">
+    <tw-card variant="elevated" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-media position="top">
         <img
           src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?w=400&h=250&fit=crop"
@@ -72,11 +82,11 @@
           class="w-full h-48 object-cover">
       </tw-card-media>
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Ocean View</h3>
-        <p class="text-sm text-slate-600">A beautiful view of the ocean at sunset.</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Ocean View</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">A beautiful view of the ocean at sunset.</p>
       </tw-card-body>
     </tw-card>
-    <tw-card variant="elevated">
+    <tw-card variant="elevated" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-media position="top">
         <img
           src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=250&fit=crop"
@@ -84,11 +94,11 @@
           class="w-full h-48 object-cover">
       </tw-card-media>
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Mountain Peak</h3>
-        <p class="text-sm text-slate-600">Majestic mountains reaching the clouds.</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Mountain Peak</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Majestic mountains reaching the clouds.</p>
       </tw-card-body>
     </tw-card>
-    <tw-card variant="elevated">
+    <tw-card variant="elevated" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-media position="top">
         <img
           src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=250&fit=crop"
@@ -96,8 +106,8 @@
           class="w-full h-48 object-cover">
       </tw-card-media>
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Forest Trail</h3>
-        <p class="text-sm text-slate-600">A peaceful walk through the woods.</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Forest Trail</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">A peaceful walk through the woods.</p>
       </tw-card-body>
     </tw-card>
   </div>
@@ -108,22 +118,22 @@
   description="Cards with hover effects and click interactions."
   [code]="interactiveCode">
   <div class="grid md:grid-cols-3 gap-4">
-    <tw-card variant="outlined" [hoverable]="true">
+    <tw-card variant="outlined" [hoverable]="true" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Hoverable</h3>
-        <p class="text-sm text-slate-600">Hover to see the lift effect.</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Hoverable</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Hover to see the lift effect.</p>
       </tw-card-body>
     </tw-card>
-    <tw-card variant="outlined" [clickable]="true">
+    <tw-card variant="outlined" [clickable]="true" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Clickable</h3>
-        <p class="text-sm text-slate-600">Click to trigger an action.</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Clickable</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Click to trigger an action.</p>
       </tw-card-body>
     </tw-card>
-    <tw-card variant="outlined" [hoverable]="true" [clickable]="true">
+    <tw-card variant="outlined" [hoverable]="true" [clickable]="true" class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-lg">
       <tw-card-body>
-        <h3 class="font-semibold text-slate-900 mb-2">Both</h3>
-        <p class="text-sm text-slate-600">Hoverable and clickable combined.</p>
+        <h3 class="font-semibold text-slate-900 dark:text-white mb-2">Both</h3>
+        <p class="text-sm text-slate-600 dark:text-slate-300">Hoverable and clickable combined.</p>
       </tw-card-body>
     </tw-card>
   </div>
@@ -134,7 +144,9 @@
   description="A more complex card example with multiple elements."
   [code]="complexCode">
   <div class="max-w-sm">
-    <tw-card variant="elevated">
+    <tw-card
+      variant="elevated"
+      class="bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-700 shadow-xl">
       <tw-card-media position="top">
         <img
           src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=200&fit=crop"
@@ -151,7 +163,7 @@
         </div>
       </tw-card-header>
       <tw-card-body>
-        <p class="text-slate-600 text-sm">
+        <p class="text-slate-600 dark:text-slate-300 text-sm">
           Beautiful, accessible Angular components designed for Tailwind CSS 4+.
         </p>
         <div class="flex flex-wrap gap-2 mt-4">

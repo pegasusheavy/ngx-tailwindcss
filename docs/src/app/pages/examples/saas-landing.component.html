@@ -1,0 +1,573 @@
+<div class="min-h-screen bg-slate-950">
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-violet-500/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-16">
+        <!-- Logo -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-gradient-to-br from-violet-500 via-fuchsia-500 to-pink-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-violet-500/30">
+            V
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-white">VelocityAI</h1>
+            <p class="text-xs text-violet-400">Scale at the speed of thought</p>
+          </div>
+        </div>
+
+        <!-- Back to Docs -->
+        <a routerLink="/" class="flex items-center gap-2 px-3 py-2 text-violet-300 hover:text-white hover:bg-violet-500/10 rounded-lg font-medium transition-colors">
+          <fa-icon [icon]="icons.arrowLeft" class="text-sm"></fa-icon>
+          <span class="hidden sm:inline">Docs</span>
+        </a>
+
+        <div class="h-6 w-px bg-violet-500/20"></div>
+
+        <!-- Nav Links -->
+        <div class="hidden md:flex items-center gap-1">
+          <button class="px-4 py-2 text-violet-300 hover:text-white hover:bg-violet-500/10 rounded-lg font-medium transition-all" (click)="scrollToSection('features')">
+            Features
+          </button>
+          <button class="px-4 py-2 text-violet-300 hover:text-white hover:bg-violet-500/10 rounded-lg font-medium transition-all" (click)="scrollToSection('pricing')">
+            Pricing
+          </button>
+          <button class="px-4 py-2 text-violet-300 hover:text-white hover:bg-violet-500/10 rounded-lg font-medium transition-all" (click)="scrollToSection('customers')">
+            Customers
+          </button>
+          <button class="px-4 py-2 text-violet-300 hover:text-white hover:bg-violet-500/10 rounded-lg font-medium transition-all" (click)="scrollToSection('team')">
+            Team
+          </button>
+          <app-theme-toggle></app-theme-toggle>
+          <button class="ml-4 px-4 py-2 text-violet-300 hover:text-white border border-violet-500/30 rounded-lg font-medium hover:bg-violet-500/10 transition-all">
+            Sign In
+          </button>
+          <button
+            (click)="openDemo()"
+            class="px-5 py-2 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold rounded-lg hover:from-violet-500 hover:to-fuchsia-500 transition-all shadow-lg shadow-violet-500/25">
+            Get Started
+          </button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="pt-32 pb-24 relative overflow-hidden">
+    <!-- Background Effects -->
+    <div class="absolute inset-0">
+      <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-500/20 rounded-full blur-[128px]"></div>
+      <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-fuchsia-500/20 rounded-full blur-[128px]"></div>
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-violet-600/10 to-fuchsia-600/10 rounded-full blur-[100px]"></div>
+    </div>
+
+    <!-- Grid Pattern -->
+    <div class="absolute inset-0 opacity-20" style="background-image: linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px); background-size: 50px 50px;"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="text-center max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-4 py-2 bg-violet-500/10 border border-violet-500/30 rounded-full mb-8">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-violet-500"></span>
+          </span>
+          <span class="text-violet-300 text-sm font-medium">Now Backed by Sequoia Capital - $50M Series B</span>
+        </div>
+
+        <h1 class="text-5xl md:text-7xl font-black text-white mb-8 leading-[1.1]">
+          The Operating System for
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400">
+            Modern Business
+          </span>
+        </h1>
+
+        <p class="text-xl text-slate-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+          VelocityAI combines AI, analytics, and automation into one powerful platform.
+          Join 10,000+ companies scaling faster than ever.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-4 mb-16">
+          <button
+            (click)="openDemo()"
+            class="group px-8 py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold rounded-xl hover:from-violet-500 hover:to-fuchsia-500 transition-all shadow-xl shadow-violet-500/30 flex items-center gap-3">
+            <fa-icon [icon]="icons.play"></fa-icon>
+            Watch Demo
+            <span class="group-hover:translate-x-1 transition-transform">→</span>
+          </button>
+          <button
+            (click)="openContact()"
+            class="px-8 py-4 bg-white/5 backdrop-blur-sm text-white font-semibold rounded-xl border border-violet-500/30 hover:bg-white/10 transition-all flex items-center gap-3">
+            Schedule Call
+          </button>
+          <button class="px-8 py-4 text-violet-300 font-semibold rounded-xl hover:text-white hover:bg-violet-500/10 transition-all flex items-center gap-3">
+            <fa-icon [icon]="icons.book"></fa-icon>
+            Read Docs
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          @for (stat of stats; track stat.label) {
+            <div class="text-center px-4 py-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-violet-500/10">
+              <div class="text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400 whitespace-nowrap">{{ stat.value }}</div>
+              <div class="text-sm text-slate-500 mt-1">{{ stat.label }}</div>
+            </div>
+          }
+        </div>
+
+        <!-- Social Proof -->
+        <div class="mt-20">
+          <p class="text-sm text-slate-600 mb-8 uppercase tracking-widest">Trusted by leading companies</p>
+          <div class="flex flex-wrap justify-center items-center gap-12 opacity-40">
+            <span class="text-4xl grayscale hover:grayscale-0 transition-all cursor-pointer">🏢</span>
+            <span class="text-4xl grayscale hover:grayscale-0 transition-all cursor-pointer">🚀</span>
+            <span class="text-4xl grayscale hover:grayscale-0 transition-all cursor-pointer">💼</span>
+            <span class="text-4xl grayscale hover:grayscale-0 transition-all cursor-pointer">🏦</span>
+            <span class="text-4xl grayscale hover:grayscale-0 transition-all cursor-pointer">🏭</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-24 relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/5 to-transparent"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="text-center mb-16">
+        <span class="text-violet-400 text-sm font-bold uppercase tracking-widest">Features</span>
+        <h2 class="text-4xl md:text-5xl font-black text-white mt-4 mb-6">
+          Everything You Need to
+          <span class="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">Scale</span>
+        </h2>
+        <p class="text-xl text-slate-400 max-w-2xl mx-auto">
+          Built from the ground up with enterprise requirements in mind
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        @for (feature of features; track feature.title; let i = $index) {
+          <div class="group p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-violet-500/10 hover:border-violet-500/30 transition-all duration-300 hover:-translate-y-1">
+            <div class="w-14 h-14 mb-6 rounded-xl bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
+              {{ feature.icon }}
+            </div>
+            <h3 class="text-xl font-bold text-white mb-3">{{ feature.title }}</h3>
+            <p class="text-slate-400 leading-relaxed">{{ feature.description }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Integration Section -->
+  <section class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <span class="text-violet-400 text-sm font-bold uppercase tracking-widest">Integrations</span>
+        <h2 class="text-4xl font-black text-white mt-4 mb-6">
+          Connect Your Entire Stack
+        </h2>
+        <p class="text-xl text-slate-400">
+          Seamlessly integrate with 1000+ tools you already use
+        </p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        @for (integration of integrations; track integration.name) {
+          <div class="group p-6 rounded-xl bg-white/5 backdrop-blur-sm border border-violet-500/10 hover:border-violet-500/30 hover:bg-violet-500/10 transition-all cursor-pointer text-center">
+            <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">{{ integration.logo }}</div>
+            <p class="font-semibold text-slate-300 text-sm">{{ integration.name }}</p>
+          </div>
+        }
+      </div>
+
+      <div class="text-center mt-12">
+        <button class="px-8 py-4 text-violet-300 font-semibold rounded-xl border border-violet-500/30 hover:bg-violet-500/10 transition-all flex items-center gap-3 mx-auto">
+          View All Integrations
+          <fa-icon [icon]="icons.arrowRight"></fa-icon>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pricing Section -->
+  <section id="pricing" class="py-24 relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-fuchsia-500/5 to-transparent"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="text-center mb-16">
+        <span class="text-violet-400 text-sm font-bold uppercase tracking-widest">Pricing</span>
+        <h2 class="text-4xl md:text-5xl font-black text-white mt-4 mb-6">
+          Simple, Transparent Pricing
+        </h2>
+        <p class="text-xl text-slate-400">
+          Start free, scale as you grow. No hidden fees.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        @for (tier of pricingTiers; track tier.name; let i = $index) {
+          <div [class]="tier.highlighted
+            ? 'relative p-8 rounded-2xl bg-gradient-to-b from-violet-600/20 to-fuchsia-600/20 border-2 border-violet-500 shadow-2xl shadow-violet-500/20 scale-105'
+            : 'p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-violet-500/10 hover:border-violet-500/30 transition-all'">
+
+            @if (tier.highlighted) {
+              <div class="absolute -top-4 left-1/2 -translate-x-1/2">
+                <span class="px-4 py-1.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-sm font-bold rounded-full shadow-lg">
+                  MOST POPULAR
+                </span>
+              </div>
+            }
+
+            <div class="text-center mb-8">
+              <h3 class="text-2xl font-bold text-white mb-2">{{ tier.name }}</h3>
+              <p class="text-slate-400 mb-6">{{ tier.description }}</p>
+              <div class="mb-6">
+                <span class="text-5xl font-black text-white">{{ tier.price }}</span>
+                @if (tier.period !== 'contact us') {
+                  <span class="text-slate-400">{{ tier.period }}</span>
+                }
+              </div>
+              <button
+                [class]="tier.highlighted
+                  ? 'w-full py-4 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-bold rounded-xl hover:from-violet-500 hover:to-fuchsia-500 transition-all shadow-lg'
+                  : 'w-full py-4 bg-white/5 text-white font-semibold rounded-xl border border-violet-500/30 hover:bg-violet-500/10 transition-all'"
+                (click)="startTrial(tier)">
+                {{ tier.cta }}
+              </button>
+            </div>
+
+            <div class="h-px bg-violet-500/20 mb-6"></div>
+
+            <ul class="space-y-4">
+              @for (feature of tier.features; track feature) {
+                <li class="flex items-start gap-3 text-slate-300">
+                  <fa-icon [icon]="icons.check" class="text-violet-400 flex-shrink-0 mt-0.5"></fa-icon>
+                  {{ feature }}
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      </div>
+
+      <div class="mt-12 p-6 rounded-2xl bg-gradient-to-r from-violet-500/10 to-fuchsia-500/10 border border-violet-500/20 text-center">
+        <p class="text-slate-300">
+          🎓 <strong class="text-white">Students and non-profits get 50% off all plans.</strong>
+          <button class="ml-2 text-violet-400 hover:text-violet-300 underline">Learn More</button>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials Section -->
+  <section id="customers" class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <span class="text-violet-400 text-sm font-bold uppercase tracking-widest">Testimonials</span>
+        <h2 class="text-4xl md:text-5xl font-black text-white mt-4 mb-6">
+          Loved by Teams Worldwide
+        </h2>
+        <p class="text-xl text-slate-400">
+          See what our customers have to say
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        @for (testimonial of testimonials; track testimonial.name) {
+          <div class="p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-violet-500/10 hover:border-violet-500/30 transition-all">
+            <div class="flex items-center gap-4 mb-6">
+              <div class="w-14 h-14 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-bold text-lg">
+                {{ testimonial.avatar }}
+              </div>
+              <div>
+                <h4 class="font-bold text-white">{{ testimonial.name }}</h4>
+                <p class="text-sm text-slate-400">{{ testimonial.role }}</p>
+                <p class="text-xs text-violet-400">{{ testimonial.company }}</p>
+              </div>
+            </div>
+
+            <div class="flex gap-1 mb-4">
+              @for (star of [1,2,3,4,5]; track star) {
+                <span class="text-amber-400">⭐</span>
+              }
+            </div>
+
+            <p class="text-slate-300 italic leading-relaxed">"{{ testimonial.content }}"</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Section -->
+  <section id="team" class="py-24 relative">
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/5 to-transparent"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+      <div class="text-center mb-16">
+        <span class="text-violet-400 text-sm font-bold uppercase tracking-widest">Team</span>
+        <h2 class="text-4xl md:text-5xl font-black text-white mt-4 mb-6">
+          Meet the Founders
+        </h2>
+        <p class="text-xl text-slate-400">
+          Veterans from Google, Meta, and top tech companies
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        @for (member of team; track member.name) {
+          <div class="group p-8 rounded-2xl bg-white/5 backdrop-blur-sm border border-violet-500/10 hover:border-violet-500/30 transition-all text-center">
+            <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center text-white font-bold text-2xl group-hover:scale-110 transition-transform">
+              {{ member.avatar }}
+            </div>
+            <h3 class="text-xl font-bold text-white mb-1">{{ member.name }}</h3>
+            <p class="text-sm text-violet-400 mb-3">{{ member.role }}</p>
+            <p class="text-sm text-slate-400">{{ member.bio }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="py-24 relative">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <span class="text-violet-400 text-sm font-bold uppercase tracking-widest">FAQ</span>
+        <h2 class="text-4xl font-black text-white mt-4 mb-4">
+          Frequently Asked Questions
+        </h2>
+      </div>
+
+      <tw-accordion>
+        <tw-accordion-item itemTitle="How does the free trial work?" [open]="true">
+          <p class="text-slate-300">
+            Start with a 14-day free trial on any plan. No credit card required.
+            Access all premium features during your trial period. Cancel anytime.
+          </p>
+        </tw-accordion-item>
+
+        <tw-accordion-item itemTitle="Can I change plans later?">
+          <p class="text-slate-300">
+            Absolutely! Upgrade or downgrade at any time. Changes take effect immediately,
+            and we'll prorate the difference.
+          </p>
+        </tw-accordion-item>
+
+        <tw-accordion-item itemTitle="What's your data security policy?">
+          <p class="text-slate-300">
+            We're SOC 2 Type II certified with end-to-end encryption. All data is stored
+            in secure, redundant data centers with regular security audits.
+          </p>
+        </tw-accordion-item>
+
+        <tw-accordion-item itemTitle="Do you offer custom enterprise solutions?">
+          <p class="text-slate-300">
+            Yes! Our Enterprise plan includes custom integrations, dedicated support,
+            and SLA guarantees. Contact our sales team to learn more.
+          </p>
+        </tw-accordion-item>
+
+        <tw-accordion-item itemTitle="What's your refund policy?">
+          <p class="text-slate-300">
+            We offer a 30-day money-back guarantee. If you're not satisfied,
+            we'll refund your payment, no questions asked.
+          </p>
+        </tw-accordion-item>
+      </tw-accordion>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-24 relative overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-violet-600 to-fuchsia-600"></div>
+    <div class="absolute inset-0 opacity-30" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cg fill=&quot;none&quot; fill-rule=&quot;evenodd&quot;%3E%3Cg fill=&quot;%23ffffff&quot; fill-opacity=&quot;0.1&quot;%3E%3Cpath d=&quot;M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z&quot;/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+      <h2 class="text-4xl md:text-6xl font-black text-white mb-6">
+        Ready to 10x Your
+        <span class="block">Productivity?</span>
+      </h2>
+      <p class="text-xl text-violet-100 mb-10">
+        Join 10,000+ companies already scaling with VelocityAI
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <button
+          (click)="openDemo()"
+          class="px-10 py-5 bg-white text-violet-600 font-bold text-lg rounded-xl hover:bg-violet-50 transition-colors shadow-2xl flex items-center gap-3">
+          Start Free Trial
+        </button>
+        <button
+          (click)="openContact()"
+          class="px-10 py-5 bg-white/10 backdrop-blur-sm text-white font-bold text-lg rounded-xl border-2 border-white/30 hover:bg-white/20 transition-colors flex items-center gap-3">
+          Talk to Sales
+        </button>
+      </div>
+      <p class="text-violet-200 mt-8 text-sm">
+        ✓ No credit card required  ✓ 14-day free trial  ✓ Cancel anytime
+      </p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-slate-950 border-t border-violet-500/10 text-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-12 mb-12">
+        <div class="md:col-span-2">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center text-white font-bold text-xl">
+              V
+            </div>
+            <div>
+              <h3 class="text-xl font-bold">VelocityAI</h3>
+              <p class="text-sm text-violet-400">Scale at the speed of thought</p>
+            </div>
+          </div>
+          <p class="text-slate-400 mb-6">
+            The operating system for modern business. Built in San Francisco.
+          </p>
+          <div class="flex gap-3">
+            <a href="#" class="w-10 h-10 rounded-lg bg-white/5 hover:bg-violet-500/20 flex items-center justify-center transition-colors text-slate-400 hover:text-violet-400">𝕏</a>
+            <a href="#" class="w-10 h-10 rounded-lg bg-white/5 hover:bg-violet-500/20 flex items-center justify-center transition-colors text-slate-400 hover:text-violet-400">in</a>
+            <a href="#" class="w-10 h-10 rounded-lg bg-white/5 hover:bg-violet-500/20 flex items-center justify-center transition-colors text-slate-400 hover:text-violet-400">⌘</a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-white mb-4">Product</h4>
+          <ul class="space-y-3 text-sm text-slate-400">
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Features</a></li>
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Pricing</a></li>
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Enterprise</a></li>
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Security</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-white mb-4">Company</h4>
+          <ul class="space-y-3 text-sm text-slate-400">
+            <li><a href="#" class="hover:text-violet-400 transition-colors">About</a></li>
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Blog</a></li>
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Careers</a></li>
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Press</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="font-semibold text-white mb-4">Resources</h4>
+          <ul class="space-y-3 text-sm text-slate-400">
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Documentation</a></li>
+            <li><a href="#" class="hover:text-violet-400 transition-colors">API Reference</a></li>
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Support</a></li>
+            <li><a href="#" class="hover:text-violet-400 transition-colors">Status</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="h-px bg-violet-500/20 mb-8"></div>
+
+      <div class="flex flex-col md:flex-row items-center justify-between text-sm text-slate-500">
+        <p>© 2024 VelocityAI, Inc. All rights reserved.</p>
+        <div class="flex gap-6 mt-4 md:mt-0">
+          <a href="#" class="hover:text-violet-400 transition-colors">Privacy Policy</a>
+          <a href="#" class="hover:text-violet-400 transition-colors">Terms of Service</a>
+          <a href="#" class="hover:text-violet-400 transition-colors">Cookie Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Demo Modal -->
+  <tw-modal
+    [(open)]="demoModalOpen"
+    title="Watch Product Demo"
+    [showCloseButton]="true"
+    size="lg">
+    <div class="aspect-video bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 rounded-xl flex items-center justify-center mb-6 border border-violet-500/20">
+      <div class="text-center">
+        <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-violet-500/20 flex items-center justify-center">
+          <span class="text-4xl">▶️</span>
+        </div>
+        <p class="text-slate-300 font-medium">See VelocityAI in action</p>
+        <p class="text-sm text-slate-500">5 minute demo</p>
+      </div>
+    </div>
+
+    <div class="p-4 rounded-xl bg-violet-500/10 border border-violet-500/20">
+      <p class="text-slate-300 text-sm">
+        Want a personalized demo? Schedule a call with our team to see how VelocityAI
+        can transform your workflow.
+      </p>
+    </div>
+
+    <div footer class="flex gap-3">
+      <button (click)="closeDemo()" class="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors">
+        Close
+      </button>
+      <button (click)="openContact()" class="flex-1 px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold rounded-xl hover:from-violet-500 hover:to-fuchsia-500 transition-all">
+        Schedule Personalized Demo
+      </button>
+    </div>
+  </tw-modal>
+
+  <!-- Contact Modal -->
+  <tw-modal
+    [(open)]="contactModalOpen"
+    title="Contact Sales"
+    [showCloseButton]="true">
+    <div class="space-y-5">
+      <tw-input
+        [(ngModel)]="name"
+        label="Full Name"
+        placeholder="John Doe"
+        required>
+      </tw-input>
+
+      <tw-input
+        [(ngModel)]="email"
+        type="email"
+        label="Work Email"
+        placeholder="john@company.com"
+        required>
+      </tw-input>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">Company Size</label>
+        <select class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all">
+          <option>1-10 employees</option>
+          <option>11-50 employees</option>
+          <option>51-200 employees</option>
+          <option>201-1000 employees</option>
+          <option>1000+ employees</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium text-slate-700 mb-2">How can we help?</label>
+        <textarea
+          [(ngModel)]="message"
+          rows="4"
+          class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+          placeholder="Tell us about your needs..."></textarea>
+      </div>
+
+      <div class="p-4 rounded-xl bg-violet-50 border border-violet-200">
+        <p class="text-violet-800 text-sm">
+          Our team typically responds within 24 hours during business days.
+        </p>
+      </div>
+    </div>
+
+    <div footer class="flex gap-3">
+      <button (click)="closeContact()" class="px-6 py-3 bg-slate-100 text-slate-700 font-semibold rounded-xl hover:bg-slate-200 transition-colors">
+        Cancel
+      </button>
+      <button (click)="submitContact()" [disabled]="loading()" class="flex-1 px-6 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white font-semibold rounded-xl hover:from-violet-500 hover:to-fuchsia-500 transition-all disabled:opacity-50 flex items-center justify-center gap-2">
+        @if (loading()) {
+          <tw-spinner size="sm"></tw-spinner>
+        }
+        Send Message
+      </button>
+    </div>
+  </tw-modal>
+</div>

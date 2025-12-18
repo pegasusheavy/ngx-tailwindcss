@@ -1,23 +1,23 @@
 <section class="mb-12">
-  <h2 class="text-xl font-semibold text-slate-900 mb-2">{{ title }}</h2>
+  <h2 class="text-xl font-semibold text-slate-900 dark:text-white mb-2">{{ title }}</h2>
   @if (description) {
-    <p class="text-slate-600 mb-4">{{ description }}</p>
+    <p class="text-slate-600 dark:text-slate-300 mb-4">{{ description }}</p>
   }
-  <div class="rounded-xl border border-slate-200 overflow-hidden">
-    <div class="p-6 bg-white">
+  <div class="rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+    <div class="p-6 bg-white dark:bg-slate-900">
       <ng-content></ng-content>
     </div>
     @if (code) {
-      <div class="border-t border-slate-200 bg-slate-50">
+      <div class="border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
         <button
           type="button"
-          class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+          class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
           (click)="toggleCode()">
           <span class="flex items-center gap-2">
-            <fa-icon [icon]="icons.code" class="text-slate-400"></fa-icon>
+            <fa-icon [icon]="icons.code" class="text-slate-400 dark:text-slate-500"></fa-icon>
             {{ showCode() ? 'Hide' : 'Show' }} Code
           </span>
-          <fa-icon [icon]="showCode() ? icons.chevronUp : icons.chevronDown" class="text-slate-400"></fa-icon>
+          <fa-icon [icon]="showCode() ? icons.chevronUp : icons.chevronDown" class="text-slate-400 dark:text-slate-500"></fa-icon>
         </button>
         @if (showCode()) {
           <div class="relative bg-slate-900">

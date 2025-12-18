@@ -95,21 +95,30 @@ export class TwStepsComponent {
 
   protected itemClasses(isLast: boolean) {
     if (this.orientation === 'horizontal') {
-      return this.twClass.merge('relative flex items-center', isLast ? '' : 'flex-1');
+      // Use items-start so connector aligns at the top with the indicator
+      return this.twClass.merge('relative flex items-start', isLast ? '' : 'flex-1');
     }
     return '';
   }
 
   protected connectorClasses(index: number) {
     const isComplete = index < this.activeIndex;
-    return this.twClass.merge('flex-1 h-0.5 mx-2', isComplete ? 'bg-blue-600' : 'bg-slate-200');
+    return this.twClass.merge('flex-1 h-0.5 mx-2', isComplete ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-700');
+  }
+
+  protected getHorizontalConnectorStyle(): Record<string, string> {
+    const { indicatorSize } = STEPS_SIZES[this.size];
+    // Position connector at vertical center of indicator
+    return {
+      marginTop: `${indicatorSize / 2 - 1}px`,
+    };
   }
 
   protected verticalConnectorClasses(index: number) {
     const isComplete = index < this.activeIndex;
     const { indicatorSize } = STEPS_SIZES[this.size];
 
-    return this.twClass.merge('w-0.5 h-8', isComplete ? 'bg-blue-600' : 'bg-slate-200');
+    return this.twClass.merge('w-0.5 h-8', isComplete ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-700');
   }
 
   protected getVerticalConnectorStyle(): Record<string, string> {
@@ -140,8 +149,8 @@ export class TwStepsComponent {
 
     const statusClasses = {
       complete: 'bg-blue-600 text-white',
-      current: 'bg-white border-2 border-blue-600 text-blue-600',
-      upcoming: 'bg-white border-2 border-slate-300 text-slate-500',
+      current: 'bg-white dark:bg-slate-800 border-2 border-blue-600 text-blue-600 dark:text-blue-400',
+      upcoming: 'bg-white dark:bg-slate-800 border-2 border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400',
     };
 
     return this.twClass.merge(
