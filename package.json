@@ -82,7 +82,8 @@
     "lint:fix": "eslint projects/ --fix",
     "format": "prettier --write \"projects/**/*.{ts,html,scss,css,json}\"",
     "format:check": "prettier --check \"projects/**/*.{ts,html,scss,css,json}\"",
-    "prepare": "pnpm run build"
+    "prepare": "pnpm run build",
+    "commitlint": "commitlint"
   },
   "peerDependencies": {
     "@angular/animations": "^19.0.0 || ^20.0.0 || ^21.0.0",
@@ -129,7 +130,9 @@
     "typescript": "~5.8.0",
     "typescript-eslint": "^8.0.0",
     "vitest": "^3.0.0",
-    "zone.js": "~0.15.0"
+    "zone.js": "~0.15.0",
+    "@commitlint/cli": "^18.1.0",
+    "@commitlint/config-conventional": "^18.0.0"
   },
   "exports": {
     ".": {
