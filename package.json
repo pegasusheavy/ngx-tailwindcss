@@ -1,6 +1,6 @@
 {
   "name": "@pegasusheavy/ngx-tailwindcss",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "A highly customizable Angular component library for Tailwind CSS 4+. Build beautiful, accessible UI components with full theming support, intelligent class merging, and zero bundled CSS. Features 30+ components including buttons, cards, modals, forms, tables, and more.",
   "license": "MIT",
@@ -82,7 +82,7 @@
     "lint:fix": "eslint projects/ --fix",
     "format": "prettier --write \"projects/**/*.{ts,html,scss,css,json}\"",
     "format:check": "prettier --check \"projects/**/*.{ts,html,scss,css,json}\"",
-    "prepare": "pnpm run build && husky install",
+    "prepare": "pnpm run build && node -e \"import('husky').then(({ default: husky }) => husky('./.husky')).catch(err => { console.error(err); process.exit(1) })\"",
     "commitlint": "commitlint"
   },
   "peerDependencies": {
