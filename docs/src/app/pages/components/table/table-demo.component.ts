@@ -50,4 +50,15 @@ columns = [
 <tw-table [data]="users" [columns]="columns" size="lg"></tw-table>`;
 
   hoverCode = `<tw-table [data]="users" [columns]="columns" [hoverable]="true"></tw-table>`;
+
+  filterCode = `<tw-table
+  [data]="users"
+  [columns]="columns"
+  showGlobalFilter="true"
+  filterPlaceholder="Search customers..."
+  [paginator]="true"
+  [rows]="3"
+  tableVariant="bordered"
+  classOverride="text-slate-700 dark:text-slate-300"
+></tw-table>`;
 }

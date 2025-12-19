@@ -50,6 +50,7 @@ export * from './lib/overlay/index';
 export * from './lib/badge/index';
 export * from './lib/avatar/index';
 export * from './lib/table/index';
+export * from './lib/datatables/index';
 export * from './lib/tree/index';
 export * from './lib/timeline/index';
 
@@ -116,6 +117,7 @@ import { TwChipComponent, TwChipsComponent } from './lib/chip/index';
 
 // New data display components
 import { TwTableComponent } from './lib/table/index';
+import { TwDatatablesComponent } from './lib/datatables/index';
 import { TwTreeComponent } from './lib/tree/index';
 import { TwTimelineComponent } from './lib/timeline/index';
 
@@ -188,6 +190,7 @@ export const TW_RATING_COMPONENTS = [TwRatingComponent] as const;
 export const TW_CHIP_COMPONENTS = [TwChipComponent, TwChipsComponent] as const;
 
 export const TW_TABLE_COMPONENTS = [TwTableComponent] as const;
+export const TW_DATATABLES_COMPONENTS = [TwDatatablesComponent] as const;
 
 export const TW_TREE_COMPONENTS = [TwTreeComponent] as const;
 
@@ -287,6 +290,7 @@ export const TW_ALL = [
   ...TW_BADGE_COMPONENTS,
   ...TW_AVATAR_COMPONENTS,
   ...TW_TABLE_COMPONENTS,
+  ...TW_DATATABLES_COMPONENTS,
   ...TW_TREE_COMPONENTS,
   ...TW_TIMELINE_COMPONENTS,
   // Navigation

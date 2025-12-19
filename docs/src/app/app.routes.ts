@@ -64,6 +64,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/components/table/table-demo.component').then(m => m.TableDemoComponent),
       },
       {
+        path: 'datatables',
+        loadComponent: () => import('./pages/components/datatables/datatables-demo.component').then(m => m.DatatablesDemoComponent),
+      },
+      {
         path: 'tree',
         loadComponent: () => import('./pages/components/tree/tree-demo.component').then(m => m.TreeDemoComponent),
       },

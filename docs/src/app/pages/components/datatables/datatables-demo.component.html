@@ -1,0 +1,67 @@
+<app-page-header
+  title="DataTables"
+  description="An opinionated wrapper around the table component that wires up filtering, pagination, selection, and toolbar actions so you can drop a full datatable into dashboards with minimal configuration."
+></app-page-header>
+
+<div class="space-y-8">
+  <app-demo-section
+    title="Feature-rich dashboard table"
+    description="Includes built-in toolbar actions, filtering, selection, and responsive pagination."
+    [code]="basicCode"
+  >
+    <tw-datatables
+      [data]="users"
+      [columns]="columns"
+      title="Customer Directory"
+      subtitle="Live CRM data"
+      description="Sort, search, select, and paginate without additional wiring."
+      [paginator]="true"
+      [rows]="5"
+      [selectable]="true"
+      [showGlobalFilter]="true"
+      tableVariant="striped"
+      tableSize="md"
+      containerClass="max-w-4xl"
+    >
+      <button
+        twDatatablesActions
+        class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+      >
+        Export CSV
+      </button>
+      <button
+        twDatatablesActions
+        class="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+      >
+        New invite
+      </button>
+    </tw-datatables>
+  </app-demo-section>
+
+  <app-demo-section
+    title="Compact dashboard layout"
+    description="Dense layout that keeps more rows on screen while still providing striped and bordered styling."
+    [code]="compactCode"
+  >
+    <tw-datatables
+      [data]="users"
+      [columns]="columns"
+      title="Compact View"
+      description="Ideal for analytics or admin pages where density matters."
+      [paginator]="false"
+      [rows]="users.length"
+      [showGlobalFilter]="false"
+      tableVariant="bordered"
+      tableSize="sm"
+      containerClass="max-w-2xl"
+    >
+      <button
+        twDatatablesActions
+        class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-600 text-white"
+      >
+        Bulk actions
+      </button>
+    </tw-datatables>
+  </app-demo-section>
+</div>
+

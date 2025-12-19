@@ -74,6 +74,7 @@ import {
   faSun,
   faMoon,
   faCircleHalfStroke,
+  faTableRows,
 } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { ThemeService } from './services/theme.service';
@@ -205,6 +206,7 @@ export class App implements AfterViewInit, OnDestroy {
     sun: faSun,
     moon: faMoon,
     system: faCircleHalfStroke,
+    tableRows: faTableRows,
   };
 
   protected mainNavItems: NavItem[] = [
@@ -273,6 +275,7 @@ export class App implements AfterViewInit, OnDestroy {
         { label: 'Avatar', path: '/components/avatar', icon: faUserCircle },
         { label: 'Chip', path: '/components/chip', icon: faTag },
         { label: 'Table', path: '/components/table', icon: faTable },
+        { label: 'DataTables', path: '/components/datatables', icon: faTableRows },
         { label: 'Tree', path: '/components/tree', icon: faCodeBranch },
         { label: 'Timeline', path: '/components/timeline', icon: faHistory },
       ],

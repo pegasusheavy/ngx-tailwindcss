@@ -37,6 +37,23 @@
     </div>
   </app-demo-section>
 
+  <!-- Filtering & Pagination -->
+  <app-demo-section
+    title="Filtering & Pagination"
+    description="Enable the global filter input and paginator to let your users search and page through large datasets."
+    [code]="filterCode"
+  >
+    <tw-table
+      [data]="users"
+      [columns]="columns"
+      showGlobalFilter
+      filterPlaceholder="Search customers..."
+      [paginator]="true"
+      [rows]="3"
+      variant="bordered"
+    ></tw-table>
+  </app-demo-section>
+
   <!-- Hoverable -->
   <app-demo-section title="Hoverable" [code]="hoverCode">
     <tw-table [data]="users" [columns]="columns" [hoverable]="true"></tw-table>
