@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 set -e
 
-pnpm lint
+pnpm exec eslint projects/ngx-tailwindcss/src/lib/datatables --ext .ts --ext .html
 
