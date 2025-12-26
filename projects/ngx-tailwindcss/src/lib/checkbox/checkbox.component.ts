@@ -119,8 +119,8 @@ export class TwCheckboxComponent implements ControlValueAccessor {
   onCheckboxChange(event: Event): void {
     if (this._disabled() || this.readonly()) return;
 
-    const input = event.target as HTMLInputElement;
-    const isChecked = input.checked;
+    const inputElement = event.target as HTMLInputElement;
+    const isChecked = inputElement.checked;
 
     this.checked.set(isChecked);
     this.onChangeFn(isChecked);
@@ -134,7 +134,7 @@ export class TwCheckboxComponent implements ControlValueAccessor {
 
   // ControlValueAccessor implementation
   writeValue(value: boolean): void {
-    this.checked.set(!!value);
+    this.checked.set(value);
   }
 
   registerOnChange(fn: (value: boolean) => void): void {

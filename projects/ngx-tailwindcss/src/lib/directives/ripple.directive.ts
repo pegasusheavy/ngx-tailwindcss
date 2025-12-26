@@ -84,7 +84,7 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
     } else if (event instanceof MouseEvent) {
       x = event.clientX - rect.left;
       y = event.clientY - rect.top;
-    } else if (event.touches && event.touches[0]) {
+    } else if (event.touches?.[0]) {
       x = event.touches[0].clientX - rect.left;
       y = event.touches[0].clientY - rect.top;
     } else {

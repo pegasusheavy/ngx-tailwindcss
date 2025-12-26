@@ -217,7 +217,7 @@ export class TwThemeService {
    */
   public getCssVar(colorName: string): string {
     const kebabName = colorName
-      .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+      .replaceAll(/([\da-z])([A-Z])/g, '$1-$2')
       .toLowerCase();
     return `var(--tw-color-${kebabName})`;
   }

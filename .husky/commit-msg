@@ -4,3 +4,4 @@ set -e
 pnpm commitlint --edit "$1"
 
 
+

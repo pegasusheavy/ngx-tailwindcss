@@ -83,9 +83,11 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
 
     // Add loading class
     if (this.lazyLoadingClass) {
-      this.lazyLoadingClass.split(' ').forEach(cls => {
-        if (cls) this.renderer.addClass(img, cls);
-      });
+      for (const cls of this.lazyLoadingClass.split(' ')) {
+        if (cls?.trim()) {
+          this.renderer.addClass(img, cls);
+        }
+      }
     }
 
     // Use native lazy loading if requested or browser supports it
@@ -145,13 +147,13 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
       this.lazyLoaded.emit({ loaded: true, src: this.twLazyImage });
     });
 
-    tempImg.onerror = () => {
+    tempImg.addEventListener('error', () => {
       this.lazyLoaded.emit({
         loaded: false,
         src: this.twLazyImage,
         error: new Error(`Failed to load image: ${this.twLazyImage}`),
       });
-    };
+    });
 
     tempImg.src = this.twLazyImage;
   }

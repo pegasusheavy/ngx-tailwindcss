@@ -274,8 +274,8 @@ export class TwTabsComponent implements AfterContentInit {
       this.selectTab(newTab.value);
 
       // Focus the new tab
-      const tabElement = document.getElementById(`tab-${newTab.value}`);
-      tabElement?.focus();
+      const tabElement = document.querySelector(`#tab-${newTab.value}`);
+      (tabElement as HTMLElement)?.focus();
     }
   }
 

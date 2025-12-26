@@ -253,7 +253,7 @@ export function generateThemeCssProperties(theme: TwTheme): {
  * Converts camelCase to kebab-case
  */
 function camelToKebab(str: string): string {
-  return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  return str.replaceAll(/([\da-z])([A-Z])/g, '$1-$2').toLowerCase();
 }
 
 /**
