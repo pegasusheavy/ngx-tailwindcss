@@ -1,0 +1,180 @@
+<div [class]="containerClasses()">
+  <!-- Label -->
+  @if (label()) {
+    <span class="text-xs font-medium text-slate-600 dark:text-slate-400">{{ label() }}</span>
+  }
+
+  <!-- Horizontal Slider Variant -->
+  @if (variant() === 'slider') {
+    <div class="w-full">
+      <!-- L/R Labels -->
+      @if (showLabels()) {
+        <div class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 mb-1">
+          <span>L</span>
+          <span>R</span>
+        </div>
+      }
+
+      <div [class]="sliderContainerClasses()">
+        <!-- Track -->
+        <div [class]="trackClasses()" #track>
+          <!-- Center Line -->
+          <div class="absolute top-0 bottom-0 left-1/2 w-px bg-slate-500 dark:bg-slate-400"></div>
+
+          <!-- Fill -->
+          <div
+            class="absolute top-0 bottom-0 bg-blue-500/50 dark:bg-blue-600/50 rounded-full"
+            [style.left]="fillStyle().left"
+            [style.width]="fillStyle().width"
+          ></div>
+        </div>
+
+        <!-- Tick Marks -->
+        @if (showTicks()) {
+          @for (tick of tickMarks(); track tick.position) {
+            <div
+              class="absolute top-full mt-1 -translate-x-1/2 text-[8px] text-slate-500 dark:text-slate-400"
+              [style.left.%]="tick.position"
+            >
+              @if (tick.label) {
+                <span>{{ tick.label }}</span>
+              } @else {
+                <span class="block w-px h-1 bg-slate-600"></span>
+              }
+            </div>
+          }
+        }
+
+        <!-- Thumb -->
+        <div
+          [class]="thumbClasses()"
+          [style.left.%]="thumbPosition()"
+          [class.cursor-not-allowed]="disabled()"
+        ></div>
+      </div>
+    </div>
+  }
+
+  <!-- Knob Variant -->
+  @if (variant() === 'knob') {
+    <div [class]="knobContainerClasses()" (mousedown)="onKnobDrag($event)">
+      <svg viewBox="0 0 100 100" class="w-full h-full">
+        <!-- Background Circle -->
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="4"
+          class="text-slate-700 dark:text-slate-600"
+        />
+
+        <!-- Value Arc -->
+        <circle
+          cx="50"
+          cy="50"
+          r="45"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="4"
+          stroke-linecap="round"
+          class="text-blue-500 dark:text-blue-600"
+          [attr.stroke-dasharray]="'282.7'"
+          [attr.stroke-dashoffset]="282.7 - (thumbPosition() / 100) * 282.7"
+          transform="rotate(-135 50 50)"
+        />
+
+        <!-- Center Dot -->
+        <circle cx="50" cy="50" r="3" class="fill-slate-500 dark:fill-slate-400" />
+
+        <!-- Indicator Line -->
+        <line
+          x1="50"
+          y1="50"
+          x2="50"
+          y2="15"
+          stroke="currentColor"
+          stroke-width="3"
+          stroke-linecap="round"
+          class="text-blue-500 dark:text-blue-600"
+          [attr.transform]="'rotate(' + knobRotation() + ' 50 50)'"
+        />
+
+        <!-- L/R Labels -->
+        @if (showLabels()) {
+          <text x="15" y="85" class="fill-slate-500 dark:fill-slate-400 text-[12px]">L</text>
+          <text x="80" y="85" class="fill-slate-500 dark:fill-slate-400 text-[12px]">R</text>
+        }
+      </svg>
+    </div>
+  }
+
+  <!-- Stereo Width Variant -->
+  @if (variant() === 'stereo-width') {
+    <div class="w-full">
+      <!-- L/R Labels -->
+      @if (showLabels()) {
+        <div class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 mb-1">
+          <span>L</span>
+          <span class="text-center">Width</span>
+          <span>R</span>
+        </div>
+      }
+
+      <div [class]="sliderContainerClasses()">
+        <!-- Track -->
+        <div [class]="trackClasses()" #track>
+          <!-- Stereo Width Visualization -->
+          <div
+            class="absolute top-0 bottom-0 bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500 dark:from-blue-600 dark:via-blue-400 dark:to-blue-600 rounded-full transition-all"
+            [style.left.%]="stereoWidthLeft()"
+            [style.right.%]="100 - stereoWidthRight()"
+          ></div>
+
+          <!-- Left Channel Indicator -->
+          <div
+            class="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-500 shadow transition-all"
+            [style.left.%]="stereoWidthLeft()"
+            style="transform: translate(-50%, -50%)"
+          ></div>
+
+          <!-- Right Channel Indicator -->
+          <div
+            class="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-500 shadow transition-all"
+            [style.left.%]="stereoWidthRight()"
+            style="transform: translate(-50%, -50%)"
+          ></div>
+        </div>
+
+        <!-- Width Slider Thumb -->
+        <input
+          type="range"
+          [min]="0"
+          [max]="100"
+          [step]="step()"
+          [value]="internalValue()"
+          (input)="onWidthSliderChange($event)"
+          [disabled]="disabled()"
+          class="absolute inset-0 w-full opacity-0 cursor-pointer"
+        />
+
+        <!-- Tick Marks -->
+        @if (showTicks()) {
+          <div class="absolute top-full mt-1 left-0 right-0 flex justify-between text-[8px] text-slate-500 dark:text-slate-400">
+            <span>Mono</span>
+            <span>Stereo</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Value Display -->
+  @if (showValue()) {
+    <span class="text-xs font-mono text-slate-700 dark:text-slate-300">
+      {{ displayValue() }}
+    </span>
+  }
+</div>
+

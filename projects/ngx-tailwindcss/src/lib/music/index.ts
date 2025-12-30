@@ -5,6 +5,7 @@ export * from './waveform.component';
 export * from './transport.component';
 export * from './scrubber.component';
 export * from './fader.component';
+export * from './pan-control.component';
 
 // Phase 2 - Visualization
 export * from './time-display.component';
@@ -38,6 +39,7 @@ import { TwWaveformComponent } from './waveform.component';
 import { TwTransportComponent } from './transport.component';
 import { TwScrubberComponent } from './scrubber.component';
 import { TwFaderComponent } from './fader.component';
+import { TwPanControlComponent } from './pan-control.component';
 import { TwTimeDisplayComponent } from './time-display.component';
 import { TwSpectrumComponent } from './spectrum.component';
 import { TwPianoComponent } from './piano.component';
@@ -65,6 +67,7 @@ export const TW_MUSIC_COMPONENTS = [
   TwTransportComponent,
   TwScrubberComponent,
   TwFaderComponent,
+  TwPanControlComponent,
   // Phase 2 - Visualization
   TwTimeDisplayComponent,
   TwSpectrumComponent,

@@ -141,12 +141,12 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 - [x] Responsive breakpoints - responsive input with xs/sm/md/lg/xl breakpoints
 - [x] Collapsible channel sections - sections input with toggleable collapse
 
-### Pan Control
-- [ ] Horizontal pan slider
-- [x] Pan knob (rotary) - via Channel Strip
-- [x] Center detent
-- [x] L/R value display
-- [ ] Stereo width variant
+### Pan Control ✅
+- [x] Horizontal pan slider - tw-pan-control variant="slider"
+- [x] Pan knob (rotary) - tw-pan-control variant="knob"
+- [x] Center detent - centerDetent input with configurable detentRange
+- [x] L/R value display - showValue, showLabels inputs
+- [x] Stereo width variant - tw-pan-control variant="stereo-width" (0-100%)
 
 ---
 
