@@ -1,0 +1,198 @@
+<div [class]="containerClasses()" [style.padding]="'16px'">
+  <!-- Title and Composer -->
+  @if (showTitle() && musicData().title) {
+    <h2 [class]="titleClasses()">{{ musicData().title }}</h2>
+  }
+  @if (showComposer() && (musicData().composer || musicData().arranger)) {
+    <p [class]="subtitleClasses()">
+      @if (musicData().composer) {
+        <span>{{ musicData().composer }}</span>
+      }
+      @if (musicData().arranger) {
+        <span class="ml-4">arr. {{ musicData().arranger }}</span>
+      }
+    </p>
+  }
+  @if (showTempo() && musicData().tempo) {
+    <p class="text-center text-xs text-slate-500 mb-4">
+      ♩ = {{ musicData().tempo }}
+    </p>
+  }
+
+  <!-- Sheet Music Content -->
+  <div class="relative">
+    @switch (layout()) {
+      @case ('scroll') {
+        <!-- Scrollable layout - all lines -->
+        <div class="space-y-8">
+          @for (line of lines(); track $index; let lineIndex = $index) {
+            <div class="relative">
+              <!-- Staff for this line -->
+              <tw-staff
+                [clef]="musicData().clef"
+                [keySignature]="musicData().keySignature"
+                [timeSignature]="lineIndex === 0 ? musicData().timeSignature : null"
+                [measures]="line.length"
+                [width]="width()"
+                [height]="staffHeight()"
+                [lineSpacing]="lineSpacing()"
+                [variant]="staffVariant()"
+                [showClef]="true"
+                [showKeySignature]="lineIndex === 0"
+                [showTimeSignature]="lineIndex === 0"
+                [grandStaff]="musicData().grandStaff || false"
+              >
+                <!-- Notes in this line -->
+                @for (measure of line; track $index; let measureInLineIndex = $index) {
+                  @for (note of measure.notes; track $index; let noteIndex = $index) {
+                    <tw-note
+                      [name]="note.name"
+                      [octave]="note.octave"
+                      [duration]="note.duration"
+                      [accidental]="note.accidental || null"
+                      [dotted]="note.dotted || false"
+                      [doubleDotted]="note.doubleDotted || false"
+                      [tied]="note.tied || false"
+                      [x]="getNoteX(getMeasureGlobalIndex(lineIndex, measureInLineIndex), noteIndex, measure.notes.length, lineIndex)"
+                      [staffTop]="40"
+                      [lineSpacing]="lineSpacing()"
+                      [highlighted]="isNoteHighlighted(getMeasureGlobalIndex(lineIndex, measureInLineIndex), noteIndex)"
+                      [class.cursor-pointer]="interactive()"
+                      (click)="onNoteClick(getMeasureGlobalIndex(lineIndex, measureInLineIndex), noteIndex, note)"
+                    ></tw-note>
+                  }
+                }
+              </tw-staff>
+
+              <!-- Measure numbers -->
+              @if (showMeasureNumbers()) {
+                @for (measure of line; track $index; let measureInLineIndex = $index) {
+                  <span
+                    class="absolute text-[10px] text-slate-400"
+                    [style.left.px]="getMeasureStartX(getMeasureGlobalIndex(lineIndex, measureInLineIndex), lineIndex) - 10"
+                    [style.top.px]="-4"
+                  >{{ getMeasureGlobalIndex(lineIndex, measureInLineIndex) + 1 }}</span>
+                }
+              }
+
+              <!-- Playback position indicator -->
+              @for (measure of line; track $index; let measureInLineIndex = $index) {
+                @if (isPlaybackPosition(getMeasureGlobalIndex(lineIndex, measureInLineIndex))) {
+                  <div
+                    class="absolute top-0 bottom-0 w-1 bg-blue-500 opacity-50 transition-all"
+                    [style.left.px]="getMeasureStartX(getMeasureGlobalIndex(lineIndex, measureInLineIndex), lineIndex)"
+                  ></div>
+                }
+              }
+            </div>
+          }
+        </div>
+      }
+
+      @case ('pages') {
+        <!-- Paginated layout -->
+        <div>
+          @if (lines()[currentPage()]; as line) {
+            <div class="relative">
+              <tw-staff
+                [clef]="musicData().clef"
+                [keySignature]="musicData().keySignature"
+                [timeSignature]="currentPage() === 0 ? musicData().timeSignature : null"
+                [measures]="line.length"
+                [width]="width()"
+                [height]="staffHeight()"
+                [lineSpacing]="lineSpacing()"
+                [variant]="staffVariant()"
+                [showClef]="true"
+                [showKeySignature]="currentPage() === 0"
+                [showTimeSignature]="currentPage() === 0"
+                [grandStaff]="musicData().grandStaff || false"
+              >
+                @for (measure of line; track $index; let measureInLineIndex = $index) {
+                  @for (note of measure.notes; track $index; let noteIndex = $index) {
+                    <tw-note
+                      [name]="note.name"
+                      [octave]="note.octave"
+                      [duration]="note.duration"
+                      [accidental]="note.accidental || null"
+                      [dotted]="note.dotted || false"
+                      [x]="getNoteX(getMeasureGlobalIndex(currentPage(), measureInLineIndex), noteIndex, measure.notes.length, currentPage())"
+                      [staffTop]="40"
+                      [lineSpacing]="lineSpacing()"
+                      [highlighted]="isNoteHighlighted(getMeasureGlobalIndex(currentPage(), measureInLineIndex), noteIndex)"
+                    ></tw-note>
+                  }
+                }
+              </tw-staff>
+            </div>
+          }
+
+          <!-- Page navigation -->
+          <div class="flex items-center justify-center gap-4 mt-4">
+            <button
+              type="button"
+              class="px-3 py-1 rounded bg-slate-200 hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="currentPage() === 0"
+              (click)="prevPage()"
+            >
+              ← Prev
+            </button>
+            <span class="text-sm text-slate-600">
+              Line {{ currentPage() + 1 }} of {{ totalLines() }}
+            </span>
+            <button
+              type="button"
+              class="px-3 py-1 rounded bg-slate-200 hover:bg-slate-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="currentPage() >= totalLines() - 1"
+              (click)="nextPage()"
+            >
+              Next →
+            </button>
+          </div>
+        </div>
+      }
+
+      @case ('single') {
+        <!-- Single line (first line only) -->
+        @if (lines()[0]; as line) {
+          <tw-staff
+            [clef]="musicData().clef"
+            [keySignature]="musicData().keySignature"
+            [timeSignature]="musicData().timeSignature"
+            [measures]="line.length"
+            [width]="width()"
+            [height]="staffHeight()"
+            [lineSpacing]="lineSpacing()"
+            [variant]="staffVariant()"
+            [grandStaff]="musicData().grandStaff || false"
+          >
+            @for (measure of line; track $index; let measureInLineIndex = $index) {
+              @for (note of measure.notes; track $index; let noteIndex = $index) {
+                <tw-note
+                  [name]="note.name"
+                  [octave]="note.octave"
+                  [duration]="note.duration"
+                  [accidental]="note.accidental || null"
+                  [dotted]="note.dotted || false"
+                  [x]="getNoteX(measureInLineIndex, noteIndex, measure.notes.length, 0)"
+                  [staffTop]="40"
+                  [lineSpacing]="lineSpacing()"
+                  [highlighted]="isNoteHighlighted(measureInLineIndex, noteIndex)"
+                ></tw-note>
+              }
+            }
+          </tw-staff>
+        }
+      }
+    }
+  </div>
+
+  <!-- Empty state -->
+  @if (musicData().measures.length === 0) {
+    <div class="text-center py-12 text-slate-500">
+      <p class="text-lg">No music to display</p>
+      <p class="text-sm mt-2">Add measures to see the sheet music</p>
+    </div>
+  }
+</div>
+

@@ -22,6 +22,11 @@ export * from './staff.component';
 export * from './note.component';
 export * from './chord-diagram.component';
 export * from './tablature.component';
+export * from './sheet-music.component';
+export * from './lead-sheet.component';
+
+// Phase 5 - Utilities
+export * from './tuner.component';
 
 import { TwVolumeDialComponent } from './volume-dial.component';
 import { TwVuMeterComponent } from './vu-meter.component';
@@ -40,6 +45,9 @@ import { TwStaffComponent } from './staff.component';
 import { TwNoteComponent } from './note.component';
 import { TwChordDiagramComponent } from './chord-diagram.component';
 import { TwTablatureComponent } from './tablature.component';
+import { TwSheetMusicComponent } from './sheet-music.component';
+import { TwLeadSheetComponent } from './lead-sheet.component';
+import { TwTunerComponent } from './tuner.component';
 
 export const TW_MUSIC_COMPONENTS = [
   // Phase 1 - Core
@@ -63,4 +71,8 @@ export const TW_MUSIC_COMPONENTS = [
   TwNoteComponent,
   TwChordDiagramComponent,
   TwTablatureComponent,
+  TwSheetMusicComponent,
+  TwLeadSheetComponent,
+  // Phase 5 - Utilities
+  TwTunerComponent,
 ] as const;

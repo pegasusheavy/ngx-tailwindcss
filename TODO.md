@@ -34,7 +34,7 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 | Audio Visualizer | ✅ Done | circular, bars, wave, particles, rings | 6 color schemes, reactive |
 | Metronome | ✅ Done | default, minimal, pendulum, digital | Tap tempo, time signatures, subdivisions |
 
-### Phase 4 - Music Notation (PARTIAL)
+### Phase 4 - Music Notation (COMPLETE)
 
 | Component | Status | Variants | Notes |
 |-----------|--------|----------|-------|
@@ -42,8 +42,14 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 | Note | ✅ Done | - | All durations, accidentals, stems, ties |
 | Chord Diagram | ✅ Done | default, minimal, detailed, dark | Guitar/bass, finger numbers, barre chords |
 | Tablature | ✅ Done | default, minimal, printed, dark | Guitar/bass, techniques (bend, slide, etc.) |
-| Sheet Music Display | ⬜ Todo | - | Read-only renderer, MusicXML import |
-| Score Editor | ⬜ Todo | - | Full notation editor |
+| Sheet Music Display | ✅ Done | default, printed, handwritten, minimal | Scroll, pages, single layouts; playback position |
+| Lead Sheet | ✅ Done | default, minimal, printed, dark | Nashville numbers, Roman numerals, sections |
+
+### Phase 5 - Utilities
+
+| Component | Status | Variants | Notes |
+|-----------|--------|----------|-------|
+| Tuner | ✅ Done | default, minimal, analog, strobe | Chromatic + instrument modes, pitch detection |
 
 ---
 
@@ -401,14 +407,15 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 | Phase 1 - Core | ✅ Complete | Volume Dial, VU Meter, Waveform, Transport, Scrubber |
 | Phase 2 - Visualization | ✅ Complete | Spectrum, Piano, Time Display, Parametric EQ |
 | Phase 3 - Advanced | ✅ Complete | Channel Strip, Mixer, Visualizer, Metronome |
-| Phase 4 - Notation | 🔄 67% | Staff ✅, Note ✅, Chord Diagram ✅, Tablature ✅, Sheet Music ⬜, Score Editor ⬜ |
-| Phase 5 - Polish | 🔄 Partial | Theming (partial), Mobile (partial), Accessibility (partial) |
+| Phase 4 - Notation | ✅ Complete | Staff ✅, Note ✅, Chord Diagram ✅, Tablature ✅, Sheet Music ✅, Lead Sheet ✅ |
+| Phase 5 - Utilities | ✅ Complete | Tuner ✅ |
+| Phase 6 - Polish | 🔄 Partial | Theming (partial), Mobile (partial), Accessibility (partial) |
 
 ---
 
 ## Component Count
 
-**Completed: 17 components**
+**Completed: 20 components**
 
 ### Phase 1 - Core (5)
 1. `tw-volume-dial` - Rotary knob control
@@ -429,11 +436,16 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 12. `tw-metronome` - Beat indicator with tap tempo
 13. `tw-visualizer` - Audio visualizer with multiple modes
 
-### Phase 4 - Notation (4)
+### Phase 4 - Notation (6)
 14. `tw-staff` - Musical staff/stave
 15. `tw-note` - Musical note renderer
 16. `tw-chord-diagram` - Guitar chord diagrams
 17. `tw-tablature` - Guitar/bass tablature
+18. `tw-sheet-music` - Sheet music display
+19. `tw-lead-sheet` - Chord chart / lead sheet
+
+### Phase 5 - Utilities (1)
+20. `tw-tuner` - Instrument tuner with pitch detection
 
 ---
 

@@ -1,0 +1,138 @@
+<div [class]="containerClasses()">
+  <!-- Header -->
+  @if (data()?.title) {
+    <header class="text-center mb-6">
+      <h2 class="text-2xl font-bold font-serif" [class]="textClasses().title">
+        {{ data()?.title }}
+      </h2>
+      @if (data()?.artist) {
+        <p class="text-sm mt-1" [class]="textClasses().subtitle">
+          {{ data()?.artist }}
+        </p>
+      }
+      <div class="flex items-center justify-center gap-4 mt-2 text-sm" [class]="textClasses().subtitle">
+        @if (data()?.key) {
+          <span>Key: {{ data()?.key }}</span>
+        }
+        @if (data()?.tempo) {
+          <span>♩ = {{ data()?.tempo }}</span>
+        }
+        @if (data()?.timeSignature) {
+          <span>{{ data()?.timeSignature }}</span>
+        }
+      </div>
+    </header>
+  }
+
+  <!-- Sections -->
+  @for (section of data()?.sections || []; track $index; let sectionIndex = $index) {
+    <div class="mb-6 last:mb-0">
+      <!-- Section Name -->
+      @if (showSectionNames() && section.name) {
+        <h3
+          class="text-sm font-semibold uppercase tracking-wider mb-2"
+          [class]="textClasses().section"
+        >
+          {{ section.name }}
+        </h3>
+      }
+
+      <!-- Measure Rows -->
+      @for (row of getMeasureRows(section); track $index; let rowIndex = $index) {
+        <div class="flex border border-slate-300 dark:border-slate-600 rounded mb-2">
+          @for (measure of row; track $index; let measureInRowIndex = $index) {
+            <div
+              class="flex-1"
+              [class]="measureClasses()"
+              [class.cursor-pointer]="interactive()"
+              [class.hover:bg-slate-50]="interactive()"
+              [class.dark:hover:bg-slate-800]="interactive()"
+              (click)="onMeasureClick(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex)"
+            >
+              <!-- Repeat/Navigation Markers -->
+              <div class="flex items-start justify-between text-xs mb-1">
+                @if (measure.repeatStart) {
+                  <span class="text-lg">𝄆</span>
+                }
+                @if (measure.segno) {
+                  <span class="text-lg">𝄋</span>
+                }
+                @if (measure.coda) {
+                  <span class="text-lg">𝄌</span>
+                }
+                @if (measure.ending) {
+                  <span class="border-l border-t border-slate-400 px-1">
+                    {{ measure.ending }}.
+                  </span>
+                }
+                @if (showMeasureNumbers()) {
+                  <span class="text-[10px] text-slate-400">
+                    {{ getMeasureGlobalIndex(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex) }}
+                  </span>
+                }
+                @if (measure.repeatEnd) {
+                  <span class="text-lg ml-auto">𝄇</span>
+                  @if (measure.repeatCount && measure.repeatCount > 2) {
+                    <span class="text-xs">×{{ measure.repeatCount }}</span>
+                  }
+                }
+              </div>
+
+              <!-- Chords -->
+              <div class="flex items-center justify-center gap-2 flex-wrap min-h-[32px]">
+                @if (measure.chords.length > 0) {
+                  @for (chord of measure.chords; track $index) {
+                    <span
+                      class="font-semibold text-lg font-mono"
+                      [class]="textClasses().chord"
+                      [class.cursor-pointer]="interactive()"
+                      [class.hover:underline]="interactive()"
+                      (click)="onChordClick(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex, chord); $event.stopPropagation()"
+                    >
+                      {{ convertChord(chord.chord) }}
+                    </span>
+                  }
+                } @else {
+                  <!-- Empty measure marker -->
+                  <span class="text-slate-300 dark:text-slate-600">%</span>
+                }
+              </div>
+
+              <!-- Rhythm Slashes -->
+              @if (showSlashes() && measure.chords.length <= 2) {
+                <div class="flex items-center justify-center gap-1 mt-1" [class]="slashClasses()">
+                  @for (slash of [].constructor(getBeatsPerMeasure()); track $index) {
+                    <span class="text-lg">/</span>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!data() || (data()?.sections?.length === 0)) {
+    <div class="text-center py-12" [class]="textClasses().subtitle">
+      <p class="text-lg">No chart data</p>
+      <p class="text-sm mt-2">Add sections and chords to see the lead sheet</p>
+    </div>
+  }
+
+  <!-- Legend -->
+  @if (style() !== 'standard') {
+    <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+      <p class="text-xs text-slate-500">
+        @if (style() === 'nashville') {
+          Nashville Number System (Key: {{ data()?.key || 'C' }})
+        }
+        @if (style() === 'roman') {
+          Roman Numeral Analysis (Key: {{ data()?.key || 'C' }})
+        }
+      </p>
+    </div>
+  }
+</div>
+
