@@ -204,11 +204,11 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 
 ### Chord Diagram ✅
 - [x] Guitar chord diagrams
-- [ ] Piano chord diagrams
+- [x] Piano chord diagrams - tw-piano-chord with 20+ preset chords
 - [x] Finger position indicators
 - [x] Chord name display
 - [x] Barre chord support
-- [x] Multiple variants (default, minimal, detailed, dark)
+- [x] Multiple variants (default, minimal, detailed, dark, colorful)
 
 ### Note Display
 - [ ] Current note indicator

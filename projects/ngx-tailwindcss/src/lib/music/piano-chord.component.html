@@ -1,0 +1,115 @@
+<div [class]="containerClasses()">
+  <!-- Chord Name -->
+  @if (showChordName() && displayName()) {
+    <div class="text-center mb-2">
+      <span
+        class="text-lg font-bold"
+        [style.color]="colors().text"
+      >
+        {{ displayName() }}
+      </span>
+      @if (chordData()?.type) {
+        <span class="text-xs ml-1 opacity-70" [style.color]="colors().text">
+          {{ chordData()!.type }}
+        </span>
+      }
+    </div>
+  }
+
+  <!-- Piano Keyboard SVG -->
+  <svg
+    [attr.width]="dimensions().totalWidth"
+    [attr.height]="dimensions().totalHeight - (showChordName() ? 28 : 0)"
+    class="block"
+  >
+    <!-- White Keys -->
+    @for (key of whiteKeys(); track key.note + key.octave) {
+      <rect
+        [attr.x]="getWhiteKeyX(key.index)"
+        [attr.y]="dimensions().padding"
+        [attr.width]="dimensions().whiteKeyWidth - 1"
+        [attr.height]="dimensions().whiteKeyHeight"
+        [attr.fill]="isNoteActive(key.note, key.octave) ? colors().whiteKeyActive : colors().whiteKey"
+        [attr.stroke]="colors().border"
+        stroke-width="1"
+        rx="2"
+        class="transition-colors duration-150"
+      />
+
+      <!-- Key label (C, D, E, etc.) -->
+      @if (showKeyLabels() && key.note === 'C') {
+        <text
+          [attr.x]="getWhiteKeyX(key.index) + dimensions().whiteKeyWidth / 2"
+          [attr.y]="dimensions().padding + dimensions().whiteKeyHeight - 4"
+          text-anchor="middle"
+          [attr.fill]="colors().noteLabel"
+          [attr.font-size]="dimensions().whiteKeyWidth * 0.35"
+          font-family="sans-serif"
+        >
+          C{{ key.octave }}
+        </text>
+      }
+    }
+
+    <!-- Black Keys -->
+    @for (key of blackKeys(); track key.note + key.octave) {
+      <rect
+        [attr.x]="getBlackKeyX(key.position)"
+        [attr.y]="dimensions().padding"
+        [attr.width]="dimensions().blackKeyWidth"
+        [attr.height]="dimensions().blackKeyHeight"
+        [attr.fill]="isNoteActive(key.note, key.octave) ? colors().blackKeyActive : colors().blackKey"
+        rx="1"
+        class="transition-colors duration-150"
+      />
+    }
+
+    <!-- Finger position indicators -->
+    @if (chordData()) {
+      @for (note of chordData()!.notes; track note.note + note.octave) {
+        <g>
+          <!-- Finger circle -->
+          <circle
+            [attr.cx]="getFingerX(note.note, note.octave)"
+            [attr.cy]="getFingerY(isBlackKey(note.note))"
+            [attr.r]="dimensions().fingerRadius"
+            [attr.fill]="highlightRoot() && note.isRoot ? colors().rootCircle : colors().fingerCircle"
+            class="transition-colors duration-150"
+          />
+
+          <!-- Finger number -->
+          @if (showFingerNumbers() && note.finger) {
+            <text
+              [attr.x]="getFingerX(note.note, note.octave)"
+              [attr.y]="getFingerY(isBlackKey(note.note)) + dimensions().fingerRadius * 0.35"
+              text-anchor="middle"
+              [attr.fill]="colors().fingerText"
+              [attr.font-size]="dimensions().fingerRadius * 1.2"
+              font-family="sans-serif"
+              font-weight="bold"
+            >
+              {{ note.finger }}
+            </text>
+          }
+        </g>
+      }
+    }
+  </svg>
+
+  <!-- Note names display -->
+  @if (showNoteNames() && chordData()) {
+    <div class="flex justify-center gap-2 mt-2">
+      @for (note of chordData()!.notes; track note.note + note.octave) {
+        <span
+          class="text-xs px-1.5 py-0.5 rounded"
+          [class.font-bold]="note.isRoot"
+          [style.background-color]="note.isRoot ? colors().rootCircle + '20' : colors().fingerCircle + '20'"
+          [style.color]="colors().text"
+        >
+          {{ note.note }}{{ note.octave }}
+        </span>
+      }
+    </div>
+  }
+</div>
+

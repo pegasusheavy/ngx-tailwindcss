@@ -26,6 +26,7 @@ export * from './audio-player.component';
 export * from './staff.component';
 export * from './note.component';
 export * from './chord-diagram.component';
+export * from './piano-chord.component';
 export * from './tablature.component';
 export * from './sheet-music.component';
 export * from './lead-sheet.component';
@@ -54,6 +55,7 @@ import { TwAudioPlayerComponent } from './audio-player.component';
 import { TwStaffComponent } from './staff.component';
 import { TwNoteComponent } from './note.component';
 import { TwChordDiagramComponent } from './chord-diagram.component';
+import { TwPianoChordComponent } from './piano-chord.component';
 import { TwTablatureComponent } from './tablature.component';
 import { TwSheetMusicComponent } from './sheet-music.component';
 import { TwLeadSheetComponent } from './lead-sheet.component';
@@ -85,6 +87,7 @@ export const TW_MUSIC_COMPONENTS = [
   TwStaffComponent,
   TwNoteComponent,
   TwChordDiagramComponent,
+  TwPianoChordComponent,
   TwTablatureComponent,
   TwSheetMusicComponent,
   TwLeadSheetComponent,
