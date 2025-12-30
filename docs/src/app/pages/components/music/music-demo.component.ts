@@ -1,10 +1,16 @@
-import { Component, signal, ViewChild } from '@angular/core';
+import { Component, signal, ViewChild, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   TwVolumeDialComponent,
   TwVuMeterComponent,
   TwWaveformComponent,
+  TwTransportComponent,
+  TwScrubberComponent,
+  TwTimeDisplayComponent,
+  TwSpectrumComponent,
+  TwPianoComponent,
+  NoteEvent,
 } from '@pegasus-heavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
@@ -17,12 +23,17 @@ import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-
     TwVolumeDialComponent,
     TwVuMeterComponent,
     TwWaveformComponent,
+    TwTransportComponent,
+    TwScrubberComponent,
+    TwTimeDisplayComponent,
+    TwSpectrumComponent,
+    TwPianoComponent,
     DemoSectionComponent,
     PageHeaderComponent,
   ],
   templateUrl: './music-demo.component.html',
 })
-export class MusicDemoComponent {
+export class MusicDemoComponent implements OnInit, OnDestroy {
   // Volume Dial state
   volume = 50;
   gain = 75;
@@ -39,27 +50,44 @@ export class MusicDemoComponent {
   waveformProgress = 0;
   samplePeaks: number[] = [];
 
+  // Transport state
+  isPlaying = signal(false);
+  isLooping = signal(false);
+
+  // Scrubber state
+  currentTime = signal(45);
+  duration = 180;
+  buffered = 120;
+
+  // Spectrum state
+  spectrumData: number[] = [];
+  private spectrumInterval?: ReturnType<typeof setInterval>;
+
+  // Piano state
+  lastNote = signal<string>('');
+
   constructor() {
-    // Generate sample waveform data
     this.generateSamplePeaks();
+    this.generateSpectrumData();
   }
 
   ngOnInit(): void {
-    // Start simulated audio levels
     this.startMeterSimulation();
+    this.startSpectrumSimulation();
   }
 
   ngOnDestroy(): void {
     if (this.meterInterval) {
       clearInterval(this.meterInterval);
     }
+    if (this.spectrumInterval) {
+      clearInterval(this.spectrumInterval);
+    }
   }
 
   private generateSamplePeaks(): void {
-    // Generate a realistic-looking waveform
     this.samplePeaks = [];
     for (let i = 0; i < 200; i++) {
-      // Create a pattern that looks like audio
       const base = 0.3 + Math.random() * 0.4;
       const variation = Math.sin(i / 10) * 0.2;
       const peak = Math.max(0.1, Math.min(1, base + variation + (Math.random() - 0.5) * 0.3));
@@ -67,9 +95,15 @@ export class MusicDemoComponent {
     }
   }
 
+  private generateSpectrumData(): void {
+    this.spectrumData = [];
+    for (let i = 0; i < 32; i++) {
+      this.spectrumData.push(Math.floor(Math.random() * 255));
+    }
+  }
+
   private startMeterSimulation(): void {
     this.meterInterval = setInterval(() => {
-      // Simulate varying audio levels
       const baseLevel = 50 + Math.sin(Date.now() / 500) * 20;
       const leftNoise = Math.random() * 30;
       const rightNoise = Math.random() * 30;
@@ -78,15 +112,53 @@ export class MusicDemoComponent {
       this.rightChannel.set(Math.min(100, baseLevel + rightNoise - 5));
       this.meterValue.set(Math.min(100, baseLevel + (leftNoise + rightNoise) / 2));
 
-      // Update the VU meter component
       if (this.vuMeter) {
         this.vuMeter.setValues(this.leftChannel(), this.rightChannel());
       }
     }, 50);
   }
 
+  private startSpectrumSimulation(): void {
+    this.spectrumInterval = setInterval(() => {
+      this.spectrumData = this.spectrumData.map((val, i) => {
+        const change = (Math.random() - 0.5) * 40;
+        const decay = val > 100 ? -10 : 5;
+        return Math.max(20, Math.min(255, val + change + decay));
+      });
+    }, 50);
+  }
+
   onSeek(position: number): void {
     this.waveformProgress = position;
+  }
+
+  onScrubberSeek(time: number): void {
+    this.currentTime.set(time);
+  }
+
+  onPlay(): void {
+    this.isPlaying.set(true);
+  }
+
+  onPause(): void {
+    this.isPlaying.set(false);
+  }
+
+  onStop(): void {
+    this.isPlaying.set(false);
+    this.currentTime.set(0);
+  }
+
+  onLoopToggle(value: boolean): void {
+    this.isLooping.set(value);
+  }
+
+  onNoteOn(event: NoteEvent): void {
+    this.lastNote.set(`${event.note}${event.octave}`);
+  }
+
+  onNoteOff(event: NoteEvent): void {
+    // Handle note off
   }
 
   // Code examples
@@ -97,38 +169,36 @@ export class MusicDemoComponent {
 <tw-volume-dial variant="minimal" [(ngModel)]="value"></tw-volume-dial>
 <tw-volume-dial variant="led" [(ngModel)]="value"></tw-volume-dial>`;
 
-  dialSizesCode = `<tw-volume-dial size="sm" [(ngModel)]="value"></tw-volume-dial>
-<tw-volume-dial size="md" [(ngModel)]="value"></tw-volume-dial>
-<tw-volume-dial size="lg" [(ngModel)]="value"></tw-volume-dial>
-<tw-volume-dial size="xl" [(ngModel)]="value"></tw-volume-dial>`;
+  transportCode = `<tw-transport
+  [playing]="isPlaying()"
+  (play)="onPlay()"
+  (pause)="onPause()"
+  (stop)="onStop()"
+  [showLoop]="true"
+  (loopToggle)="onLoopToggle($event)"
+></tw-transport>`;
 
-  vuMeterBasicCode = `<tw-vu-meter #meter></tw-vu-meter>
-
-// In component:
-meter.setValue(audioLevel);`;
-
-  vuMeterStereoCode = `<tw-vu-meter [stereo]="true" #stereoMeter></tw-vu-meter>
-
-// In component:
-stereoMeter.setValues(leftChannel, rightChannel);`;
-
-  vuMeterVariantsCode = `<tw-vu-meter variant="led"></tw-vu-meter>
-<tw-vu-meter variant="gradient"></tw-vu-meter>
-<tw-vu-meter variant="solid"></tw-vu-meter>
-<tw-vu-meter variant="retro"></tw-vu-meter>`;
-
-  waveformBasicCode = `<tw-waveform [peaks]="peakData" [progress]="0.5"></tw-waveform>`;
-
-  waveformVariantsCode = `<tw-waveform [peaks]="peaks" variant="bars"></tw-waveform>
-<tw-waveform [peaks]="peaks" variant="line"></tw-waveform>
-<tw-waveform [peaks]="peaks" variant="mirror"></tw-waveform>
-<tw-waveform [peaks]="peaks" variant="gradient"></tw-waveform>`;
-
-  waveformInteractiveCode = `<tw-waveform
-  [peaks]="peaks"
-  [progress]="progress"
-  [seekable]="true"
+  scrubberCode = `<tw-scrubber
+  [currentTime]="currentTime()"
+  [duration]="180"
+  [buffered]="120"
   (seek)="onSeek($event)"
-></tw-waveform>`;
-}
+></tw-scrubber>`;
 
+  timeDisplayCode = `<tw-time-display [value]="currentTime" [total]="duration"></tw-time-display>
+<tw-time-display [value]="currentTime" variant="led"></tw-time-display>`;
+
+  spectrumCode = `<tw-spectrum [frequencyData]="fftData" variant="bars"></tw-spectrum>
+<tw-spectrum [analyserNode]="analyser" variant="gradient"></tw-spectrum>`;
+
+  pianoCode = `<tw-piano
+  [startOctave]="4"
+  [octaves]="2"
+  (noteOn)="playNote($event)"
+  (noteOff)="stopNote($event)"
+></tw-piano>`;
+
+  waveformCode = `<tw-waveform [peaks]="peakData" [progress]="0.5"></tw-waveform>`;
+
+  vuMeterCode = `<tw-vu-meter [stereo]="true" variant="led"></tw-vu-meter>`;
+}

@@ -1,0 +1,88 @@
+<div [class]="containerClasses()">
+  <!-- Time Display (Left) -->
+  @if (showTime() && timePosition() === 'outside') {
+    <span [class]="timeClasses()">{{ formatTime(currentTime()) }}</span>
+  }
+
+  <!-- Track Container -->
+  <div
+    #trackContainer
+    [class]="trackContainerClasses()"
+    (mousedown)="onMouseDown($event)"
+    (mousemove)="onMouseMove($event)"
+    (mouseleave)="onMouseLeave()"
+    (touchstart)="onTouchStart($event)"
+    role="slider"
+    [attr.aria-valuenow]="currentTime()"
+    [attr.aria-valuemin]="0"
+    [attr.aria-valuemax]="duration()"
+    [attr.aria-label]="'Seek slider'"
+    [attr.tabindex]="disabled() ? -1 : 0"
+    (keydown)="onKeyDown($event)"
+  >
+    <!-- Buffered Range -->
+    @if (showBuffered() && buffered() > 0) {
+      <div
+        [class]="bufferedClasses()"
+        [style.width.%]="(buffered() / duration()) * 100"
+      ></div>
+    }
+
+    <!-- Progress Fill -->
+    <div
+      [class]="progressClasses()"
+      [style.width.%]="progressPercent()"
+    ></div>
+
+    <!-- Chapter Markers -->
+    @if (showMarkers()) {
+      @for (marker of markers(); track marker.time) {
+        <div
+          [class]="markerClasses()"
+          [style.left.%]="(marker.time / duration()) * 100"
+          [attr.title]="marker.label"
+        ></div>
+      }
+    }
+
+    <!-- Hover Time Preview -->
+    @if (showHoverPreview() && hoverPosition() !== null && !isDragging()) {
+      <div
+        class="absolute top-0 bottom-0 w-px bg-white/50 pointer-events-none"
+        [style.left.%]="hoverPosition()! * 100"
+      >
+        <div [class]="hoverPreviewClasses()">
+          {{ formatTime(hoverPosition()! * duration()) }}
+        </div>
+      </div>
+    }
+
+    <!-- Thumb / Handle -->
+    @if (showThumb()) {
+      <div
+        [class]="thumbClasses()"
+        [style.left.%]="progressPercent()"
+      ></div>
+    }
+
+    <!-- Time Inside Track -->
+    @if (showTime() && timePosition() === 'inside') {
+      <div class="absolute inset-0 flex items-center justify-between px-2 pointer-events-none">
+        <span [class]="timeInsideClasses()">{{ formatTime(currentTime()) }}</span>
+        <span [class]="timeInsideClasses()">{{ formatTime(duration()) }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Time Display (Right) -->
+  @if (showTime() && timePosition() === 'outside') {
+    <span [class]="timeClasses()">
+      @if (showRemaining()) {
+        -{{ formatTime(duration() - currentTime()) }}
+      } @else {
+        {{ formatTime(duration()) }}
+      }
+    </span>
+  }
+</div>
+

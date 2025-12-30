@@ -1,0 +1,59 @@
+<div
+  [class]="containerClasses()"
+  role="application"
+  [attr.aria-label]="'Piano keyboard'"
+>
+  <div class="relative flex" [style.height.px]="height()">
+    <!-- White Keys -->
+    @for (key of whiteKeys(); track key.note) {
+      <button
+        type="button"
+        [class]="whiteKeyClasses(key)"
+        [style.width.px]="whiteKeyWidth()"
+        (mousedown)="onKeyDown(key)"
+        (mouseup)="onKeyUp(key)"
+        (mouseleave)="onKeyUp(key)"
+        (touchstart)="onTouchStart($event, key)"
+        (touchend)="onTouchEnd(key)"
+        [attr.aria-label]="key.note + key.octave"
+        [attr.aria-pressed]="isKeyActive(key)"
+      >
+        @if (showLabels()) {
+          <span [class]="labelClasses('white')">{{ key.note }}{{ key.octave }}</span>
+        }
+      </button>
+    }
+
+    <!-- Black Keys (positioned absolutely) -->
+    @for (key of blackKeys(); track key.note + key.octave) {
+      <button
+        type="button"
+        [class]="blackKeyClasses(key)"
+        [style.width.px]="blackKeyWidth()"
+        [style.height.%]="65"
+        [style.left.px]="key.position"
+        (mousedown)="onKeyDown(key)"
+        (mouseup)="onKeyUp(key)"
+        (mouseleave)="onKeyUp(key)"
+        (touchstart)="onTouchStart($event, key)"
+        (touchend)="onTouchEnd(key)"
+        [attr.aria-label]="key.note + key.octave"
+        [attr.aria-pressed]="isKeyActive(key)"
+      >
+        @if (showLabels()) {
+          <span [class]="labelClasses('black')">{{ key.note }}</span>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Octave Labels -->
+  @if (showOctaveLabels()) {
+    <div class="flex justify-around mt-1 text-xs text-slate-500 dark:text-slate-400">
+      @for (octave of octaveRange(); track octave) {
+        <span>C{{ octave }}</span>
+      }
+    </div>
+  }
+</div>
+

@@ -4,6 +4,225 @@
 </app-page-header>
 
 <div class="space-y-12">
+  <!-- Transport Controls Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Transport Controls</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Playback controls for audio/video applications.</p>
+    </div>
+
+    <app-demo-section title="Variants" [code]="transportCode">
+      <div class="space-y-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Modern</p>
+          <tw-transport
+            [playing]="isPlaying()"
+            (play)="onPlay()"
+            (pause)="onPause()"
+            (stop)="onStop()"
+            [looping]="isLooping()"
+            (loopToggle)="onLoopToggle($event)"
+            variant="modern"
+          ></tw-transport>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Classic</p>
+          <tw-transport
+            [playing]="isPlaying()"
+            (play)="onPlay()"
+            (pause)="onPause()"
+            (stop)="onStop()"
+            [showRecord]="true"
+            [showRewind]="true"
+            [showFastForward]="true"
+            variant="classic"
+          ></tw-transport>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Minimal</p>
+          <tw-transport
+            [playing]="isPlaying()"
+            (play)="onPlay()"
+            (pause)="onPause()"
+            variant="minimal"
+            size="lg"
+          ></tw-transport>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Compact</p>
+          <tw-transport
+            [playing]="isPlaying()"
+            (play)="onPlay()"
+            (pause)="onPause()"
+            (stop)="onStop()"
+            variant="compact"
+            size="sm"
+          ></tw-transport>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Progress / Scrubber Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Progress Bar / Scrubber</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Timeline scrubber for seeking through audio/video.</p>
+    </div>
+
+    <app-demo-section title="Variants" [code]="scrubberCode">
+      <div class="space-y-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Default</p>
+          <tw-scrubber
+            [currentTime]="currentTime()"
+            [duration]="duration"
+            [buffered]="buffered"
+            (seek)="onScrubberSeek($event)"
+          ></tw-scrubber>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Thin</p>
+          <tw-scrubber
+            [currentTime]="currentTime()"
+            [duration]="duration"
+            variant="thin"
+            (seek)="onScrubberSeek($event)"
+          ></tw-scrubber>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">YouTube Style</p>
+          <div class="bg-slate-900 p-4 rounded-lg">
+            <tw-scrubber
+              [currentTime]="currentTime()"
+              [duration]="duration"
+              variant="youtube"
+              [showTime]="false"
+              (seek)="onScrubberSeek($event)"
+            ></tw-scrubber>
+          </div>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Spotify Style</p>
+          <div class="bg-slate-900 p-4 rounded-lg">
+            <tw-scrubber
+              [currentTime]="currentTime()"
+              [duration]="duration"
+              variant="spotify"
+              [showTime]="false"
+              (seek)="onScrubberSeek($event)"
+            ></tw-scrubber>
+          </div>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Time Display Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Time Display</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Various time/counter display styles.</p>
+    </div>
+
+    <app-demo-section title="Variants" [code]="timeDisplayCode">
+      <div class="flex flex-wrap items-center gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="text-center">
+          <tw-time-display [value]="currentTime()" [total]="duration" variant="default"></tw-time-display>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Default</p>
+        </div>
+        <div class="text-center">
+          <tw-time-display [value]="currentTime()" variant="led" size="lg"></tw-time-display>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">LED</p>
+        </div>
+        <div class="text-center">
+          <tw-time-display [value]="currentTime()" variant="digital"></tw-time-display>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Digital LCD</p>
+        </div>
+        <div class="text-center">
+          <tw-time-display [value]="currentTime()" variant="flip"></tw-time-display>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Flip Clock</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Spectrum Analyzer Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Spectrum Analyzer</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Frequency visualization for audio analysis.</p>
+    </div>
+
+    <app-demo-section title="Variants" [code]="spectrumCode">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Bars (Classic)</p>
+          <tw-spectrum [frequencyData]="spectrumData" variant="bars" colorScheme="classic" [width]="280" [height]="100"></tw-spectrum>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Gradient (Fire)</p>
+          <tw-spectrum [frequencyData]="spectrumData" variant="gradient" colorScheme="fire" [width]="280" [height]="100"></tw-spectrum>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Line (Ice)</p>
+          <tw-spectrum [frequencyData]="spectrumData" variant="line" colorScheme="ice" [width]="280" [height]="100"></tw-spectrum>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Mirror (Neon)</p>
+          <tw-spectrum [frequencyData]="spectrumData" variant="mirror" colorScheme="neon" [width]="280" [height]="100"></tw-spectrum>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Piano Keyboard Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Piano Keyboard</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Interactive piano keyboard for MIDI and note input.</p>
+    </div>
+
+    <app-demo-section title="Interactive Piano" [code]="pianoCode">
+      <div class="space-y-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Classic (2 Octaves)</p>
+          <tw-piano
+            [startOctave]="4"
+            [octaves]="2"
+            variant="classic"
+            (noteOn)="onNoteOn($event)"
+            (noteOff)="onNoteOff($event)"
+          ></tw-piano>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">
+            Last note: <span class="font-mono font-bold">{{ lastNote() || '-' }}</span>
+          </p>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Modern (1 Octave, Large)</p>
+          <tw-piano
+            [startOctave]="4"
+            [octaves]="1"
+            variant="modern"
+            size="lg"
+            [showLabels]="true"
+            (noteOn)="onNoteOn($event)"
+          ></tw-piano>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Minimal (Small)</p>
+          <tw-piano
+            [startOctave]="3"
+            [octaves]="3"
+            variant="minimal"
+            size="sm"
+            (noteOn)="onNoteOn($event)"
+          ></tw-piano>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
   <!-- Volume Dial Section -->
   <section class="space-y-8">
     <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
@@ -11,17 +230,6 @@
       <p class="text-slate-600 dark:text-slate-400 mt-1">Rotary knob control for precise value adjustment.</p>
     </div>
 
-    <!-- Basic Dial -->
-    <app-demo-section title="Basic Usage" [code]="dialBasicCode">
-      <div class="flex items-end gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
-        <div class="text-center">
-          <tw-volume-dial [(ngModel)]="volume" [min]="0" [max]="100" [showValue]="true"></tw-volume-dial>
-          <p class="text-sm text-slate-600 dark:text-slate-400 mt-4">Volume: {{ volume }}%</p>
-        </div>
-      </div>
-    </app-demo-section>
-
-    <!-- Dial Variants -->
     <app-demo-section title="Variants" [code]="dialVariantsCode">
       <div class="flex flex-wrap items-end gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
         <div class="text-center">
@@ -42,102 +250,30 @@
         </div>
       </div>
     </app-demo-section>
-
-    <!-- Dial Sizes -->
-    <app-demo-section title="Sizes" [code]="dialSizesCode">
-      <div class="flex flex-wrap items-end gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
-        <div class="text-center">
-          <tw-volume-dial size="sm" [(ngModel)]="volume"></tw-volume-dial>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Small</p>
-        </div>
-        <div class="text-center">
-          <tw-volume-dial size="md" [(ngModel)]="volume"></tw-volume-dial>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Medium</p>
-        </div>
-        <div class="text-center">
-          <tw-volume-dial size="lg" [(ngModel)]="volume"></tw-volume-dial>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Large</p>
-        </div>
-        <div class="text-center">
-          <tw-volume-dial size="xl" [(ngModel)]="volume" [showValue]="true"></tw-volume-dial>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Extra Large</p>
-        </div>
-      </div>
-    </app-demo-section>
   </section>
 
   <!-- VU Meter Section -->
   <section class="space-y-8">
     <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white">VU Meter</h2>
-      <p class="text-slate-600 dark:text-slate-400 mt-1">Level meter for visualizing audio signals with peak hold and clip indicators.</p>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Level meter for visualizing audio signals.</p>
     </div>
 
-    <!-- Basic VU Meter -->
-    <app-demo-section title="Basic Usage" [code]="vuMeterBasicCode">
+    <app-demo-section title="Stereo Meter" [code]="vuMeterCode">
       <div class="flex items-center gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
         <tw-vu-meter
           #vuMeter
+          [stereo]="true"
           [height]="180"
           variant="led"
           label="Master"
-        ></tw-vu-meter>
-        <div class="text-sm text-slate-600 dark:text-slate-400">
-          <p>Current Level: {{ meterValue() | number:'1.0-0' }}%</p>
-          <p class="text-xs mt-2 text-slate-500">Live simulation running...</p>
-        </div>
-      </div>
-    </app-demo-section>
-
-    <!-- Stereo VU Meter -->
-    <app-demo-section title="Stereo Mode" [code]="vuMeterStereoCode">
-      <div class="flex items-center gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
-        <tw-vu-meter
-          [stereo]="true"
-          [height]="200"
-          variant="led"
-          label="Output"
           [showChannelLabels]="true"
         ></tw-vu-meter>
         <div class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
           <p>Left: {{ leftChannel() | number:'1.0-0' }}%</p>
           <p>Right: {{ rightChannel() | number:'1.0-0' }}%</p>
+          <p class="text-xs mt-2 text-slate-500">Live simulation</p>
         </div>
-      </div>
-    </app-demo-section>
-
-    <!-- VU Meter Variants -->
-    <app-demo-section title="Variants" [code]="vuMeterVariantsCode">
-      <div class="flex flex-wrap items-end gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
-        <div class="text-center">
-          <tw-vu-meter variant="led" [height]="150"></tw-vu-meter>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">LED</p>
-        </div>
-        <div class="text-center">
-          <tw-vu-meter variant="gradient" [height]="150"></tw-vu-meter>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Gradient</p>
-        </div>
-        <div class="text-center">
-          <tw-vu-meter variant="solid" [height]="150"></tw-vu-meter>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Solid</p>
-        </div>
-        <div class="text-center">
-          <tw-vu-meter variant="retro" [height]="150"></tw-vu-meter>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Retro</p>
-        </div>
-      </div>
-    </app-demo-section>
-
-    <!-- Horizontal VU Meter -->
-    <app-demo-section title="Horizontal Orientation" [code]="vuMeterBasicCode">
-      <div class="p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
-        <tw-vu-meter
-          orientation="horizontal"
-          [width]="400"
-          variant="led"
-          [stereo]="true"
-          label="Stereo Bus"
-        ></tw-vu-meter>
       </div>
     </app-demo-section>
   </section>
@@ -146,70 +282,10 @@
   <section class="space-y-8">
     <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Waveform Display</h2>
-      <p class="text-slate-600 dark:text-slate-400 mt-1">Audio waveform visualization with playback progress and seeking.</p>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Audio waveform visualization with playback progress.</p>
     </div>
 
-    <!-- Basic Waveform -->
-    <app-demo-section title="Basic Usage" [code]="waveformBasicCode">
-      <div class="p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
-        <tw-waveform
-          [peaks]="samplePeaks"
-          [progress]="waveformProgress"
-          [duration]="180"
-          [width]="700"
-          [height]="100"
-        ></tw-waveform>
-      </div>
-    </app-demo-section>
-
-    <!-- Waveform Variants -->
-    <app-demo-section title="Variants" [code]="waveformVariantsCode">
-      <div class="space-y-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Bars</p>
-          <tw-waveform
-            [peaks]="samplePeaks"
-            [progress]="0.3"
-            variant="bars"
-            [width]="700"
-            [height]="80"
-          ></tw-waveform>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Line</p>
-          <tw-waveform
-            [peaks]="samplePeaks"
-            [progress]="0.5"
-            variant="line"
-            [width]="700"
-            [height]="80"
-          ></tw-waveform>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Mirror</p>
-          <tw-waveform
-            [peaks]="samplePeaks"
-            [progress]="0.4"
-            variant="mirror"
-            [width]="700"
-            [height]="80"
-          ></tw-waveform>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Gradient</p>
-          <tw-waveform
-            [peaks]="samplePeaks"
-            [progress]="0.6"
-            variant="gradient"
-            [width]="700"
-            [height]="80"
-          ></tw-waveform>
-        </div>
-      </div>
-    </app-demo-section>
-
-    <!-- Interactive Waveform -->
-    <app-demo-section title="Interactive (Click to Seek)" [code]="waveformInteractiveCode">
+    <app-demo-section title="Interactive Waveform" [code]="waveformCode">
       <div class="p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
         <tw-waveform
           [peaks]="samplePeaks"
@@ -219,40 +295,13 @@
           (seek)="onSeek($event)"
           [width]="700"
           [height]="120"
-          colorScheme="green"
+          colorScheme="blue"
+          variant="mirror"
         ></tw-waveform>
         <p class="text-sm text-slate-600 dark:text-slate-400 mt-4">
-          Position: {{ (waveformProgress * 180) | number:'1.0-0' }}s / 180s
-          <span class="text-slate-500">({{ (waveformProgress * 100) | number:'1.0-0' }}%)</span>
+          Click to seek: {{ (waveformProgress * 180) | number:'1.0-0' }}s / 180s
         </p>
-      </div>
-    </app-demo-section>
-
-    <!-- Color Schemes -->
-    <app-demo-section title="Color Schemes" [code]="waveformBasicCode">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Blue</p>
-          <tw-waveform [peaks]="samplePeaks" [progress]="0.4" colorScheme="blue" [width]="320" [height]="60"></tw-waveform>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Green</p>
-          <tw-waveform [peaks]="samplePeaks" [progress]="0.4" colorScheme="green" [width]="320" [height]="60"></tw-waveform>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Purple</p>
-          <tw-waveform [peaks]="samplePeaks" [progress]="0.4" colorScheme="purple" [width]="320" [height]="60"></tw-waveform>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Orange</p>
-          <tw-waveform [peaks]="samplePeaks" [progress]="0.4" colorScheme="orange" [width]="320" [height]="60"></tw-waveform>
-        </div>
-        <div>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Mono</p>
-          <tw-waveform [peaks]="samplePeaks" [progress]="0.4" colorScheme="mono" [width]="320" [height]="60"></tw-waveform>
-        </div>
       </div>
     </app-demo-section>
   </section>
 </div>
-

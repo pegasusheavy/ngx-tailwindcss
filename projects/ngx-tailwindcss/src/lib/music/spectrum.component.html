@@ -1,0 +1,18 @@
+<div [class]="containerClasses()">
+  <canvas
+    #spectrumCanvas
+    [width]="width()"
+    [height]="height()"
+    class="block rounded"
+  ></canvas>
+
+  <!-- Frequency Labels -->
+  @if (showLabels()) {
+    <div class="flex justify-between px-1 mt-1 text-[9px] text-slate-500 dark:text-slate-400 font-mono">
+      @for (label of frequencyLabels(); track label) {
+        <span>{{ label }}</span>
+      }
+    </div>
+  }
+</div>
+

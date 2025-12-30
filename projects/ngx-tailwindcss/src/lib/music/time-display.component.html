@@ -1,0 +1,44 @@
+<div [class]="containerClasses()">
+  @if (variant() === 'led') {
+    <!-- LED Segment Display -->
+    <div class="flex items-center font-mono tracking-wider">
+      @for (char of displayChars(); track $index) {
+        <span
+          [class]="charClasses(char)"
+          [attr.data-char]="char"
+        >{{ char }}</span>
+      }
+    </div>
+  } @else if (variant() === 'digital') {
+    <!-- Digital LCD Display -->
+    <div [class]="digitalClasses()">
+      <span class="opacity-20 absolute">{{ ghostText() }}</span>
+      <span class="relative">{{ displayText() }}</span>
+    </div>
+  } @else if (variant() === 'flip') {
+    <!-- Flip Clock Style -->
+    <div class="flex items-center gap-1">
+      @for (segment of flipSegments(); track segment.id) {
+        <div [class]="flipCardClasses()">
+          <span>{{ segment.value }}</span>
+        </div>
+        @if (segment.separator) {
+          <span [class]="separatorClasses()">:</span>
+        }
+      }
+    </div>
+  } @else {
+    <!-- Default / Minimal -->
+    <div [class]="defaultClasses()">
+      @if (showLabel() && label()) {
+        <span class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-2">{{ label() }}</span>
+      }
+      <span>{{ displayText() }}</span>
+      @if (showTotal() && mode() === 'time') {
+        <span class="text-slate-400 dark:text-slate-500 mx-1">/</span>
+        <span class="text-slate-500 dark:text-slate-400">{{ formatTime(total()) }}</span>
+      }
+    </div>
+  }
+</div>
+
