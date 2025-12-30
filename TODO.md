@@ -137,9 +137,9 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 - [x] Multi-channel mixer layout
 - [x] Master bus section
 - [x] Horizontal scrolling for many channels
-- [ ] Channel grouping/linking
-- [ ] Responsive breakpoints
-- [ ] Collapsible channel sections
+- [x] Channel grouping/linking - groups input with linkVolume/linkMute/linkSolo options
+- [x] Responsive breakpoints - responsive input with xs/sm/md/lg/xl breakpoints
+- [x] Collapsible channel sections - sections input with toggleable collapse
 
 ### Pan Control
 - [ ] Horizontal pan slider
