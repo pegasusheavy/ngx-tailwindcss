@@ -106,7 +106,7 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 - [x] Bar graph style (classic equalizer look)
 - [x] Line/curve style (smooth spectrum)
 - [x] Configurable band count (8, 16, 32, 64, etc.)
-- [ ] Linear and logarithmic frequency scaling
+- [x] Linear and logarithmic frequency scaling - frequencyScale='linear'|'logarithmic'
 - [x] Peak hold indicators
 - [x] Gradient and solid color options
 - [x] Mirror variant

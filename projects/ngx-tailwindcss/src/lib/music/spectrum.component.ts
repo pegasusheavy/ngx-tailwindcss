@@ -17,6 +17,7 @@ import { TwClassService } from '../core/tw-class.service';
 
 export type SpectrumVariant = 'bars' | 'line' | 'gradient' | 'mirror';
 export type SpectrumColorScheme = 'classic' | 'fire' | 'ice' | 'neon' | 'mono';
+export type FrequencyScale = 'linear' | 'logarithmic';
 
 interface ColorStop {
   position: number;
@@ -96,16 +97,58 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   readonly backgroundColor = input<string>('');
   readonly classOverride = input('');
 
+  // Frequency scaling
+  readonly frequencyScale = input<FrequencyScale>('logarithmic'); // 'linear' or 'logarithmic'
+  readonly minFrequency = input(20); // Hz - lowest frequency to display
+  readonly maxFrequency = input(20000); // Hz - highest frequency to display
+
   // Internal state
   private ctx: CanvasRenderingContext2D | null = null;
   private animationFrame: number | null = null;
   private dataArray: Uint8Array<ArrayBuffer> = new Uint8Array(0);
   private peaks: number[] = [];
   private isRunning = false;
+  private sampleRate = 44100; // Default, updated from AudioContext
+  private binToBarMapping: number[][] = []; // Maps each bar to its frequency bin range
 
   protected readonly frequencyLabels = computed(() => {
-    return ['20', '100', '500', '1k', '5k', '20k'];
+    const scale = this.frequencyScale();
+    const barCount = this.barCount();
+    const minFreq = this.minFrequency();
+    const maxFreq = this.maxFrequency();
+
+    if (scale === 'logarithmic') {
+      // Logarithmic labels at common frequencies
+      return ['20', '50', '100', '200', '500', '1k', '2k', '5k', '10k', '20k']
+        .filter(label => {
+          const freq = this.labelToFreq(label);
+          return freq >= minFreq && freq <= maxFreq;
+        });
+    } else {
+      // Linear labels - evenly spaced
+      const labels: string[] = [];
+      const step = (maxFreq - minFreq) / 5;
+      for (let i = 0; i <= 5; i++) {
+        const freq = minFreq + i * step;
+        labels.push(this.freqToLabel(freq));
+      }
+      return labels;
+    }
   });
+
+  private labelToFreq(label: string): number {
+    if (label.endsWith('k')) {
+      return parseFloat(label) * 1000;
+    }
+    return parseFloat(label);
+  }
+
+  private freqToLabel(freq: number): string {
+    if (freq >= 1000) {
+      return `${(freq / 1000).toFixed(freq >= 10000 ? 0 : 1)}k`;
+    }
+    return freq.toFixed(0);
+  }
 
   protected readonly containerClasses = computed(() => {
     const baseClasses = 'inline-block';
@@ -140,6 +183,66 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
       analyser.maxDecibels = this.maxDecibels();
       this.dataArray = new Uint8Array(analyser.frequencyBinCount);
       this.peaks = Array.from({ length: this.barCount() }).fill(0) as number[];
+
+      // Get sample rate from AudioContext if available
+      if (analyser.context) {
+        this.sampleRate = analyser.context.sampleRate;
+      }
+
+      // Calculate bin to bar mapping based on frequency scale
+      this.calculateBinMapping(analyser.frequencyBinCount);
+    }
+  }
+
+  private calculateBinMapping(binCount: number): void {
+    const barCount = this.barCount();
+    const scale = this.frequencyScale();
+    const minFreq = this.minFrequency();
+    const maxFreq = this.maxFrequency();
+    const nyquist = this.sampleRate / 2;
+    const binSize = nyquist / binCount;
+
+    this.binToBarMapping = [];
+
+    if (scale === 'linear') {
+      // Linear: equal frequency ranges per bar
+      const freqPerBar = (maxFreq - minFreq) / barCount;
+
+      for (let bar = 0; bar < barCount; bar++) {
+        const freqLow = minFreq + bar * freqPerBar;
+        const freqHigh = freqLow + freqPerBar;
+
+        const binLow = Math.floor(freqLow / binSize);
+        const binHigh = Math.min(binCount - 1, Math.floor(freqHigh / binSize));
+
+        const bins: number[] = [];
+        for (let b = binLow; b <= binHigh; b++) {
+          bins.push(b);
+        }
+        this.binToBarMapping.push(bins.length > 0 ? bins : [binLow]);
+      }
+    } else {
+      // Logarithmic: exponential frequency ranges (more detail in low frequencies)
+      const logMin = Math.log10(Math.max(1, minFreq));
+      const logMax = Math.log10(maxFreq);
+      const logRange = logMax - logMin;
+
+      for (let bar = 0; bar < barCount; bar++) {
+        const logFreqLow = logMin + (bar / barCount) * logRange;
+        const logFreqHigh = logMin + ((bar + 1) / barCount) * logRange;
+
+        const freqLow = Math.pow(10, logFreqLow);
+        const freqHigh = Math.pow(10, logFreqHigh);
+
+        const binLow = Math.max(0, Math.floor(freqLow / binSize));
+        const binHigh = Math.min(binCount - 1, Math.floor(freqHigh / binSize));
+
+        const bins: number[] = [];
+        for (let b = binLow; b <= binHigh; b++) {
+          bins.push(b);
+        }
+        this.binToBarMapping.push(bins.length > 0 ? bins : [binLow]);
+      }
     }
   }
 
@@ -216,15 +319,10 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     const colors = COLOR_SCHEMES[this.colorScheme()];
 
     const barWidth = (w - (barCount - 1) * gap) / barCount;
-    const samplesPerBar = Math.floor(data.length / barCount);
 
     for (let i = 0; i < barCount; i++) {
-      // Average samples for this bar
-      let sum = 0;
-      for (let j = 0; j < samplesPerBar; j++) {
-        sum += data[i * samplesPerBar + j];
-      }
-      const value = sum / samplesPerBar / 255;
+      // Get value for this bar using frequency-scaled bin mapping
+      const value = this.getBarValue(data, i);
 
       const barHeight = Math.max(2, value * h);
       const x = i * (barWidth + gap);
@@ -252,6 +350,31 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     }
   }
 
+  private getBarValue(data: Uint8Array, barIndex: number): number {
+    // Use pre-computed bin mapping if available
+    if (this.binToBarMapping.length > 0 && this.binToBarMapping[barIndex]) {
+      const bins = this.binToBarMapping[barIndex];
+      let sum = 0;
+      for (const bin of bins) {
+        if (bin < data.length) {
+          sum += data[bin];
+        }
+      }
+      return bins.length > 0 ? sum / bins.length / 255 : 0;
+    }
+
+    // Fallback to simple linear mapping
+    const samplesPerBar = Math.floor(data.length / this.barCount());
+    let sum = 0;
+    for (let j = 0; j < samplesPerBar; j++) {
+      const idx = barIndex * samplesPerBar + j;
+      if (idx < data.length) {
+        sum += data[idx];
+      }
+    }
+    return samplesPerBar > 0 ? sum / samplesPerBar / 255 : 0;
+  }
+
   private drawGradientBars(data: Uint8Array): void {
     if (!this.ctx) return;
 
@@ -263,7 +386,6 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     const colors = COLOR_SCHEMES[this.colorScheme()];
 
     const barWidth = (w - (barCount - 1) * gap) / barCount;
-    const samplesPerBar = Math.floor(data.length / barCount);
 
     // Create vertical gradient
     const gradient = this.ctx.createLinearGradient(0, h, 0, 0);
@@ -272,11 +394,7 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     }
 
     for (let i = 0; i < barCount; i++) {
-      let sum = 0;
-      for (let j = 0; j < samplesPerBar; j++) {
-        sum += data[i * samplesPerBar + j];
-      }
-      const value = sum / samplesPerBar / 255;
+      const value = this.getBarValue(data, i);
 
       const barHeight = Math.max(2, value * h);
       const x = i * (barWidth + gap);
@@ -346,7 +464,6 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     const colors = COLOR_SCHEMES[this.colorScheme()];
 
     const barWidth = (w - (barCount - 1) * gap) / barCount;
-    const samplesPerBar = Math.floor(data.length / barCount);
     const centerY = h / 2;
 
     // Create gradient
@@ -358,11 +475,7 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     this.ctx.fillStyle = gradient;
 
     for (let i = 0; i < barCount; i++) {
-      let sum = 0;
-      for (let j = 0; j < samplesPerBar; j++) {
-        sum += data[i * samplesPerBar + j];
-      }
-      const value = sum / samplesPerBar / 255;
+      const value = this.getBarValue(data, i);
 
       const barHeight = Math.max(1, value * (h / 2 - 2));
       const x = i * (barWidth + gap);
@@ -418,6 +531,43 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   reset(): void {
     this.peaks = Array.from({ length: this.barCount() }).fill(0) as number[];
     this.draw();
+  }
+
+  /**
+   * Get the frequency range for a specific bar
+   */
+  getBarFrequencyRange(barIndex: number): { low: number; high: number } {
+    const scale = this.frequencyScale();
+    const barCount = this.barCount();
+    const minFreq = this.minFrequency();
+    const maxFreq = this.maxFrequency();
+
+    if (scale === 'linear') {
+      const freqPerBar = (maxFreq - minFreq) / barCount;
+      return {
+        low: minFreq + barIndex * freqPerBar,
+        high: minFreq + (barIndex + 1) * freqPerBar,
+      };
+    } else {
+      const logMin = Math.log10(Math.max(1, minFreq));
+      const logMax = Math.log10(maxFreq);
+      const logRange = logMax - logMin;
+
+      return {
+        low: Math.pow(10, logMin + (barIndex / barCount) * logRange),
+        high: Math.pow(10, logMin + ((barIndex + 1) / barCount) * logRange),
+      };
+    }
+  }
+
+  /**
+   * Set frequency scale and recalculate bin mapping
+   */
+  setFrequencyScale(scale: FrequencyScale): void {
+    const analyser = this.analyserNode();
+    if (analyser) {
+      this.calculateBinMapping(analyser.frequencyBinCount);
+    }
   }
 }
 
