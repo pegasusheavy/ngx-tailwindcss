@@ -99,7 +99,7 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 - [x] Region selection for looping
 - [x] Multiple color themes (blue, green, purple, orange, mono)
 - [x] Mirrored/centered waveform option
-- [ ] Mini waveform variant for compact displays
+- [x] Mini waveform variant for compact displays - size='mini'|'sm'|'md'|'lg'|'auto'
 
 ### Spectrum Analyzer ✅
 - [x] FFT-based frequency spectrum display
