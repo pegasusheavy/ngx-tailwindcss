@@ -332,7 +332,7 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
     }
 
     // Check if click is inside the portal (for appendTo="body")
-    if (this.portalContainer && this.portalContainer.contains(target)) {
+    if (this.portalContainer?.contains(target)) {
       return;
     }
 

@@ -64,7 +64,7 @@ export class TwClickOutsideDirective implements OnInit, OnDestroy {
       }, this.clickOutsideDelay);
     } else {
       // Use a microtask delay to prevent immediate triggering
-      Promise.resolve().then(() => {
+      void Promise.resolve().then(() => {
         this.attachListener();
       });
     }
@@ -102,6 +102,7 @@ export class TwClickOutsideDirective implements OnInit, OnDestroy {
   private isExcluded(target: HTMLElement): boolean {
     for (const selector of this.clickOutsideExclude) {
       // Check if the target matches the selector or is a descendant
+      // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf<Element> doesn't support spread in this TS config
       const excludedElements = Array.from(document.querySelectorAll(selector));
       for (const excluded of excludedElements) {
         if (excluded.contains(target)) {

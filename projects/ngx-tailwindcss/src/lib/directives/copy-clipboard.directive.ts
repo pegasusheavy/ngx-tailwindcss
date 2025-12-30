@@ -44,7 +44,7 @@ export class TwCopyClipboardDirective {
     if (this.copyDisabled || !this.twCopyClipboard) return;
 
     try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
+      if (navigator.clipboard?.writeText) {
         await navigator.clipboard.writeText(this.twCopyClipboard);
         this.copied.emit({ success: true, text: this.twCopyClipboard });
       } else {

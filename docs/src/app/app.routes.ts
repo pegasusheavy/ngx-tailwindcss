@@ -80,6 +80,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/components/image/image-demo.component').then(m => m.ImageDemoComponent),
       },
 
+      // Music/Audio
+      {
+        path: 'music',
+        loadComponent: () => import('./pages/components/music/music-demo.component').then(m => m.MusicDemoComponent),
+      },
+
       // Feedback
       {
         path: 'alert',
@@ -192,6 +198,10 @@ export const routes: Routes = [
       {
         path: 'scroll-area',
         loadComponent: () => import('./pages/components/scroll-area/scroll-area-demo.component').then(m => m.ScrollAreaDemoComponent),
+      },
+      {
+        path: 'scroll-top',
+        loadComponent: () => import('./pages/components/scroll-top/scroll-top-demo.component').then(m => m.ScrollTopDemoComponent),
       },
       {
         path: 'columns',

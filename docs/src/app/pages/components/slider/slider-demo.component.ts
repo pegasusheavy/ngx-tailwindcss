@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TwSliderComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwSliderComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

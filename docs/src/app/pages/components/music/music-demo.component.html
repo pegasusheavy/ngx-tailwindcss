@@ -1,0 +1,562 @@
+<app-page-header
+  title="Music Components"
+  description="Audio-focused UI components for building music applications, DAWs, and audio interfaces.">
+</app-page-header>
+
+<div class="space-y-12">
+  <!-- Transport Controls Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Transport Controls</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Playback controls for audio/video applications.</p>
+    </div>
+
+    <app-demo-section title="Variants" [code]="transportCode">
+      <div class="space-y-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Modern</p>
+          <tw-transport
+            [playing]="isPlaying()"
+            (play)="onPlay()"
+            (pause)="onPause()"
+            (stop)="onStop()"
+            [looping]="isLooping()"
+            (loopToggle)="onLoopToggle($event)"
+            variant="modern"
+          ></tw-transport>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Classic</p>
+          <tw-transport
+            [playing]="isPlaying()"
+            (play)="onPlay()"
+            (pause)="onPause()"
+            (stop)="onStop()"
+            [showRecord]="true"
+            [showRewind]="true"
+            [showFastForward]="true"
+            variant="classic"
+          ></tw-transport>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Minimal</p>
+          <tw-transport
+            [playing]="isPlaying()"
+            (play)="onPlay()"
+            (pause)="onPause()"
+            variant="minimal"
+            size="lg"
+          ></tw-transport>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Progress / Scrubber Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Progress Bar / Scrubber</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Timeline scrubber for seeking through audio/video.</p>
+    </div>
+
+    <app-demo-section title="Variants" [code]="scrubberCode">
+      <div class="space-y-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Default</p>
+          <tw-scrubber
+            [currentTime]="currentTime()"
+            [duration]="duration"
+            [buffered]="buffered"
+            (seek)="onScrubberSeek($event)"
+          ></tw-scrubber>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">YouTube Style</p>
+          <div class="bg-slate-900 p-4 rounded-lg">
+            <tw-scrubber
+              [currentTime]="currentTime()"
+              [duration]="duration"
+              variant="youtube"
+              [showTime]="false"
+              (seek)="onScrubberSeek($event)"
+            ></tw-scrubber>
+          </div>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Time Display Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Time Display</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Various time/counter display styles.</p>
+    </div>
+
+    <app-demo-section title="Variants" [code]="timeDisplayCode">
+      <div class="flex flex-wrap items-center gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="text-center">
+          <tw-time-display [value]="currentTime()" [total]="duration" variant="default"></tw-time-display>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Default</p>
+        </div>
+        <div class="text-center">
+          <tw-time-display [value]="currentTime()" variant="led" size="lg"></tw-time-display>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">LED</p>
+        </div>
+        <div class="text-center">
+          <tw-time-display [value]="currentTime()" variant="digital"></tw-time-display>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Digital LCD</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Fader Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Fader</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Vertical/horizontal fader for mixing console style controls.</p>
+    </div>
+
+    <app-demo-section title="Vertical Faders" [code]="faderCode">
+      <div class="flex items-end gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="text-center">
+          <tw-fader [(ngModel)]="faderValue" [min]="-60" [max]="12" orientation="vertical" [customTrackLength]="200" variant="studio" [showScale]="true"></tw-fader>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Studio</p>
+        </div>
+        <div class="text-center">
+          <tw-fader [(ngModel)]="faderValue" [min]="-60" [max]="12" orientation="vertical" [customTrackLength]="200" variant="vintage" [showScale]="true"></tw-fader>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Vintage</p>
+        </div>
+        <div class="text-center">
+          <tw-fader [(ngModel)]="faderValue" [min]="-60" [max]="12" orientation="vertical" [customTrackLength]="200" variant="channel"></tw-fader>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Channel</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Pan Control Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Pan Control</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Stereo panning control in knob or slider style.</p>
+    </div>
+
+    <app-demo-section title="Pan Variants" [code]="panControlCode">
+      <div class="flex flex-wrap items-center gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="text-center">
+          <tw-pan-control [(ngModel)]="panValue" variant="knob"></tw-pan-control>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Knob</p>
+        </div>
+        <div class="text-center w-48">
+          <tw-pan-control [(ngModel)]="panValue" variant="slider"></tw-pan-control>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Slider</p>
+        </div>
+        <div class="text-center">
+          <tw-pan-control [(ngModel)]="panValue" variant="stereo-width"></tw-pan-control>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Stereo Width</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Spectrum Analyzer Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Spectrum Analyzer</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Frequency visualization for audio analysis.</p>
+    </div>
+
+    <app-demo-section title="Variants" [code]="spectrumCode">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Bars (Classic)</p>
+          <tw-spectrum [frequencyData]="spectrumData" variant="bars" colorScheme="classic" [width]="280" [height]="100"></tw-spectrum>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Gradient (Fire)</p>
+          <tw-spectrum [frequencyData]="spectrumData" variant="gradient" colorScheme="fire" [width]="280" [height]="100"></tw-spectrum>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Line (Ice)</p>
+          <tw-spectrum [frequencyData]="spectrumData" variant="line" colorScheme="ice" [width]="280" [height]="100"></tw-spectrum>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Mirror (Neon)</p>
+          <tw-spectrum [frequencyData]="spectrumData" variant="mirror" colorScheme="neon" [width]="280" [height]="100"></tw-spectrum>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Oscilloscope Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Oscilloscope</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Real-time waveform display for audio signals.</p>
+    </div>
+
+    <app-demo-section title="Oscilloscope Variants" [code]="oscilloscopeCode">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Retro</p>
+          <tw-oscilloscope variant="retro" [width]="280" [height]="120"></tw-oscilloscope>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Neon</p>
+          <tw-oscilloscope variant="neon" [width]="280" [height]="120"></tw-oscilloscope>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Piano Keyboard Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Piano Keyboard</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Interactive piano keyboard for MIDI and note input.</p>
+    </div>
+
+    <app-demo-section title="Interactive Piano" [code]="pianoCode">
+      <div class="space-y-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Classic (2 Octaves)</p>
+          <tw-piano
+            [startOctave]="4"
+            [octaves]="2"
+            variant="classic"
+            (noteOn)="onNoteOn($event)"
+            (noteOff)="onNoteOff($event)"
+          ></tw-piano>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">
+            Last note: <span class="font-mono font-bold">{{ lastNote() || '-' }}</span>
+          </p>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Modern with Labels</p>
+          <tw-piano
+            [startOctave]="4"
+            [octaves]="1"
+            variant="modern"
+            size="lg"
+            [showLabels]="true"
+            (noteOn)="onNoteOn($event)"
+          ></tw-piano>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Volume Dial Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Volume Dial</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Rotary knob control for precise value adjustment.</p>
+    </div>
+
+    <app-demo-section title="Variants" [code]="dialVariantsCode">
+      <div class="flex flex-wrap items-end gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="text-center">
+          <tw-volume-dial variant="modern" [(ngModel)]="volume" [showValue]="true"></tw-volume-dial>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Modern</p>
+        </div>
+        <div class="text-center">
+          <tw-volume-dial variant="vintage" [(ngModel)]="gain" [showValue]="true"></tw-volume-dial>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Vintage</p>
+        </div>
+        <div class="text-center">
+          <tw-volume-dial variant="minimal" [(ngModel)]="pan" [showValue]="true"></tw-volume-dial>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Minimal</p>
+        </div>
+        <div class="text-center bg-slate-900 dark:bg-black p-4 rounded-lg">
+          <tw-volume-dial variant="led" [(ngModel)]="volume" [showValue]="true"></tw-volume-dial>
+          <p class="text-xs text-slate-400 mt-2">LED</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- VU Meter Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">VU Meter</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Level meter for visualizing audio signals.</p>
+    </div>
+
+    <app-demo-section title="Stereo Meter" [code]="vuMeterCode">
+      <div class="flex items-center gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <tw-vu-meter
+          #vuMeter
+          [stereo]="true"
+          [height]="180"
+          variant="led"
+          label="Master"
+          [showChannelLabels]="true"
+        ></tw-vu-meter>
+        <div class="space-y-2 text-sm text-slate-600 dark:text-slate-400">
+          <p>Left: {{ leftChannel() | number:'1.0-0' }}%</p>
+          <p>Right: {{ rightChannel() | number:'1.0-0' }}%</p>
+          <p class="text-xs mt-2 text-slate-500">Live simulation</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Waveform Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Waveform Display</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Audio waveform visualization with playback progress.</p>
+    </div>
+
+    <app-demo-section title="Interactive Waveform" [code]="waveformCode">
+      <div class="p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <tw-waveform
+          [peaks]="samplePeaks"
+          [progress]="waveformProgress"
+          [duration]="180"
+          [seekable]="true"
+          (seek)="onSeek($event)"
+          [width]="700"
+          [height]="120"
+          colorScheme="blue"
+          variant="mirror"
+        ></tw-waveform>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mt-4">
+          Click to seek: {{ (waveformProgress * 180) | number:'1.0-0' }}s / 180s
+        </p>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Metronome Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Metronome</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Beat indicator with tap tempo and visual feedback.</p>
+    </div>
+
+    <app-demo-section title="Metronome Variants" [code]="metronomeCode">
+      <div class="flex flex-wrap items-center gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="text-center">
+          <tw-metronome [bpm]="bpm" variant="digital"></tw-metronome>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Digital</p>
+        </div>
+        <div class="text-center">
+          <tw-metronome [bpm]="bpm" variant="pendulum"></tw-metronome>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Pendulum</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- BPM Display Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">BPM Display</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Tempo control with tap tempo and sync indicator.</p>
+    </div>
+
+    <app-demo-section title="BPM Controls" [code]="bpmDisplayCode">
+      <div class="flex flex-wrap items-center gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <tw-bpm-display [(bpm)]="bpm" [showTapTempo]="true" [showHalfDouble]="true" (bpmChange)="onBpmChange($event)"></tw-bpm-display>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Note Display Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Note Display</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Shows detected note, octave, and tuning deviation.</p>
+    </div>
+
+    <app-demo-section title="Note Display Variants" [code]="noteDisplayCode">
+      <div class="flex flex-wrap items-center gap-8 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="text-center">
+          <tw-note-display [noteName]="currentNote" [octave]="currentOctave" variant="default" [showCents]="true"></tw-note-display>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">Default</p>
+        </div>
+        <div class="text-center">
+          <tw-note-display [noteName]="currentNote" [octave]="currentOctave" variant="led" [showOctave]="true"></tw-note-display>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-2">LED</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Tuner Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Tuner</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Chromatic tuner with pitch detection visualization.</p>
+    </div>
+
+    <app-demo-section title="Tuner Display" [code]="tunerCode">
+      <div class="flex justify-center p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <tw-tuner [referenceFrequency]="440" [showFrequency]="true" [showCents]="true" [showMeter]="true"></tw-tuner>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Compressor Meter Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Compressor Meter</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Gain reduction meter with I/O levels for dynamics processing.</p>
+    </div>
+
+    <app-demo-section title="Compressor Meter" [code]="compressorCode">
+      <div class="flex justify-center p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <tw-compressor-meter
+          [gainReduction]="gainReduction()"
+          [inputLevel]="inputLevel()"
+          [outputLevel]="outputLevel()"
+          [threshold]="-18"
+          [ratio]="4"
+        ></tw-compressor-meter>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Graphic EQ Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Graphic EQ</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Fixed-band graphic equalizer with slider controls.</p>
+    </div>
+
+    <app-demo-section title="10-Band Graphic EQ" [code]="graphicEqCode">
+      <div class="p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <tw-graphic-eq [bandCount]="10" [sliderHeight]="200"></tw-graphic-eq>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Visualizer Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Audio Visualizer</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Animated audio visualization with multiple styles.</p>
+    </div>
+
+    <app-demo-section title="Visualizer Styles" [code]="visualizerCode">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Circular</p>
+          <tw-visualizer variant="circular" [width]="200" [height]="200"></tw-visualizer>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Bars</p>
+          <tw-visualizer variant="bars" [width]="280" [height]="150"></tw-visualizer>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Channel Strip Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Channel Strip</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Complete mixer channel with fader, pan, mute, and solo.</p>
+    </div>
+
+    <app-demo-section title="Channel Strip" [code]="channelStripCode">
+      <div class="flex gap-4 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <tw-channel-strip label="CH 1" [channelNumber]="1"></tw-channel-strip>
+        <tw-channel-strip label="CH 2" [channelNumber]="2"></tw-channel-strip>
+        <tw-channel-strip label="CH 3" [channelNumber]="3"></tw-channel-strip>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Chord Diagrams Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Chord Diagrams</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Guitar and ukulele chord diagrams.</p>
+    </div>
+
+    <app-demo-section title="Guitar Chords" [code]="chordDiagramCode">
+      <div class="flex flex-wrap gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="text-center">
+          <tw-chord-diagram chord="C"></tw-chord-diagram>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">C Major</p>
+        </div>
+        <div class="text-center">
+          <tw-chord-diagram chord="G"></tw-chord-diagram>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">G Major</p>
+        </div>
+        <div class="text-center">
+          <tw-chord-diagram chord="Am"></tw-chord-diagram>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">A Minor</p>
+        </div>
+        <div class="text-center">
+          <tw-chord-diagram chord="F"></tw-chord-diagram>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">F Major</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Piano Chord Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Piano Chord Diagrams</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Piano keyboard chord visualization.</p>
+    </div>
+
+    <app-demo-section title="Piano Chords" [code]="pianoChordCode">
+      <div class="flex flex-wrap gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="text-center">
+          <tw-piano-chord chord="C"></tw-piano-chord>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">C Major</p>
+        </div>
+        <div class="text-center">
+          <tw-piano-chord chord="Am"></tw-piano-chord>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">A Minor</p>
+        </div>
+        <div class="text-center">
+          <tw-piano-chord chord="G7"></tw-piano-chord>
+          <p class="text-sm text-slate-600 dark:text-slate-400 mt-2">G7</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Staff Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Musical Staff</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Standard music notation staff with clef and key signature.</p>
+    </div>
+
+    <app-demo-section title="Staff Examples" [code]="staffCode">
+      <div class="space-y-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Treble Clef - C Major - 4/4</p>
+          <tw-staff clef="treble" keySignature="C" timeSignature="4/4" [width]="600"></tw-staff>
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs text-slate-500 dark:text-slate-400">Bass Clef - G Major - 3/4</p>
+          <tw-staff clef="bass" keySignature="G" timeSignature="3/4" [width]="600"></tw-staff>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Looper Section -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Loop Pedal / Looper</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Multi-layer loop recording and playback control.</p>
+    </div>
+
+    <app-demo-section title="Looper" [code]="looperCode">
+      <div class="p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <tw-looper [maxLayers]="4"></tw-looper>
+      </div>
+    </app-demo-section>
+  </section>
+</div>

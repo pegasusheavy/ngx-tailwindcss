@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2025-12-21
+
+### 🛠 Packaging & Reliability
+
+- Copied `README.md` into the published `/dist/ngx-tailwindcss` output so npmjs can render the project documentation even when the tarball is built from the compiled library.
+- Added a `publish:dist` script that runs the production build and publishes directly from `dist/ngx-tailwindcss` with `--access public`, keeping the published artifact aligned with the compiled bundle.
+- Raised the Vitest hook and test timeouts to 60 s so the longer-running directive specs no longer abort the Husky pre-push step.
+
+## [0.1.1] - 2025-12-19
+
+### 🛠 Packaging & Reliability
+
+- Ensured the npm release is produced from the compiled `/dist/ngx-tailwindcss` output so the published tarball includes the FESM bundle, typings, and theme CSS instead of just docs/config files.
+- Replaced the deprecated `husky install` step with a runtime `node -e "import('husky')..."` bootstrap and added dedicated pre-commit/pre-push/commit-msg scripts so lint/test/commitlint hooks run reliably without invoking the removed shim.
+
 ## [0.1.0] - 2025-12-19
 
 ### ✨ Features
@@ -158,6 +173,8 @@ First public release of `@pegasus-heavy/ngx-tailwindcss` - A highly customizable
 - Zero bundled CSS - works with your Tailwind config
 - Signals-based reactive state management
 
+[0.1.2]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.2
+[0.1.1]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.1
 [0.1.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.0
 [0.1.0-beta.1]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.0-beta.1
 

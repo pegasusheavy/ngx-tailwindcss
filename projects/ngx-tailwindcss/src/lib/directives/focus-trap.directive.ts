@@ -88,7 +88,7 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
       if (focusableElements.length === 0) return;
 
       const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
+      const lastElement = focusableElements.at(-1);
 
       if (event.shiftKey) {
         // Shift+Tab: if on first element, go to last
@@ -96,12 +96,10 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
           event.preventDefault();
           lastElement.focus();
         }
-      } else {
+      } else if (document.activeElement === lastElement && firstElement) {
         // Tab: if on last element, go to first
-        if (document.activeElement === lastElement && firstElement) {
-          event.preventDefault();
-          firstElement.focus();
-        }
+        event.preventDefault();
+        firstElement.focus();
       }
     };
 
@@ -154,7 +152,7 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
   focusLast(): void {
     const elements = this.getFocusableElements();
     if (elements.length > 0) {
-      elements[elements.length - 1].focus();
+      elements.at(-1)?.focus();
     }
   }
 

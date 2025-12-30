@@ -21,29 +21,29 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TwDatatablesComponent {
-  @Input() data: any[] = [];
-  @Input() columns: TableColumn[] = [];
-  @Input() title = '';
-  @Input() subtitle?: string;
-  @Input() description?: string;
-  @Input() tableSize: TableSize = 'md';
-  @Input() tableVariant: TableVariant = 'striped';
-  @Input() selectable = false;
-  @Input() selectionMode: 'single' | 'multiple' = 'multiple';
-  @Input() showGlobalFilter = true;
-  @Input() paginator = true;
-  @Input() rows = 10;
-  @Input() hoverable = true;
-  @Input() responsive = true;
-  @Input() emptyMessage = 'No records found';
-  @Input() classOverride = '';
-  @Input() containerClass = '';
-  @Input() toolbarClass = '';
+  @Input() public data: unknown[] = [];
+  @Input() public columns: TableColumn[] = [];
+  @Input() public title = '';
+  @Input() public subtitle?: string;
+  @Input() public description?: string;
+  @Input() public tableSize: TableSize = 'md';
+  @Input() public tableVariant: TableVariant = 'striped';
+  @Input() public selectable = false;
+  @Input() public selectionMode: 'single' | 'multiple' = 'multiple';
+  @Input() public showGlobalFilter = true;
+  @Input() public paginator = true;
+  @Input() public rows = 10;
+  @Input() public hoverable = true;
+  @Input() public responsive = true;
+  @Input() public emptyMessage = 'No records found';
+  @Input() public classOverride = '';
+  @Input() public containerClass = '';
+  @Input() public toolbarClass = '';
 
-  @Output() selectionChange = new EventEmitter<any[]>();
-  @Output() rowClick = new EventEmitter<any>();
-  @Output() sortChange = new EventEmitter<{ field: string; order: number }>();
-  @Output() pageChange = new EventEmitter<{ page: number; rows: number }>();
+  @Output() public selectionChange = new EventEmitter<unknown[]>();
+  @Output() public rowClick = new EventEmitter<unknown>();
+  @Output() public sortChange = new EventEmitter<{ field: string; order: number }>();
+  @Output() public pageChange = new EventEmitter<{ page: number; rows: number }>();
 
   protected readonly baseContainerClass =
     'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-sm p-6 space-y-6';
@@ -58,4 +58,5 @@ export class TwDatatablesComponent {
     return [this.baseToolbarClass, this.toolbarClass].filter(Boolean).join(' ');
   }
 }
+
 

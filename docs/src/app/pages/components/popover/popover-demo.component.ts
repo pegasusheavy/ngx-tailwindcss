@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwPopoverComponent, TwButtonComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwPopoverComponent, TwButtonComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

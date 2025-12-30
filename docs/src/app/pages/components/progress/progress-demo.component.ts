@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwProgressComponent, TwProgressCircularComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwProgressComponent, TwProgressCircularComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

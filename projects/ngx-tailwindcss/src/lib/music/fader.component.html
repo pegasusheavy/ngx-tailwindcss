@@ -1,0 +1,228 @@
+<div
+  [class]="containerClasses()"
+  [class]="colors().container"
+  [style.width.px]="dimensions().width"
+  [style.height.px]="dimensions().height"
+>
+  <!-- Channel Number (for channel variant) -->
+  @if (variant() === 'channel' && showChannelNumber() && channelNumber() !== null) {
+    <div class="text-center mb-1">
+      <span class="text-xs font-mono text-slate-400 bg-slate-900 px-2 py-0.5 rounded">
+        {{ channelNumber() }}
+      </span>
+    </div>
+  }
+
+  <!-- Label -->
+  @if (label()) {
+    <span class="text-xs font-medium truncate text-center" [class]="colors().text">
+      {{ label() }}
+    </span>
+  }
+
+  <div class="relative flex items-center">
+    <!-- Scale Marks -->
+    @if (showScale()) {
+      <div
+        class="absolute flex"
+        [class]="{
+          'flex-col-reverse h-full -left-7': orientation() === 'vertical',
+          'flex-row w-full -top-4': orientation() === 'horizontal'
+        }"
+      >
+        @for (mark of scaleMarks(); track mark.value) {
+          <div
+            class="absolute flex items-center"
+            [class]="colors().scale"
+            [style]="{
+              bottom: orientation() === 'vertical' ? mark.position + '%' : 'auto',
+              left: orientation() === 'horizontal' ? mark.position + '%' : 'auto',
+              transform: orientation() === 'vertical' ? 'translateY(50%)' : 'translateX(-50%)'
+            }"
+          >
+            <!-- Tick mark -->
+            <div
+              class="bg-current"
+              [style]="{
+                width: orientation() === 'vertical' ? '4px' : '1px',
+                height: orientation() === 'vertical' ? '1px' : '4px'
+              }"
+            ></div>
+            <span
+              class="text-[9px] font-mono whitespace-nowrap ml-1"
+              [class.font-bold]="mark.value === 0"
+            >
+              {{ mark.label }}
+            </span>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Peak Meter -->
+    @if (showPeakMeter()) {
+      <div
+        class="absolute rounded-full overflow-hidden"
+        [class]="{
+          'w-1.5 -right-4': orientation() === 'vertical',
+          'h-1.5 -bottom-4': orientation() === 'horizontal'
+        }"
+        [style]="{
+          height: orientation() === 'vertical' ? dimensions().trackLength + 'px' : '6px',
+          width: orientation() === 'horizontal' ? dimensions().trackLength + 'px' : '6px'
+        }"
+      >
+        <div class="absolute inset-0 bg-slate-900"></div>
+
+        <!-- Peak meter fill -->
+        <div
+          class="absolute transition-all duration-75"
+          [style.background]="'linear-gradient(to top, rgb(34, 197, 94) 0%, rgb(34, 197, 94) 60%, rgb(234, 179, 8) 75%, rgb(239, 68, 68) 90%)'"
+          [style]="{
+            height: orientation() === 'vertical' ? peakLevel() + '%' : '100%',
+            width: orientation() === 'horizontal' ? peakLevel() + '%' : '100%',
+            bottom: orientation() === 'vertical' ? 0 : 'auto',
+            left: orientation() === 'horizontal' ? 0 : 'auto'
+          }"
+        ></div>
+
+        <!-- Peak hold indicator line -->
+        @if (peakHold() && peakHoldLevel() > 0) {
+          <div
+            class="absolute transition-all duration-150"
+            [class]="colors().peakHold"
+            [style]="{
+              height: orientation() === 'vertical' ? '2px' : '100%',
+              width: orientation() === 'vertical' ? '100%' : '2px',
+              bottom: orientation() === 'vertical' ? peakHoldPosition() + 'px' : 'auto',
+              left: orientation() === 'horizontal' ? peakHoldPosition() + 'px' : 'auto'
+            }"
+          ></div>
+        }
+
+        <!-- Clip indicator -->
+        @if (peakLevel() >= 100) {
+          <div
+            class="absolute bg-red-600 animate-pulse"
+            [class]="{
+              'top-0 left-0 right-0 h-2': orientation() === 'vertical',
+              'top-0 bottom-0 right-0 w-2': orientation() === 'horizontal'
+            }"
+          ></div>
+        }
+      </div>
+    }
+
+    <!-- Track -->
+    <div
+      #track
+      [class]="trackClasses().class"
+      [style]="trackClasses().style"
+    >
+      <!-- Fill -->
+      <div
+        class="absolute rounded-full transition-all"
+        [class.duration-75]="!isDragging()"
+        [class]="colors().fill"
+        [style]="{
+          width: orientation() === 'vertical' ? '100%' : fillStyle().width,
+          height: orientation() === 'vertical' ? fillStyle().height : '100%',
+          bottom: orientation() === 'vertical' ? 0 : 'auto',
+          left: orientation() === 'horizontal' ? 0 : 'auto'
+        }"
+      ></div>
+
+      <!-- Zero line indicator -->
+      @if (min() < 0 && max() > 0) {
+        <div
+          class="absolute bg-white/60 z-10"
+          [style]="{
+            width: orientation() === 'vertical' ? '100%' : '2px',
+            height: orientation() === 'vertical' ? '2px' : '100%',
+            bottom: orientation() === 'vertical' ? ((0 - min()) / (max() - min()) * 100) + '%' : 'auto',
+            left: orientation() === 'horizontal' ? ((0 - min()) / (max() - min()) * 100) + '%' : 'auto'
+          }"
+        ></div>
+      }
+
+      <!-- -10dB marker (common reference) -->
+      @if (min() <= -10 && max() > -10 && variant() === 'channel') {
+        <div
+          class="absolute bg-amber-500/40"
+          [style]="{
+            width: orientation() === 'vertical' ? '100%' : '1px',
+            height: orientation() === 'vertical' ? '1px' : '100%',
+            bottom: orientation() === 'vertical' ? ((-10 - min()) / (max() - min()) * 100) + '%' : 'auto',
+            left: orientation() === 'horizontal' ? ((-10 - min()) / (max() - min()) * 100) + '%' : 'auto'
+          }"
+        ></div>
+      }
+    </div>
+
+    <!-- Fader Cap -->
+    <div
+      [class]="capClasses().class"
+      [ngStyle]="capClasses().style"
+      [style.bottom]="orientation() === 'vertical' ? capPosition().bottom : null"
+      [style.left]="orientation() === 'horizontal' ? capPosition().left : null"
+      (dblclick)="resetToDefault()"
+      title="Double-click to reset to 0dB"
+    >
+      <!-- Cap texture lines (for realism) -->
+      @if (variant() === 'channel' || variant() === 'studio') {
+        <div class="absolute inset-x-1 top-1/2 -translate-y-1/2 flex flex-col gap-0.5">
+          <div class="h-px bg-slate-400/50 rounded"></div>
+          <div class="h-px bg-white/80 rounded"></div>
+          <div class="h-px bg-slate-400/50 rounded"></div>
+        </div>
+      } @else {
+        <!-- Cap highlight line (default) -->
+        <div
+          class="absolute rounded-full"
+          [class]="colors().capHighlight"
+          [style]="{
+            width: orientation() === 'vertical' ? '60%' : '2px',
+            height: orientation() === 'vertical' ? '2px' : '60%',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)'
+          }"
+        ></div>
+      }
+
+      <!-- Touch grab area indicator (for touch devices) -->
+      <div
+        class="absolute inset-0 rounded-sm ring-0 ring-blue-400 transition-all"
+        [class.ring-2]="isDragging()"
+        [class.ring-offset-1]="isDragging()"
+        [class.ring-offset-slate-800]="isDragging()"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Mute/Solo indicators (channel variant) -->
+  @if (variant() === 'channel' && (muted() || soloed())) {
+    <div class="flex items-center justify-center gap-1 mt-1">
+      @if (muted()) {
+        <span class="text-[9px] px-1.5 py-0.5 rounded bg-red-600 text-white font-bold">M</span>
+      }
+      @if (soloed()) {
+        <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500 text-black font-bold">S</span>
+      }
+    </div>
+  }
+
+  <!-- Value Display -->
+  @if (showValue()) {
+    <div
+      class="text-xs font-mono text-center min-w-[48px] px-1.5 py-1 rounded"
+      [class]="colors().text"
+      [class.bg-slate-900]="variant() === 'channel'"
+      [class.bg-slate-800]="variant() !== 'minimal' && variant() !== 'channel'"
+      [class.border]="variant() === 'channel'"
+      [class.border-slate-700]="variant() === 'channel'"
+    >
+      {{ displayValue() }} <span class="text-[10px] opacity-70">dB</span>
+    </div>
+  }
+</div>

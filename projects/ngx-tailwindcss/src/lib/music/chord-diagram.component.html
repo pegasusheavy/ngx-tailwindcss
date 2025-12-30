@@ -1,0 +1,150 @@
+<div [class]="containerClasses()" [style.width.px]="dimensions().width" [style.padding]="'8px'">
+  <svg
+    [attr.width]="dimensions().width"
+    [attr.height]="dimensions().height"
+    [attr.viewBox]="'0 0 ' + dimensions().width + ' ' + dimensions().height"
+  >
+    <!-- Background -->
+    @if (colors().background !== 'transparent') {
+      <rect
+        x="0"
+        y="0"
+        [attr.width]="dimensions().width"
+        [attr.height]="dimensions().height"
+        [attr.fill]="colors().background"
+        rx="4"
+      />
+    }
+
+    <!-- Chord Name -->
+    @if (showChordName() && displayName()) {
+      <text
+        [attr.x]="dimensions().width / 2"
+        y="18"
+        [attr.fill]="colors().text"
+        font-size="16"
+        font-weight="bold"
+        text-anchor="middle"
+        class="select-none"
+      >{{ displayName() }}</text>
+    }
+
+    <!-- Nut (thick line at top) -->
+    @if (displayBaseFret() === 1) {
+      <rect
+        [attr.x]="dimensions().gridLeft - 2"
+        [attr.y]="dimensions().gridTop"
+        [attr.width]="(stringCount() - 1) * dimensions().stringSpacing + 4"
+        [attr.height]="dimensions().nutHeight"
+        [attr.fill]="colors().nut"
+      />
+    }
+
+    <!-- Fret Number (if not at nut) -->
+    @if (showFretNumber() && displayBaseFret() > 1) {
+      <text
+        [attr.x]="dimensions().gridLeft - 12"
+        [attr.y]="getFretY(1) - dimensions().fretSpacing / 2 + 4"
+        [attr.fill]="colors().text"
+        font-size="12"
+        text-anchor="end"
+        class="select-none"
+      >{{ displayBaseFret() }}fr</text>
+    }
+
+    <!-- Fret Lines -->
+    @for (fret of frets(); track fret) {
+      <line
+        [attr.x1]="dimensions().gridLeft"
+        [attr.y1]="getFretY(fret)"
+        [attr.x2]="dimensions().gridLeft + (stringCount() - 1) * dimensions().stringSpacing"
+        [attr.y2]="getFretY(fret)"
+        [attr.stroke]="colors().fret"
+        stroke-width="1"
+      />
+    }
+
+    <!-- Strings (vertical lines) -->
+    @for (string of strings(); track string) {
+      <line
+        [attr.x1]="getStringX(string)"
+        [attr.y1]="dimensions().gridTop + dimensions().nutHeight"
+        [attr.x2]="getStringX(string)"
+        [attr.y2]="getFretY(fretCount())"
+        [attr.stroke]="colors().string"
+        [attr.stroke-width]="string === 6 ? 2 : string === 5 ? 1.5 : 1"
+      />
+    }
+
+    <!-- String Labels -->
+    @if (showStringLabels()) {
+      @for (label of stringLabels(); track $index) {
+        <text
+          [attr.x]="getStringX($index + 1)"
+          [attr.y]="getFretY(fretCount()) + 14"
+          [attr.fill]="colors().text"
+          font-size="10"
+          text-anchor="middle"
+          class="select-none opacity-60"
+        >{{ label }}</text>
+      }
+    }
+
+    <!-- Barre (if present) -->
+    @if (getBarreData(); as barre) {
+      <rect
+        [attr.x]="barre.x1 - dimensions().fingerRadius"
+        [attr.y]="barre.y - dimensions().fingerRadius"
+        [attr.width]="Math.abs(barre.x2 - barre.x1) + dimensions().fingerRadius * 2"
+        [attr.height]="dimensions().fingerRadius * 2"
+        [attr.fill]="colors().finger"
+        rx="5"
+      />
+    }
+
+    <!-- Finger Positions -->
+    @for (fingering of fingerings(); track $index) {
+      @if (fingering.fret > 0 && !fingering.barre) {
+        @if (getFingerPosition(fingering); as pos) {
+          <circle
+            [attr.cx]="pos.x"
+            [attr.cy]="pos.y"
+            [attr.r]="dimensions().fingerRadius"
+            [attr.fill]="colors().finger"
+          />
+          @if (showFingerNumbers() && fingering.finger) {
+            <text
+              [attr.x]="pos.x"
+              [attr.y]="pos.y + 3"
+              [attr.fill]="colors().fingerText"
+              font-size="10"
+              font-weight="bold"
+              text-anchor="middle"
+              class="select-none"
+            >{{ fingering.finger }}</text>
+          }
+        }
+      } @else if (fingering.fret === 0) {
+        <!-- Open String -->
+        <circle
+          [attr.cx]="getStringX(fingering.string)"
+          [attr.cy]="getOpenMutedY()"
+          r="5"
+          fill="none"
+          [attr.stroke]="colors().open"
+          stroke-width="2"
+        />
+      } @else if (fingering.fret === -1) {
+        <!-- Muted String -->
+        <g [attr.transform]="'translate(' + getStringX(fingering.string) + ',' + getOpenMutedY() + ')'">
+          <line x1="-4" y1="-4" x2="4" y2="4" [attr.stroke]="colors().muted" stroke-width="2" />
+          <line x1="4" y1="-4" x2="-4" y2="4" [attr.stroke]="colors().muted" stroke-width="2" />
+        </g>
+      }
+    }
+  </svg>
+</div>
+
+
+
+

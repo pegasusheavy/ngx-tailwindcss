@@ -1,0 +1,275 @@
+<div [class]="containerClasses()">
+  <!-- Header -->
+  @if (data()?.title) {
+    <header class="text-center mb-6">
+      <h2
+        class="text-2xl font-bold"
+        [class]="textClasses().title"
+        [class.font-serif]="variant() === 'fakebook' || variant() === 'printed'"
+      >
+        {{ data()?.title }}
+      </h2>
+      @if (data()?.subtitle) {
+        <p class="text-base mt-1 italic" [class]="textClasses().subtitle">
+          {{ data()?.subtitle }}
+        </p>
+      }
+      @if (data()?.artist || data()?.composer) {
+        <p class="text-sm mt-1" [class]="textClasses().subtitle">
+          @if (data()?.composer) {
+            <span>{{ data()?.composer }}</span>
+          }
+          @if (data()?.artist && data()?.composer) {
+            <span> • </span>
+          }
+          @if (data()?.artist) {
+            <span>{{ data()?.artist }}</span>
+          }
+          @if (data()?.arranger) {
+            <span class="ml-2">(arr. {{ data()?.arranger }})</span>
+          }
+        </p>
+      }
+      <div class="flex items-center justify-center gap-4 mt-2 text-sm" [class]="textClasses().subtitle">
+        @if (data()?.key) {
+          <span>Key: {{ data()?.key }}</span>
+        }
+        @if (data()?.tempo || data()?.tempoDescription) {
+          <span>
+            @if (data()?.tempoDescription) {
+              {{ data()?.tempoDescription }}
+            }
+            @if (data()?.tempo) {
+              (♩ = {{ data()?.tempo }})
+            }
+          </span>
+        }
+        @if (data()?.timeSignature) {
+          <span>{{ data()?.timeSignature }}</span>
+        }
+        @if (data()?.feel) {
+          <span class="italic">{{ data()?.feel }}</span>
+        }
+      </div>
+    </header>
+  }
+
+  <!-- Sections -->
+  @for (section of data()?.sections || []; track $index; let sectionIndex = $index) {
+    <div class="mb-6 last:mb-0">
+      <!-- Section Name with Rehearsal Mark -->
+      @if ((showSectionNames() && section.name) || (showRehearsalMarks() && section.rehearsalMark)) {
+        <div class="flex items-center gap-3 mb-2">
+          @if (showRehearsalMarks() && section.rehearsalMark) {
+            <span
+              class="inline-flex items-center justify-center w-7 h-7 text-sm font-bold rounded"
+              [class]="textClasses().rehearsal"
+            >
+              {{ section.rehearsalMark }}
+            </span>
+          }
+          @if (showSectionNames() && section.name) {
+            <h3
+              class="text-sm font-semibold uppercase tracking-wider"
+              [class]="textClasses().section"
+              [class.italic]="variant() === 'fakebook'"
+            >
+              {{ section.name }}
+            </h3>
+          }
+        </div>
+      }
+
+      <!-- Measure Rows -->
+      @for (row of getMeasureRows(section); track $index; let rowIndex = $index) {
+        <div
+          class="flex border rounded mb-2"
+          [class.border-slate-300]="variant() === 'default'"
+          [class.dark:border-slate-600]="variant() === 'default'"
+          [class.border-slate-200]="variant() === 'minimal'"
+          [class.border-slate-400]="variant() === 'printed'"
+          [class.border-slate-700]="variant() === 'dark'"
+          [class.border-amber-400]="variant() === 'fakebook'"
+        >
+          @for (measure of row; track $index; let measureInRowIndex = $index) {
+            <div
+              class="flex-1"
+              [class]="measureClasses()"
+              [class.cursor-pointer]="interactive()"
+              [class.hover:bg-slate-50]="interactive() && variant() !== 'dark' && variant() !== 'fakebook'"
+              [class.dark:hover:bg-slate-800]="interactive() && variant() === 'default'"
+              [class.hover:bg-amber-100]="interactive() && variant() === 'fakebook'"
+              (click)="onMeasureClick(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex)"
+            >
+              <!-- Repeat/Navigation Markers -->
+              <div class="flex items-start justify-between text-xs mb-1">
+                @if (measure.repeatStart) {
+                  <span class="text-lg">𝄆</span>
+                }
+                @if (measure.segno) {
+                  <span class="text-lg">𝄋</span>
+                }
+                @if (measure.coda) {
+                  <span class="text-lg">𝄌</span>
+                }
+                @if (measure.ending) {
+                  <span class="border-l border-t border-current px-1">
+                    {{ measure.ending }}.
+                  </span>
+                }
+                @if (showMeasureNumbers()) {
+                  <span class="text-[10px] opacity-50">
+                    {{ getMeasureGlobalIndex(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex) }}
+                  </span>
+                }
+                @if (measure.repeatEnd) {
+                  <span class="text-lg ml-auto">𝄇</span>
+                  @if (measure.repeatCount && measure.repeatCount > 2) {
+                    <span class="text-xs">×{{ measure.repeatCount }}</span>
+                  }
+                }
+              </div>
+
+              <!-- Chords (Above Staff) -->
+              <div class="flex items-center justify-center gap-2 flex-wrap min-h-[32px]">
+                @if (measure.chords.length > 0) {
+                  @for (chord of measure.chords; track $index; let chordIndex = $index) {
+                    <div class="relative">
+                      <span
+                        class="font-semibold text-lg"
+                        [class]="textClasses().chord"
+                        [class.font-mono]="variant() !== 'fakebook'"
+                        [class.cursor-pointer]="interactive() || showChordDiagrams()"
+                        [class.hover:underline]="interactive()"
+                        (click)="onChordClick(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex, chord); showChordDiagrams() && toggleDiagram(getChordId(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex, chordIndex)); $event.stopPropagation()"
+                      >
+                        {{ convertChord(chord.chord) }}
+                      </span>
+
+                      <!-- Inline Chord Diagram (Popup) -->
+                      @if (showChordDiagrams() && isDiagramExpanded(getChordId(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex, chordIndex))) {
+                        @if (getChordDiagram(chord); as diagram) {
+                          <div class="absolute z-10 top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-600">
+                            <tw-chord-diagram
+                              [chord]="diagram"
+                              [size]="diagramSize()"
+                              [showFingerNumbers]="true"
+                            ></tw-chord-diagram>
+                          </div>
+                        }
+                      }
+                    </div>
+                  }
+                } @else {
+                  <!-- Empty measure / repeat previous marker -->
+                  <span class="opacity-30">%</span>
+                }
+              </div>
+
+              <!-- Rhythm Slashes -->
+              @if (showSlashes() && slashStyle() !== 'none') {
+                @if (slashStyle() === 'simple') {
+                  <!-- Simple slashes (/) -->
+                  @if (measure.chords.length <= 2) {
+                    <div class="flex items-center justify-center gap-1 mt-1" [class]="slashClasses()">
+                      @for (beat of getSlashPatternForMeasure(measure); track beat) {
+                        @if (isRestBeat(measure, beat)) {
+                          <span class="text-lg opacity-50">𝄽</span>
+                        } @else {
+                          <span
+                            class="text-lg"
+                            [class.font-bold]="getAccentBeats(measure).includes(beat)"
+                          >/</span>
+                        }
+                      }
+                    </div>
+                  }
+                } @else if (slashStyle() === 'rhythmic') {
+                  <!-- Rhythmic notation (diamond noteheads with stems) -->
+                  <svg class="w-full h-10 mt-1" viewBox="0 0 100 40" preserveAspectRatio="xMidYMid meet">
+                    <!-- Staff line (single) -->
+                    <line x1="0" y1="30" x2="100" y2="30" [class]="staffLineClasses()" stroke-width="0.5" />
+
+                    @for (beat of getSlashPatternForMeasure(measure); track beat) {
+                      @if (!isRestBeat(measure, beat)) {
+                        <g [class]="slashClasses()">
+                          <!-- Diamond notehead -->
+                          <path
+                            [attr.d]="getRhythmicSlashPath(beat, getAccentBeats(measure).includes(beat), 100, getBeatsPerMeasure())"
+                            fill="currentColor"
+                            stroke="currentColor"
+                            stroke-width="1"
+                          />
+                        </g>
+                      } @else {
+                        <!-- Rest -->
+                        <text
+                          [attr.x]="((beat - 0.5) / getBeatsPerMeasure()) * 100"
+                          y="35"
+                          text-anchor="middle"
+                          class="text-[12px]"
+                          [class]="slashClasses()"
+                        >𝄽</text>
+                      }
+                    }
+                  </svg>
+                }
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Chord Diagrams Row (when display mode includes diagrams) -->
+        @if (displayMode() === 'with-diagrams' || displayMode() === 'full') {
+          <div class="flex gap-4 mb-4 flex-wrap justify-center">
+            @for (measure of row; track $index) {
+              @for (chord of measure.chords; track $index) {
+                @if (getChordDiagram(chord); as diagram) {
+                  <div class="text-center">
+                    <tw-chord-diagram
+                      [chord]="diagram"
+                      [size]="diagramSize()"
+                      [showFingerNumbers]="true"
+                      [showChordName]="true"
+                    ></tw-chord-diagram>
+                  </div>
+                }
+              }
+            }
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- Empty State -->
+  @if (!data() || (data()?.sections?.length === 0)) {
+    <div class="text-center py-12" [class]="textClasses().subtitle">
+      <p class="text-lg">No chart data</p>
+      <p class="text-sm mt-2">Add sections and chords to see the lead sheet</p>
+    </div>
+  }
+
+  <!-- Legend for Nashville/Roman -->
+  @if (style() !== 'standard') {
+    <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-700">
+      <p class="text-xs" [class]="textClasses().subtitle">
+        @if (style() === 'nashville') {
+          Nashville Number System (Key: {{ data()?.key || 'C' }})
+        }
+        @if (style() === 'roman') {
+          Roman Numeral Analysis (Key: {{ data()?.key || 'C' }})
+        }
+      </p>
+    </div>
+  }
+
+  <!-- Copyright -->
+  @if (data()?.copyright) {
+    <div class="mt-4 pt-2 border-t border-slate-200 dark:border-slate-700">
+      <p class="text-[10px] text-center" [class]="textClasses().subtitle">
+        {{ data()?.copyright }}
+      </p>
+    </div>
+  }
+</div>

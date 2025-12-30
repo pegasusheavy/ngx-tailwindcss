@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TwRadioButtonComponent, TwRadioGroupComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwRadioButtonComponent, TwRadioGroupComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwSpacerComponent, TwWrapComponent, SpacerSize } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwSpacerComponent, TwWrapComponent, SpacerSize } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

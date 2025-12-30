@@ -4,7 +4,7 @@ import {
   TwCenterComponent,
   TwSquareComponent,
   TwCircleComponent,
-} from '@pegasus-heavy/ngx-tailwindcss';
+} from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

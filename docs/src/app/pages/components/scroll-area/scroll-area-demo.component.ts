@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwScrollAreaComponent, TwButtonComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwScrollAreaComponent, TwButtonComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

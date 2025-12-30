@@ -109,9 +109,7 @@ export class TwErrorDirective {
   }
 
   @HostBinding('attr.role')
-  get role(): string {
-    return 'alert';
-  }
+  readonly role = 'alert';
 }
 
 /**

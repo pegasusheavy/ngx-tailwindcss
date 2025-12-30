@@ -1,0 +1,160 @@
+<div [class]="containerClasses()">
+  <!-- Rewind Button -->
+  @if (showRewind()) {
+    <button
+      type="button"
+      [class]="buttonClasses('rewind')"
+      [disabled]="disabled()"
+      (click)="onRewind()"
+      [attr.aria-label]="'Rewind'"
+      [attr.title]="'Rewind'"
+    >
+      <svg [class]="iconClasses()" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M11 18V6l-8.5 6 8.5 6zm.5-6l8.5 6V6l-8.5 6z"/>
+      </svg>
+    </button>
+  }
+
+  <!-- Skip Previous Button -->
+  @if (showSkipButtons()) {
+    <button
+      type="button"
+      [class]="buttonClasses('skip')"
+      [disabled]="disabled()"
+      (click)="onSkipPrevious()"
+      [attr.aria-label]="'Skip to previous'"
+      [attr.title]="'Previous'"
+    >
+      <svg [class]="iconClasses()" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+      </svg>
+    </button>
+  }
+
+  <!-- Stop Button -->
+  @if (showStop()) {
+    <button
+      type="button"
+      [class]="buttonClasses('stop')"
+      [disabled]="disabled()"
+      (click)="onStop()"
+      [attr.aria-label]="'Stop'"
+      [attr.title]="'Stop'"
+    >
+      <svg [class]="iconClasses()" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 6h12v12H6z"/>
+      </svg>
+    </button>
+  }
+
+  <!-- Play/Pause Button -->
+  <button
+    type="button"
+    [class]="buttonClasses('play', true)"
+    [disabled]="disabled()"
+    (click)="onPlayPause()"
+    [attr.aria-label]="playing() ? 'Pause' : 'Play'"
+    [attr.title]="playing() ? 'Pause' : 'Play'"
+  >
+    @if (playing()) {
+      <svg [class]="iconClasses('primary')" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+      </svg>
+    } @else {
+      <svg [class]="iconClasses('primary')" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+    }
+  </button>
+
+  <!-- Record Button -->
+  @if (showRecord()) {
+    <button
+      type="button"
+      [class]="buttonClasses('record')"
+      [disabled]="disabled()"
+      (click)="onRecord()"
+      [attr.aria-label]="recording() ? 'Stop recording' : 'Start recording'"
+      [attr.title]="recording() ? 'Stop recording' : 'Record'"
+    >
+      <svg [class]="iconClasses(recording() ? 'record-active' : 'record')" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="12" r="8"/>
+      </svg>
+    </button>
+  }
+
+  <!-- Skip Next Button -->
+  @if (showSkipButtons()) {
+    <button
+      type="button"
+      [class]="buttonClasses('skip')"
+      [disabled]="disabled()"
+      (click)="onSkipNext()"
+      [attr.aria-label]="'Skip to next'"
+      [attr.title]="'Next'"
+    >
+      <svg [class]="iconClasses()" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
+      </svg>
+    </button>
+  }
+
+  <!-- Fast Forward Button -->
+  @if (showFastForward()) {
+    <button
+      type="button"
+      [class]="buttonClasses('forward')"
+      [disabled]="disabled()"
+      (click)="onFastForward()"
+      [attr.aria-label]="'Fast forward'"
+      [attr.title]="'Fast forward'"
+    >
+      <svg [class]="iconClasses()" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M4 18l8.5-6L4 6v12zm9-12v12l8.5-6L13 6z"/>
+      </svg>
+    </button>
+  }
+
+  <!-- Separator -->
+  @if (showLoop() || showShuffle()) {
+    <div class="w-px h-6 bg-slate-300 dark:bg-slate-600 mx-1"></div>
+  }
+
+  <!-- Loop Button -->
+  @if (showLoop()) {
+    <button
+      type="button"
+      [class]="buttonClasses('toggle', false, looping())"
+      [disabled]="disabled()"
+      (click)="onLoopToggle()"
+      [attr.aria-label]="looping() ? 'Disable loop' : 'Enable loop'"
+      [attr.title]="looping() ? 'Loop on' : 'Loop off'"
+      [attr.aria-pressed]="looping()"
+    >
+      <svg [class]="iconClasses(looping() ? 'active' : '')" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/>
+      </svg>
+    </button>
+  }
+
+  <!-- Shuffle Button -->
+  @if (showShuffle()) {
+    <button
+      type="button"
+      [class]="buttonClasses('toggle', false, shuffling())"
+      [disabled]="disabled()"
+      (click)="onShuffleToggle()"
+      [attr.aria-label]="shuffling() ? 'Disable shuffle' : 'Enable shuffle'"
+      [attr.title]="shuffling() ? 'Shuffle on' : 'Shuffle off'"
+      [attr.aria-pressed]="shuffling()"
+    >
+      <svg [class]="iconClasses(shuffling() ? 'active' : '')" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10.59 9.17L5.41 4 4 5.41l5.17 5.17 1.42-1.41zM14.5 4l2.04 2.04L4 18.59 5.41 20 17.96 7.46 20 9.5V4h-5.5zm.33 9.41l-1.41 1.41 3.13 3.13L14.5 20H20v-5.5l-2.04 2.04-3.13-3.13z"/>
+      </svg>
+    </button>
+  }
+</div>
+
+
+
+

@@ -121,7 +121,7 @@ export class TwRatingComponent implements ControlValueAccessor {
 
   protected value = signal(0);
   protected hoverValue = signal<number | null>(null);
-  protected starsArray = computed(() => new Array(this.stars).fill(0));
+  protected starsArray = computed(() => Array.from({ length: this.stars }, () => 0));
   protected containerClasses = computed(() => {
     return this.twClass.merge(
       'inline-flex items-center gap-1',

@@ -1,0 +1,108 @@
+<div
+  [class]="containerClasses()"
+  [style.width.px]="sizeConfig().size"
+  [style.height.px]="sizeConfig().size + (showValue() ? 24 : 0)"
+>
+  <!-- SVG Dial -->
+  <svg
+    #dialSvg
+    [attr.width]="sizeConfig().size"
+    [attr.height]="sizeConfig().size"
+    [attr.viewBox]="'0 0 ' + sizeConfig().size + ' ' + sizeConfig().size"
+    class="cursor-pointer select-none"
+    [class.opacity-50]="disabled()"
+    [class.cursor-not-allowed]="disabled()"
+    (mousedown)="onMouseDown($event)"
+    (touchstart)="onTouchStart($event)"
+    (keydown)="onKeyDown($event)"
+    [attr.tabindex]="disabled() ? -1 : 0"
+    role="slider"
+    [attr.aria-valuenow]="value()"
+    [attr.aria-valuemin]="min()"
+    [attr.aria-valuemax]="max()"
+    [attr.aria-label]="label() || 'Volume dial'"
+    [attr.aria-disabled]="disabled()"
+  >
+    <!-- Track (background arc) -->
+    <path
+      [attr.d]="trackPath()"
+      fill="none"
+      [attr.stroke-width]="sizeConfig().strokeWidth"
+      [class]="variantConfig().track"
+      stroke-linecap="round"
+    />
+
+    <!-- Fill (value arc) -->
+    <path
+      [attr.d]="fillPath()"
+      fill="none"
+      [attr.stroke-width]="sizeConfig().strokeWidth"
+      [class]="variantConfig().fill"
+      stroke-linecap="round"
+    />
+
+    <!-- Tick marks -->
+    @if (showTicks()) {
+      @for (tick of tickMarks(); track tick.angle) {
+        <line
+          [attr.x1]="tick.x1"
+          [attr.y1]="tick.y1"
+          [attr.x2]="tick.x2"
+          [attr.y2]="tick.y2"
+          [class]="tick.isMajor ? 'stroke-slate-400 dark:stroke-slate-500' : 'stroke-slate-300 dark:stroke-slate-600'"
+          [attr.stroke-width]="tick.isMajor ? 2 : 1"
+        />
+      }
+    }
+
+    <!-- Knob center -->
+    <circle
+      [attr.cx]="center()"
+      [attr.cy]="center()"
+      [attr.r]="knobRadius()"
+      [class]="variantConfig().knob"
+      stroke-width="2"
+    />
+
+    <!-- Indicator line -->
+    <line
+      [attr.x1]="center()"
+      [attr.y1]="center()"
+      [attr.x2]="indicatorEnd().x"
+      [attr.y2]="indicatorEnd().y"
+      [class]="variantConfig().indicator"
+      [attr.stroke-width]="sizeConfig().strokeWidth - 1"
+      stroke-linecap="round"
+    />
+
+    <!-- LED ring (for led variant) -->
+    @if (variant() === 'led' && showLedRing()) {
+      @for (led of ledSegments(); track led.index) {
+        <circle
+          [attr.cx]="led.x"
+          [attr.cy]="led.y"
+          [attr.r]="3"
+          [class]="led.active ? 'fill-emerald-400' : 'fill-slate-700'"
+        />
+      }
+    }
+  </svg>
+
+  <!-- Value display -->
+  @if (showValue()) {
+    <div [class]="valueClasses()">
+      {{ displayValue() }}{{ unit() }}
+    </div>
+  }
+
+  <!-- Label -->
+  @if (label() && showLabel()) {
+    <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-slate-500 dark:text-slate-400 whitespace-nowrap">
+      {{ label() }}
+    </div>
+  }
+</div>
+
+
+
+

@@ -79,6 +79,9 @@ export * from './lib/image/index';
 // Misc Components
 export * from './lib/scroll-top/index';
 
+// Music/Audio Components
+export * from './lib/music/index';
+
 // Convenience re-exports for all components
 import { TW_DIRECTIVES } from './lib/directives/index';
 
@@ -134,6 +137,9 @@ import { TwImageComponent } from './lib/image/index';
 
 // Misc components
 import { TwScrollTopComponent } from './lib/scroll-top/index';
+
+// Music/Audio components
+import { TW_MUSIC_COMPONENTS } from './lib/music/index';
 
 // Layout components
 import { TwContainerComponent } from './lib/container/index';
@@ -313,6 +319,8 @@ export const TW_ALL = [
   ...TW_IMAGE_COMPONENTS,
   // Misc
   ...TW_SCROLL_TOP_COMPONENTS,
+  // Music/Audio
+  ...TW_MUSIC_COMPONENTS,
 ] as const;
 
 export { TW_CORE_DIRECTIVES, TW_DX_DIRECTIVES } from './lib/directives/index';

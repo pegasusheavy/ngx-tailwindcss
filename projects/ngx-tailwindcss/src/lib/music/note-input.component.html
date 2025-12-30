@@ -1,0 +1,342 @@
+<div class="flex flex-col gap-2">
+  <!-- Toolbar -->
+  <div class="flex items-center gap-4 px-3 py-2 bg-slate-100 dark:bg-slate-800 rounded-lg">
+    <!-- Duration Selection -->
+    <div class="flex items-center gap-1">
+      <span class="text-xs text-slate-500 mr-2">Duration:</span>
+      @for (dur of ['whole', 'half', 'quarter', 'eighth', 'sixteenth']; track dur) {
+        <button
+          type="button"
+          class="w-8 h-8 flex items-center justify-center rounded text-lg transition-colors"
+          [class.bg-blue-500]="currentDuration() === dur"
+          [class.text-white]="currentDuration() === dur"
+          [class.bg-slate-200]="currentDuration() !== dur"
+          [class.dark:bg-slate-700]="currentDuration() !== dur"
+          [class.text-slate-700]="currentDuration() !== dur"
+          [class.dark:text-slate-300]="currentDuration() !== dur"
+          (click)="setDuration($any(dur))"
+          [title]="dur"
+        >
+          @switch (dur) {
+            @case ('whole') { 𝅝 }
+            @case ('half') { 𝅗𝅥 }
+            @case ('quarter') { 𝅘𝅥 }
+            @case ('eighth') { 𝅘𝅥𝅮 }
+            @case ('sixteenth') { 𝅘𝅥𝅯 }
+          }
+        </button>
+      }
+    </div>
+
+    <div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
+
+    <!-- Accidentals -->
+    <div class="flex items-center gap-1">
+      <button
+        type="button"
+        class="w-8 h-8 flex items-center justify-center rounded text-lg transition-colors"
+        [class.bg-blue-500]="currentAccidental() === 'sharp'"
+        [class.text-white]="currentAccidental() === 'sharp'"
+        [class.bg-slate-200]="currentAccidental() !== 'sharp'"
+        [class.dark:bg-slate-700]="currentAccidental() !== 'sharp'"
+        (click)="setAccidental(currentAccidental() === 'sharp' ? null : 'sharp')"
+        title="Sharp (#)"
+      >♯</button>
+      <button
+        type="button"
+        class="w-8 h-8 flex items-center justify-center rounded text-lg transition-colors"
+        [class.bg-blue-500]="currentAccidental() === 'flat'"
+        [class.text-white]="currentAccidental() === 'flat'"
+        [class.bg-slate-200]="currentAccidental() !== 'flat'"
+        [class.dark:bg-slate-700]="currentAccidental() !== 'flat'"
+        (click)="setAccidental(currentAccidental() === 'flat' ? null : 'flat')"
+        title="Flat (-)"
+      >♭</button>
+      <button
+        type="button"
+        class="w-8 h-8 flex items-center justify-center rounded text-lg transition-colors"
+        [class.bg-blue-500]="currentAccidental() === 'natural'"
+        [class.text-white]="currentAccidental() === 'natural'"
+        [class.bg-slate-200]="currentAccidental() !== 'natural'"
+        [class.dark:bg-slate-700]="currentAccidental() !== 'natural'"
+        (click)="setAccidental(currentAccidental() === 'natural' ? null : 'natural')"
+        title="Natural (=)"
+      >♮</button>
+    </div>
+
+    <div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
+
+    <!-- Dotted / Rest -->
+    <div class="flex items-center gap-1">
+      <button
+        type="button"
+        class="w-8 h-8 flex items-center justify-center rounded text-sm font-bold transition-colors"
+        [class.bg-blue-500]="isDotted()"
+        [class.text-white]="isDotted()"
+        [class.bg-slate-200]="!isDotted()"
+        [class.dark:bg-slate-700]="!isDotted()"
+        (click)="setDotted(!isDotted())"
+        title="Dotted (.)"
+      >•</button>
+      <button
+        type="button"
+        class="w-8 h-8 flex items-center justify-center rounded text-lg transition-colors"
+        [class.bg-blue-500]="isRest()"
+        [class.text-white]="isRest()"
+        [class.bg-slate-200]="!isRest()"
+        [class.dark:bg-slate-700]="!isRest()"
+        (click)="setRestMode(!isRest())"
+        title="Rest (R)"
+      >𝄽</button>
+    </div>
+
+    <div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
+
+    <!-- Voice Selection -->
+    @if (maxVoices() > 1) {
+      <div class="flex items-center gap-1">
+        <span class="text-xs text-slate-500 mr-1">Voice:</span>
+        @for (voice of [1, 2, 3, 4]; track voice) {
+          @if (voice <= maxVoices()) {
+            <button
+              type="button"
+              class="w-6 h-6 flex items-center justify-center rounded text-xs font-bold transition-colors"
+              [class.ring-2]="currentVoice() === voice"
+              [class.ring-blue-500]="currentVoice() === voice"
+              [style.backgroundColor]="currentVoice() === voice ? getVoiceColorByNumber(voice) : ''"
+              [style.color]="currentVoice() === voice ? 'white' : getVoiceColorByNumber(voice)"
+              [class.bg-slate-200]="currentVoice() !== voice"
+              [class.dark:bg-slate-700]="currentVoice() !== voice"
+              (click)="setVoice($any(voice))"
+              [title]="'Voice ' + voice + ' (Shift+' + voice + ')'"
+            >{{ voice }}</button>
+          }
+        }
+      </div>
+    }
+
+    <div class="flex-1"></div>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-1">
+      <button
+        type="button"
+        class="px-2 py-1 text-xs rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+        (click)="undo()"
+        [disabled]="undoStack().length === 0"
+        [class.opacity-50]="undoStack().length === 0"
+        title="Undo (Ctrl+Z)"
+      >Undo</button>
+      <button
+        type="button"
+        class="px-2 py-1 text-xs rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+        (click)="redo()"
+        [disabled]="redoStack().length === 0"
+        [class.opacity-50]="redoStack().length === 0"
+        title="Redo (Ctrl+Shift+Z)"
+      >Redo</button>
+      <button
+        type="button"
+        class="px-2 py-1 text-xs rounded bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
+        (click)="deleteSelectedNotes()"
+        [disabled]="selectedNotes().length === 0"
+        [class.opacity-50]="selectedNotes().length === 0"
+        title="Delete (Del)"
+      >Delete</button>
+    </div>
+
+    <!-- MIDI Status -->
+    @if (enableMidiInput()) {
+      <div class="flex items-center gap-1">
+        <div
+          class="w-2 h-2 rounded-full"
+          [class.bg-green-500]="midiConnected()"
+          [class.bg-slate-400]="!midiConnected()"
+        ></div>
+        <span class="text-xs text-slate-500">
+          {{ midiConnected() ? (midiDeviceName() ?? 'MIDI') : 'No MIDI' }}
+        </span>
+      </div>
+    }
+  </div>
+
+  <!-- Staff Container -->
+  <div
+    #staffContainer
+    class="relative cursor-crosshair select-none"
+    [class.cursor-not-allowed]="!editable()"
+    (click)="onStaffClick($event)"
+    (mousemove)="onStaffMouseMove($event)"
+    (mouseleave)="onStaffMouseLeave()"
+  >
+    <!-- Staff Background -->
+    <tw-staff
+      [clef]="clef()"
+      [keySignature]="keySignature()"
+      [timeSignature]="timeSignature()"
+      [measures]="measures()"
+      [width]="width()"
+      [height]="height()"
+      [lineSpacing]="lineSpacing()"
+    >
+      <!-- Notes are rendered separately on top -->
+    </tw-staff>
+
+    <!-- Notes Layer (SVG overlay) -->
+    <svg
+      class="absolute top-0 left-0 pointer-events-none"
+      [attr.width]="width()"
+      [attr.height]="height()"
+      [style.overflow]="'visible'"
+    >
+      <!-- Grid lines (when hovering) -->
+      @if (hoverPosition() && snapToGrid()) {
+        @for (pos of gridPositions(); track pos) {
+          <line
+            [attr.x1]="pos"
+            [attr.y1]="staffTop()"
+            [attr.x2]="pos"
+            [attr.y2]="staffTop() + lineSpacing() * 4"
+            stroke="#CBD5E1"
+            stroke-width="0.5"
+            stroke-dasharray="2,2"
+            opacity="0.5"
+          />
+        }
+      }
+
+      <!-- Placed Notes -->
+      @for (note of notes(); track note.id) {
+        <g
+          class="pointer-events-auto cursor-grab"
+          [class.cursor-grabbing]="draggedNote()?.id === note.id"
+          (mousedown)="onNoteMouseDown($event, note)"
+        >
+          <!-- Note head -->
+          <ellipse
+            [attr.cx]="draggedNote()?.id === note.id ? draggedNote()!.x : note.x"
+            [attr.cy]="draggedNote()?.id === note.id
+              ? noteToY(draggedNote()!.name, draggedNote()!.octave)
+              : noteToY(note.name, note.octave)"
+            [attr.rx]="lineSpacing() * 0.45"
+            [attr.ry]="lineSpacing() * 0.35"
+            [attr.fill]="note.duration === 'whole' || note.duration === 'half' ? 'none' : getVoiceColor(note.voice)"
+            [attr.stroke]="getVoiceColor(note.voice)"
+            [attr.stroke-width]="note.duration === 'whole' || note.duration === 'half' ? 1.5 : 0"
+            [attr.transform]="'rotate(-15, ' + (draggedNote()?.id === note.id ? draggedNote()!.x : note.x) + ', ' + (draggedNote()?.id === note.id ? noteToY(draggedNote()!.name, draggedNote()!.octave) : noteToY(note.name, note.octave)) + ')'"
+          />
+
+          <!-- Selection highlight -->
+          @if (isNoteSelected(note)) {
+            <circle
+              [attr.cx]="note.x"
+              [attr.cy]="noteToY(note.name, note.octave)"
+              [attr.r]="lineSpacing() * 0.7"
+              fill="none"
+              stroke="#3B82F6"
+              stroke-width="2"
+              stroke-dasharray="3,2"
+            />
+          }
+
+          <!-- Accidental -->
+          @if (note.accidental) {
+            <text
+              [attr.x]="note.x - lineSpacing() * 0.8"
+              [attr.y]="noteToY(note.name, note.octave) + lineSpacing() * 0.15"
+              [attr.font-size]="lineSpacing() * 0.9"
+              [attr.fill]="getVoiceColor(note.voice)"
+              font-family="serif"
+              text-anchor="end"
+            >
+              @switch (note.accidental) {
+                @case ('sharp') { ♯ }
+                @case ('flat') { ♭ }
+                @case ('natural') { ♮ }
+                @case ('doubleSharp') { 𝄪 }
+                @case ('doubleFlat') { 𝄫 }
+              }
+            </text>
+          }
+
+          <!-- Stem (for notes that have stems) -->
+          @if (note.duration !== 'whole') {
+            <line
+              [attr.x1]="note.x + lineSpacing() * 0.4"
+              [attr.y1]="noteToY(note.name, note.octave)"
+              [attr.x2]="note.x + lineSpacing() * 0.4"
+              [attr.y2]="noteToY(note.name, note.octave) - lineSpacing() * 3.5"
+              [attr.stroke]="getVoiceColor(note.voice)"
+              stroke-width="1.5"
+            />
+          }
+
+          <!-- Dot -->
+          @if (note.dotted) {
+            <circle
+              [attr.cx]="note.x + lineSpacing() * 0.7"
+              [attr.cy]="noteToY(note.name, note.octave) - lineSpacing() * 0.1"
+              [attr.r]="lineSpacing() * 0.1"
+              [attr.fill]="getVoiceColor(note.voice)"
+            />
+          }
+        </g>
+      }
+
+      <!-- Hover Preview -->
+      @if (hoverPosition() && editable() && !isDragging()) {
+        <g opacity="0.5">
+          <ellipse
+            [attr.cx]="hoverPosition()!.x"
+            [attr.cy]="noteToY(hoverPosition()!.note, hoverPosition()!.octave)"
+            [attr.rx]="lineSpacing() * 0.45"
+            [attr.ry]="lineSpacing() * 0.35"
+            [attr.fill]="currentDuration() === 'whole' || currentDuration() === 'half' ? 'none' : getVoiceColor(currentVoice())"
+            [attr.stroke]="getVoiceColor(currentVoice())"
+            stroke-width="1.5"
+            [attr.transform]="'rotate(-15, ' + hoverPosition()!.x + ', ' + noteToY(hoverPosition()!.note, hoverPosition()!.octave) + ')'"
+          />
+          <text
+            [attr.x]="hoverPosition()!.x"
+            [attr.y]="noteToY(hoverPosition()!.note, hoverPosition()!.octave) + lineSpacing() * 2"
+            [attr.font-size]="lineSpacing() * 0.9"
+            fill="#64748B"
+            text-anchor="middle"
+            font-family="sans-serif"
+          >{{ hoverPosition()!.note }}{{ hoverPosition()!.octave }}</text>
+        </g>
+      }
+
+      <!-- Dragged Note Highlight -->
+      @if (draggedNote()) {
+        <circle
+          [attr.cx]="draggedNote()!.x"
+          [attr.cy]="noteToY(draggedNote()!.name, draggedNote()!.octave)"
+          [attr.r]="lineSpacing() * 0.8"
+          fill="rgba(59, 130, 246, 0.2)"
+          stroke="#3B82F6"
+          stroke-width="2"
+        />
+      }
+    </svg>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="flex items-center justify-between px-3 py-1.5 text-xs text-slate-500 bg-slate-50 dark:bg-slate-900 rounded-lg">
+    <div class="flex items-center gap-4">
+      <span>Notes: {{ notes().length }}</span>
+      @if (selectedNotes().length > 0) {
+        <span>Selected: {{ selectedNotes().length }}</span>
+      }
+      @if (hoverPosition()) {
+        <span>{{ hoverPosition()!.note }}{{ hoverPosition()!.octave }} (M{{ hoverPosition()!.measure + 1 }})</span>
+      }
+    </div>
+    <div class="flex items-center gap-4">
+      <span class="text-slate-400">
+        Shortcuts: 1-5 duration • A-G notes • # ♭ = accidentals • Del delete • Ctrl+Z undo
+      </span>
+    </div>
+  </div>
+</div>
+
