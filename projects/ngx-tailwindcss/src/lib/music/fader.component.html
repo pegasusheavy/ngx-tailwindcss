@@ -1,0 +1,132 @@
+<div
+  [class]="containerClasses()"
+  [style.width.px]="dimensions().width"
+  [style.height.px]="dimensions().height"
+>
+  <!-- Label -->
+  @if (label()) {
+    <span class="text-xs font-medium truncate" [class]="colors().text">
+      {{ label() }}
+    </span>
+  }
+
+  <div class="relative flex items-center">
+    <!-- Scale Marks -->
+    @if (showScale()) {
+      <div
+        class="absolute flex"
+        [class]="{
+          'flex-col-reverse h-full -left-6': orientation() === 'vertical',
+          'flex-row w-full -top-4': orientation() === 'horizontal'
+        }"
+      >
+        @for (mark of scaleMarks(); track mark.value) {
+          <span
+            class="absolute text-[9px] font-mono whitespace-nowrap"
+            [class]="colors().scale"
+            [style]="{
+              bottom: orientation() === 'vertical' ? mark.position + '%' : 'auto',
+              left: orientation() === 'horizontal' ? mark.position + '%' : 'auto',
+              transform: orientation() === 'vertical' ? 'translateY(50%)' : 'translateX(-50%)'
+            }"
+          >
+            {{ mark.label }}
+          </span>
+        }
+      </div>
+    }
+
+    <!-- Peak Meter -->
+    @if (showPeakMeter()) {
+      <div
+        class="absolute rounded-full overflow-hidden"
+        [class]="{
+          'w-1 -right-3': orientation() === 'vertical',
+          'h-1 -bottom-3': orientation() === 'horizontal'
+        }"
+        [style]="{
+          height: orientation() === 'vertical' ? dimensions().trackLength + 'px' : '4px',
+          width: orientation() === 'horizontal' ? dimensions().trackLength + 'px' : '4px'
+        }"
+      >
+        <div class="absolute inset-0 bg-slate-800"></div>
+        <div
+          class="absolute bg-gradient-to-t from-green-500 via-yellow-500 to-red-500"
+          [style]="{
+            height: orientation() === 'vertical' ? peakLevel() + '%' : '100%',
+            width: orientation() === 'horizontal' ? peakLevel() + '%' : '100%',
+            bottom: orientation() === 'vertical' ? 0 : 'auto',
+            left: orientation() === 'horizontal' ? 0 : 'auto'
+          }"
+        ></div>
+      </div>
+    }
+
+    <!-- Track -->
+    <div
+      #track
+      [class]="trackClasses().class"
+      [style]="trackClasses().style"
+    >
+      <!-- Fill -->
+      <div
+        class="absolute rounded-full"
+        [class]="colors().fill"
+        [style]="{
+          width: orientation() === 'vertical' ? '100%' : fillStyle().width,
+          height: orientation() === 'vertical' ? fillStyle().height : '100%',
+          bottom: orientation() === 'vertical' ? 0 : 'auto',
+          left: orientation() === 'horizontal' ? 0 : 'auto'
+        }"
+      ></div>
+
+      <!-- Zero line indicator -->
+      @if (min() < 0 && max() > 0) {
+        <div
+          class="absolute bg-white/50"
+          [style]="{
+            width: orientation() === 'vertical' ? '100%' : '2px',
+            height: orientation() === 'vertical' ? '2px' : '100%',
+            bottom: orientation() === 'vertical' ? ((0 - min()) / (max() - min()) * 100) + '%' : 'auto',
+            left: orientation() === 'horizontal' ? ((0 - min()) / (max() - min()) * 100) + '%' : 'auto'
+          }"
+        ></div>
+      }
+    </div>
+
+    <!-- Fader Cap -->
+    <div
+      [class]="capClasses().class"
+      [ngStyle]="capClasses().style"
+      [style.bottom]="orientation() === 'vertical' ? capPosition().bottom : null"
+      [style.left]="orientation() === 'horizontal' ? capPosition().left : null"
+      (dblclick)="resetToDefault()"
+      title="Double-click to reset"
+    >
+      <!-- Cap highlight line -->
+      <div
+        class="absolute rounded-full"
+        [class]="colors().capHighlight"
+        [style]="{
+          width: orientation() === 'vertical' ? '60%' : '2px',
+          height: orientation() === 'vertical' ? '2px' : '60%',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)'
+        }"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Value Display -->
+  @if (showValue()) {
+    <div
+      class="text-xs font-mono text-center min-w-[40px] px-1 py-0.5 rounded"
+      [class]="colors().text"
+      [class.bg-slate-800]="variant() !== 'minimal'"
+    >
+      {{ displayValue() }} dB
+    </div>
+  }
+</div>
+

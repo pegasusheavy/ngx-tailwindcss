@@ -1,0 +1,145 @@
+<div [class]="containerClasses()">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-4">
+    <span class="text-sm font-medium" [class]="colors().label">
+      {{ bandCount() }}-Band EQ
+    </span>
+    <button
+      type="button"
+      class="text-xs px-2 py-1 rounded hover:bg-slate-700 transition-colors"
+      [class]="colors().label"
+      (click)="resetAll()"
+      [disabled]="disabled()"
+    >
+      Reset
+    </button>
+  </div>
+
+  <!-- EQ Container -->
+  <div class="relative">
+    <!-- Curve Overlay -->
+    @if (showCurve()) {
+      <svg
+        class="absolute inset-0 w-full pointer-events-none z-10"
+        [attr.height]="sliderHeight()"
+        [attr.viewBox]="'0 0 100 ' + sliderHeight()"
+        preserveAspectRatio="none"
+      >
+        <!-- Grid lines -->
+        <line
+          x1="0"
+          [attr.y1]="sliderHeight() / 2"
+          x2="100"
+          [attr.y2]="sliderHeight() / 2"
+          [attr.stroke]="colors().grid"
+          stroke-width="1"
+          stroke-dasharray="2,2"
+        />
+        <line
+          x1="0"
+          [attr.y1]="sliderHeight() / 4"
+          x2="100"
+          [attr.y2]="sliderHeight() / 4"
+          [attr.stroke]="colors().grid"
+          stroke-width="0.5"
+          stroke-dasharray="2,2"
+        />
+        <line
+          x1="0"
+          [attr.y1]="sliderHeight() * 3 / 4"
+          x2="100"
+          [attr.y2]="sliderHeight() * 3 / 4"
+          [attr.stroke]="colors().grid"
+          stroke-width="0.5"
+          stroke-dasharray="2,2"
+        />
+
+        <!-- Response Curve -->
+        <path
+          [attr.d]="curvePath()"
+          fill="none"
+          [attr.stroke]="colors().curve"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    }
+
+    <!-- Sliders -->
+    <div class="flex items-end justify-center gap-1">
+      @for (band of bands(); track band.frequency; let i = $index) {
+        <div class="flex flex-col items-center">
+          <!-- Slider Track -->
+          <div
+            class="relative rounded-full cursor-pointer"
+            [class]="colors().track"
+            [style.height.px]="sliderHeight()"
+            [style.width]="bandCount() > 15 ? '8px' : bandCount() > 10 ? '12px' : '16px'"
+            [attr.data-band]="i"
+            (mousedown)="onBandMouseDown($event, i)"
+            (touchstart)="onBandTouchStart($event, i)"
+            (dblclick)="resetBand(i)"
+            [title]="'Double-click to reset ' + band.label"
+          >
+            <!-- Center line -->
+            <div
+              class="absolute left-0 right-0 h-px bg-white/30"
+              [style.top.px]="sliderHeight() / 2"
+            ></div>
+
+            <!-- Fill -->
+            <div
+              class="absolute left-0 right-0 rounded-full transition-all duration-75"
+              [class]="colors().fill"
+              [style.height]="getBandFillHeight(band.gain)"
+              [style.top]="getBandFillPosition(band.gain)"
+            ></div>
+
+            <!-- Slider Thumb -->
+            <div
+              class="absolute left-1/2 -translate-x-1/2 w-full rounded-full shadow-md transition-all duration-75"
+              [class]="colors().slider"
+              [class.ring-2]="draggingBand() === i"
+              [class.ring-white/50]="draggingBand() === i"
+              [style.height]="bandCount() > 15 ? '6px' : '8px'"
+              [style.top.px]="(1 - (band.gain - minGain()) / (maxGain() - minGain())) * sliderHeight() - (bandCount() > 15 ? 3 : 4)"
+            ></div>
+          </div>
+
+          <!-- Value -->
+          @if (showValues()) {
+            <span
+              class="text-[9px] font-mono mt-1 min-w-[24px] text-center"
+              [class]="colors().value"
+            >
+              {{ band.gain > 0 ? '+' : '' }}{{ band.gain.toFixed(1) }}
+            </span>
+          }
+
+          <!-- Frequency Label -->
+          @if (showLabels()) {
+            <span
+              class="text-[9px] font-mono mt-1"
+              [class]="colors().label"
+            >
+              {{ band.label }}
+            </span>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Gain Scale -->
+    <div
+      class="absolute -left-8 top-0 flex flex-col justify-between text-[9px] font-mono"
+      [class]="colors().label"
+      [style.height.px]="sliderHeight()"
+    >
+      <span>+{{ maxGain() }}</span>
+      <span>0</span>
+      <span>{{ minGain() }}</span>
+    </div>
+  </div>
+</div>
+
