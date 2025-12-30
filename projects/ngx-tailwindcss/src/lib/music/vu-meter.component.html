@@ -37,6 +37,15 @@
               ></div>
             }
 
+            <!-- RMS indicator (for 'both' mode) -->
+            @if (showRmsBar() && rmsValues()[channel] > 0) {
+              <div
+                class="absolute left-0 right-0 h-0.5 bg-cyan-400 dark:bg-cyan-300 transition-all duration-150"
+                [style.bottom.%]="getRmsPosition(channel)"
+                title="RMS Level"
+              ></div>
+            }
+
             <!-- Clip indicator -->
             @if (showClip() && clipStates()[channel]) {
               <div
@@ -67,6 +76,15 @@
               <div
                 [class]="'absolute top-0 bottom-0 w-1 transition-all duration-75 ' + peakClasses(peakValues()[channel])"
                 [style.left.%]="(peakValues()[channel] / max()) * 100"
+              ></div>
+            }
+
+            <!-- RMS indicator (for 'both' mode) -->
+            @if (showRmsBar() && rmsValues()[channel] > 0) {
+              <div
+                class="absolute top-0 bottom-0 w-0.5 bg-cyan-400 dark:bg-cyan-300 transition-all duration-150"
+                [style.left.%]="getRmsPosition(channel)"
+                title="RMS Level"
               ></div>
             }
 
@@ -103,6 +121,16 @@
     <div class="flex justify-center gap-4 mt-1 text-xs text-slate-500 dark:text-slate-400">
       <span>L</span>
       <span>R</span>
+    </div>
+  }
+
+  <!-- Mode indicator -->
+  @if (meterMode() !== 'peak') {
+    <div class="text-[9px] font-mono text-slate-500 dark:text-slate-400 mt-1 text-center">
+      {{ meterModeLabel() }}
+      @if (showRmsBar()) {
+        <span class="inline-block w-2 h-0.5 bg-cyan-400 ml-1 align-middle" title="RMS indicator"></span>
+      }
     </div>
   }
 </div>

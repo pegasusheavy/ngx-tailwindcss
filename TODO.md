@@ -82,7 +82,7 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 - [x] Gradient coloring (green → yellow → red)
 - [x] Peak hold with decay
 - [x] Configurable segment count
-- [ ] RMS and Peak modes
+- [x] RMS and Peak modes (peak, rms, both)
 - [x] Clip indicator with reset
 - [x] Retro variant
 

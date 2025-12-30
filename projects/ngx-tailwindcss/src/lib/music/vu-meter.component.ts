@@ -16,12 +16,16 @@ import { TwClassService } from '../core/tw-class.service';
 
 export type VuMeterVariant = 'led' | 'gradient' | 'solid' | 'retro';
 export type VuMeterOrientation = 'vertical' | 'horizontal';
+export type VuMeterMode = 'peak' | 'rms' | 'both';
 
 interface MeterSegment {
   index: number;
   threshold: number;
   color: 'green' | 'yellow' | 'red';
 }
+
+// RMS calculation window size (samples)
+const RMS_WINDOW_SIZE = 1024;
 
 /**
  * VU Meter / Level Meter component for audio visualization
@@ -57,11 +61,13 @@ export class TwVuMeterComponent implements OnInit {
   readonly stereo = input(false);
   readonly variant = input<VuMeterVariant>('led');
   readonly orientation = input<VuMeterOrientation>('vertical');
+  readonly meterMode = input<VuMeterMode>('peak'); // NEW: peak, rms, or both
   readonly segmentCount = input(20);
   readonly height = input(200);
   readonly width = input(200);
   readonly barWidth = input(12);
   readonly gapSize = input(2);
+  readonly rmsDecayRate = input(0.15); // Slower decay for RMS
 
   // Display options
   readonly showPeak = input(true);
@@ -85,13 +91,22 @@ export class TwVuMeterComponent implements OnInit {
   readonly clipDetected = output<{ channel: number }>();
 
   // Internal state
-  protected readonly channelValues = signal<number[]>([0]);
-  protected readonly peakValues = signal<number[]>([0]);
+  protected readonly channelValues = signal<number[]>([0]); // Current display value (peak or RMS depending on mode)
+  protected readonly peakValues = signal<number[]>([0]); // Peak hold values
+  protected readonly rmsValues = signal<number[]>([0]); // RMS values (for 'both' mode)
   protected readonly clipStates = signal<boolean[]>([false]);
 
   private peakDecayTimers: Array<ReturnType<typeof setInterval>> = [];
+  private rmsBuffers: Float32Array[] = []; // Circular buffers for RMS calculation
+  private rmsWriteIndices: number[] = [0, 0];
 
   ngOnInit(): void {
+    // Initialize RMS buffers
+    this.rmsBuffers = [
+      new Float32Array(RMS_WINDOW_SIZE),
+      new Float32Array(RMS_WINDOW_SIZE),
+    ];
+
     // Setup peak decay
     if (this.showPeak()) {
       interval(50)
@@ -100,11 +115,38 @@ export class TwVuMeterComponent implements OnInit {
           this.decayPeaks();
         });
     }
+
+    // Setup RMS decay (slower than peak)
+    if (this.meterMode() === 'rms' || this.meterMode() === 'both') {
+      interval(50)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(() => {
+          this.decayRms();
+        });
+    }
   }
 
   // Computed values
   protected readonly channels = computed(() => {
     return this.stereo() ? [0, 1] : [0];
+  });
+
+  protected readonly showRmsBar = computed(() => {
+    return this.meterMode() === 'both';
+  });
+
+  protected readonly meterModeLabel = computed(() => {
+    const mode = this.meterMode();
+    switch (mode) {
+      case 'peak':
+        return 'PEAK';
+      case 'rms':
+        return 'RMS';
+      case 'both':
+        return 'P/R';
+      default:
+        return '';
+    }
   });
 
   protected readonly segments = computed((): MeterSegment[] => {
@@ -239,11 +281,37 @@ export class TwVuMeterComponent implements OnInit {
   }
 
   // Public methods
+
+  /**
+   * Set the meter value directly (for peak mode or simple usage)
+   */
   setValue(value: number, channel = 0): void {
     const normalizedValue = Math.max(this.min(), Math.min(this.max(), value));
-    const values = [...this.channelValues()];
-    values[channel] = normalizedValue;
-    this.channelValues.set(values);
+    const mode = this.meterMode();
+
+    if (mode === 'peak') {
+      const values = [...this.channelValues()];
+      values[channel] = normalizedValue;
+      this.channelValues.set(values);
+    } else if (mode === 'rms') {
+      // For RMS mode, add sample to buffer and recalculate
+      this.addSampleToRmsBuffer(normalizedValue / this.max(), channel);
+      const rmsValue = this.calculateRmsFromBuffer(channel) * this.max();
+      const values = [...this.channelValues()];
+      values[channel] = rmsValue;
+      this.channelValues.set(values);
+    } else {
+      // Both mode - peak for main display, track RMS separately
+      const values = [...this.channelValues()];
+      values[channel] = normalizedValue;
+      this.channelValues.set(values);
+
+      this.addSampleToRmsBuffer(normalizedValue / this.max(), channel);
+      const rmsValue = this.calculateRmsFromBuffer(channel) * this.max();
+      const rmsVals = [...this.rmsValues()];
+      rmsVals[channel] = rmsValue;
+      this.rmsValues.set(rmsVals);
+    }
 
     // Update peak
     if (this.showPeak()) {
@@ -256,11 +324,107 @@ export class TwVuMeterComponent implements OnInit {
     }
   }
 
+  /**
+   * Set values from raw audio samples (Float32Array, -1 to 1)
+   * This allows for proper RMS calculation from actual audio data
+   */
+  setFromSamples(samples: Float32Array, channel = 0): void {
+    const mode = this.meterMode();
+
+    // Calculate peak from samples
+    let peak = 0;
+    for (let i = 0; i < samples.length; i++) {
+      const abs = Math.abs(samples[i]);
+      if (abs > peak) peak = abs;
+    }
+    const peakValue = peak * this.max();
+
+    // Calculate RMS from samples
+    let sumSquares = 0;
+    for (let i = 0; i < samples.length; i++) {
+      sumSquares += samples[i] * samples[i];
+    }
+    const rms = Math.sqrt(sumSquares / samples.length);
+    const rmsValue = rms * this.max();
+
+    if (mode === 'peak') {
+      const values = [...this.channelValues()];
+      values[channel] = peakValue;
+      this.channelValues.set(values);
+    } else if (mode === 'rms') {
+      const values = [...this.channelValues()];
+      values[channel] = rmsValue;
+      this.channelValues.set(values);
+    } else {
+      // Both mode
+      const values = [...this.channelValues()];
+      values[channel] = peakValue;
+      this.channelValues.set(values);
+
+      const rmsVals = [...this.rmsValues()];
+      rmsVals[channel] = rmsValue;
+      this.rmsValues.set(rmsVals);
+    }
+
+    // Update peak hold
+    if (this.showPeak()) {
+      this.updatePeak(peakValue, channel);
+    }
+
+    // Check for clip
+    if (this.showClip() && (peakValue / this.max()) * 100 >= this.clipThreshold()) {
+      this.setClip(channel);
+    }
+  }
+
+  /**
+   * Set values for stereo channels from raw samples
+   */
+  setFromStereoSamples(leftSamples: Float32Array, rightSamples: Float32Array): void {
+    this.setFromSamples(leftSamples, 0);
+    if (this.stereo()) {
+      this.setFromSamples(rightSamples, 1);
+    }
+  }
+
   setValues(left: number, right?: number): void {
     this.setValue(left, 0);
     if (this.stereo() && right !== undefined) {
       this.setValue(right, 1);
     }
+  }
+
+  /**
+   * Get the current RMS value for a channel (useful for external display)
+   */
+  getRmsValue(channel = 0): number {
+    return this.rmsValues()[channel] ?? 0;
+  }
+
+  /**
+   * Get the current peak value for a channel
+   */
+  getPeakValue(channel = 0): number {
+    return this.peakValues()[channel] ?? 0;
+  }
+
+  private addSampleToRmsBuffer(sample: number, channel: number): void {
+    if (!this.rmsBuffers[channel]) {
+      this.rmsBuffers[channel] = new Float32Array(RMS_WINDOW_SIZE);
+    }
+    this.rmsBuffers[channel][this.rmsWriteIndices[channel]] = sample;
+    this.rmsWriteIndices[channel] = (this.rmsWriteIndices[channel] + 1) % RMS_WINDOW_SIZE;
+  }
+
+  private calculateRmsFromBuffer(channel: number): number {
+    const buffer = this.rmsBuffers[channel];
+    if (!buffer) return 0;
+
+    let sumSquares = 0;
+    for (let i = 0; i < buffer.length; i++) {
+      sumSquares += buffer[i] * buffer[i];
+    }
+    return Math.sqrt(sumSquares / buffer.length);
   }
 
   private updatePeak(value: number, channel: number): void {
@@ -297,6 +461,22 @@ export class TwVuMeterComponent implements OnInit {
     }
   }
 
+  private decayRms(): void {
+    const rmsVals = [...this.rmsValues()];
+    let changed = false;
+
+    rmsVals.forEach((rms, i) => {
+      if (rms > 0) {
+        rmsVals[i] = Math.max(0, rms - (this.max() * this.rmsDecayRate()));
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      this.rmsValues.set(rmsVals);
+    }
+  }
+
   private setClip(channel: number): void {
     const clips = [...this.clipStates()];
     if (!clips[channel]) {
@@ -319,7 +499,20 @@ export class TwVuMeterComponent implements OnInit {
   reset(): void {
     this.channelValues.set(this.channels().map(() => 0));
     this.peakValues.set(this.channels().map(() => 0));
+    this.rmsValues.set(this.channels().map(() => 0));
     this.resetAllClips();
+
+    // Clear RMS buffers
+    this.rmsBuffers.forEach((buffer) => buffer.fill(0));
+    this.rmsWriteIndices = [0, 0];
+  }
+
+  /**
+   * Get RMS display position (percentage) for rendering
+   */
+  protected getRmsPosition(channel: number): number {
+    const rms = this.rmsValues()[channel] ?? 0;
+    return (rms / this.max()) * 100;
   }
 }
 
