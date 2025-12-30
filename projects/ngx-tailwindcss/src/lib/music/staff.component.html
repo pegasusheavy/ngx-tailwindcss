@@ -1,0 +1,304 @@
+<div [class]="containerClasses()">
+  <svg
+    [attr.width]="width()"
+    [attr.height]="grandStaff() ? height() * 2 + 20 : height()"
+    [attr.viewBox]="'0 0 ' + width() + ' ' + (grandStaff() ? height() * 2 + 20 : height())"
+    class="block"
+  >
+    <!-- Background -->
+    @if (colors().background !== 'transparent') {
+      <rect
+        x="0"
+        y="0"
+        [attr.width]="width()"
+        [attr.height]="grandStaff() ? height() * 2 + 20 : height()"
+        [attr.fill]="colors().background"
+      />
+    }
+
+    <!-- Treble Staff (or single staff) -->
+    <g [attr.transform]="grandStaff() ? 'translate(0, 0)' : ''">
+      <!-- Staff Lines -->
+      @for (y of staffLines(); track y) {
+        <line
+          x1="10"
+          [attr.y1]="y"
+          [attr.x2]="width() - 10"
+          [attr.y2]="y"
+          [attr.stroke]="colors().line"
+          stroke-width="1"
+        />
+      }
+
+      <!-- Clef -->
+      @if (showClef()) {
+        <g [attr.transform]="'translate(12, ' + clefSize().y + ')'">
+          @switch (clef()) {
+            @case ('treble') {
+              <!-- Treble Clef (G Clef) -->
+              <text
+                x="0"
+                [attr.y]="lineSpacing() * 4"
+                [attr.font-size]="lineSpacing() * 6"
+                [attr.fill]="colors().symbol"
+                font-family="serif"
+                class="select-none"
+              >𝄞</text>
+            }
+            @case ('bass') {
+              <!-- Bass Clef (F Clef) -->
+              <text
+                x="0"
+                [attr.y]="lineSpacing() * 2"
+                [attr.font-size]="lineSpacing() * 4"
+                [attr.fill]="colors().symbol"
+                font-family="serif"
+                class="select-none"
+              >𝄢</text>
+            }
+            @case ('alto') {
+              <!-- Alto Clef (C Clef) -->
+              <text
+                x="0"
+                [attr.y]="lineSpacing() * 2.5"
+                [attr.font-size]="lineSpacing() * 4"
+                [attr.fill]="colors().symbol"
+                font-family="serif"
+                class="select-none"
+              >𝄡</text>
+            }
+            @case ('tenor') {
+              <!-- Tenor Clef -->
+              <text
+                x="0"
+                [attr.y]="lineSpacing() * 1.5"
+                [attr.font-size]="lineSpacing() * 4"
+                [attr.fill]="colors().symbol"
+                font-family="serif"
+                class="select-none"
+              >𝄡</text>
+            }
+            @case ('percussion') {
+              <!-- Percussion Clef -->
+              <rect
+                x="5"
+                [attr.y]="lineSpacing() * 1"
+                [attr.width]="lineSpacing() * 0.8"
+                [attr.height]="lineSpacing() * 2"
+                [attr.fill]="colors().symbol"
+              />
+              <rect
+                [attr.x]="lineSpacing() * 1.2"
+                [attr.y]="lineSpacing() * 1"
+                [attr.width]="lineSpacing() * 0.8"
+                [attr.height]="lineSpacing() * 2"
+                [attr.fill]="colors().symbol"
+              />
+            }
+          }
+        </g>
+      }
+
+      <!-- Key Signature -->
+      @if (showKeySignature()) {
+        @for (acc of keySignatureAccidentals(); track $index) {
+          <text
+            [attr.x]="acc.x"
+            [attr.y]="acc.y + lineSpacing() * 0.8"
+            [attr.font-size]="lineSpacing() * 2"
+            [attr.fill]="colors().symbol"
+            font-family="serif"
+            class="select-none"
+          >{{ acc.type === 'sharp' ? '♯' : '♭' }}</text>
+        }
+      }
+
+      <!-- Time Signature -->
+      @if (showTimeSignature() && timeSignature()) {
+        @if (getTimeSignatureParts(); as parts) {
+          @if (parts.bottom) {
+            <!-- Numeric time signature -->
+            <text
+              [attr.x]="timeSignaturePosition()"
+              [attr.y]="staffTop() + lineSpacing() * 1.5"
+              [attr.font-size]="lineSpacing() * 2.5"
+              [attr.fill]="colors().symbol"
+              font-family="serif"
+              font-weight="bold"
+              class="select-none"
+            >{{ parts.top }}</text>
+            <text
+              [attr.x]="timeSignaturePosition()"
+              [attr.y]="staffTop() + lineSpacing() * 3.5"
+              [attr.font-size]="lineSpacing() * 2.5"
+              [attr.fill]="colors().symbol"
+              font-family="serif"
+              font-weight="bold"
+              class="select-none"
+            >{{ parts.bottom }}</text>
+          } @else {
+            <!-- Common time or cut time -->
+            <text
+              [attr.x]="timeSignaturePosition()"
+              [attr.y]="staffTop() + lineSpacing() * 2.8"
+              [attr.font-size]="lineSpacing() * 4"
+              [attr.fill]="colors().symbol"
+              font-family="serif"
+              class="select-none"
+            >{{ parts.top === 'C' ? '𝄴' : '𝄵' }}</text>
+          }
+        }
+      }
+
+      <!-- Bar Lines -->
+      @if (showBarLines()) {
+        @for (x of barLinePositions(); track x; let last = $last) {
+          @if (!last || showEndBarLine()) {
+            <line
+              [attr.x1]="x"
+              [attr.y1]="staffTop()"
+              [attr.x2]="x"
+              [attr.y2]="staffTop() + lineSpacing() * 4"
+              [attr.stroke]="colors().line"
+              [attr.stroke-width]="last && showEndBarLine() ? 2 : 1"
+            />
+            @if (last && showEndBarLine()) {
+              <!-- Double bar line at end -->
+              <line
+                [attr.x1]="x - 4"
+                [attr.y1]="staffTop()"
+                [attr.x2]="x - 4"
+                [attr.y2]="staffTop() + lineSpacing() * 4"
+                [attr.stroke]="colors().line"
+                stroke-width="1"
+              />
+            }
+          }
+        }
+      }
+
+      <!-- Content slot for notes -->
+      <g class="staff-content">
+        <ng-content></ng-content>
+      </g>
+    </g>
+
+    <!-- Bass Staff (for grand staff) -->
+    @if (grandStaff()) {
+      <g [attr.transform]="'translate(0, ' + (height() + 20) + ')'">
+        <!-- Staff Lines -->
+        @for (y of staffLines(); track y) {
+          <line
+            x1="10"
+            [attr.y1]="y"
+            [attr.x2]="width() - 10"
+            [attr.y2]="y"
+            [attr.stroke]="colors().line"
+            stroke-width="1"
+          />
+        }
+
+        <!-- Bass Clef -->
+        @if (showClef()) {
+          <text
+            x="12"
+            [attr.y]="staffTop() + lineSpacing() * 2"
+            [attr.font-size]="lineSpacing() * 4"
+            [attr.fill]="colors().symbol"
+            font-family="serif"
+            class="select-none"
+          >𝄢</text>
+        }
+
+        <!-- Key Signature (adjusted for bass clef) -->
+        @if (showKeySignature()) {
+          @for (acc of keySignatureAccidentals(); track $index) {
+            <text
+              [attr.x]="acc.x"
+              [attr.y]="acc.y + lineSpacing() + lineSpacing() * 0.8"
+              [attr.font-size]="lineSpacing() * 2"
+              [attr.fill]="colors().symbol"
+              font-family="serif"
+              class="select-none"
+            >{{ acc.type === 'sharp' ? '♯' : '♭' }}</text>
+          }
+        }
+
+        <!-- Time Signature -->
+        @if (showTimeSignature() && timeSignature()) {
+          @if (getTimeSignatureParts(); as parts) {
+            @if (parts.bottom) {
+              <text
+                [attr.x]="timeSignaturePosition()"
+                [attr.y]="staffTop() + lineSpacing() * 1.5"
+                [attr.font-size]="lineSpacing() * 2.5"
+                [attr.fill]="colors().symbol"
+                font-family="serif"
+                font-weight="bold"
+                class="select-none"
+              >{{ parts.top }}</text>
+              <text
+                [attr.x]="timeSignaturePosition()"
+                [attr.y]="staffTop() + lineSpacing() * 3.5"
+                [attr.font-size]="lineSpacing() * 2.5"
+                [attr.fill]="colors().symbol"
+                font-family="serif"
+                font-weight="bold"
+                class="select-none"
+              >{{ parts.bottom }}</text>
+            } @else {
+              <text
+                [attr.x]="timeSignaturePosition()"
+                [attr.y]="staffTop() + lineSpacing() * 2.8"
+                [attr.font-size]="lineSpacing() * 4"
+                [attr.fill]="colors().symbol"
+                font-family="serif"
+                class="select-none"
+              >{{ parts.top === 'C' ? '𝄴' : '𝄵' }}</text>
+            }
+          }
+        }
+
+        <!-- Bar Lines -->
+        @if (showBarLines()) {
+          @for (x of barLinePositions(); track x; let last = $last) {
+            @if (!last || showEndBarLine()) {
+              <line
+                [attr.x1]="x"
+                [attr.y1]="staffTop()"
+                [attr.x2]="x"
+                [attr.y2]="staffTop() + lineSpacing() * 4"
+                [attr.stroke]="colors().line"
+                [attr.stroke-width]="last && showEndBarLine() ? 2 : 1"
+              />
+              @if (last && showEndBarLine()) {
+                <line
+                  [attr.x1]="x - 4"
+                  [attr.y1]="staffTop()"
+                  [attr.x2]="x - 4"
+                  [attr.y2]="staffTop() + lineSpacing() * 4"
+                  [attr.stroke]="colors().line"
+                  stroke-width="1"
+                />
+              }
+            }
+          }
+        }
+
+        <!-- Content slot for bass notes -->
+        <g class="staff-content-bass">
+          <ng-content select="[bass]"></ng-content>
+        </g>
+      </g>
+
+      <!-- Brace for grand staff -->
+      <path
+        [attr.d]="'M 8 ' + staffTop() + ' Q 0 ' + (height() + 10) + ' 8 ' + (height() * 2 + 20 - staffTop())"
+        [attr.stroke]="colors().symbol"
+        stroke-width="3"
+        fill="none"
+      />
+    }
+  </svg>
+</div>
+

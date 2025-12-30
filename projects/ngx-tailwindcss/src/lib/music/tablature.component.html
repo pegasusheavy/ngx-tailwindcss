@@ -1,0 +1,193 @@
+<div [class]="containerClasses()">
+  <svg
+    [attr.width]="width()"
+    [attr.height]="height()"
+    [attr.viewBox]="'0 0 ' + width() + ' ' + height()"
+    class="block"
+  >
+    <!-- Background -->
+    @if (colors().background !== 'transparent') {
+      <rect
+        x="0"
+        y="0"
+        [attr.width]="width()"
+        [attr.height]="height()"
+        [attr.fill]="colors().background"
+      />
+    }
+
+    <!-- String Labels -->
+    @if (showStringLabels()) {
+      @for (label of stringLabels(); track $index) {
+        <text
+          x="15"
+          [attr.y]="getStringY($index + 1) + 4"
+          [attr.fill]="colors().text"
+          font-size="12"
+          font-weight="bold"
+          text-anchor="middle"
+          font-family="monospace"
+          class="select-none"
+        >{{ label }}</text>
+      }
+      <!-- TAB label -->
+      <text
+        x="15"
+        y="12"
+        [attr.fill]="colors().text"
+        font-size="10"
+        font-weight="bold"
+        text-anchor="middle"
+        class="select-none opacity-60"
+      >TAB</text>
+    }
+
+    <!-- String Lines -->
+    @for (string of strings(); track string) {
+      <line
+        [attr.x1]="showStringLabels() ? 30 : 10"
+        [attr.y1]="getStringY(string)"
+        [attr.x2]="width() - 10"
+        [attr.y2]="getStringY(string)"
+        [attr.stroke]="colors().line"
+        stroke-width="1"
+      />
+    }
+
+    <!-- Measures -->
+    @for (measure of measures(); track $index; let measureIndex = $index) {
+      <g
+        [class.cursor-pointer]="interactive()"
+        (click)="onMeasureClick(measureIndex)"
+      >
+        <!-- Measure Number -->
+        @if (showMeasureNumbers()) {
+          <text
+            [attr.x]="getMeasureX(measureIndex) + 5"
+            y="12"
+            [attr.fill]="colors().text"
+            font-size="10"
+            class="select-none opacity-50"
+          >{{ measureIndex + 1 }}</text>
+        }
+
+        <!-- Bar Line at start -->
+        @if (showBarLines() && measureIndex > 0) {
+          <line
+            [attr.x1]="getMeasureX(measureIndex)"
+            [attr.y1]="getStringY(1) - 5"
+            [attr.x2]="getMeasureX(measureIndex)"
+            [attr.y2]="getStringY(stringCount()) + 5"
+            [attr.stroke]="colors().barLine"
+            stroke-width="1"
+          />
+        }
+
+        <!-- Notes in this measure -->
+        @for (beat of beats(); track beat) {
+          @for (note of getNoteAtBeat(measure, beat); track $index) {
+            <g
+              [class.cursor-pointer]="interactive()"
+              (click)="onNoteClick(measureIndex, beat, note); $event.stopPropagation()"
+            >
+              <!-- Note background (for readability) -->
+              <rect
+                [attr.x]="getBeatX(measureIndex, beat) - 6"
+                [attr.y]="getStringY(note.string) - 7"
+                width="12"
+                height="14"
+                [attr.fill]="colors().background"
+              />
+
+              <!-- Fret Number -->
+              <text
+                [attr.x]="getBeatX(measureIndex, beat)"
+                [attr.y]="getStringY(note.string) + 4"
+                [attr.fill]="colors().note"
+                font-size="12"
+                font-weight="500"
+                text-anchor="middle"
+                font-family="monospace"
+                class="select-none"
+              >{{ note.fret }}</text>
+
+              <!-- Technique Symbol -->
+              @if (note.technique) {
+                <text
+                  [attr.x]="getBeatX(measureIndex, beat) + 10"
+                  [attr.y]="getStringY(note.string) + 2"
+                  [attr.fill]="colors().technique"
+                  font-size="10"
+                  font-weight="bold"
+                  class="select-none"
+                >{{ getTechniqueSymbol(note.technique) }}</text>
+
+                <!-- Bend arrow -->
+                @if (note.technique === 'bend' && note.bendTarget) {
+                  <path
+                    [attr.d]="'M ' + (getBeatX(measureIndex, beat) + 6) + ' ' + (getStringY(note.string) - 2) + ' q 5 -8 10 0'"
+                    [attr.stroke]="colors().technique"
+                    stroke-width="1.5"
+                    fill="none"
+                  />
+                  <text
+                    [attr.x]="getBeatX(measureIndex, beat) + 20"
+                    [attr.y]="getStringY(note.string) - 6"
+                    [attr.fill]="colors().technique"
+                    font-size="9"
+                    class="select-none"
+                  >{{ note.bendTarget }}</text>
+                }
+
+                <!-- Slide line -->
+                @if (note.technique === 'slide' && note.slideTarget) {
+                  <line
+                    [attr.x1]="getBeatX(measureIndex, beat) + 8"
+                    [attr.y1]="getStringY(note.string)"
+                    [attr.x2]="getBeatX(measureIndex, beat) + 20"
+                    [attr.y2]="getStringY(note.string) - 4"
+                    [attr.stroke]="colors().technique"
+                    stroke-width="1.5"
+                  />
+                }
+              }
+            </g>
+          }
+        }
+
+        <!-- End bar line for last measure -->
+        @if (showBarLines() && measureIndex === measures().length - 1) {
+          <line
+            [attr.x1]="getMeasureX(measureIndex) + measureWidth() - 5"
+            [attr.y1]="getStringY(1) - 5"
+            [attr.x2]="getMeasureX(measureIndex) + measureWidth() - 5"
+            [attr.y2]="getStringY(stringCount()) + 5"
+            [attr.stroke]="colors().barLine"
+            stroke-width="2"
+          />
+          <line
+            [attr.x1]="getMeasureX(measureIndex) + measureWidth() - 9"
+            [attr.y1]="getStringY(1) - 5"
+            [attr.x2]="getMeasureX(measureIndex) + measureWidth() - 9"
+            [attr.y2]="getStringY(stringCount()) + 5"
+            [attr.stroke]="colors().barLine"
+            stroke-width="1"
+          />
+        }
+      </g>
+    }
+
+    <!-- Empty state -->
+    @if (measures().length === 0) {
+      <text
+        [attr.x]="width() / 2"
+        [attr.y]="height() / 2"
+        [attr.fill]="colors().text"
+        font-size="14"
+        text-anchor="middle"
+        class="select-none opacity-50"
+      >No tablature data</text>
+    }
+  </svg>
+</div>
+
