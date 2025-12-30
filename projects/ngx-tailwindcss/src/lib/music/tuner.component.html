@@ -1,0 +1,139 @@
+<div [class]="containerClasses()">
+  <!-- Note Display -->
+  <div class="text-center">
+    <span [class]="noteDisplayClasses()">{{ currentNote() }}</span>
+    @if (showOctave() && currentNote() !== '--') {
+      <span class="text-2xl text-slate-400 ml-1">{{ currentOctave() }}</span>
+    }
+  </div>
+
+  <!-- Cents Display -->
+  @if (showCents() && currentNote() !== '--') {
+    <div [class]="centsDisplayClasses()">
+      {{ currentCents() > 0 ? '+' : '' }}{{ currentCents() }} cents
+    </div>
+  }
+
+  <!-- Tuning Meter -->
+  @if (showMeter()) {
+    <div class="w-full max-w-xs">
+      <!-- Meter labels -->
+      <div class="flex justify-between text-xs text-slate-500 mb-1">
+        <span>♭</span>
+        <span>●</span>
+        <span>♯</span>
+      </div>
+
+      <!-- Meter bar -->
+      <div class="relative h-4 bg-slate-800 rounded-full overflow-hidden">
+        <!-- Center marker -->
+        <div class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-600 -translate-x-1/2 z-10"></div>
+
+        <!-- Tolerance zone -->
+        <div
+          class="absolute top-0 bottom-0 bg-green-900/30"
+          [style.left.%]="50 - tolerance()"
+          [style.width.%]="tolerance() * 2"
+        ></div>
+
+        <!-- Indicator -->
+        @if (currentNote() !== '--') {
+          <div
+            class="absolute top-0 bottom-0 w-2 rounded-full transition-all duration-75"
+            [style.left.%]="meterPosition()"
+            [style.backgroundColor]="meterColor()"
+            [style.transform]="'translateX(-50%)'"
+          ></div>
+        }
+      </div>
+
+      <!-- Tick marks -->
+      <div class="flex justify-between text-[10px] text-slate-600 mt-1 px-2">
+        <span>-50</span>
+        <span>-25</span>
+        <span>0</span>
+        <span>+25</span>
+        <span>+50</span>
+      </div>
+    </div>
+  }
+
+  <!-- Frequency Display -->
+  @if (showFrequency() && currentFrequency() > 0) {
+    <div class="text-sm text-slate-400 font-mono">
+      {{ currentFrequency() }} Hz
+    </div>
+  }
+
+  <!-- String Selector (for instrument modes) -->
+  @if (showStringSelector() && tuningStrings().length > 0) {
+    <div class="flex items-center gap-2 mt-2">
+      @for (string of tuningStrings(); track $index; let i = $index) {
+        <button
+          type="button"
+          class="w-10 h-10 rounded-full font-mono text-sm font-bold transition-all"
+          [class.bg-blue-600]="selectedString() === i"
+          [class.text-white]="selectedString() === i"
+          [class.bg-slate-700]="selectedString() !== i"
+          [class.text-slate-300]="selectedString() !== i"
+          [class.hover:bg-slate-600]="selectedString() !== i"
+          (click)="selectString(i)"
+        >
+          {{ string }}
+        </button>
+      }
+    </div>
+
+    @if (selectedString() >= 0 && tuningStrings()[selectedString()]) {
+      <div class="text-xs text-slate-500">
+        Target: {{ getExpectedFrequency(tuningStrings()[selectedString()]).toFixed(1) }} Hz
+      </div>
+    }
+  }
+
+  <!-- In Tune Indicator -->
+  @if (isInTune() && currentNote() !== '--' && isListening()) {
+    <div class="flex items-center gap-2 text-green-400">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+      </svg>
+      <span class="font-medium">In Tune!</span>
+    </div>
+  }
+
+  <!-- Start/Stop Button -->
+  <button
+    type="button"
+    class="px-6 py-3 rounded-xl font-medium transition-all flex items-center gap-2"
+    [class.bg-green-600]="!isListening()"
+    [class.hover:bg-green-500]="!isListening()"
+    [class.bg-red-600]="isListening()"
+    [class.hover:bg-red-500]="isListening()"
+    [class.text-white]="true"
+    (click)="toggleListening()"
+  >
+    @if (isListening()) {
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <rect x="5" y="4" width="3" height="12" rx="1"></rect>
+        <rect x="12" y="4" width="3" height="12" rx="1"></rect>
+      </svg>
+      <span>Stop</span>
+    } @else {
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"></path>
+      </svg>
+      <span>Start Tuner</span>
+    }
+  </button>
+
+  <!-- Microphone Permission Notice -->
+  @if (!isListening()) {
+    <p class="text-xs text-slate-500 text-center max-w-xs">
+      Click Start to enable microphone access and begin tuning
+    </p>
+  }
+</div>
+
+
+
+

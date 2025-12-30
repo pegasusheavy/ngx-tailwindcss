@@ -1,0 +1,334 @@
+<div [class]="containerClasses()">
+  <!-- Sync Indicator (Enhanced) -->
+  @if (showSync()) {
+    <div class="flex items-center gap-2 w-full justify-between mb-1">
+      <div class="flex items-center gap-1.5">
+        <!-- Sync Status Icon -->
+        <div
+          class="w-5 h-5 rounded-full flex items-center justify-center transition-colors"
+          [class]="syncStatusClass()"
+        >
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" [attr.d]="syncStatusIcon()"></path>
+          </svg>
+        </div>
+        <span class="text-[10px]" [class]="labelClasses()">
+          {{ syncStatusText() }}
+        </span>
+      </div>
+
+      <!-- Sync Toggle Button -->
+      <button
+        type="button"
+        class="px-2 py-0.5 rounded text-[10px] font-medium transition-colors"
+        [class.bg-green-600]="isSynced()"
+        [class.text-white]="isSynced()"
+        [class.bg-slate-700]="!isSynced()"
+        [class.text-slate-400]="!isSynced()"
+        [class.hover:bg-slate-600]="!isSynced()"
+        [disabled]="disabled()"
+        (click)="toggleSync()"
+        title="Toggle Sync"
+      >
+        @if (isSynced()) {
+          SYNC ON
+        } @else {
+          SYNC
+        }
+      </button>
+    </div>
+
+    <!-- External Sync BPM Display (if different) -->
+    @if (isSynced() && syncBpm() && syncBpm() !== internalBpm()) {
+      <div class="flex items-center justify-center gap-1 text-[10px] mb-1" [class]="labelClasses()">
+        <span>Ext:</span>
+        <span class="font-mono">{{ syncBpm() }}</span>
+        <span>BPM</span>
+      </div>
+    }
+  }
+
+  <!-- Beat Indicator -->
+  @if (showBeatIndicator()) {
+    <div
+      class="w-3 h-3 rounded-full transition-all duration-100"
+      [class.bg-red-500]="beatActive()"
+      [class.scale-110]="beatActive()"
+      [class.shadow-lg]="beatActive()"
+      [class.shadow-red-500/50]="beatActive()"
+      [class.bg-slate-600]="!beatActive()"
+    ></div>
+  }
+
+  <!-- Main BPM Display -->
+  <div class="flex items-center gap-2">
+    <!-- Decrement Button -->
+    @if (editable() && variant() !== 'minimal') {
+      <button
+        type="button"
+        class="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || internalBpm() <= minBpm()"
+        (click)="incrementBpm(-step())"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M20 12H4"></path>
+        </svg>
+      </button>
+    }
+
+    <!-- BPM Value -->
+    <div class="relative">
+      @if (isEditing()) {
+        <input
+          type="number"
+          [ngModel]="editValue()"
+          (ngModelChange)="editValue.set($event)"
+          (blur)="finishEditing()"
+          (keydown)="onEditKeydown($event)"
+          [min]="minBpm()"
+          [max]="maxBpm()"
+          class="w-24 text-center bg-transparent border-b-2 border-blue-500 outline-none"
+          [class]="bpmValueClasses()"
+          autofocus
+        />
+      } @else {
+        <div
+          [class]="bpmValueClasses()"
+          [class.cursor-pointer]="editable() && !disabled()"
+          (click)="editable() ? startEditing() : null"
+          title="Click to edit"
+        >
+          {{ bpmDisplay() }}
+        </div>
+      }
+    </div>
+
+    <!-- Increment Button -->
+    @if (editable() && variant() !== 'minimal') {
+      <button
+        type="button"
+        class="w-8 h-8 rounded-full flex items-center justify-center transition-colors"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || internalBpm() >= maxBpm()"
+        (click)="incrementBpm(step())"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+        </svg>
+      </button>
+    }
+  </div>
+
+  <!-- BPM Label & Additional Info -->
+  <div class="flex items-center justify-center gap-2">
+    <span [class]="labelClasses()">BPM</span>
+    @if (showMsPerBeat()) {
+      <span class="text-[10px] font-mono opacity-60" [class]="labelClasses()">
+        ({{ msPerBeat() }}ms)
+      </span>
+    }
+  </div>
+
+  <!-- Tempo Marking -->
+  @if (showTempoMarking() || variant() === 'analog') {
+    <span
+      class="text-sm italic"
+      [class.text-amber-500/70]="variant() === 'analog'"
+      [class.text-slate-500]="variant() !== 'analog'"
+    >{{ tempoMarking() }}</span>
+  }
+
+  <!-- Enhanced BPM Slider -->
+  @if (showSlider()) {
+    <div class="w-full mt-2 relative">
+      <!-- Slider Track Background with Marks -->
+      <div class="relative h-6">
+        <!-- Main Slider -->
+        <input
+          type="range"
+          [value]="internalBpm()"
+          (input)="onSliderChange($event)"
+          [min]="minBpm()"
+          [max]="maxBpm()"
+          [step]="step()"
+          class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer absolute top-2"
+          style="accent-color: var(--slider-color, #3B82F6);"
+          [disabled]="disabled() || !editable()"
+        />
+
+        <!-- Filled portion -->
+        <div
+          class="absolute top-2 left-0 h-2 rounded-l-lg pointer-events-none"
+          [style.width.%]="sliderPercent()"
+          [class.bg-blue-500]="variant() === 'default' || variant() === 'minimal'"
+          [class.bg-red-500]="variant() === 'led'"
+          [class.bg-cyan-500]="variant() === 'digital'"
+          [class.bg-amber-500]="variant() === 'analog'"
+        ></div>
+
+        <!-- Value indicator on track -->
+        @if (showSliderValue()) {
+          <div
+            class="absolute -top-4 transform -translate-x-1/2 text-[10px] font-mono px-1 rounded transition-all"
+            [style.left.%]="sliderPercent()"
+            [class.bg-blue-500]="variant() === 'default' || variant() === 'minimal'"
+            [class.bg-red-500]="variant() === 'led'"
+            [class.bg-cyan-500]="variant() === 'digital'"
+            [class.bg-amber-500]="variant() === 'analog'"
+            [class.text-white]="variant() !== 'minimal'"
+          >
+            {{ internalBpm() }}
+          </div>
+        }
+      </div>
+
+      <!-- Slider Marks -->
+      @if (showSliderMarks()) {
+        <div class="relative h-3 mt-0.5">
+          @for (mark of sliderMarks(); track mark.value) {
+            <div
+              class="absolute flex flex-col items-center"
+              [style.left.%]="mark.percent"
+              style="transform: translateX(-50%)"
+            >
+              <div class="w-px h-1 bg-slate-600"></div>
+              <span class="text-[8px] text-slate-600">{{ mark.label }}</span>
+            </div>
+          }
+        </div>
+      }
+
+      <!-- Min/Max labels -->
+      <div class="flex justify-between text-[10px] text-slate-600 mt-1">
+        <span>{{ minBpm() }}</span>
+        <span>{{ maxBpm() }}</span>
+      </div>
+    </div>
+  }
+
+  <!-- Control Buttons -->
+  <div class="flex items-center gap-2 flex-wrap justify-center">
+    <!-- Half/Double Tempo -->
+    @if (showHalfDouble()) {
+      <button
+        type="button"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable() || internalBpm() / 2 < minBpm()"
+        (click)="halfTempo()"
+        title="Half tempo (÷2)"
+      >
+        ÷2
+      </button>
+      <button
+        type="button"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable() || internalBpm() * 2 > maxBpm()"
+        (click)="doubleTempo()"
+        title="Double tempo (×2)"
+      >
+        ×2
+      </button>
+    }
+
+    <!-- Triple/Quarter Tempo -->
+    @if (showTripleQuarter()) {
+      <button
+        type="button"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable() || internalBpm() / 3 < minBpm()"
+        (click)="thirdTempo()"
+        title="Third tempo (÷3)"
+      >
+        ÷3
+      </button>
+      <button
+        type="button"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable() || internalBpm() * 3 > maxBpm()"
+        (click)="tripleTempo()"
+        title="Triple tempo (×3)"
+      >
+        ×3
+      </button>
+    }
+
+    <!-- Tap Tempo -->
+    @if (showTapTempo()) {
+      <button
+        type="button"
+        [class]="buttonClasses()"
+        class="relative overflow-hidden"
+        [disabled]="disabled() || !editable()"
+        (click)="onTap()"
+        title="Tap tempo"
+      >
+        TAP
+        @if (tapCount() > 0) {
+          <span class="absolute -top-1 -right-1 w-4 h-4 bg-blue-500 rounded-full text-[10px] text-white flex items-center justify-center">
+            {{ tapCount() }}
+          </span>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Fine Controls (large sizes) -->
+  @if (size() === 'lg' || size() === 'xl') {
+    <div class="flex items-center gap-1 mt-1">
+      <button
+        type="button"
+        class="px-2 py-0.5 rounded text-xs transition-colors"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable()"
+        (click)="incrementBpm(-10)"
+      >
+        -10
+      </button>
+      <button
+        type="button"
+        class="px-2 py-0.5 rounded text-xs transition-colors"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable()"
+        (click)="incrementBpm(-1)"
+      >
+        -1
+      </button>
+      <button
+        type="button"
+        class="px-2 py-0.5 rounded text-xs transition-colors"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable()"
+        (click)="incrementBpm(1)"
+      >
+        +1
+      </button>
+      <button
+        type="button"
+        class="px-2 py-0.5 rounded text-xs transition-colors"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable()"
+        (click)="incrementBpm(10)"
+      >
+        +10
+      </button>
+    </div>
+  }
+
+  <!-- Quick Tempo Presets (xl size) -->
+  @if (size() === 'xl' && editable()) {
+    <div class="flex flex-wrap gap-1 mt-2 justify-center">
+      @for (preset of [60, 80, 100, 120, 140, 160, 180]; track preset) {
+        <button
+          type="button"
+          class="px-1.5 py-0.5 rounded text-[10px] transition-colors"
+          [class]="internalBpm() === preset ? 'bg-blue-500 text-white' : 'bg-slate-700 text-slate-400 hover:bg-slate-600'"
+          [disabled]="disabled()"
+          (click)="setBpmValue(preset)"
+        >
+          {{ preset }}
+        </button>
+      }
+    </div>
+  }
+</div>

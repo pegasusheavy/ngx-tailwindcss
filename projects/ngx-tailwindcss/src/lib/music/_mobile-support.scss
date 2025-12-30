@@ -1,0 +1,315 @@
+/**
+ * Mobile Support Styles for Music Components
+ *
+ * Provides responsive layouts, touch-friendly sizing, and accessibility improvements.
+ */
+
+// ============================================================================
+// RESPONSIVE BREAKPOINTS
+// ============================================================================
+
+// Mobile-first breakpoints (matches Tailwind defaults)
+$breakpoints: (
+  'xs': 475px,
+  'sm': 640px,
+  'md': 768px,
+  'lg': 1024px,
+  'xl': 1280px,
+  '2xl': 1536px,
+);
+
+@mixin respond-to($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (min-width: map-get($breakpoints, $breakpoint)) {
+      @content;
+    }
+  }
+}
+
+@mixin respond-below($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+    @media (max-width: #{map-get($breakpoints, $breakpoint) - 1px}) {
+      @content;
+    }
+  }
+}
+
+// ============================================================================
+// RESPONSIVE LAYOUT UTILITIES
+// ============================================================================
+
+.tw-music-responsive {
+  // Stack components vertically on mobile
+  &-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--tw-music-gap-md, 12px);
+
+    @include respond-to('md') {
+      flex-direction: row;
+    }
+  }
+
+  // Grid layout that adapts to screen size
+  &-grid {
+    display: grid;
+    gap: var(--tw-music-gap-md, 12px);
+    grid-template-columns: 1fr;
+
+    @include respond-to('sm') {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to('md') {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    @include respond-to('lg') {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+
+  // Mixer layout - single channel on mobile, multiple on larger screens
+  &-mixer {
+    display: grid;
+    gap: var(--tw-music-gap-sm, 8px);
+    grid-template-columns: 1fr;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+
+    @include respond-to('sm') {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include respond-to('md') {
+      grid-template-columns: repeat(4, 1fr);
+    }
+
+    @include respond-to('lg') {
+      grid-template-columns: repeat(8, 1fr);
+    }
+
+    @include respond-to('xl') {
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+    }
+  }
+
+  // Full width on mobile
+  &-full-mobile {
+    width: 100%;
+
+    @include respond-to('md') {
+      width: auto;
+    }
+  }
+
+  // Hidden on mobile
+  &-hide-mobile {
+    display: none;
+
+    @include respond-to('md') {
+      display: block;
+    }
+  }
+
+  // Show only on mobile
+  &-show-mobile {
+    display: block;
+
+    @include respond-to('md') {
+      display: none;
+    }
+  }
+}
+
+// ============================================================================
+// TOUCH-FRIENDLY SIZING
+// ============================================================================
+
+// Minimum touch target size (44px recommended by Apple/Google)
+$touch-target-min: 44px;
+$touch-target-comfortable: 48px;
+
+.tw-music-touch {
+  // Touch-friendly button sizing
+  &-target {
+    min-width: $touch-target-min;
+    min-height: $touch-target-min;
+  }
+
+  &-target-comfortable {
+    min-width: $touch-target-comfortable;
+    min-height: $touch-target-comfortable;
+  }
+
+  // Expand touch area without changing visual size
+  &-expand {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -8px;
+      z-index: 1;
+    }
+  }
+
+  &-expand-lg {
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      z-index: 1;
+    }
+  }
+}
+
+// ============================================================================
+// TOUCH GUARD / ACCIDENTAL TOUCH PREVENTION
+// ============================================================================
+
+.tw-music-touch-guard {
+  // Require long press to activate (prevent accidental touches)
+  &-longpress {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  // Require deliberate drag (larger threshold)
+  &-drag {
+    touch-action: pan-x pan-y;
+  }
+
+  // Lock to single axis
+  &-lock-x {
+    touch-action: pan-x;
+  }
+
+  &-lock-y {
+    touch-action: pan-y;
+  }
+
+  // Disable all touch manipulation
+  &-disabled {
+    touch-action: none;
+    pointer-events: none;
+  }
+
+  // Add visual feedback for touch areas
+  &-highlight {
+    &:active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+// ============================================================================
+// SWIPE GESTURES
+// ============================================================================
+
+.tw-music-swipeable {
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+
+  > * {
+    scroll-snap-align: start;
+  }
+}
+
+.tw-music-swipeable-y {
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: y mandatory;
+
+  > * {
+    scroll-snap-align: start;
+  }
+}
+
+// ============================================================================
+// SAFE AREA INSETS (notched devices)
+// ============================================================================
+
+.tw-music-safe-area {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+
+  &-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  &-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  &-all {
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  }
+}
+
+// ============================================================================
+// LANDSCAPE / PORTRAIT SPECIFIC
+// ============================================================================
+
+@media (orientation: landscape) {
+  .tw-music-landscape-only {
+    display: block;
+  }
+
+  .tw-music-portrait-only {
+    display: none;
+  }
+
+  // Adjust for limited vertical space in landscape
+  .tw-music-landscape-compact {
+    --tw-music-meter-height: 100px;
+    --tw-music-fader-height: 120px;
+    --tw-music-piano-white-key-height: 80px;
+  }
+}
+
+@media (orientation: portrait) {
+  .tw-music-landscape-only {
+    display: none;
+  }
+
+  .tw-music-portrait-only {
+    display: block;
+  }
+}
+
+// ============================================================================
+// REDUCED MOTION
+// ============================================================================
+
+@media (prefers-reduced-motion: reduce) {
+  .tw-music-animated {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+// ============================================================================
+// DARK MODE SUPPORT
+// ============================================================================
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tw-music-bg-default: #0f172a;
+    --tw-music-text-default: #f1f5f9;
+    --tw-music-border-default: #334155;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --tw-music-bg-default: #ffffff;
+    --tw-music-text-default: #1e293b;
+    --tw-music-border-default: #e2e8f0;
+  }
+}
+

@@ -1,0 +1,397 @@
+<div class="score-editor" [class.print-mode]="variant() === 'print'">
+  <!-- Toolbar -->
+  @if (showToolbar()) {
+    <div class="toolbar">
+      <!-- File operations -->
+      <div class="toolbar-group">
+        <button type="button" class="toolbar-btn" (click)="showExportDialog.set(true)" title="Export">
+          <span class="icon">📥</span>
+          <span class="label">Export</span>
+        </button>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <!-- Edit operations -->
+      <div class="toolbar-group">
+        <button type="button" class="toolbar-btn" [disabled]="!canUndo()" (click)="undo()" title="Undo (Ctrl+Z)">
+          <span class="icon">↩</span>
+        </button>
+        <button type="button" class="toolbar-btn" [disabled]="!canRedo()" (click)="redo()" title="Redo (Ctrl+Shift+Z)">
+          <span class="icon">↪</span>
+        </button>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <!-- Duration selection -->
+      <div class="toolbar-group durations">
+        @for (dur of durationOptions; track dur) {
+          <button
+            type="button"
+            class="toolbar-btn duration-btn"
+            [class.active]="currentDuration() === dur"
+            (click)="currentDuration.set(dur)"
+            [title]="dur | titlecase"
+          >
+            <span class="duration-icon" [attr.data-duration]="dur"></span>
+          </button>
+        }
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <!-- Accidentals -->
+      <div class="toolbar-group">
+        <button
+          type="button"
+          class="toolbar-btn"
+          [class.active]="currentAccidental() === 'sharp'"
+          (click)="currentAccidental.set(currentAccidental() === 'sharp' ? null : 'sharp')"
+          title="Sharp"
+        >♯</button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          [class.active]="currentAccidental() === 'flat'"
+          (click)="currentAccidental.set(currentAccidental() === 'flat' ? null : 'flat')"
+          title="Flat"
+        >♭</button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          [class.active]="currentAccidental() === 'natural'"
+          (click)="currentAccidental.set(currentAccidental() === 'natural' ? null : 'natural')"
+          title="Natural"
+        >♮</button>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <!-- Modifiers -->
+      <div class="toolbar-group">
+        <button
+          type="button"
+          class="toolbar-btn"
+          [class.active]="isDotted()"
+          (click)="toggleDotted()"
+          title="Dotted"
+        >.</button>
+        <button
+          type="button"
+          class="toolbar-btn"
+          [class.active]="isRest()"
+          (click)="toggleRest()"
+          title="Rest"
+        >𝄽</button>
+      </div>
+
+      <div class="toolbar-divider"></div>
+
+      <!-- Voice selection -->
+      <div class="toolbar-group voices">
+        @for (voice of [1, 2, 3, 4]; track voice) {
+          <button
+            type="button"
+            class="toolbar-btn voice-btn"
+            [class.active]="currentVoice() === voice"
+            [style.--voice-color]="voiceColors[voice]"
+            (click)="setVoice(voice)"
+            title="Voice {{ voice }}"
+          >{{ voice }}</button>
+        }
+      </div>
+
+      <div class="toolbar-spacer"></div>
+
+      <!-- Transpose -->
+      <div class="toolbar-group">
+        <button type="button" class="toolbar-btn" (click)="showTransposeDialog.set(true)" title="Transpose">
+          <span class="icon">↕</span>
+          <span class="label">Transpose</span>
+        </button>
+      </div>
+    </div>
+  }
+
+  <div class="editor-content">
+    <!-- Part Panel -->
+    @if (showPartPanel()) {
+      <div class="part-panel">
+        <div class="panel-header">
+          <span>Parts</span>
+          <button type="button" class="add-part-btn" (click)="showPartDialog.set(true)" title="Add Part">+</button>
+        </div>
+
+        <div class="part-list">
+          @for (part of parts(); track part.id) {
+            <div
+              class="part-item"
+              [class.selected]="selectedPartId() === part.id"
+              (click)="selectPart(part.id)"
+            >
+              <div class="part-color" [style.background]="part.color"></div>
+              <div class="part-info">
+                <span class="part-name">{{ part.abbreviation }}</span>
+                <span class="part-full-name">{{ part.name }}</span>
+              </div>
+              <div class="part-controls">
+                <button
+                  type="button"
+                  class="part-btn"
+                  [class.active]="part.muted"
+                  (click)="updatePart(part.id, { muted: !part.muted }); $event.stopPropagation()"
+                  title="Mute"
+                >M</button>
+                <button
+                  type="button"
+                  class="part-btn"
+                  [class.active]="part.solo"
+                  (click)="updatePart(part.id, { solo: !part.solo }); $event.stopPropagation()"
+                  title="Solo"
+                >S</button>
+                <button
+                  type="button"
+                  class="part-btn delete"
+                  (click)="removePart(part.id); $event.stopPropagation()"
+                  [disabled]="parts().length <= 1"
+                  title="Remove"
+                >×</button>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Part presets -->
+        <div class="part-presets">
+          <select (change)="addPart($any($event.target).value); $any($event.target).value = ''">
+            <option value="">Add instrument...</option>
+            <optgroup label="Keyboard">
+              <option value="piano-treble">Piano (Treble)</option>
+              <option value="piano-bass">Piano (Bass)</option>
+            </optgroup>
+            <optgroup label="Strings">
+              <option value="violin">Violin</option>
+              <option value="viola">Viola</option>
+              <option value="cello">Cello</option>
+            </optgroup>
+            <optgroup label="Woodwinds">
+              <option value="flute">Flute</option>
+              <option value="clarinet-bb">Clarinet in Bb</option>
+            </optgroup>
+            <optgroup label="Brass">
+              <option value="trumpet-bb">Trumpet in Bb</option>
+              <option value="horn-f">Horn in F</option>
+            </optgroup>
+            <optgroup label="Voices">
+              <option value="voice-soprano">Soprano</option>
+              <option value="voice-alto">Alto</option>
+              <option value="voice-tenor">Tenor</option>
+              <option value="voice-bass">Bass</option>
+            </optgroup>
+            <optgroup label="Guitar">
+              <option value="guitar">Guitar</option>
+              <option value="bass-guitar">Bass Guitar</option>
+            </optgroup>
+          </select>
+        </div>
+      </div>
+    }
+
+    <!-- Score Area -->
+    <div class="score-area">
+      <!-- Title -->
+      <div class="score-header">
+        <input
+          type="text"
+          class="score-title"
+          [ngModel]="title()"
+          (ngModelChange)="title.set($event)"
+          placeholder="Title"
+          [disabled]="!editable()"
+        />
+        <input
+          type="text"
+          class="score-composer"
+          [ngModel]="composer()"
+          (ngModelChange)="composer.set($event)"
+          placeholder="Composer"
+          [disabled]="!editable()"
+        />
+        <div class="score-meta">
+          <span class="tempo">♩ = {{ tempo() }}</span>
+          <span class="key">{{ keySignature() }}</span>
+          <span class="time">{{ timeSignature() }}</span>
+        </div>
+      </div>
+
+      <!-- Staves -->
+      <div class="staves-container">
+        @for (part of parts(); track part.id; let idx = $index) {
+          <div class="staff-row" [class.muted]="part.muted" [class.selected]="selectedPartId() === part.id">
+            <!-- Part label -->
+            <div class="staff-label" [style.color]="part.color">
+              {{ part.abbreviation }}
+            </div>
+
+            <!-- Staff with notes -->
+            <tw-note-input
+              [clef]="part.clef"
+              [keySignature]="keySignature()"
+              [timeSignature]="timeSignature()"
+              [measures]="measures()"
+              [width]="width() - 120"
+              [height]="staffHeight()"
+              [lineSpacing]="lineSpacing()"
+              [editable]="editable() && selectedPartId() === part.id"
+              [initialNotes]="part.notes"
+              [enableKeyboardShortcuts]="enableKeyboardShortcuts() && selectedPartId() === part.id"
+              [enableMidiInput]="enableMidiInput() && selectedPartId() === part.id"
+              [showVoiceColors]="true"
+              (notesChanged)="onPartNotesChanged(part.id, $event)"
+              (click)="selectPart(part.id)"
+            ></tw-note-input>
+
+            <!-- Lyrics -->
+            @if (showLyricsEditor() && part.lyrics.length > 0) {
+              <div class="lyrics-row">
+                @for (lyric of getLyricsForPart(part.id); track lyric.id) {
+                  <span
+                    class="lyric-syllable"
+                    [style.left.px]="130 + lyric.measure * 150 + lyric.beat * 30"
+                  >{{ lyric.text }}</span>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- Dialogs -->
+
+  <!-- Add Part Dialog -->
+  @if (showPartDialog()) {
+    <div class="dialog-overlay" (click)="showPartDialog.set(false)">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Add Part</h3>
+          <button type="button" class="close-btn" (click)="showPartDialog.set(false)">×</button>
+        </div>
+        <div class="dialog-content">
+          <div class="preset-grid">
+            @for (preset of Object.keys(INSTRUMENT_PRESETS); track preset) {
+              <button
+                type="button"
+                class="preset-btn"
+                (click)="addPart(preset); showPartDialog.set(false)"
+              >
+                {{ INSTRUMENT_PRESETS[preset].name }}
+              </button>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Transpose Dialog -->
+  @if (showTransposeDialog()) {
+    <div class="dialog-overlay" (click)="showTransposeDialog.set(false)">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Transpose</h3>
+          <button type="button" class="close-btn" (click)="showTransposeDialog.set(false)">×</button>
+        </div>
+        <div class="dialog-content">
+          <div class="transpose-controls">
+            <label>
+              Semitones:
+              <input
+                type="number"
+                [ngModel]="transposeAmount()"
+                (ngModelChange)="transposeAmount.set($event)"
+                min="-12"
+                max="12"
+              />
+            </label>
+            <div class="quick-transpose">
+              <button type="button" (click)="transposeAmount.set(-12)">-Oct</button>
+              <button type="button" (click)="transposeAmount.set(-7)">-5th</button>
+              <button type="button" (click)="transposeAmount.set(-5)">-4th</button>
+              <button type="button" (click)="transposeAmount.set(-2)">-M2</button>
+              <button type="button" (click)="transposeAmount.set(-1)">-m2</button>
+              <button type="button" (click)="transposeAmount.set(1)">+m2</button>
+              <button type="button" (click)="transposeAmount.set(2)">+M2</button>
+              <button type="button" (click)="transposeAmount.set(5)">+4th</button>
+              <button type="button" (click)="transposeAmount.set(7)">+5th</button>
+              <button type="button" (click)="transposeAmount.set(12)">+Oct</button>
+            </div>
+          </div>
+          <div class="dialog-actions">
+            <button type="button" class="btn-secondary" (click)="showTransposeDialog.set(false)">Cancel</button>
+            <button
+              type="button"
+              class="btn-primary"
+              (click)="transposeSelectedPart(transposeAmount()); showTransposeDialog.set(false)"
+            >Transpose Selected</button>
+            <button
+              type="button"
+              class="btn-primary"
+              (click)="transposeAll(transposeAmount()); showTransposeDialog.set(false)"
+            >Transpose All</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Export Dialog -->
+  @if (showExportDialog()) {
+    <div class="dialog-overlay" (click)="showExportDialog.set(false)">
+      <div class="dialog" (click)="$event.stopPropagation()">
+        <div class="dialog-header">
+          <h3>Export Score</h3>
+          <button type="button" class="close-btn" (click)="showExportDialog.set(false)">×</button>
+        </div>
+        <div class="dialog-content">
+          <div class="export-options">
+            <button type="button" class="export-btn" (click)="downloadExport('musicxml'); showExportDialog.set(false)">
+              <span class="export-icon">📄</span>
+              <span class="export-label">MusicXML</span>
+              <span class="export-desc">For notation software</span>
+            </button>
+            <button type="button" class="export-btn" (click)="downloadExport('midi'); showExportDialog.set(false)">
+              <span class="export-icon">🎹</span>
+              <span class="export-label">MIDI</span>
+              <span class="export-desc">For audio playback</span>
+            </button>
+            <button type="button" class="export-btn" (click)="downloadExport('abc'); showExportDialog.set(false)">
+              <span class="export-icon">📝</span>
+              <span class="export-label">ABC Notation</span>
+              <span class="export-desc">Text format</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- Lyrics Editor -->
+  @if (showLyricsEditor() && editingLyrics()) {
+    <div class="lyrics-editor-panel">
+      <div class="panel-header">
+        <span>Lyrics Editor</span>
+        <button type="button" (click)="editingLyrics.set(false)">×</button>
+      </div>
+      <textarea
+        class="lyrics-input"
+        [ngModel]="currentLyricText()"
+        (ngModelChange)="currentLyricText.set($event)"
+        placeholder="Enter lyrics here...&#10;Use hyphens for syllables: Hel-lo world"
+      ></textarea>
+    </div>
+  }
+</div>
+

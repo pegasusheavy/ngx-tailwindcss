@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwTabsComponent, TwTabPanelComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwTabsComponent, TwTabPanelComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

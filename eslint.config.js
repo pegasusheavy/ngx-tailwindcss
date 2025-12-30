@@ -205,8 +205,20 @@ export default tseslint.config(
       // ============================================
       // TypeScript Access Modifier Rules
       // ============================================
+      '@pegasusheavy/typescript-access/explicit-member-accessibility': [
+        'warn',
+        {
+          accessibility: 'explicit',
+          overrides: {
+            constructors: 'no-public', // Constructors don't need explicit public
+            accessors: 'explicit',
+            methods: 'explicit',
+            properties: 'explicit',
+            parameterProperties: 'explicit',
+          },
+        },
+      ],
       // TODO: Re-enable after codebase cleanup
-      '@pegasusheavy/typescript-access/explicit-member-accessibility': 'off',
       '@pegasusheavy/typescript-access/member-accessibility-order': 'off',
 
       // ============================================

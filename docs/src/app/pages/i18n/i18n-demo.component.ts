@@ -7,7 +7,7 @@ import {
   TwCardHeaderDirective,
   TwCardTitleDirective,
   TwCardBodyDirective,
-} from '@pegasus-heavy/ngx-tailwindcss';
+} from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../shared/demo-section.component';
 
 @Component({
@@ -73,7 +73,7 @@ export class I18nDemoComponent {
   // Code examples
   setupCode = `// app.config.ts
 import { ApplicationConfig } from '@angular/core';
-import { provideTwTranslations, provideTwLocale } from '@pegasus-heavy/ngx-tailwindcss';
+import { provideTwTranslations, provideTwLocale } from '@pegasusheavy/ngx-tailwindcss';
 
 // Spanish translations
 const spanishTranslations = {
@@ -107,7 +107,7 @@ export const appConfig: ApplicationConfig = {
   ],
 };`;
 
-  serviceCode = `import { TwI18nService } from '@pegasus-heavy/ngx-tailwindcss';
+  serviceCode = `import { TwI18nService } from '@pegasusheavy/ngx-tailwindcss';
 
 @Component({...})
 export class MyComponent {

@@ -1,0 +1,175 @@
+<svg
+  [attr.class]="containerClasses()"
+  [attr.width]="size() * 2"
+  [attr.height]="size() * 6"
+  [style.overflow]="'visible'"
+>
+  <!-- Ledger Lines -->
+  @for (lineY of needsLedgerLines(); track lineY) {
+    <line
+      [attr.x1]="x() - size() * 0.6"
+      [attr.y1]="lineY"
+      [attr.x2]="x() + size() * 0.6"
+      [attr.y2]="lineY"
+      [attr.stroke]="color()"
+      stroke-width="1"
+    />
+  }
+
+  <!-- Accidental -->
+  @if (accidentalSymbol()) {
+    <text
+      [attr.x]="x() - size() * 0.8"
+      [attr.y]="yPosition() + size() * 0.15"
+      [attr.font-size]="size() * 0.9"
+      [attr.fill]="noteColor()"
+      font-family="serif"
+      text-anchor="end"
+      class="select-none"
+    >{{ accidentalSymbol() }}</text>
+  }
+
+  <!-- Note Head -->
+  @if (!isRest()) {
+    <ellipse
+      [attr.cx]="x()"
+      [attr.cy]="yPosition()"
+      [attr.rx]="size() * 0.45"
+      [attr.ry]="size() * 0.35"
+      [attr.fill]="noteHeadFill()"
+      [attr.stroke]="noteColor()"
+      [attr.stroke-width]="duration() === 'whole' || duration() === 'half' ? 1.5 : 0"
+      [attr.transform]="'rotate(-15, ' + x() + ', ' + yPosition() + ')'"
+    />
+
+    <!-- Stem -->
+    @if (stemLength() > 0) {
+      <line
+        [attr.x1]="stemX()"
+        [attr.y1]="stemY1()"
+        [attr.x2]="stemX()"
+        [attr.y2]="beamed() ? beamY() : stemY2()"
+        [attr.stroke]="noteColor()"
+        stroke-width="1.5"
+      />
+
+      <!-- Flags (for eighth, sixteenth, etc. when not beamed) -->
+      @if (flagCount() > 0 && !beamed()) {
+        @for (flag of [].constructor(flagCount()); track $index) {
+          <path
+            [attr.d]="computedStemDirection() === 'up'
+              ? 'M ' + stemX() + ' ' + (stemY2() + $index * size() * 0.4) + ' q ' + size() * 0.6 + ' ' + size() * 0.3 + ' ' + size() * 0.5 + ' ' + size() * 0.8
+              : 'M ' + stemX() + ' ' + (stemY2() - $index * size() * 0.4) + ' q ' + size() * 0.6 + ' -' + size() * 0.3 + ' ' + size() * 0.5 + ' -' + size() * 0.8"
+            [attr.stroke]="noteColor()"
+            stroke-width="2"
+            fill="none"
+          />
+        }
+      }
+
+      <!-- Beams (when part of beamed group) -->
+      @if (beamed() && effectiveBeamConfig()) {
+        @for (beam of beamPaths(); track beam.level) {
+          <path
+            [attr.d]="beam.d"
+            [attr.fill]="noteColor()"
+          />
+        }
+      }
+    }
+  } @else {
+    <!-- Rest Symbol -->
+    <text
+      [attr.x]="x()"
+      [attr.y]="yPosition() + size() * 0.3"
+      [attr.font-size]="size() * 1.5"
+      [attr.fill]="noteColor()"
+      font-family="serif"
+      text-anchor="middle"
+      class="select-none"
+    >{{ noteSymbol() }}</text>
+  }
+
+  <!-- Dots -->
+  @for (dotX of dotPositions(); track $index) {
+    <circle
+      [attr.cx]="dotX"
+      [attr.cy]="yPosition() - size() * 0.1"
+      [attr.r]="size() * 0.1"
+      [attr.fill]="noteColor()"
+    />
+  }
+
+  <!-- Tie start/end curve -->
+  @if (tied() && tieDirection()) {
+    <path
+      [attr.d]="tieDirection() === 'start'
+        ? 'M ' + (x() + size() * 0.5) + ' ' + yPosition() + ' q ' + size() + ' ' + (computedStemDirection() === 'up' ? size() : -size()) + ' ' + size() * 2 + ' 0'
+        : 'M ' + (x() - size() * 0.5) + ' ' + yPosition() + ' q -' + size() + ' ' + (computedStemDirection() === 'up' ? size() : -size()) + ' -' + size() * 2 + ' 0'"
+      [attr.stroke]="noteColor()"
+      stroke-width="1.5"
+      fill="none"
+    />
+  }
+
+  <!-- Tuplet Bracket and Number -->
+  @if (effectiveTuplet()) {
+    <!-- Tuplet bracket start hook -->
+    @if (effectiveTuplet()?.position === 'start' && effectiveTuplet()?.showBracket !== false) {
+      <line
+        [attr.x1]="x() - size() * 0.3"
+        [attr.y1]="tupletBracketY() + (tupletBracketDirection() === 'up' ? size() * 0.4 : -size() * 0.4)"
+        [attr.x2]="x() - size() * 0.3"
+        [attr.y2]="tupletBracketY()"
+        [attr.stroke]="noteColor()"
+        stroke-width="1"
+      />
+      <line
+        [attr.x1]="x() - size() * 0.3"
+        [attr.y1]="tupletBracketY()"
+        [attr.x2]="x() + size() * 2"
+        [attr.y2]="tupletBracketY()"
+        [attr.stroke]="noteColor()"
+        stroke-width="1"
+      />
+    }
+
+    <!-- Tuplet bracket end hook -->
+    @if (effectiveTuplet()?.position === 'end' && effectiveTuplet()?.showBracket !== false) {
+      <line
+        [attr.x1]="x() - size() * 2"
+        [attr.y1]="tupletBracketY()"
+        [attr.x2]="x() + size() * 0.3"
+        [attr.y2]="tupletBracketY()"
+        [attr.stroke]="noteColor()"
+        stroke-width="1"
+      />
+      <line
+        [attr.x1]="x() + size() * 0.3"
+        [attr.y1]="tupletBracketY()"
+        [attr.x2]="x() + size() * 0.3"
+        [attr.y2]="tupletBracketY() + (tupletBracketDirection() === 'up' ? size() * 0.4 : -size() * 0.4)"
+        [attr.stroke]="noteColor()"
+        stroke-width="1"
+      />
+    }
+
+    <!-- Tuplet number -->
+    @if (showTupletNumber()) {
+      <text
+        [attr.x]="x()"
+        [attr.y]="tupletBracketY() + (tupletBracketDirection() === 'up' ? -size() * 0.2 : size() * 0.5)"
+        [attr.font-size]="size() * 0.6"
+        [attr.fill]="noteColor()"
+        font-family="serif"
+        font-style="italic"
+        text-anchor="middle"
+        class="select-none"
+      >{{ tupletDisplayNumber() }}</text>
+    }
+  }
+</svg>
+
+
+
+

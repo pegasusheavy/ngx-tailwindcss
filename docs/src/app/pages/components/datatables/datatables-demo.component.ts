@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwDatatablesComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwDatatablesComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -106,6 +106,10 @@ export class DatatablesDemoComponent {
   </button>
 </tw-datatables>`;
 }
+
+
+
+
 
 
 

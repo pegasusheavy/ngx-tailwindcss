@@ -39,3 +39,28 @@ if (typeof window !== 'undefined' && !window.ResizeObserver) {
   }
   window.ResizeObserver = ResizeObserver;
 }
+
+// Mock matchMedia
+if (typeof window !== 'undefined' && !window.matchMedia) {
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: (query: string) => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: () => {},
+      removeListener: () => {},
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      dispatchEvent: () => false,
+    }),
+  });
+}
+
+// Mock navigator.vibrate
+if (typeof navigator !== 'undefined' && !navigator.vibrate) {
+  Object.defineProperty(navigator, 'vibrate', {
+    writable: true,
+    value: () => true,
+  });
+}

@@ -1,0 +1,179 @@
+<div [class]="containerClasses()">
+  <!-- Channel Label with Signal Indicator -->
+  @if (showLabel()) {
+    <div [class]="labelClasses()" class="relative flex items-center justify-center gap-1">
+      <!-- Signal Present Indicator -->
+      @if (showSignalIndicator()) {
+        <div
+          class="w-2 h-2 rounded-full transition-all duration-150"
+          [class.bg-green-500]="signalPresent()"
+          [class.shadow-[0_0_6px_rgba(34,197,94,0.8)]]="signalPresent()"
+          [class.bg-slate-600]="!signalPresent()"
+          title="Signal Present"
+        ></div>
+      }
+      <span class="text-slate-400">{{ channelNumber() }}</span>
+      <span class="text-white">{{ label() }}</span>
+    </div>
+  }
+
+  <!-- Input Gain Control -->
+  @if (showInputGain()) {
+    <div class="flex flex-col items-center gap-1">
+      <tw-volume-dial
+        [ngModel]="inputGain()"
+        (ngModelChange)="onInputGainChange($event)"
+        [min]="-20"
+        [max]="20"
+        [step]="1"
+        [size]="size() === 'lg' ? 'sm' : 'xs'"
+        [variant]="variant() === 'vintage' ? 'vintage' : 'minimal'"
+        [disabled]="disabled()"
+        [centerDetent]="true"
+        [detentValue]="0"
+        label=""
+        [showValue]="false"
+      ></tw-volume-dial>
+      <span class="text-[9px] text-slate-500 font-mono">{{ formatGain(inputGain()) }}dB</span>
+      <span class="text-[8px] text-slate-600">GAIN</span>
+    </div>
+  }
+
+  <!-- Record Button -->
+  @if (showRecord()) {
+    <button
+      type="button"
+      [class]="buttonSize()"
+      class="rounded-full flex items-center justify-center font-bold transition-all"
+      [class.bg-red-600]="record()"
+      [class.text-white]="record()"
+      [class.bg-slate-700]="!record()"
+      [class.text-slate-400]="!record()"
+      [class.hover:bg-red-500]="!record()"
+      [class.animate-pulse]="record()"
+      [disabled]="disabled()"
+      (click)="toggleRecord()"
+      title="Record Arm"
+    >
+      R
+    </button>
+  }
+
+  <!-- Aux Send Knobs -->
+  @if (showAuxSends()) {
+    <div class="flex flex-col gap-1 w-full border-t border-slate-700/50 pt-2">
+      <span class="text-[8px] text-slate-500 text-center">SENDS</span>
+      <div class="grid gap-1" [class.grid-cols-2]="auxSendCount() > 2" [class.grid-cols-1]="auxSendCount() <= 2">
+        @for (aux of auxSendArray(); track aux.index) {
+          <div class="flex flex-col items-center">
+            <tw-volume-dial
+              [ngModel]="aux.value"
+              (ngModelChange)="onAuxSendChange(aux.index, $event)"
+              [min]="0"
+              [max]="100"
+              [step]="1"
+              size="xs"
+              [variant]="variant() === 'vintage' ? 'vintage' : 'minimal'"
+              [disabled]="disabled() || mute()"
+              label=""
+              [showValue]="false"
+            ></tw-volume-dial>
+            <span class="text-[8px] text-slate-500 truncate max-w-full">{{ aux.label }}</span>
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- VU Meter -->
+  @if (showMeter()) {
+    <div class="flex-1 flex items-center justify-center py-1">
+      @if (stereo()) {
+        <tw-vu-meter
+          [leftValue]="meterLevel()"
+          [rightValue]="meterLevelRight()"
+          [stereo]="true"
+          [segmentCount]="size() === 'sm' ? 8 : 12"
+          [height]="size() === 'sm' ? 60 : size() === 'lg' ? 100 : 80"
+          variant="led"
+        ></tw-vu-meter>
+      } @else {
+        <tw-vu-meter
+          [value]="meterLevel()"
+          [segmentCount]="size() === 'sm' ? 8 : 12"
+          [height]="size() === 'sm' ? 60 : size() === 'lg' ? 100 : 80"
+          variant="led"
+        ></tw-vu-meter>
+      }
+    </div>
+  }
+
+  <!-- Volume Fader / Dial -->
+  <tw-volume-dial
+    [ngModel]="volume()"
+    (ngModelChange)="onVolumeChange($event)"
+    [min]="0"
+    [max]="100"
+    [step]="1"
+    [size]="dialSize()"
+    [variant]="variant() === 'vintage' ? 'vintage' : 'modern'"
+    [disabled]="disabled() || mute()"
+    label=""
+    [showValue]="size() !== 'sm'"
+  ></tw-volume-dial>
+
+  <!-- Pan Control -->
+  @if (showPan()) {
+    <tw-volume-dial
+      [ngModel]="pan()"
+      (ngModelChange)="onPanChange($event)"
+      [min]="-100"
+      [max]="100"
+      [step]="1"
+      [size]="size() === 'lg' ? 'md' : 'sm'"
+      [variant]="variant() === 'vintage' ? 'vintage' : 'minimal'"
+      [disabled]="disabled()"
+      [centerDetent]="true"
+      [detentValue]="0"
+      label=""
+      [showValue]="false"
+    ></tw-volume-dial>
+    <span class="text-[10px] text-slate-500">PAN</span>
+  }
+
+  <!-- Mute / Solo Buttons -->
+  @if (showMuteSolo()) {
+    <div class="flex gap-1">
+      <button
+        type="button"
+        [class]="buttonSize()"
+        class="rounded flex items-center justify-center font-bold transition-all"
+        [class.bg-amber-500]="mute()"
+        [class.text-black]="mute()"
+        [class.bg-slate-700]="!mute()"
+        [class.text-slate-400]="!mute()"
+        [class.hover:bg-amber-400]="!mute()"
+        [disabled]="disabled()"
+        (click)="toggleMute()"
+        title="Mute"
+      >
+        M
+      </button>
+      <button
+        type="button"
+        [class]="buttonSize()"
+        class="rounded flex items-center justify-center font-bold transition-all"
+        [class.bg-green-500]="solo()"
+        [class.text-black]="solo()"
+        [class.bg-slate-700]="!solo()"
+        [class.text-slate-400]="!solo()"
+        [class.hover:bg-green-400]="!solo()"
+        [disabled]="disabled()"
+        (click)="toggleSolo()"
+        title="Solo"
+      >
+        S
+      </button>
+    </div>
+  }
+</div>

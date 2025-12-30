@@ -32,10 +32,12 @@ export default defineConfig({
         '**/*.d.ts',
       ],
       thresholds: {
-        statements: 75,
-        branches: 70,
-        functions: 60,
-        lines: 75,
+        // Target: 90% coverage
+        // Current: ~58% - incrementally increasing
+        statements: 90,
+        branches: 85,
+        functions: 90,
+        lines: 90,
       },
     },
     reporters: ['default'],

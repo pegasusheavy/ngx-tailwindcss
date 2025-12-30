@@ -1,0 +1,115 @@
+<div
+  [class]="containerClasses()"
+  role="application"
+  [attr.aria-label]="'Piano keyboard'"
+>
+  <!-- MIDI Status Indicator -->
+  @if (enableMidi()) {
+    <div class="flex items-center gap-2 mb-2 px-2 text-xs">
+      @if (connectedMidiDevice()) {
+        <span class="flex items-center gap-1 text-green-500">
+          <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          MIDI: {{ connectedMidiDevice()!.name }}
+        </span>
+      } @else {
+        <span class="flex items-center gap-1 text-slate-500">
+          <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+          MIDI: Not connected
+        </span>
+      }
+    </div>
+  }
+
+  <div class="relative flex" [style.height.px]="height()">
+    <!-- White Keys -->
+    @for (key of whiteKeys(); track key.note) {
+      <button
+        type="button"
+        [class]="whiteKeyClasses(key)"
+        [style.width.px]="whiteKeyWidth()"
+        [ngStyle]="getVelocityStyle(key)"
+        (mousedown)="onKeyDown(key)"
+        (mouseup)="onKeyUp(key)"
+        (mouseleave)="onKeyUp(key)"
+        (touchstart)="onTouchStart($event, key)"
+        (touchend)="onTouchEnd(key)"
+        [attr.aria-label]="key.note + key.octave"
+        [attr.aria-pressed]="isKeyActive(key)"
+      >
+        <!-- Velocity Indicator Bar -->
+        @if (velocitySensitive() && isKeyActive(key)) {
+          <div
+            class="absolute bottom-0 left-0 right-0 bg-blue-500/30 transition-all duration-75"
+            [style.height.%]="getVelocityIndicatorWidth(key)"
+          ></div>
+        }
+
+        <!-- MIDI Source Indicator -->
+        @if (isKeyActive(key) && getNoteSource(key) === 'midi') {
+          <div class="absolute top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+        }
+
+        @if (showLabels()) {
+          <span [class]="labelClasses('white')">{{ key.note }}{{ key.octave }}</span>
+        }
+      </button>
+    }
+
+    <!-- Black Keys (positioned absolutely) -->
+    @for (key of blackKeys(); track key.note + key.octave) {
+      <button
+        type="button"
+        [class]="blackKeyClasses(key)"
+        [style.width.px]="blackKeyWidth()"
+        [style.height.%]="65"
+        [style.left.px]="key.position"
+        [ngStyle]="getVelocityStyle(key)"
+        (mousedown)="onKeyDown(key)"
+        (mouseup)="onKeyUp(key)"
+        (mouseleave)="onKeyUp(key)"
+        (touchstart)="onTouchStart($event, key)"
+        (touchend)="onTouchEnd(key)"
+        [attr.aria-label]="key.note + key.octave"
+        [attr.aria-pressed]="isKeyActive(key)"
+      >
+        <!-- Velocity Indicator Bar -->
+        @if (velocitySensitive() && isKeyActive(key)) {
+          <div
+            class="absolute bottom-0 left-0 right-0 bg-blue-400/40 transition-all duration-75"
+            [style.height.%]="getVelocityIndicatorWidth(key)"
+          ></div>
+        }
+
+        <!-- MIDI Source Indicator -->
+        @if (isKeyActive(key) && getNoteSource(key) === 'midi') {
+          <div class="absolute top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
+        }
+
+        @if (showLabels()) {
+          <span [class]="labelClasses('black')">{{ key.note }}</span>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Octave Labels -->
+  @if (showOctaveLabels()) {
+    <div class="flex justify-around mt-1 text-xs text-slate-500 dark:text-slate-400">
+      @for (octave of octaveRange(); track octave) {
+        <span>C{{ octave }}</span>
+      }
+    </div>
+  }
+
+  <!-- Active Notes Display (for velocity visualization) -->
+  @if (velocitySensitive() && getActiveNotes().length > 0) {
+    <div class="flex gap-1 mt-2 text-[10px] text-slate-500 dark:text-slate-400">
+      @for (activeNote of getActiveNotes(); track activeNote.note + activeNote.octave) {
+        <span class="px-1 py-0.5 bg-slate-800 rounded text-slate-300">
+          {{ activeNote.note }}{{ activeNote.octave }}: {{ activeNote.velocity }}
+        </span>
+      }
+    </div>
+  }
+</div>
+

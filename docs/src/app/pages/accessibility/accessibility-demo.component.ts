@@ -13,7 +13,7 @@ import {
   TwCardHeaderDirective,
   TwCardTitleDirective,
   TwCardBodyDirective,
-} from '@pegasus-heavy/ngx-tailwindcss';
+} from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../shared/demo-section.component';
 
 @Component({
@@ -69,7 +69,7 @@ export class AccessibilityDemoComponent {
   }
 
   // Code examples
-  ariaServiceCode = `import { TwAriaService } from '@pegasus-heavy/ngx-tailwindcss';
+  ariaServiceCode = `import { TwAriaService } from '@pegasusheavy/ngx-tailwindcss';
 
 @Component({...})
 export class MyComponent {
@@ -187,9 +187,9 @@ import {
   TwAriaModalDirective,     // Modal dialogs
   TwAriaHaspopupDirective,  // Popup menus
   TwAriaLiveDirective,      // Live regions
-} from '@pegasus-heavy/ngx-tailwindcss';`;
+} from '@pegasusheavy/ngx-tailwindcss';`;
 
-  ariaUtilsCode = `import { AriaUtils } from '@pegasus-heavy/ngx-tailwindcss';
+  ariaUtilsCode = `import { AriaUtils } from '@pegasusheavy/ngx-tailwindcss';
 
 // Generate unique IDs for ARIA relationships
 const descriptionId = AriaUtils.generateId('desc'); // 'desc-a1b2c3d'
