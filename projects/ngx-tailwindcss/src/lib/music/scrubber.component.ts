@@ -20,6 +20,22 @@ export interface ScrubberMarker {
   color?: string;
 }
 
+export interface ScrubberThumbnail {
+  time: number;
+  url: string;
+  width?: number;
+  height?: number;
+}
+
+export interface ThumbnailSpriteConfig {
+  url: string;
+  frameWidth: number;
+  frameHeight: number;
+  columns: number;
+  interval: number; // seconds between each frame
+  totalFrames: number;
+}
+
 /**
  * Progress Bar / Scrubber component for audio/video timeline
  *
@@ -63,6 +79,16 @@ export class TwScrubberComponent {
   readonly markers = input<ScrubberMarker[]>([]);
   readonly disabled = input(false);
   readonly classOverride = input('');
+
+  // Thumbnail preview options
+  readonly showThumbnailPreview = input(false);
+  readonly thumbnails = input<ScrubberThumbnail[]>([]);
+  readonly thumbnailSprite = input<ThumbnailSpriteConfig | null>(null);
+  readonly thumbnailWidth = input(160);
+  readonly thumbnailHeight = input(90);
+  readonly thumbnailOffset = input(60); // Distance above scrubber in px
+  readonly thumbnailBorderRadius = input(4);
+  readonly videoElement = input<HTMLVideoElement | null>(null); // For live thumbnail generation
 
   // Outputs
   readonly seek = output<number>();
@@ -172,6 +198,62 @@ export class TwScrubberComponent {
 
   protected readonly hoverPreviewClasses = computed(() => {
     return 'absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-slate-800 text-white text-xs rounded whitespace-nowrap';
+  });
+
+  protected readonly thumbnailContainerClasses = computed(() => {
+    return 'absolute left-1/2 -translate-x-1/2 pointer-events-none z-10 flex flex-col items-center';
+  });
+
+  protected readonly thumbnailImageClasses = computed(() => {
+    const radius = this.thumbnailBorderRadius();
+    return `shadow-lg border-2 border-slate-700 bg-slate-900 overflow-hidden`;
+  });
+
+  // Get the current thumbnail for hover position
+  protected readonly currentThumbnail = computed(() => {
+    const pos = this.hoverPosition();
+    if (pos === null) return null;
+
+    const time = pos * this.duration();
+    const thumbnails = this.thumbnails();
+    const sprite = this.thumbnailSprite();
+
+    // Try individual thumbnails first
+    if (thumbnails.length > 0) {
+      return this.findClosestThumbnail(time, thumbnails);
+    }
+
+    // Try sprite sheet
+    if (sprite) {
+      return this.getThumbnailFromSprite(time, sprite);
+    }
+
+    return null;
+  });
+
+  // Get sprite background position for current time
+  protected readonly spritePosition = computed(() => {
+    const pos = this.hoverPosition();
+    if (pos === null) return null;
+
+    const sprite = this.thumbnailSprite();
+    if (!sprite) return null;
+
+    const time = pos * this.duration();
+    const frameIndex = Math.min(
+      Math.floor(time / sprite.interval),
+      sprite.totalFrames - 1
+    );
+
+    const col = frameIndex % sprite.columns;
+    const row = Math.floor(frameIndex / sprite.columns);
+
+    return {
+      x: -col * sprite.frameWidth,
+      y: -row * sprite.frameHeight,
+      width: sprite.frameWidth,
+      height: sprite.frameHeight,
+    };
   });
 
   protected readonly timeClasses = computed(() => {
@@ -313,5 +395,78 @@ export class TwScrubberComponent {
     }
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }
+
+  private findClosestThumbnail(
+    time: number,
+    thumbnails: ScrubberThumbnail[]
+  ): ScrubberThumbnail | null {
+    if (thumbnails.length === 0) return null;
+
+    // Sort thumbnails by time
+    const sorted = [...thumbnails].sort((a, b) => a.time - b.time);
+
+    // Find closest thumbnail
+    let closest = sorted[0];
+    let minDiff = Math.abs(time - closest.time);
+
+    for (const thumb of sorted) {
+      const diff = Math.abs(time - thumb.time);
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = thumb;
+      }
+      // If we've passed the time, no need to continue
+      if (thumb.time > time && minDiff < diff) break;
+    }
+
+    return closest;
+  }
+
+  private getThumbnailFromSprite(
+    time: number,
+    sprite: ThumbnailSpriteConfig
+  ): ScrubberThumbnail | null {
+    const frameIndex = Math.min(
+      Math.floor(time / sprite.interval),
+      sprite.totalFrames - 1
+    );
+
+    return {
+      time: frameIndex * sprite.interval,
+      url: sprite.url,
+      width: sprite.frameWidth,
+      height: sprite.frameHeight,
+    };
+  }
+
+  // Generate thumbnail canvas from video element (optional advanced feature)
+  protected generateVideoThumbnail(time: number): string | null {
+    const video = this.videoElement();
+    if (!video) return null;
+
+    try {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+
+      canvas.width = this.thumbnailWidth();
+      canvas.height = this.thumbnailHeight();
+
+      // Save current time and seek
+      const currentTime = video.currentTime;
+
+      // Note: For live thumbnails, you'd need to handle this differently
+      // as seeking causes video to pause/buffer
+      // This is mainly for reference implementation
+
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      return canvas.toDataURL('image/jpeg', 0.7);
+    } catch {
+      return null;
+    }
+  }
 }
+
+
+
 

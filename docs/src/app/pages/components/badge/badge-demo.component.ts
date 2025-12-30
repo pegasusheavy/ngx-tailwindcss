@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwBadgeComponent, TwBadgeGroupComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwBadgeComponent, TwBadgeGroupComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

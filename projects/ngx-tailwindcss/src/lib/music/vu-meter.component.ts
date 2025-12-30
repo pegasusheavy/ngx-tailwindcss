@@ -14,7 +14,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 import { TwClassService } from '../core/tw-class.service';
 
-export type VuMeterVariant = 'led' | 'gradient' | 'solid' | 'retro';
+export type VuMeterVariant = 'led' | 'gradient' | 'solid' | 'retro' | 'light' | 'highContrast';
 export type VuMeterOrientation = 'vertical' | 'horizontal';
 export type VuMeterMode = 'peak' | 'rms' | 'both';
 
@@ -68,6 +68,12 @@ export class TwVuMeterComponent implements OnInit {
   readonly barWidth = input(12);
   readonly gapSize = input(2);
   readonly rmsDecayRate = input(0.15); // Slower decay for RMS
+
+  // Custom sizing via CSS variables (override individual dimensions)
+  readonly customHeight = input<number | null>(null);
+  readonly customWidth = input<number | null>(null);
+  readonly customBarWidth = input<number | null>(null);
+  readonly customGapSize = input<number | null>(null);
 
   // Display options
   readonly showPeak = input(true);
@@ -193,6 +199,22 @@ export class TwVuMeterComponent implements OnInit {
     return this.twClass.merge('inline-flex flex-col items-center gap-2', this.classOverride());
   });
 
+  // Effective dimensions (custom overrides take precedence)
+  protected readonly effectiveHeight = computed(() => this.customHeight() ?? this.height());
+  protected readonly effectiveWidth = computed(() => this.customWidth() ?? this.width());
+  protected readonly effectiveBarWidth = computed(() => this.customBarWidth() ?? this.barWidth());
+  protected readonly effectiveGapSize = computed(() => this.customGapSize() ?? this.gapSize());
+
+  // CSS variable style bindings for custom sizing
+  protected readonly cssVarStyles = computed(() => {
+    const styles: Record<string, string> = {};
+    if (this.customHeight()) styles['--tw-music-meter-height'] = `${this.customHeight()}px`;
+    if (this.customWidth()) styles['--tw-music-meter-width'] = `${this.customWidth()}px`;
+    if (this.customBarWidth()) styles['--tw-music-meter-bar-width'] = `${this.customBarWidth()}px`;
+    if (this.customGapSize()) styles['--tw-music-meter-segment-gap'] = `${this.customGapSize()}px`;
+    return styles;
+  });
+
   protected readonly meterContainerClasses = computed(() => {
     const variant = this.variant();
     const baseClasses = 'relative p-2 rounded-lg';
@@ -202,6 +224,8 @@ export class TwVuMeterComponent implements OnInit {
       gradient: 'bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700',
       solid: 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm',
       retro: 'bg-amber-50 dark:bg-amber-950 border-2 border-amber-200 dark:border-amber-800 rounded-xl',
+      light: 'bg-white border border-slate-200 shadow-sm',
+      highContrast: 'bg-black border-2 border-white',
     };
 
     return this.twClass.merge(baseClasses, variantClasses[variant]);
@@ -257,15 +281,39 @@ export class TwVuMeterComponent implements OnInit {
       );
     }
 
-    // Retro variant
-    const activeColors: Record<string, string> = {
-      green: 'bg-emerald-600',
-      yellow: 'bg-amber-500',
-      red: 'bg-red-600',
+    if (variant === 'retro') {
+      const activeColors: Record<string, string> = {
+        green: 'bg-emerald-600',
+        yellow: 'bg-amber-500',
+        red: 'bg-red-600',
+      };
+      return this.twClass.merge(
+        baseClasses,
+        isActive ? activeColors[segment.color] : 'bg-amber-100 dark:bg-amber-900/30'
+      );
+    }
+
+    if (variant === 'light') {
+      const activeColors: Record<string, string> = {
+        green: 'bg-emerald-500',
+        yellow: 'bg-amber-400',
+        red: 'bg-red-500',
+      };
+      return this.twClass.merge(
+        baseClasses,
+        isActive ? activeColors[segment.color] : 'bg-slate-200'
+      );
+    }
+
+    // High contrast variant
+    const activeColorsHC: Record<string, string> = {
+      green: 'bg-green-400',
+      yellow: 'bg-yellow-300',
+      red: 'bg-red-400',
     };
     return this.twClass.merge(
       baseClasses,
-      isActive ? activeColors[segment.color] : 'bg-amber-100 dark:bg-amber-900/30'
+      isActive ? activeColorsHC[segment.color] : 'bg-gray-800 border border-gray-600'
     );
   }
 

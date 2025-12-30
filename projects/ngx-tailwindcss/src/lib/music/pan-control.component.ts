@@ -49,6 +49,9 @@ export type PanControlSize = 'sm' | 'md' | 'lg';
 export class TwPanControlComponent implements ControlValueAccessor {
   private readonly twClass = inject(TwClassService);
 
+  // Expose Math for template
+  protected readonly Math = Math;
+
   @ViewChild('track') private trackRef!: ElementRef<HTMLDivElement>;
 
   public readonly variant = input<PanControlVariant>('slider');
@@ -93,34 +96,21 @@ export class TwPanControlComponent implements ControlValueAccessor {
 
   protected readonly sliderContainerClasses = computed(() => {
     const sizeClasses: Record<PanControlSize, string> = {
-      sm: 'h-4',
-      md: 'h-5',
-      lg: 'h-6',
+      sm: 'h-8',
+      md: 'h-10',
+      lg: 'h-12',
     };
     return this.twClass.merge('relative w-full', sizeClasses[this.size()]);
   });
 
   protected readonly trackClasses = computed(() => {
-    const base = 'absolute top-1/2 -translate-y-1/2 left-0 right-0 rounded-full bg-slate-700 dark:bg-slate-600';
-    const sizeClasses: Record<PanControlSize, string> = {
-      sm: 'h-1',
-      md: 'h-1.5',
-      lg: 'h-2',
-    };
-    return this.twClass.merge(base, sizeClasses[this.size()]);
+    // Track classes now handled directly in template for more control
+    return '';
   });
 
   protected readonly thumbClasses = computed(() => {
-    const base = 'absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full shadow-md cursor-grab active:cursor-grabbing transition-colors';
-    const sizeClasses: Record<PanControlSize, string> = {
-      sm: 'w-3 h-3',
-      md: 'w-4 h-4',
-      lg: 'w-5 h-5',
-    };
-    const colorClasses = this.disabled()
-      ? 'bg-slate-500'
-      : 'bg-blue-500 hover:bg-blue-400 dark:bg-blue-600 dark:hover:bg-blue-500';
-    return this.twClass.merge(base, sizeClasses[this.size()], colorClasses);
+    // Thumb classes now handled directly in template for more control
+    return '';
   });
 
   protected readonly knobContainerClasses = computed(() => {

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwColumnsComponent, TwCardComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwColumnsComponent, TwCardComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

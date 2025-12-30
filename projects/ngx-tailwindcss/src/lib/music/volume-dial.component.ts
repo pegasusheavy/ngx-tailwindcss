@@ -13,8 +13,9 @@ import {
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TwClassService } from '../core/tw-class.service';
+import { MusicAccessibilityService } from './accessibility.service';
 
-export type DialVariant = 'modern' | 'vintage' | 'minimal' | 'led';
+export type DialVariant = 'modern' | 'vintage' | 'minimal' | 'led' | 'light' | 'highContrast';
 export type DialSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 const DIAL_SIZES: Record<DialSize, { size: number; strokeWidth: number; tickLength: number; fontSize: string }> = {
@@ -50,6 +51,18 @@ const DIAL_VARIANTS: Record<DialVariant, { track: string; fill: string; knob: st
     knob: 'fill-slate-900 dark:fill-black stroke-slate-700 dark:stroke-slate-800',
     indicator: 'stroke-emerald-400',
   },
+  light: {
+    track: 'stroke-slate-200',
+    fill: 'stroke-blue-600',
+    knob: 'fill-white stroke-slate-300 shadow-md',
+    indicator: 'stroke-blue-600',
+  },
+  highContrast: {
+    track: 'stroke-white',
+    fill: 'stroke-yellow-400',
+    knob: 'fill-black stroke-white stroke-2',
+    indicator: 'stroke-yellow-400',
+  },
 };
 
 /**
@@ -80,6 +93,7 @@ const DIAL_VARIANTS: Record<DialVariant, { track: string; fill: string; knob: st
 })
 export class TwVolumeDialComponent implements ControlValueAccessor {
   private readonly twClass = inject(TwClassService);
+  private readonly a11y = inject(MusicAccessibilityService);
   private readonly dialSvg = viewChild<ElementRef<SVGElement>>('dialSvg');
 
   // Inputs
@@ -99,8 +113,22 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
   readonly detentValue = input(50);
   readonly classOverride = input('');
 
+  // Custom sizing via CSS variables (overrides size prop)
+  readonly customSize = input<number | null>(null); // Override dial size in pixels
+  readonly customStrokeWidth = input<number | null>(null); // Override stroke width
+
+  // Mobile / Touch options
+  readonly hapticFeedback = input(true); // Enable haptic feedback on value changes
+  readonly touchGuard = input(false); // Prevent accidental touches
+  readonly minTouchDuration = input(0); // Minimum touch duration (ms) before interaction
+
+  // Accessibility options
+  readonly announceChanges = input(true); // Announce value changes to screen readers
+  readonly reducedMotion = input<boolean | 'auto'>('auto'); // Respect reduced motion preference
+
   // Outputs
   readonly valueChange = output<number>();
+  readonly hapticTrigger = output<'change' | 'detent' | 'boundary'>(); // Haptic feedback trigger points
 
   // Internal state
   protected readonly value = signal(0);
@@ -113,11 +141,39 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
   private onTouchedFn: () => void = () => {};
 
   // Computed values
-  protected readonly sizeConfig = computed(() => DIAL_SIZES[this.size()]);
+  protected readonly sizeConfig = computed(() => {
+    const baseConfig = DIAL_SIZES[this.size()];
+    const customSize = this.customSize();
+    const customStroke = this.customStrokeWidth();
+
+    // Allow custom overrides
+    return {
+      size: customSize ?? baseConfig.size,
+      strokeWidth: customStroke ?? baseConfig.strokeWidth,
+      tickLength: baseConfig.tickLength,
+      fontSize: baseConfig.fontSize,
+    };
+  });
   protected readonly variantConfig = computed(() => DIAL_VARIANTS[this.variant()]);
   protected readonly center = computed(() => this.sizeConfig().size / 2);
   protected readonly radius = computed(() => this.center() - this.sizeConfig().strokeWidth - 4);
   protected readonly knobRadius = computed(() => this.radius() * 0.55);
+
+  // CSS variable style bindings for custom sizing
+  protected readonly cssVarStyles = computed(() => {
+    const customSize = this.customSize();
+    const customStroke = this.customStrokeWidth();
+    const styles: Record<string, string> = {};
+
+    if (customSize) {
+      styles['--tw-music-dial-size'] = `${customSize}px`;
+    }
+    if (customStroke) {
+      styles['--tw-music-dial-stroke-width'] = `${customStroke}px`;
+    }
+
+    return styles;
+  });
 
   // Arc angles (in degrees, 0 = top, clockwise)
   private readonly startAngleDeg = -135;
@@ -382,6 +438,15 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
       this.value.set(newValue);
       this.onChangeFn(newValue);
       this.valueChange.emit(newValue);
+
+      // Announce to screen readers (debounced)
+      if (this.announceChanges()) {
+        this.a11y.announceValueChange(
+          this.label() || 'Volume',
+          this.displayValue(),
+          this.unit()
+        );
+      }
     }
   }
 

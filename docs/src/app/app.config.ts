@@ -1,7 +1,7 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
 import { provideRouter, withViewTransitions, withInMemoryScrolling } from '@angular/router';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { provideTwConfig } from '@pegasus-heavy/ngx-tailwindcss';
+import { provideTwConfig } from '@pegasusheavy/ngx-tailwindcss';
 
 import { routes } from './app.routes';
 

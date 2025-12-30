@@ -40,7 +40,7 @@ import {
   TwAccordionComponent,
   TwAccordionItemComponent,
   TwRatingComponent,
-} from '@pegasus-heavy/ngx-tailwindcss';
+} from '@pegasusheavy/ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface Photo {

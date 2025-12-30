@@ -16,6 +16,149 @@
       />
     }
 
+    <!-- ========== STANDARD NOTATION STAFF ========== -->
+    @if (showStandardNotation()) {
+      <!-- Clef -->
+      @if (showClef()) {
+        <text
+          x="15"
+          [attr.y]="getStaffLineY(3) + staffLineSpacing() * 0.5"
+          [attr.font-size]="staffLineSpacing() * 5"
+          [attr.fill]="colors().text"
+          font-family="serif"
+          class="select-none"
+        >{{ clef() === 'treble' ? '𝄞' : '𝄢' }}</text>
+      }
+
+      <!-- Staff Lines -->
+      @for (line of staffLines(); track line) {
+        <line
+          [attr.x1]="showStringLabels() ? 30 : 10"
+          [attr.y1]="getStaffLineY(line)"
+          [attr.x2]="width() - 10"
+          [attr.y2]="getStaffLineY(line)"
+          [attr.stroke]="colors().line"
+          stroke-width="1"
+        />
+      }
+
+      <!-- Notes on Staff -->
+      @for (measure of measures(); track $index; let measureIndex = $index) {
+        <!-- Bar line for staff -->
+        @if (showBarLines() && measureIndex > 0) {
+          <line
+            [attr.x1]="getMeasureX(measureIndex)"
+            [attr.y1]="getStaffLineY(1)"
+            [attr.x2]="getMeasureX(measureIndex)"
+            [attr.y2]="getStaffLineY(5)"
+            [attr.stroke]="colors().barLine"
+            stroke-width="1"
+          />
+        }
+
+        @for (beat of beats(); track beat) {
+          @for (note of getNoteAtBeat(measure, beat); track $index) {
+            @if (autoCalculateNotes() || note.noteName) {
+              <!-- Calculate note data -->
+              @let noteData = autoCalculateNotes() && typeof note.fret === 'number'
+                ? calculateNoteFromFret(note.string, note.fret)
+                : (note.noteName ? { note: note.noteName, octave: note.octave || 4, accidental: note.accidental } : null);
+
+              @if (noteData) {
+                @let noteY = getNoteYOnStaff(noteData.note, noteData.octave);
+                @let noteDuration = getNoteDuration(note);
+                @let filled = isNoteHeadFilled(noteDuration);
+                @let flags = getFlagCount(noteDuration);
+
+                <g>
+                  <!-- Ledger lines -->
+                  @for (ledgerY of getLedgerLinesForNote(noteY); track ledgerY) {
+                    <line
+                      [attr.x1]="getBeatX(measureIndex, beat) - staffLineSpacing() * 0.8"
+                      [attr.y1]="ledgerY"
+                      [attr.x2]="getBeatX(measureIndex, beat) + staffLineSpacing() * 0.8"
+                      [attr.y2]="ledgerY"
+                      [attr.stroke]="colors().line"
+                      stroke-width="1"
+                    />
+                  }
+
+                  <!-- Accidental -->
+                  @if (noteData.accidental) {
+                    <text
+                      [attr.x]="getBeatX(measureIndex, beat) - staffLineSpacing() * 1.2"
+                      [attr.y]="noteY + staffLineSpacing() * 0.3"
+                      [attr.font-size]="staffLineSpacing() * 1.5"
+                      [attr.fill]="colors().note"
+                      font-family="serif"
+                      text-anchor="middle"
+                      class="select-none"
+                    >{{ noteData.accidental === 'sharp' ? '♯' : (noteData.accidental === 'flat' ? '♭' : '♮') }}</text>
+                  }
+
+                  <!-- Note head -->
+                  <ellipse
+                    [attr.cx]="getBeatX(measureIndex, beat)"
+                    [attr.cy]="noteY"
+                    [attr.rx]="staffLineSpacing() * 0.55"
+                    [attr.ry]="staffLineSpacing() * 0.4"
+                    [attr.fill]="filled ? colors().note : 'none'"
+                    [attr.stroke]="colors().note"
+                    [attr.stroke-width]="filled ? 0 : 1.5"
+                    [attr.transform]="'rotate(-15, ' + getBeatX(measureIndex, beat) + ', ' + noteY + ')'"
+                  />
+
+                  <!-- Stem (not for whole notes) -->
+                  @if (noteDuration !== 'whole') {
+                    <line
+                      [attr.x1]="getBeatX(measureIndex, beat) + staffLineSpacing() * 0.5"
+                      [attr.y1]="noteY"
+                      [attr.x2]="getBeatX(measureIndex, beat) + staffLineSpacing() * 0.5"
+                      [attr.y2]="noteY - staffLineSpacing() * 3.5"
+                      [attr.stroke]="colors().note"
+                      stroke-width="1.5"
+                    />
+
+                    <!-- Flags -->
+                    @for (flag of [].constructor(flags); track $index) {
+                      <path
+                        [attr.d]="'M ' + (getBeatX(measureIndex, beat) + staffLineSpacing() * 0.5) + ' ' + (noteY - staffLineSpacing() * 3.5 + $index * staffLineSpacing() * 0.5) + ' q ' + staffLineSpacing() + ' ' + staffLineSpacing() * 0.4 + ' ' + staffLineSpacing() * 0.8 + ' ' + staffLineSpacing() * 1.2"
+                        [attr.stroke]="colors().note"
+                        stroke-width="2"
+                        fill="none"
+                      />
+                    }
+                  }
+                </g>
+              }
+            }
+          }
+        }
+
+        <!-- End bar line for staff -->
+        @if (showBarLines() && measureIndex === measures().length - 1) {
+          <line
+            [attr.x1]="getMeasureX(measureIndex) + measureWidth() - 5"
+            [attr.y1]="getStaffLineY(1)"
+            [attr.x2]="getMeasureX(measureIndex) + measureWidth() - 5"
+            [attr.y2]="getStaffLineY(5)"
+            [attr.stroke]="colors().barLine"
+            stroke-width="2"
+          />
+          <line
+            [attr.x1]="getMeasureX(measureIndex) + measureWidth() - 9"
+            [attr.y1]="getStaffLineY(1)"
+            [attr.x2]="getMeasureX(measureIndex) + measureWidth() - 9"
+            [attr.y2]="getStaffLineY(5)"
+            [attr.stroke]="colors().barLine"
+            stroke-width="1"
+          />
+        }
+      }
+    }
+
+    <!-- ========== TABLATURE ========== -->
+
     <!-- String Labels -->
     @if (showStringLabels()) {
       @for (label of stringLabels(); track $index) {
@@ -33,7 +176,7 @@
       <!-- TAB label -->
       <text
         x="15"
-        y="12"
+        [attr.y]="tabTop() - 8"
         [attr.fill]="colors().text"
         font-size="10"
         font-weight="bold"
@@ -190,4 +333,7 @@
     }
   </svg>
 </div>
+
+
+
 

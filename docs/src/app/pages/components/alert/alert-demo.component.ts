@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwAlertComponent, TwAlertTitleComponent, TwAlertDescriptionComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwAlertComponent, TwAlertTitleComponent, TwAlertDescriptionComponent } from '@pegasusheavy/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

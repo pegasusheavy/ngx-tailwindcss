@@ -1,29 +1,53 @@
 <div [class]="containerClasses()">
   <!-- Label -->
   @if (label()) {
-    <span class="text-xs font-medium text-slate-600 dark:text-slate-400">{{ label() }}</span>
+    <span class="text-xs font-medium text-slate-300 dark:text-slate-400 tracking-wide uppercase">{{ label() }}</span>
   }
 
   <!-- Horizontal Slider Variant -->
   @if (variant() === 'slider') {
-    <div class="w-full">
-      <!-- L/R Labels -->
+    <div class="w-full min-w-[100px] px-1">
+      <!-- L/R Labels with Position Indicators -->
       @if (showLabels()) {
-        <div class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 mb-1">
-          <span>L</span>
-          <span>R</span>
+        <div class="flex justify-between items-center text-[10px] font-bold mb-2">
+          <span
+            class="px-1.5 py-0.5 rounded text-[9px] transition-all"
+            [class.bg-cyan-500]="internalValue() < -20"
+            [class.text-white]="internalValue() < -20"
+            [class.bg-slate-700]="internalValue() >= -20"
+            [class.text-slate-400]="internalValue() >= -20"
+          >L</span>
+          <span class="text-slate-500 text-[8px] font-mono">PAN</span>
+          <span
+            class="px-1.5 py-0.5 rounded text-[9px] transition-all"
+            [class.bg-cyan-500]="internalValue() > 20"
+            [class.text-white]="internalValue() > 20"
+            [class.bg-slate-700]="internalValue() <= 20"
+            [class.text-slate-400]="internalValue() <= 20"
+          >R</span>
         </div>
       }
 
-      <div [class]="sliderContainerClasses()">
-        <!-- Track -->
-        <div [class]="trackClasses()" #track>
-          <!-- Center Line -->
-          <div class="absolute top-0 bottom-0 left-1/2 w-px bg-slate-500 dark:bg-slate-400"></div>
+      <div [class]="sliderContainerClasses()" class="relative">
+        <!-- Track Background with Grooves -->
+        <div
+          class="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-3 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-md shadow-inner border border-slate-700/50"
+          #track
+        >
+          <!-- Track Groove Lines -->
+          <div class="absolute inset-0 flex items-center justify-between px-1 opacity-30">
+            @for (i of [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]; track i) {
+              <div class="w-px h-1.5 bg-slate-500"></div>
+            }
+          </div>
 
-          <!-- Fill -->
+          <!-- Center Detent Indicator -->
+          <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5 bg-gradient-to-b from-amber-400/80 via-amber-500/60 to-amber-400/80 rounded-full"></div>
+
+          <!-- Fill from Center -->
           <div
-            class="absolute top-0 bottom-0 bg-blue-500/50 dark:bg-blue-600/50 rounded-full"
+            class="absolute top-0.5 bottom-0.5 rounded-sm transition-all duration-75"
+            [class]="internalValue() === 0 ? '' : (internalValue() < 0 ? 'bg-gradient-to-l from-cyan-500/70 to-cyan-400/30' : 'bg-gradient-to-r from-cyan-500/70 to-cyan-400/30')"
             [style.left]="fillStyle().left"
             [style.width]="fillStyle().width"
           ></div>
@@ -31,80 +55,150 @@
 
         <!-- Tick Marks -->
         @if (showTicks()) {
-          @for (tick of tickMarks(); track tick.position) {
-            <div
-              class="absolute top-full mt-1 -translate-x-1/2 text-[8px] text-slate-500 dark:text-slate-400"
-              [style.left.%]="tick.position"
-            >
-              @if (tick.label) {
-                <span>{{ tick.label }}</span>
-              } @else {
-                <span class="block w-px h-1 bg-slate-600"></span>
-              }
-            </div>
-          }
+          <div class="absolute top-full mt-2 left-0 right-0">
+            @for (tick of tickMarks(); track tick.position) {
+              <div
+                class="absolute -translate-x-1/2 flex flex-col items-center"
+                [style.left.%]="tick.position"
+              >
+                <div
+                  class="w-px bg-slate-600"
+                  [class.h-1.5]="tick.label"
+                  [class.h-1]="!tick.label"
+                ></div>
+                @if (tick.label) {
+                  <span class="text-[8px] text-slate-500 font-mono mt-0.5">{{ tick.label }}</span>
+                }
+              </div>
+            }
+          </div>
         }
 
-        <!-- Thumb -->
+        <!-- Fader Cap/Thumb (Professional styling) -->
         <div
-          [class]="thumbClasses()"
-          [style.left.%]="thumbPosition()"
+          class="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 transition-all"
+          [class.cursor-grab]="!disabled()"
           [class.cursor-not-allowed]="disabled()"
-        ></div>
+          [class.active:cursor-grabbing]="!disabled()"
+          [style.left.%]="thumbPosition()"
+        >
+          <!-- Outer Cap Body -->
+          <div
+            class="relative w-5 h-7 rounded-sm shadow-lg transition-transform"
+            [class.scale-105]="isDragging()"
+            [class]="disabled() ? 'bg-slate-600' : 'bg-gradient-to-b from-slate-300 via-slate-400 to-slate-500 dark:from-slate-500 dark:via-slate-600 dark:to-slate-700'"
+          >
+            <!-- Cap Shine/Highlight -->
+            <div class="absolute top-0.5 left-0.5 right-0.5 h-1.5 bg-gradient-to-b from-white/40 to-transparent rounded-t-sm"></div>
+
+            <!-- Cap Grip Lines -->
+            <div class="absolute inset-x-1 top-1/2 -translate-y-1/2 flex flex-col gap-[3px]">
+              <div class="h-px bg-slate-600/70 dark:bg-slate-400/50"></div>
+              <div class="h-px bg-white/50 dark:bg-white/30"></div>
+              <div class="h-px bg-slate-600/70 dark:bg-slate-400/50"></div>
+            </div>
+
+            <!-- Bottom Shadow -->
+            <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-b from-transparent to-slate-600/50 rounded-b-sm"></div>
+          </div>
+
+          <!-- Cap Shadow -->
+          <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 bg-black/30 rounded-full blur-sm"></div>
+        </div>
       </div>
     </div>
   }
 
   <!-- Knob Variant -->
   @if (variant() === 'knob') {
-    <div [class]="knobContainerClasses()" (mousedown)="onKnobDrag($event)">
-      <svg viewBox="0 0 100 100" class="w-full h-full">
-        <!-- Background Circle -->
+    <div [class]="knobContainerClasses()" (mousedown)="onKnobDrag($event)" class="cursor-pointer select-none">
+      <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-lg">
+        <!-- Outer Ring (beveled effect) -->
+        <defs>
+          <linearGradient id="panKnobBevel" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#64748b" />
+            <stop offset="50%" stop-color="#334155" />
+            <stop offset="100%" stop-color="#1e293b" />
+          </linearGradient>
+          <linearGradient id="panKnobBody" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stop-color="#475569" />
+            <stop offset="30%" stop-color="#334155" />
+            <stop offset="70%" stop-color="#1e293b" />
+            <stop offset="100%" stop-color="#0f172a" />
+          </linearGradient>
+          <filter id="panKnobShadow" x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="2" dy="4" stdDeviation="3" flood-opacity="0.5"/>
+          </filter>
+        </defs>
+
+        <!-- Background Ring -->
         <circle
           cx="50"
           cy="50"
-          r="45"
+          r="46"
+          fill="url(#panKnobBevel)"
+          filter="url(#panKnobShadow)"
+        />
+
+        <!-- Knob Body -->
+        <circle
+          cx="50"
+          cy="50"
+          r="40"
+          fill="url(#panKnobBody)"
+        />
+
+        <!-- Value Arc Track -->
+        <circle
+          cx="50"
+          cy="50"
+          r="46"
           fill="none"
-          stroke="currentColor"
-          stroke-width="4"
-          class="text-slate-700 dark:text-slate-600"
+          stroke="#1e293b"
+          stroke-width="6"
+          stroke-dasharray="217"
+          stroke-dashoffset="0"
+          transform="rotate(135 50 50)"
+          stroke-linecap="round"
         />
 
         <!-- Value Arc -->
         <circle
           cx="50"
           cy="50"
-          r="45"
+          r="46"
           fill="none"
-          stroke="currentColor"
-          stroke-width="4"
+          stroke="#22d3ee"
+          stroke-width="5"
           stroke-linecap="round"
-          class="text-blue-500 dark:text-blue-600"
-          [attr.stroke-dasharray]="'282.7'"
-          [attr.stroke-dashoffset]="282.7 - (thumbPosition() / 100) * 282.7"
-          transform="rotate(-135 50 50)"
+          stroke-dasharray="217"
+          [attr.stroke-dashoffset]="217 - (thumbPosition() / 100) * 217"
+          transform="rotate(135 50 50)"
+          class="transition-all duration-75"
         />
 
-        <!-- Center Dot -->
-        <circle cx="50" cy="50" r="3" class="fill-slate-500 dark:fill-slate-400" />
+        <!-- Center Marker (when centered) -->
+        @if (Math.abs(internalValue()) < 5) {
+          <circle cx="50" cy="8" r="3" fill="#f59e0b" class="animate-pulse"/>
+        }
 
-        <!-- Indicator Line -->
-        <line
-          x1="50"
-          y1="50"
-          x2="50"
-          y2="15"
-          stroke="currentColor"
-          stroke-width="3"
-          stroke-linecap="round"
-          class="text-blue-500 dark:text-blue-600"
+        <!-- Indicator Dot -->
+        <circle
+          cx="50"
+          cy="18"
+          r="4"
+          fill="#22d3ee"
           [attr.transform]="'rotate(' + knobRotation() + ' 50 50)'"
+          class="transition-all duration-75"
         />
+
+        <!-- Knob Shine -->
+        <ellipse cx="42" cy="35" rx="15" ry="10" fill="white" opacity="0.08"/>
 
         <!-- L/R Labels -->
         @if (showLabels()) {
-          <text x="15" y="85" class="fill-slate-500 dark:fill-slate-400 text-[12px]">L</text>
-          <text x="80" y="85" class="fill-slate-500 dark:fill-slate-400 text-[12px]">R</text>
+          <text x="12" y="80" class="fill-slate-400 text-[10px] font-bold">L</text>
+          <text x="82" y="80" class="fill-slate-400 text-[10px] font-bold">R</text>
         }
       </svg>
     </div>
@@ -112,42 +206,62 @@
 
   <!-- Stereo Width Variant -->
   @if (variant() === 'stereo-width') {
-    <div class="w-full">
-      <!-- L/R Labels -->
+    <div class="w-full min-w-[120px] px-1">
+      <!-- Labels -->
       @if (showLabels()) {
-        <div class="flex justify-between text-[10px] text-slate-500 dark:text-slate-400 mb-1">
-          <span>L</span>
-          <span class="text-center">Width</span>
-          <span>R</span>
+        <div class="flex justify-between items-center text-[10px] mb-2">
+          <span class="px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 text-[9px] font-bold">L</span>
+          <span class="text-slate-500 text-[8px] font-mono tracking-wider">WIDTH</span>
+          <span class="px-1.5 py-0.5 rounded bg-slate-700 text-slate-400 text-[9px] font-bold">R</span>
         </div>
       }
 
-      <div [class]="sliderContainerClasses()">
-        <!-- Track -->
-        <div [class]="trackClasses()" #track>
-          <!-- Stereo Width Visualization -->
+      <div [class]="sliderContainerClasses()" class="relative">
+        <!-- Track Background -->
+        <div
+          class="absolute top-1/2 -translate-y-1/2 left-0 right-0 h-4 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 rounded-md shadow-inner border border-slate-700/50 overflow-hidden"
+          #track
+        >
+          <!-- Stereo Field Visualization -->
           <div
-            class="absolute top-0 bottom-0 bg-gradient-to-r from-blue-500 via-blue-300 to-blue-500 dark:from-blue-600 dark:via-blue-400 dark:to-blue-600 rounded-full transition-all"
+            class="absolute top-1 bottom-1 rounded-sm transition-all duration-100"
+            [class]="internalValue() > 0 ? 'bg-gradient-to-r from-purple-500/60 via-cyan-400/40 to-purple-500/60' : 'bg-slate-700/50'"
             [style.left.%]="stereoWidthLeft()"
             [style.right.%]="100 - stereoWidthRight()"
-          ></div>
+          >
+            <!-- Animated stereo indicator -->
+            @if (internalValue() > 50) {
+              <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
+            }
+          </div>
 
-          <!-- Left Channel Indicator -->
+          <!-- Left Channel Speaker Icon -->
           <div
-            class="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-500 shadow transition-all"
+            class="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all duration-100"
+            [class.bg-purple-500]="internalValue() > 0"
+            [class.bg-slate-600]="internalValue() === 0"
+            [class.shadow-lg]="internalValue() > 0"
+            [class.shadow-purple-500/50]="internalValue() > 0"
             [style.left.%]="stereoWidthLeft()"
             style="transform: translate(-50%, -50%)"
           ></div>
 
-          <!-- Right Channel Indicator -->
+          <!-- Right Channel Speaker Icon -->
           <div
-            class="absolute top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-500 shadow transition-all"
+            class="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full transition-all duration-100"
+            [class.bg-purple-500]="internalValue() > 0"
+            [class.bg-slate-600]="internalValue() === 0"
+            [class.shadow-lg]="internalValue() > 0"
+            [class.shadow-purple-500/50]="internalValue() > 0"
             [style.left.%]="stereoWidthRight()"
             style="transform: translate(-50%, -50%)"
           ></div>
+
+          <!-- Center Reference Line -->
+          <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-px bg-slate-600"></div>
         </div>
 
-        <!-- Width Slider Thumb -->
+        <!-- Hidden Range Input for Accessibility -->
         <input
           type="range"
           [min]="0"
@@ -157,13 +271,33 @@
           (input)="onWidthSliderChange($event)"
           [disabled]="disabled()"
           class="absolute inset-0 w-full opacity-0 cursor-pointer"
+          [attr.aria-label]="'Stereo width: ' + internalValue() + '%'"
         />
+
+        <!-- Width Control Slider Cap -->
+        <div
+          class="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 transition-all"
+          [class.cursor-ew-resize]="!disabled()"
+        >
+          <div
+            class="w-8 h-6 rounded-sm shadow-lg transition-transform"
+            [class.scale-105]="isDragging()"
+            [class]="disabled() ? 'bg-slate-600' : 'bg-gradient-to-b from-slate-400 via-slate-500 to-slate-600 dark:from-slate-500 dark:via-slate-600 dark:to-slate-700'"
+          >
+            <!-- Grip texture -->
+            <div class="absolute inset-x-2 top-1/2 -translate-y-1/2 flex flex-col gap-[2px]">
+              <div class="h-px bg-slate-700/60"></div>
+              <div class="h-px bg-white/30"></div>
+              <div class="h-px bg-slate-700/60"></div>
+            </div>
+          </div>
+        </div>
 
         <!-- Tick Marks -->
         @if (showTicks()) {
-          <div class="absolute top-full mt-1 left-0 right-0 flex justify-between text-[8px] text-slate-500 dark:text-slate-400">
-            <span>Mono</span>
-            <span>Stereo</span>
+          <div class="absolute top-full mt-3 left-0 right-0 flex justify-between text-[9px] text-slate-500 font-mono">
+            <span class="px-1 py-0.5 bg-slate-800 rounded text-[8px]">MONO</span>
+            <span class="px-1 py-0.5 bg-slate-800 rounded text-[8px]">STEREO</span>
           </div>
         }
       </div>
@@ -172,9 +306,16 @@
 
   <!-- Value Display -->
   @if (showValue()) {
-    <span class="text-xs font-mono text-slate-700 dark:text-slate-300">
+    <div
+      class="text-xs font-mono text-center min-w-[40px] px-2 py-1 mt-1 rounded bg-slate-900 border border-slate-700"
+      [class.text-cyan-400]="internalValue() !== 0"
+      [class.text-amber-400]="internalValue() === 0"
+    >
       {{ displayValue() }}
-    </span>
+    </div>
   }
 </div>
+
+
+
 

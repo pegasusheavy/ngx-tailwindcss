@@ -137,12 +137,25 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   readonly seekable = input(true);
   readonly selectable = input(false);
 
+  // Zoom and pan
+  readonly zoomable = input(false);
+  readonly showZoomControls = input(true);
+  readonly minZoom = input(1);
+  readonly maxZoom = input(16);
+  readonly zoomStep = input(2); // Multiplier for zoom in/out
+  readonly pannable = input(true); // Allow panning when zoomed
+  readonly wheelZoom = input(true); // Zoom with mouse wheel
+  readonly pinchZoom = input(true); // Pinch-to-zoom on touch devices
+
   // Class override
   readonly classOverride = input('');
 
   // Outputs
   readonly seek = output<number>();
   readonly regionSelect = output<{ start: number; end: number }>();
+  readonly zoomChange = output<number>();
+  readonly panChange = output<number>();
+  readonly viewRangeChange = output<{ start: number; end: number }>();
 
   // Internal state
   protected readonly loading = signal(false);
@@ -151,6 +164,14 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   protected readonly selectionStart = signal<number | null>(null);
   protected readonly selectionEnd = signal<number | null>(null);
   protected readonly isDragging = signal(false);
+
+  // Zoom and pan state
+  protected readonly zoomLevel = signal(1);
+  protected readonly panPosition = signal(0); // 0-1, represents left edge of visible area
+  protected readonly isPanning = signal(false);
+  private panStartX = 0;
+  private panStartPosition = 0;
+  private lastPinchDistance = 0;
 
   private ctx: CanvasRenderingContext2D | null = null;
   private peakData: number[] = [];
@@ -245,6 +266,40 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   });
 
   protected readonly isMini = computed(() => this.size() === 'mini');
+
+  // Zoom and pan computed values
+  protected readonly isZoomed = computed(() => this.zoomLevel() > 1);
+
+  protected readonly visibleRange = computed(() => {
+    const zoom = this.zoomLevel();
+    const pan = this.panPosition();
+    const visibleWidth = 1 / zoom;
+    const start = pan;
+    const end = Math.min(1, pan + visibleWidth);
+    return { start, end, width: visibleWidth };
+  });
+
+  protected readonly zoomPercent = computed(() => {
+    return Math.round(this.zoomLevel() * 100);
+  });
+
+  protected readonly canZoomIn = computed(() => {
+    return this.zoomable() && this.zoomLevel() < this.maxZoom();
+  });
+
+  protected readonly canZoomOut = computed(() => {
+    return this.zoomable() && this.zoomLevel() > this.minZoom();
+  });
+
+  protected readonly scrollbarWidth = computed(() => {
+    // Width of scrollbar thumb as percentage
+    return (1 / this.zoomLevel()) * 100;
+  });
+
+  protected readonly scrollbarPosition = computed(() => {
+    // Position of scrollbar thumb
+    return this.panPosition() * (100 - this.scrollbarWidth());
+  });
 
   protected readonly containerClasses = computed(() => {
     const base = 'relative overflow-hidden';
@@ -628,31 +683,40 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     const barW = this.effectiveBarWidth();
     const gap = this.effectiveBarGap();
     const radius = this.effectiveBarRadius();
+    const { start: viewStart, end: viewEnd } = this.visibleRange();
 
     // Clear canvas
     this.ctx.fillStyle = colors.background;
     this.ctx.fillRect(0, 0, w, h);
 
     const barCount = Math.floor(w / (barW + gap));
-    const samplesPerBar = Math.floor(this.peakData.length / barCount);
+    const viewWidth = viewEnd - viewStart;
 
     for (let i = 0; i < barCount; i++) {
       const x = i * (barW + gap);
-      const progressX = progress * w;
 
-      // Get average peak for this bar
+      // Calculate which part of the full waveform this bar represents
+      const barStartNorm = viewStart + (i / barCount) * viewWidth;
+      const barEndNorm = viewStart + ((i + 1) / barCount) * viewWidth;
+
+      // Map to peak data indices
+      const startIdx = Math.floor(barStartNorm * this.peakData.length);
+      const endIdx = Math.ceil(barEndNorm * this.peakData.length);
+
+      // Get max peak for this bar
       let peak = 0;
-      for (let j = 0; j < samplesPerBar; j++) {
-        const idx = i * samplesPerBar + j;
-        if (idx < this.peakData.length) {
-          peak = Math.max(peak, this.peakData[idx]);
+      for (let j = startIdx; j < endIdx && j < this.peakData.length; j++) {
+        if (j >= 0) {
+          peak = Math.max(peak, this.peakData[j]);
         }
       }
 
       const barH = Math.max(2, peak * (h - 4));
       const y = (h - barH) / 2;
 
-      // Color based on progress
+      // Color based on progress (convert progress to view coordinates)
+      const progressInView = (progress - viewStart) / viewWidth;
+      const progressX = progressInView * w;
       this.ctx.fillStyle = x < progressX ? colors.progress : colors.primary;
 
       // Draw rounded bar
@@ -667,6 +731,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     const w = this.effectiveWidth();
     const h = this.effectiveHeight();
     const progress = this.progress();
+    const { start: viewStart, end: viewEnd } = this.visibleRange();
+    const viewWidth = viewEnd - viewStart;
 
     // Clear canvas
     this.ctx.fillStyle = colors.background;
@@ -674,12 +740,18 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     const centerY = h / 2;
 
+    // Calculate visible range of peak data
+    const startIdx = Math.floor(viewStart * this.peakData.length);
+    const endIdx = Math.ceil(viewEnd * this.peakData.length);
+
     // Draw waveform line
     this.ctx.beginPath();
     this.ctx.moveTo(0, centerY);
 
-    for (let i = 0; i < this.peakData.length; i++) {
-      const x = (i / this.peakData.length) * w;
+    for (let i = startIdx; i <= endIdx && i < this.peakData.length; i++) {
+      if (i < 0) continue;
+      const normalizedPos = i / this.peakData.length;
+      const x = ((normalizedPos - viewStart) / viewWidth) * w;
       const y = centerY - this.peakData[i] * (h / 2 - 2);
       this.ctx.lineTo(x, y);
     }
@@ -688,17 +760,20 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     this.ctx.lineWidth = 2;
     this.ctx.stroke();
 
-    // Draw progress overlay
-    if (progress > 0) {
+    // Draw progress overlay (convert progress to view coordinates)
+    const progressInView = (progress - viewStart) / viewWidth;
+    if (progressInView > 0 && progressInView < 1) {
       this.ctx.save();
       this.ctx.beginPath();
-      this.ctx.rect(0, 0, progress * w, h);
+      this.ctx.rect(0, 0, progressInView * w, h);
       this.ctx.clip();
 
       this.ctx.beginPath();
       this.ctx.moveTo(0, centerY);
-      for (let i = 0; i < this.peakData.length; i++) {
-        const x = (i / this.peakData.length) * w;
+      for (let i = startIdx; i <= endIdx && i < this.peakData.length; i++) {
+        if (i < 0) continue;
+        const normalizedPos = i / this.peakData.length;
+        const x = ((normalizedPos - viewStart) / viewWidth) * w;
         const y = centerY - this.peakData[i] * (h / 2 - 2);
         this.ctx.lineTo(x, y);
       }
@@ -716,30 +791,39 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     const w = this.effectiveWidth();
     const h = this.effectiveHeight();
     const progress = this.progress();
+    const { start: viewStart, end: viewEnd } = this.visibleRange();
+    const viewWidth = viewEnd - viewStart;
 
     // Clear canvas
     this.ctx.fillStyle = colors.background;
     this.ctx.fillRect(0, 0, w, h);
 
     const centerY = h / 2;
+    const startIdx = Math.floor(viewStart * this.peakData.length);
+    const endIdx = Math.ceil(viewEnd * this.peakData.length);
 
     // Draw mirrored waveform
     this.ctx.beginPath();
 
     // Top half
-    for (let i = 0; i < this.peakData.length; i++) {
-      const x = (i / this.peakData.length) * w;
+    let first = true;
+    for (let i = startIdx; i <= endIdx && i < this.peakData.length; i++) {
+      if (i < 0) continue;
+      const normalizedPos = i / this.peakData.length;
+      const x = ((normalizedPos - viewStart) / viewWidth) * w;
       const y = centerY - this.peakData[i] * (h / 2 - 2);
-      if (i === 0) {
+      if (first) {
         this.ctx.moveTo(x, y);
+        first = false;
       } else {
         this.ctx.lineTo(x, y);
       }
     }
 
     // Bottom half (reversed)
-    for (let i = this.peakData.length - 1; i >= 0; i--) {
-      const x = (i / this.peakData.length) * w;
+    for (let i = Math.min(endIdx, this.peakData.length - 1); i >= startIdx && i >= 0; i--) {
+      const normalizedPos = i / this.peakData.length;
+      const x = ((normalizedPos - viewStart) / viewWidth) * w;
       const y = centerY + this.peakData[i] * (h / 2 - 2);
       this.ctx.lineTo(x, y);
     }
@@ -749,24 +833,30 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     this.ctx.fill();
 
     // Progress fill
-    if (progress > 0) {
+    const progressInView = (progress - viewStart) / viewWidth;
+    if (progressInView > 0 && progressInView < 1) {
       this.ctx.save();
       this.ctx.beginPath();
-      this.ctx.rect(0, 0, progress * w, h);
+      this.ctx.rect(0, 0, progressInView * w, h);
       this.ctx.clip();
 
       this.ctx.beginPath();
-      for (let i = 0; i < this.peakData.length; i++) {
-        const x = (i / this.peakData.length) * w;
+      first = true;
+      for (let i = startIdx; i <= endIdx && i < this.peakData.length; i++) {
+        if (i < 0) continue;
+        const normalizedPos = i / this.peakData.length;
+        const x = ((normalizedPos - viewStart) / viewWidth) * w;
         const y = centerY - this.peakData[i] * (h / 2 - 2);
-        if (i === 0) {
+        if (first) {
           this.ctx.moveTo(x, y);
+          first = false;
         } else {
           this.ctx.lineTo(x, y);
         }
       }
-      for (let i = this.peakData.length - 1; i >= 0; i--) {
-        const x = (i / this.peakData.length) * w;
+      for (let i = Math.min(endIdx, this.peakData.length - 1); i >= startIdx && i >= 0; i--) {
+        const normalizedPos = i / this.peakData.length;
+        const x = ((normalizedPos - viewStart) / viewWidth) * w;
         const y = centerY + this.peakData[i] * (h / 2 - 2);
         this.ctx.lineTo(x, y);
       }
@@ -784,6 +874,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     const colors = this.colors();
     const w = this.effectiveWidth();
     const h = this.effectiveHeight();
+    const { start: viewStart, end: viewEnd } = this.visibleRange();
+    const viewWidth = viewEnd - viewStart;
 
     // Clear canvas
     this.ctx.fillStyle = colors.background;
@@ -796,21 +888,26 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     gradient.addColorStop(1, colors.primary);
 
     const centerY = h / 2;
+    const startIdx = Math.floor(viewStart * this.peakData.length);
+    const endIdx = Math.ceil(viewEnd * this.peakData.length);
 
     // Draw filled waveform with gradient
     this.ctx.beginPath();
     this.ctx.moveTo(0, centerY);
 
-    for (let i = 0; i < this.peakData.length; i++) {
-      const x = (i / this.peakData.length) * w;
+    for (let i = startIdx; i <= endIdx && i < this.peakData.length; i++) {
+      if (i < 0) continue;
+      const normalizedPos = i / this.peakData.length;
+      const x = ((normalizedPos - viewStart) / viewWidth) * w;
       const amplitude = this.peakData[i] * (h / 2 - 2);
       this.ctx.lineTo(x, centerY - amplitude);
     }
 
     this.ctx.lineTo(w, centerY);
 
-    for (let i = this.peakData.length - 1; i >= 0; i--) {
-      const x = (i / this.peakData.length) * w;
+    for (let i = Math.min(endIdx, this.peakData.length - 1); i >= startIdx && i >= 0; i--) {
+      const normalizedPos = i / this.peakData.length;
+      const x = ((normalizedPos - viewStart) / viewWidth) * w;
       const amplitude = this.peakData[i] * (h / 2 - 2);
       this.ctx.lineTo(x, centerY + amplitude);
     }
@@ -889,7 +986,239 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (!canvasEl) return 0;
 
     const rect = canvasEl.getBoundingClientRect();
-    return Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+    const relativeX = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+
+    // If zoomed, convert to actual position
+    if (this.zoomLevel() > 1) {
+      const { start, width } = this.visibleRange();
+      return start + relativeX * width;
+    }
+
+    return relativeX;
+  }
+
+  // Zoom methods
+  zoomIn(centerPosition?: number): void {
+    if (!this.canZoomIn()) return;
+
+    const currentZoom = this.zoomLevel();
+    const newZoom = Math.min(this.maxZoom(), currentZoom * this.zoomStep());
+    this.setZoom(newZoom, centerPosition);
+  }
+
+  zoomOut(centerPosition?: number): void {
+    if (!this.canZoomOut()) return;
+
+    const currentZoom = this.zoomLevel();
+    const newZoom = Math.max(this.minZoom(), currentZoom / this.zoomStep());
+    this.setZoom(newZoom, centerPosition);
+  }
+
+  setZoom(zoom: number, centerPosition?: number): void {
+    const clampedZoom = Math.max(this.minZoom(), Math.min(this.maxZoom(), zoom));
+    const oldZoom = this.zoomLevel();
+
+    if (clampedZoom === oldZoom) return;
+
+    // Calculate new pan position to keep the center point stable
+    const center = centerPosition ?? (this.panPosition() + (1 / oldZoom) / 2);
+    const newVisibleWidth = 1 / clampedZoom;
+    let newPan = center - newVisibleWidth / 2;
+
+    // Clamp pan position
+    newPan = Math.max(0, Math.min(1 - newVisibleWidth, newPan));
+
+    this.zoomLevel.set(clampedZoom);
+    this.panPosition.set(newPan);
+
+    this.zoomChange.emit(clampedZoom);
+    this.emitViewRange();
+    this.draw();
+  }
+
+  resetZoom(): void {
+    this.zoomLevel.set(1);
+    this.panPosition.set(0);
+    this.zoomChange.emit(1);
+    this.panChange.emit(0);
+    this.emitViewRange();
+    this.draw();
+  }
+
+  zoomToRegion(start: number, end: number): void {
+    const regionWidth = end - start;
+    const newZoom = Math.min(this.maxZoom(), 1 / regionWidth);
+    this.zoomLevel.set(newZoom);
+    this.panPosition.set(start);
+    this.zoomChange.emit(newZoom);
+    this.panChange.emit(start);
+    this.emitViewRange();
+    this.draw();
+  }
+
+  // Pan methods
+  setPan(position: number): void {
+    if (!this.pannable() || this.zoomLevel() <= 1) return;
+
+    const visibleWidth = 1 / this.zoomLevel();
+    const clampedPan = Math.max(0, Math.min(1 - visibleWidth, position));
+
+    this.panPosition.set(clampedPan);
+    this.panChange.emit(clampedPan);
+    this.emitViewRange();
+    this.draw();
+  }
+
+  panLeft(): void {
+    const step = 0.1 / this.zoomLevel();
+    this.setPan(this.panPosition() - step);
+  }
+
+  panRight(): void {
+    const step = 0.1 / this.zoomLevel();
+    this.setPan(this.panPosition() + step);
+  }
+
+  // Pan to show a specific position (e.g., follow playhead)
+  panToPosition(position: number): void {
+    const { start, end } = this.visibleRange();
+    const margin = 0.1 / this.zoomLevel(); // 10% margin
+
+    if (position < start + margin) {
+      this.setPan(position - margin);
+    } else if (position > end - margin) {
+      this.setPan(position - (1 / this.zoomLevel()) + margin);
+    }
+  }
+
+  private emitViewRange(): void {
+    const { start, end } = this.visibleRange();
+    this.viewRangeChange.emit({ start, end });
+  }
+
+  // Wheel zoom handler
+  onWheel(event: WheelEvent): void {
+    if (!this.zoomable() || !this.wheelZoom()) return;
+
+    event.preventDefault();
+
+    const canvasEl = this.canvas()?.nativeElement;
+    if (!canvasEl) return;
+
+    const rect = canvasEl.getBoundingClientRect();
+    const relativeX = (event.clientX - rect.left) / rect.width;
+
+    // Calculate center position in actual coordinates
+    const { start, width } = this.visibleRange();
+    const centerPosition = start + relativeX * width;
+
+    if (event.deltaY < 0) {
+      this.zoomIn(centerPosition);
+    } else {
+      this.zoomOut(centerPosition);
+    }
+  }
+
+  // Pan drag handlers
+  onPanStart(event: MouseEvent | TouchEvent): void {
+    if (!this.pannable() || this.zoomLevel() <= 1) return;
+
+    // Only pan with middle mouse button or when holding shift
+    const isMouseEvent = 'button' in event;
+    if (isMouseEvent && (event as MouseEvent).button !== 1 && !event.shiftKey) return;
+
+    event.preventDefault();
+    this.isPanning.set(true);
+    this.panStartX = 'touches' in event ? event.touches[0].clientX : event.clientX;
+    this.panStartPosition = this.panPosition();
+
+    const onMove = (e: MouseEvent | TouchEvent) => {
+      if (!this.isPanning()) return;
+
+      const currentX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+      const canvasEl = this.canvas()?.nativeElement;
+      if (!canvasEl) return;
+
+      const rect = canvasEl.getBoundingClientRect();
+      const deltaX = (this.panStartX - currentX) / rect.width;
+      const deltaPan = deltaX * (1 / this.zoomLevel());
+
+      this.setPan(this.panStartPosition + deltaPan);
+    };
+
+    const onEnd = () => {
+      this.isPanning.set(false);
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onEnd);
+      document.removeEventListener('touchmove', onMove);
+      document.removeEventListener('touchend', onEnd);
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+    document.addEventListener('touchmove', onMove);
+    document.addEventListener('touchend', onEnd);
+  }
+
+  // Touch pinch zoom
+  onTouchStart(event: TouchEvent): void {
+    if (!this.zoomable() || !this.pinchZoom() || event.touches.length !== 2) return;
+
+    event.preventDefault();
+    this.lastPinchDistance = this.getPinchDistance(event);
+  }
+
+  onTouchMove(event: TouchEvent): void {
+    if (!this.zoomable() || !this.pinchZoom() || event.touches.length !== 2) return;
+
+    event.preventDefault();
+    const currentDistance = this.getPinchDistance(event);
+
+    if (this.lastPinchDistance > 0) {
+      const scale = currentDistance / this.lastPinchDistance;
+      const newZoom = this.zoomLevel() * scale;
+
+      // Get center of pinch
+      const canvasEl = this.canvas()?.nativeElement;
+      if (canvasEl) {
+        const rect = canvasEl.getBoundingClientRect();
+        const centerX = (event.touches[0].clientX + event.touches[1].clientX) / 2;
+        const relativeX = (centerX - rect.left) / rect.width;
+        const { start, width } = this.visibleRange();
+        const centerPosition = start + relativeX * width;
+
+        this.setZoom(newZoom, centerPosition);
+      }
+    }
+
+    this.lastPinchDistance = currentDistance;
+  }
+
+  onTouchEnd(): void {
+    this.lastPinchDistance = 0;
+  }
+
+  private getPinchDistance(event: TouchEvent): number {
+    const dx = event.touches[0].clientX - event.touches[1].clientX;
+    const dy = event.touches[0].clientY - event.touches[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  // Scrollbar drag handler
+  onScrollbarDrag(event: MouseEvent): void {
+    if (!this.pannable() || this.zoomLevel() <= 1) return;
+
+    event.preventDefault();
+
+    const scrollbarEl = event.currentTarget as HTMLElement;
+    const rect = scrollbarEl.getBoundingClientRect();
+    const thumbWidth = this.scrollbarWidth() / 100;
+    const availableWidth = 1 - thumbWidth;
+
+    const relativeX = (event.clientX - rect.left) / rect.width;
+    const newPan = (relativeX - thumbWidth / 2) / (1 - thumbWidth);
+
+    this.setPan(Math.max(0, Math.min(1 - 1 / this.zoomLevel(), newPan)));
   }
 
   // Utility

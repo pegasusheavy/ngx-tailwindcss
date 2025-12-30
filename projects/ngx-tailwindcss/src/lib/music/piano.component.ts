@@ -84,6 +84,10 @@ export class TwPianoComponent {
   readonly disabled = input(false);
   readonly classOverride = input('');
 
+  // Custom sizing via CSS variables (override size presets)
+  readonly customWhiteKeyWidth = input<number | null>(null);
+  readonly customKeyHeight = input<number | null>(null);
+
   // Velocity-sensitive display
   readonly velocitySensitive = input(false); // Show velocity as color intensity
   readonly velocityColorMode = input<'brightness' | 'hue' | 'saturation'>('brightness');
@@ -114,12 +118,26 @@ export class TwPianoComponent {
       md: { whiteWidth: 36, height: 150 },
       lg: { whiteWidth: 48, height: 200 },
     };
-    return configs[this.size()];
+    const config = configs[this.size()];
+
+    // Apply custom overrides
+    return {
+      whiteWidth: this.customWhiteKeyWidth() ?? config.whiteWidth,
+      height: this.customKeyHeight() ?? config.height,
+    };
   });
 
   protected readonly height = computed(() => this.sizeConfig().height);
   protected readonly whiteKeyWidth = computed(() => this.sizeConfig().whiteWidth);
   protected readonly blackKeyWidth = computed(() => this.sizeConfig().whiteWidth * 0.6);
+
+  // CSS variable style bindings for custom sizing
+  protected readonly cssVarStyles = computed(() => {
+    const styles: Record<string, string> = {};
+    if (this.customWhiteKeyWidth()) styles['--tw-music-piano-white-key-width'] = `${this.customWhiteKeyWidth()}px`;
+    if (this.customKeyHeight()) styles['--tw-music-piano-white-key-height'] = `${this.customKeyHeight()}px`;
+    return styles;
+  });
 
   protected readonly octaveRange = computed(() => {
     const start = this.startOctave();

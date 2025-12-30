@@ -200,6 +200,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/components/scroll-area/scroll-area-demo.component').then(m => m.ScrollAreaDemoComponent),
       },
       {
+        path: 'scroll-top',
+        loadComponent: () => import('./pages/components/scroll-top/scroll-top-demo.component').then(m => m.ScrollTopDemoComponent),
+      },
+      {
         path: 'columns',
         loadComponent: () => import('./pages/components/columns/columns-demo.component').then(m => m.ColumnsDemoComponent),
       },

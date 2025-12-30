@@ -1,7 +1,7 @@
 @use "tailwindcss";
 
 /* Scan the ngx-tailwindcss library for Tailwind classes */
-@source "../node_modules/@pegasus-heavy/ngx-tailwindcss/fesm2022/*.mjs";
+@source "../node_modules/@pegasusheavy/ngx-tailwindcss/fesm2022/*.mjs";
 
 /* Include safelist for dark mode classes that @source may not properly extract */
 @source "./tailwind-safelist.ts";

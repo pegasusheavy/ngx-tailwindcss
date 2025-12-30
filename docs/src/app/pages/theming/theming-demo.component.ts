@@ -14,7 +14,7 @@ import {
   TwCardComponent,
   TwAlertComponent,
   TwThemeService,
-} from '@pegasus-heavy/ngx-tailwindcss';
+} from '@pegasusheavy/ngx-tailwindcss';
 
 @Component({
   selector: 'app-theming-demo',
@@ -302,7 +302,7 @@ export class ThemingDemoComponent {
   ];
 
   protected readonly providerCode = `// app.config.ts
-import { provideTwTheme, createTheme } from '@pegasus-heavy/ngx-tailwindcss';
+import { provideTwTheme, createTheme } from '@pegasusheavy/ngx-tailwindcss';
 
 const customTheme = createTheme({
   colors: {
@@ -329,7 +329,7 @@ export const appConfig: ApplicationConfig = {
   --tw-color-secondary: #f472b6;
 }`;
 
-  protected readonly colorModeCode = `import { TwThemeService } from '@pegasus-heavy/ngx-tailwindcss';
+  protected readonly colorModeCode = `import { TwThemeService } from '@pegasusheavy/ngx-tailwindcss';
 
 export class MyComponent {
   private themeService = inject(TwThemeService);

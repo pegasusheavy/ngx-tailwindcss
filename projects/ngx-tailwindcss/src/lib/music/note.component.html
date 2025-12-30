@@ -48,7 +48,7 @@
         [attr.x1]="stemX()"
         [attr.y1]="stemY1()"
         [attr.x2]="stemX()"
-        [attr.y2]="stemY2()"
+        [attr.y2]="beamed() ? beamY() : stemY2()"
         [attr.stroke]="noteColor()"
         stroke-width="1.5"
       />
@@ -63,6 +63,16 @@
             [attr.stroke]="noteColor()"
             stroke-width="2"
             fill="none"
+          />
+        }
+      }
+
+      <!-- Beams (when part of beamed group) -->
+      @if (beamed() && effectiveBeamConfig()) {
+        @for (beam of beamPaths(); track beam.level) {
+          <path
+            [attr.d]="beam.d"
+            [attr.fill]="noteColor()"
           />
         }
       }
@@ -101,5 +111,65 @@
       fill="none"
     />
   }
+
+  <!-- Tuplet Bracket and Number -->
+  @if (effectiveTuplet()) {
+    <!-- Tuplet bracket start hook -->
+    @if (effectiveTuplet()?.position === 'start' && effectiveTuplet()?.showBracket !== false) {
+      <line
+        [attr.x1]="x() - size() * 0.3"
+        [attr.y1]="tupletBracketY() + (tupletBracketDirection() === 'up' ? size() * 0.4 : -size() * 0.4)"
+        [attr.x2]="x() - size() * 0.3"
+        [attr.y2]="tupletBracketY()"
+        [attr.stroke]="noteColor()"
+        stroke-width="1"
+      />
+      <line
+        [attr.x1]="x() - size() * 0.3"
+        [attr.y1]="tupletBracketY()"
+        [attr.x2]="x() + size() * 2"
+        [attr.y2]="tupletBracketY()"
+        [attr.stroke]="noteColor()"
+        stroke-width="1"
+      />
+    }
+
+    <!-- Tuplet bracket end hook -->
+    @if (effectiveTuplet()?.position === 'end' && effectiveTuplet()?.showBracket !== false) {
+      <line
+        [attr.x1]="x() - size() * 2"
+        [attr.y1]="tupletBracketY()"
+        [attr.x2]="x() + size() * 0.3"
+        [attr.y2]="tupletBracketY()"
+        [attr.stroke]="noteColor()"
+        stroke-width="1"
+      />
+      <line
+        [attr.x1]="x() + size() * 0.3"
+        [attr.y1]="tupletBracketY()"
+        [attr.x2]="x() + size() * 0.3"
+        [attr.y2]="tupletBracketY() + (tupletBracketDirection() === 'up' ? size() * 0.4 : -size() * 0.4)"
+        [attr.stroke]="noteColor()"
+        stroke-width="1"
+      />
+    }
+
+    <!-- Tuplet number -->
+    @if (showTupletNumber()) {
+      <text
+        [attr.x]="x()"
+        [attr.y]="tupletBracketY() + (tupletBracketDirection() === 'up' ? -size() * 0.2 : size() * 0.5)"
+        [attr.font-size]="size() * 0.6"
+        [attr.fill]="noteColor()"
+        font-family="serif"
+        font-style="italic"
+        text-anchor="middle"
+        class="select-none"
+      >{{ tupletDisplayNumber() }}</text>
+    }
+  }
 </svg>
+
+
+
 

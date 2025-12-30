@@ -1,0 +1,207 @@
+/**
+ * Music Components CSS Custom Properties
+ *
+ * These CSS variables can be set on parent elements to customize component sizing.
+ * All variables use fallback values from the component's size prop.
+ *
+ * Usage:
+ * ```css
+ * .my-mixer {
+ *   --tw-music-dial-size: 64px;
+ *   --tw-music-meter-height: 180px;
+ *   --tw-music-fader-height: 250px;
+ * }
+ * ```
+ */
+
+:root {
+  // === Volume Dial / Knob ===
+  --tw-music-dial-size: 72px;
+  --tw-music-dial-stroke-width: 5px;
+  --tw-music-dial-tick-length: 6px;
+  --tw-music-dial-knob-radius: 55%;
+  --tw-music-dial-font-size: 0.75rem;
+
+  // === VU Meter / Level Meter ===
+  --tw-music-meter-height: 200px;
+  --tw-music-meter-width: 200px;
+  --tw-music-meter-bar-width: 12px;
+  --tw-music-meter-segment-gap: 2px;
+  --tw-music-meter-segment-count: 20;
+
+  // === Fader / Slider ===
+  --tw-music-fader-height: 200px;
+  --tw-music-fader-width: 60px;
+  --tw-music-fader-track-width: 8px;
+  --tw-music-fader-thumb-width: 40px;
+  --tw-music-fader-thumb-height: 24px;
+
+  // === Waveform Display ===
+  --tw-music-waveform-height: 128px;
+  --tw-music-waveform-width: 100%;
+  --tw-music-waveform-bar-width: 3px;
+  --tw-music-waveform-bar-gap: 1px;
+
+  // === Spectrum Analyzer ===
+  --tw-music-spectrum-height: 128px;
+  --tw-music-spectrum-width: 300px;
+  --tw-music-spectrum-bar-width: 8px;
+  --tw-music-spectrum-bar-gap: 2px;
+  --tw-music-spectrum-bar-radius: 2px;
+
+  // === Parametric EQ ===
+  --tw-music-eq-height: 200px;
+  --tw-music-eq-width: 600px;
+  --tw-music-eq-handle-size: 16px;
+
+  // === Graphic EQ ===
+  --tw-music-graphic-eq-slider-height: 150px;
+  --tw-music-graphic-eq-slider-width: 16px;
+  --tw-music-graphic-eq-gap: 4px;
+
+  // === Piano Keyboard ===
+  --tw-music-piano-white-key-width: 40px;
+  --tw-music-piano-white-key-height: 150px;
+  --tw-music-piano-black-key-width: 24px;
+  --tw-music-piano-black-key-height: 100px;
+
+  // === Channel Strip ===
+  --tw-music-channel-width: 80px;
+  --tw-music-channel-height: 400px;
+
+  // === Transport Controls ===
+  --tw-music-transport-button-size: 40px;
+  --tw-music-transport-gap: 8px;
+
+  // === Time Display ===
+  --tw-music-time-font-size: 2rem;
+  --tw-music-time-digit-width: 1.2ch;
+
+  // === BPM Display ===
+  --tw-music-bpm-font-size: 3rem;
+  --tw-music-bpm-min-width: 140px;
+
+  // === Compressor Meter ===
+  --tw-music-compressor-meter-height: 140px;
+  --tw-music-compressor-curve-size: 160px;
+
+  // === Oscilloscope ===
+  --tw-music-scope-height: 200px;
+  --tw-music-scope-width: 400px;
+
+  // === Staff / Notation ===
+  --tw-music-staff-line-spacing: 10px;
+  --tw-music-staff-height: 80px;
+  --tw-music-note-size: 10px;
+
+  // === Metronome ===
+  --tw-music-metronome-size: 200px;
+  --tw-music-metronome-pendulum-length: 120px;
+
+  // === Tuner ===
+  --tw-music-tuner-width: 300px;
+  --tw-music-tuner-height: 200px;
+
+  // === Chord Diagram ===
+  --tw-music-chord-width: 80px;
+  --tw-music-chord-height: 100px;
+  --tw-music-chord-fret-spacing: 16px;
+  --tw-music-chord-string-spacing: 12px;
+
+  // === General Spacing ===
+  --tw-music-gap-xs: 4px;
+  --tw-music-gap-sm: 8px;
+  --tw-music-gap-md: 12px;
+  --tw-music-gap-lg: 16px;
+  --tw-music-gap-xl: 24px;
+
+  // === Typography ===
+  --tw-music-font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --tw-music-font-family-display: system-ui, -apple-system, sans-serif;
+
+  // === Animation ===
+  --tw-music-transition-fast: 75ms;
+  --tw-music-transition-normal: 150ms;
+  --tw-music-transition-slow: 300ms;
+
+  // === Colors (can be overridden per component) ===
+  --tw-music-color-primary: #3b82f6;
+  --tw-music-color-success: #22c55e;
+  --tw-music-color-warning: #eab308;
+  --tw-music-color-danger: #ef4444;
+  --tw-music-color-muted: #64748b;
+}
+
+// Size presets as CSS classes
+.tw-music-size-xs {
+  --tw-music-dial-size: 32px;
+  --tw-music-dial-stroke-width: 3px;
+  --tw-music-meter-height: 80px;
+  --tw-music-fader-height: 100px;
+  --tw-music-spectrum-height: 64px;
+  --tw-music-piano-white-key-width: 20px;
+  --tw-music-piano-white-key-height: 75px;
+}
+
+.tw-music-size-sm {
+  --tw-music-dial-size: 48px;
+  --tw-music-dial-stroke-width: 4px;
+  --tw-music-meter-height: 120px;
+  --tw-music-fader-height: 150px;
+  --tw-music-spectrum-height: 96px;
+  --tw-music-piano-white-key-width: 30px;
+  --tw-music-piano-white-key-height: 112px;
+}
+
+.tw-music-size-md {
+  --tw-music-dial-size: 72px;
+  --tw-music-dial-stroke-width: 5px;
+  --tw-music-meter-height: 200px;
+  --tw-music-fader-height: 200px;
+  --tw-music-spectrum-height: 128px;
+  --tw-music-piano-white-key-width: 40px;
+  --tw-music-piano-white-key-height: 150px;
+}
+
+.tw-music-size-lg {
+  --tw-music-dial-size: 96px;
+  --tw-music-dial-stroke-width: 6px;
+  --tw-music-meter-height: 280px;
+  --tw-music-fader-height: 280px;
+  --tw-music-spectrum-height: 180px;
+  --tw-music-piano-white-key-width: 50px;
+  --tw-music-piano-white-key-height: 187px;
+}
+
+.tw-music-size-xl {
+  --tw-music-dial-size: 128px;
+  --tw-music-dial-stroke-width: 8px;
+  --tw-music-meter-height: 360px;
+  --tw-music-fader-height: 360px;
+  --tw-music-spectrum-height: 240px;
+  --tw-music-piano-white-key-width: 60px;
+  --tw-music-piano-white-key-height: 225px;
+}
+
+// Touch-friendly preset
+.tw-music-touch-friendly {
+  --tw-music-dial-size: 96px;
+  --tw-music-fader-thumb-width: 56px;
+  --tw-music-fader-thumb-height: 32px;
+  --tw-music-transport-button-size: 56px;
+  --tw-music-transport-gap: 12px;
+}
+
+// Compact preset (for dense UIs)
+.tw-music-compact {
+  --tw-music-dial-size: 48px;
+  --tw-music-meter-height: 100px;
+  --tw-music-fader-height: 120px;
+  --tw-music-channel-width: 60px;
+  --tw-music-channel-height: 300px;
+  --tw-music-gap-xs: 2px;
+  --tw-music-gap-sm: 4px;
+  --tw-music-gap-md: 8px;
+  --tw-music-gap-lg: 12px;
+}
+

@@ -4,16 +4,18 @@ import {
   Component,
   computed,
   ElementRef,
-  inject,
   input,
   numberAttribute,
   OnDestroy,
+  output,
+  signal,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type VisualizerVariant = 'circular' | 'bars' | 'wave' | 'particles' | 'rings';
 export type VisualizerColorScheme = 'rainbow' | 'fire' | 'ocean' | 'neon' | 'mono' | 'custom';
+export type BeatHighlightMode = 'flash' | 'pulse' | 'glow' | 'particles' | 'ring' | 'none';
 
 interface Particle {
   x: number;
@@ -24,6 +26,16 @@ interface Particle {
   life: number;
   maxLife: number;
   color: string;
+}
+
+interface BeatParticle extends Particle {
+  isBeatParticle: boolean;
+}
+
+export interface BeatEvent {
+  timestamp: number;
+  intensity: number;
+  frequency: 'low' | 'mid' | 'high' | 'all';
 }
 
 @Component({
@@ -52,12 +64,41 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
   readonly reactive = input(true); // React to audio amplitude
   readonly classOverride = input('');
 
+  // Beat detection inputs
+  readonly enableBeatDetection = input(true);
+  readonly beatHighlightMode = input<BeatHighlightMode>('flash');
+  readonly beatSensitivity = input(1.2, { transform: numberAttribute }); // Threshold multiplier
+  readonly beatDecay = input(0.95, { transform: numberAttribute }); // How quickly beat effect fades
+  readonly beatHistorySize = input(43, { transform: numberAttribute }); // ~1 second at 60fps
+  readonly beatFlashColor = input('#ffffff');
+  readonly beatFlashOpacity = input(0.3, { transform: numberAttribute });
+  readonly showBeatIndicator = input(true);
+  readonly detectLowBeat = input(true); // Bass/kick detection
+  readonly detectMidBeat = input(false); // Mid frequency detection
+  readonly detectHighBeat = input(false); // High frequency detection
+
+  // Beat detection outputs
+  readonly beatDetected = output<BeatEvent>();
+
+  // Beat state signals (public for template)
+  readonly isBeatActive = signal(false);
+  readonly beatIntensity = signal(0);
+  readonly currentBpm = signal(0);
+
   private ctx: CanvasRenderingContext2D | null = null;
   private animationFrameId: number | null = null;
-  private frequencyData: Uint8Array<ArrayBuffer> | null = null;
-  private timeDomainData: Uint8Array<ArrayBuffer> | null = null;
-  private particles: Particle[] = [];
+  private frequencyData: Uint8Array | null = null;
+  private timeDomainData: Uint8Array | null = null;
+  private particles: (Particle | BeatParticle)[] = [];
   private rotation = 0;
+
+  // Beat detection state
+  private energyHistory: number[] = [];
+  private beatTimestamps: number[] = [];
+  private lastBeatTime = 0;
+  private beatFlashIntensity = 0;
+  private beatRingRadius = 0;
+  private beatPulseScale = 1;
 
   protected readonly containerClasses = computed(() => {
     const base = 'rounded-lg overflow-hidden';
@@ -100,13 +141,18 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
 
     const analyser = this.analyserNode();
     if (analyser && this.frequencyData && this.timeDomainData) {
-      analyser.getByteFrequencyData(this.frequencyData);
-      analyser.getByteTimeDomainData(this.timeDomainData);
+      analyser.getByteFrequencyData(this.frequencyData as Uint8Array<ArrayBuffer>);
+      analyser.getByteTimeDomainData(this.timeDomainData as Uint8Array<ArrayBuffer>);
     } else if (this.frequencyData) {
       // Generate mock data for demo visualization
       for (let i = 0; i < this.frequencyData.length; i++) {
         this.frequencyData[i] = Math.random() * 100 + Math.sin(Date.now() / 500 + i * 0.1) * 50 + 50;
       }
+    }
+
+    // Beat detection
+    if (this.enableBeatDetection() && this.frequencyData) {
+      this.detectBeat();
     }
 
     // Clear canvas
@@ -115,6 +161,11 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
       this.ctx.fillRect(0, 0, width, height);
     } else {
       this.ctx.clearRect(0, 0, width, height);
+    }
+
+    // Draw beat effects (background layer)
+    if (this.enableBeatDetection()) {
+      this.drawBeatEffects();
     }
 
     // Draw based on variant
@@ -136,13 +187,276 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
         break;
     }
 
+    // Draw beat overlay effects (foreground layer)
+    if (this.enableBeatDetection()) {
+      this.drawBeatOverlay();
+    }
+
     this.rotation += 0.005;
+
+    // Decay beat effects
+    this.beatFlashIntensity *= this.beatDecay();
+    this.beatPulseScale = 1 + (this.beatPulseScale - 1) * this.beatDecay();
+    this.beatRingRadius += 5;
 
     // Request next frame
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
     this.animationFrameId = requestAnimationFrame(() => this.draw());
+  }
+
+  private detectBeat(): void {
+    if (!this.frequencyData) return;
+
+    const now = Date.now();
+    const minBeatInterval = 100; // Minimum ms between beats
+
+    // Calculate energy for different frequency bands
+    const lowEnergy = this.getFrequencyBandEnergy(0, 0.1); // Bass (0-10%)
+    const midEnergy = this.getFrequencyBandEnergy(0.1, 0.5); // Mids (10-50%)
+    const highEnergy = this.getFrequencyBandEnergy(0.5, 1.0); // Highs (50-100%)
+
+    // Use selected bands
+    let currentEnergy = 0;
+    let bandCount = 0;
+
+    if (this.detectLowBeat()) {
+      currentEnergy += lowEnergy * 1.5; // Weight bass more heavily
+      bandCount++;
+    }
+    if (this.detectMidBeat()) {
+      currentEnergy += midEnergy;
+      bandCount++;
+    }
+    if (this.detectHighBeat()) {
+      currentEnergy += highEnergy * 0.8;
+      bandCount++;
+    }
+
+    if (bandCount === 0) {
+      currentEnergy = lowEnergy * 1.5; // Default to bass
+      bandCount = 1;
+    }
+
+    currentEnergy /= bandCount;
+
+    // Add to history
+    this.energyHistory.push(currentEnergy);
+    if (this.energyHistory.length > this.beatHistorySize()) {
+      this.energyHistory.shift();
+    }
+
+    // Calculate average energy
+    const averageEnergy =
+      this.energyHistory.reduce((a, b) => a + b, 0) / this.energyHistory.length;
+
+    // Calculate variance for dynamic threshold
+    const variance =
+      this.energyHistory.reduce((sum, e) => sum + Math.pow(e - averageEnergy, 2), 0) /
+      this.energyHistory.length;
+    const stdDev = Math.sqrt(variance);
+
+    // Dynamic threshold based on variance
+    const threshold = averageEnergy + stdDev * this.beatSensitivity();
+
+    // Detect beat
+    if (
+      currentEnergy > threshold &&
+      currentEnergy > 20 && // Minimum energy threshold
+      now - this.lastBeatTime > minBeatInterval
+    ) {
+      const intensity = Math.min(1, (currentEnergy - threshold) / (averageEnergy + 1));
+
+      // Trigger beat
+      this.lastBeatTime = now;
+      this.beatTimestamps.push(now);
+
+      // Keep only recent timestamps for BPM calculation
+      const bpmWindow = 4000; // 4 seconds
+      this.beatTimestamps = this.beatTimestamps.filter((t) => now - t < bpmWindow);
+
+      // Update signals
+      this.isBeatActive.set(true);
+      this.beatIntensity.set(intensity);
+
+      // Calculate BPM
+      if (this.beatTimestamps.length > 1) {
+        const intervals: number[] = [];
+        for (let i = 1; i < this.beatTimestamps.length; i++) {
+          intervals.push(this.beatTimestamps[i] - this.beatTimestamps[i - 1]);
+        }
+        const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+        const bpm = Math.round(60000 / avgInterval);
+        if (bpm > 40 && bpm < 240) {
+          this.currentBpm.set(bpm);
+        }
+      }
+
+      // Trigger visual effects
+      this.beatFlashIntensity = intensity;
+      this.beatPulseScale = 1 + intensity * 0.3;
+      this.beatRingRadius = 0;
+
+      // Spawn beat particles
+      if (this.beatHighlightMode() === 'particles') {
+        this.spawnBeatParticles(intensity);
+      }
+
+      // Emit event
+      const frequency: 'low' | 'mid' | 'high' | 'all' =
+        this.detectLowBeat() && this.detectMidBeat() && this.detectHighBeat()
+          ? 'all'
+          : this.detectLowBeat()
+            ? 'low'
+            : this.detectMidBeat()
+              ? 'mid'
+              : 'high';
+
+      this.beatDetected.emit({
+        timestamp: now,
+        intensity,
+        frequency,
+      });
+
+      // Reset beat active after short delay
+      setTimeout(() => this.isBeatActive.set(false), 100);
+    }
+  }
+
+  private getFrequencyBandEnergy(startRatio: number, endRatio: number): number {
+    if (!this.frequencyData) return 0;
+
+    const startIndex = Math.floor(startRatio * this.frequencyData.length);
+    const endIndex = Math.floor(endRatio * this.frequencyData.length);
+
+    let sum = 0;
+    for (let i = startIndex; i < endIndex; i++) {
+      sum += this.frequencyData[i];
+    }
+
+    return sum / (endIndex - startIndex);
+  }
+
+  private drawBeatEffects(): void {
+    if (!this.ctx) return;
+
+    const mode = this.beatHighlightMode();
+    const width = this.width();
+    const height = this.height();
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    if (mode === 'glow' && this.beatFlashIntensity > 0.01) {
+      // Radial glow from center
+      const maxRadius = Math.max(width, height);
+      const gradient = this.ctx.createRadialGradient(
+        centerX,
+        centerY,
+        0,
+        centerX,
+        centerY,
+        maxRadius * this.beatFlashIntensity
+      );
+
+      gradient.addColorStop(0, this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity * 0.5));
+      gradient.addColorStop(0.5, this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity * 0.2));
+      gradient.addColorStop(1, 'transparent');
+
+      this.ctx.fillStyle = gradient;
+      this.ctx.fillRect(0, 0, width, height);
+    }
+
+    if (mode === 'ring' && this.beatRingRadius < Math.max(width, height)) {
+      // Expanding ring
+      const ringOpacity = Math.max(0, 1 - this.beatRingRadius / Math.max(width, height));
+      this.ctx.beginPath();
+      this.ctx.arc(centerX, centerY, this.beatRingRadius, 0, Math.PI * 2);
+      this.ctx.strokeStyle = this.hexToRgba(this.beatFlashColor(), ringOpacity * 0.8);
+      this.ctx.lineWidth = 4 + this.beatFlashIntensity * 8;
+      this.ctx.stroke();
+    }
+  }
+
+  private drawBeatOverlay(): void {
+    if (!this.ctx) return;
+
+    const mode = this.beatHighlightMode();
+    const width = this.width();
+    const height = this.height();
+
+    if (mode === 'flash' && this.beatFlashIntensity > 0.01) {
+      // Full screen flash
+      this.ctx.fillStyle = this.hexToRgba(
+        this.beatFlashColor(),
+        this.beatFlashIntensity * this.beatFlashOpacity()
+      );
+      this.ctx.fillRect(0, 0, width, height);
+    }
+
+    if (mode === 'pulse') {
+      // Already handled by scaling in individual draw methods
+      // Add border pulse effect
+      if (this.beatFlashIntensity > 0.01) {
+        this.ctx.strokeStyle = this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity);
+        this.ctx.lineWidth = 4 + this.beatFlashIntensity * 8;
+        this.ctx.strokeRect(2, 2, width - 4, height - 4);
+      }
+    }
+
+    // Draw beat particles
+    this.drawBeatParticles();
+  }
+
+  private spawnBeatParticles(intensity: number): void {
+    const width = this.width();
+    const height = this.height();
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const count = Math.floor(intensity * 30) + 10;
+
+    for (let i = 0; i < count; i++) {
+      const angle = (i / count) * Math.PI * 2 + Math.random() * 0.2;
+      const speed = 3 + intensity * 8 + Math.random() * 3;
+
+      this.particles.push({
+        x: centerX,
+        y: centerY,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        size: 3 + Math.random() * 5,
+        life: 1,
+        maxLife: 1,
+        color: this.beatFlashColor(),
+        isBeatParticle: true,
+      } as BeatParticle);
+    }
+  }
+
+  private drawBeatParticles(): void {
+    if (!this.ctx) return;
+
+    for (let i = this.particles.length - 1; i >= 0; i--) {
+      const p = this.particles[i] as BeatParticle;
+      if (!p.isBeatParticle) continue;
+
+      // Draw with glow effect
+      const gradient = this.ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 2);
+      gradient.addColorStop(0, this.hexToRgba(p.color, p.life));
+      gradient.addColorStop(0.5, this.hexToRgba(p.color, p.life * 0.5));
+      gradient.addColorStop(1, 'transparent');
+
+      this.ctx.beginPath();
+      this.ctx.arc(p.x, p.y, p.size * 2, 0, Math.PI * 2);
+      this.ctx.fillStyle = gradient;
+      this.ctx.fill();
+    }
+  }
+
+  private hexToRgba(hex: string, alpha: number): string {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    if (!result) return `rgba(255, 255, 255, ${alpha})`;
+    return `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${alpha})`;
   }
 
   private drawCircular(): void {

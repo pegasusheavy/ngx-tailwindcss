@@ -1,0 +1,113 @@
+<div [class]="containerClasses()">
+  <!-- Note Name Display -->
+  <div class="flex items-baseline justify-center">
+    <span [class]="noteClasses()">{{ displayNote() }}</span>
+    @if (showOctave() && displayOctave() !== '') {
+      <span [class]="octaveClasses()">{{ displayOctave() }}</span>
+    }
+  </div>
+
+  <!-- In-Tune Indicator -->
+  @if (showIndicator() && currentNote()) {
+    <div class="w-full">
+      @if (variant() === 'meter') {
+        <!-- Meter-style indicator -->
+        <div class="relative h-4 bg-slate-800 rounded-full overflow-hidden">
+          <!-- Center marker -->
+          <div class="absolute top-0 bottom-0 left-1/2 w-0.5 bg-white/30 z-10"></div>
+
+          <!-- Tick marks -->
+          <div class="absolute top-0 bottom-0 left-[25%] w-px bg-slate-600"></div>
+          <div class="absolute top-0 bottom-0 left-[75%] w-px bg-slate-600"></div>
+
+          <!-- Moving indicator -->
+          <div
+            class="absolute top-1 bottom-1 w-3 rounded-full transition-all duration-100"
+            [class]="indicatorColor()"
+            [style.left.%]="centsPosition() - 1.5"
+          ></div>
+        </div>
+
+        <!-- Scale labels -->
+        <div class="flex justify-between text-[9px] text-slate-500 mt-1 px-1">
+          <span>♭</span>
+          <span>●</span>
+          <span>♯</span>
+        </div>
+      } @else {
+        <!-- LED-style indicator bar -->
+        <div class="flex items-center justify-center gap-0.5">
+          @for (i of [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5]; track i) {
+            <div
+              class="h-2 rounded-sm transition-all duration-75"
+              [class.w-1]="size() !== 'lg' && size() !== 'xl'"
+              [class.w-1.5]="size() === 'lg' || size() === 'xl'"
+              [class.bg-blue-500]="i < 0 && centsPosition() <= 50 + i * 10"
+              [class.bg-green-500]="i === 0 && isInTune()"
+              [class.bg-amber-500]="i > 0 && centsPosition() >= 50 + i * 10"
+              [class.bg-slate-700]="!(
+                (i < 0 && centsPosition() <= 50 + i * 10) ||
+                (i === 0 && isInTune()) ||
+                (i > 0 && centsPosition() >= 50 + i * 10)
+              )"
+              [class.h-3]="i === 0"
+            ></div>
+          }
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Cents Display -->
+  @if (showCents() && currentNote()) {
+    <div class="flex items-center gap-2">
+      <span [class]="centsClasses()" class="text-sm font-mono font-bold">
+        {{ displayCents() }} ¢
+      </span>
+      @if (isFlat()) {
+        <span class="text-blue-500 text-xs">FLAT</span>
+      } @else if (isSharp()) {
+        <span class="text-amber-500 text-xs">SHARP</span>
+      } @else if (isInTune()) {
+        <span class="text-green-500 text-xs">IN TUNE</span>
+      }
+    </div>
+  }
+
+  <!-- Frequency Display -->
+  @if (showFrequency()) {
+    <span [class]="frequencyClasses()">{{ displayFrequency() }}</span>
+  }
+
+  <!-- Note History Trail -->
+  @if (showHistory() && noteHistory().length > 0) {
+    <div class="w-full mt-2 pt-2 border-t border-slate-700">
+      <div class="text-[9px] text-slate-500 uppercase tracking-wider mb-1">History</div>
+      <div class="flex flex-wrap gap-1 justify-center">
+        @for (entry of noteHistory(); track entry.id; let i = $index) {
+          <div
+            class="px-1.5 py-0.5 rounded text-xs font-mono transition-opacity"
+            [class.bg-slate-700]="i > 0"
+            [class.bg-blue-600]="i === 0"
+            [class.text-slate-300]="i > 0"
+            [class.text-white]="i === 0"
+            [style.opacity]="1 - (i * 0.1)"
+          >
+            {{ entry.note.replace('#', '♯') }}{{ entry.octave }}
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- No Note State -->
+  @if (!currentNote()) {
+    <div class="text-slate-500 text-sm">
+      Waiting for input...
+    </div>
+  }
+</div>
+
+
+
+

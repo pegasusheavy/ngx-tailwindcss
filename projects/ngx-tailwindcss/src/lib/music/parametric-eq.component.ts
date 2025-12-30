@@ -16,7 +16,7 @@ import {
 import { CommonModule } from '@angular/common';
 
 export type EQFilterType = 'lowpass' | 'highpass' | 'bandpass' | 'lowshelf' | 'highshelf' | 'peaking' | 'notch';
-export type EQVariant = 'default' | 'dark' | 'vintage' | 'neon';
+export type EQVariant = 'default' | 'dark' | 'vintage' | 'neon' | 'light' | 'highContrast';
 
 export interface EQBand {
   id: string;
@@ -110,6 +110,24 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
           curve: '#00FFFF',
           curveFill: 'rgba(0, 255, 255, 0.15)',
           spectrum: 'rgba(255, 0, 255, 0.3)',
+        };
+      case 'light':
+        return {
+          background: '#FFFFFF',
+          grid: '#E2E8F0',
+          gridText: '#64748B',
+          curve: '#2563EB',
+          curveFill: 'rgba(37, 99, 235, 0.15)',
+          spectrum: 'rgba(37, 99, 235, 0.2)',
+        };
+      case 'highContrast':
+        return {
+          background: '#000000',
+          grid: '#FFFFFF',
+          gridText: '#FFFFFF',
+          curve: '#FFFF00',
+          curveFill: 'rgba(255, 255, 0, 0.3)',
+          spectrum: 'rgba(0, 255, 0, 0.4)',
         };
       default:
         return {

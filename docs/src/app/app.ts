@@ -7,7 +7,7 @@ import {
   TwDropdownComponent,
   TwDropdownMenuComponent,
   TwDropdownItemDirective,
-} from '@pegasus-heavy/ngx-tailwindcss';
+} from '@pegasusheavy/ngx-tailwindcss';
 import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { filter } from 'rxjs/operators';
 import {

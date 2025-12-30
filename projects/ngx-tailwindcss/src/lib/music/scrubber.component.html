@@ -51,9 +51,48 @@
         class="absolute top-0 bottom-0 w-px bg-white/50 pointer-events-none"
         [style.left.%]="hoverPosition()! * 100"
       >
-        <div [class]="hoverPreviewClasses()">
-          {{ formatTime(hoverPosition()! * duration()) }}
-        </div>
+        <!-- Thumbnail Preview -->
+        @if (showThumbnailPreview()) {
+          <div
+            [class]="thumbnailContainerClasses()"
+            [style.bottom.px]="thumbnailOffset()"
+          >
+            <!-- Individual thumbnail image -->
+            @if (currentThumbnail() && !thumbnailSprite()) {
+              <img
+                [src]="currentThumbnail()!.url"
+                [alt]="'Preview at ' + formatTime(hoverPosition()! * duration())"
+                [class]="thumbnailImageClasses()"
+                [style.width.px]="thumbnailWidth()"
+                [style.height.px]="thumbnailHeight()"
+                [style.borderRadius.px]="thumbnailBorderRadius()"
+              />
+            }
+
+            <!-- Sprite sheet thumbnail -->
+            @if (thumbnailSprite() && spritePosition()) {
+              <div
+                [class]="thumbnailImageClasses()"
+                [style.width.px]="thumbnailWidth()"
+                [style.height.px]="thumbnailHeight()"
+                [style.borderRadius.px]="thumbnailBorderRadius()"
+                [style.backgroundImage]="'url(' + thumbnailSprite()!.url + ')'"
+                [style.backgroundPosition]="spritePosition()!.x + 'px ' + spritePosition()!.y + 'px'"
+                [style.backgroundSize]="(thumbnailSprite()!.frameWidth * thumbnailSprite()!.columns) + 'px auto'"
+              ></div>
+            }
+
+            <!-- Time label under thumbnail -->
+            <div class="mt-1 px-2 py-0.5 bg-slate-900/90 text-white text-xs font-mono rounded">
+              {{ formatTime(hoverPosition()! * duration()) }}
+            </div>
+          </div>
+        } @else {
+          <!-- Simple time preview (no thumbnail) -->
+          <div [class]="hoverPreviewClasses()">
+            {{ formatTime(hoverPosition()! * duration()) }}
+          </div>
+        }
       </div>
     }
 
@@ -85,4 +124,7 @@
     </span>
   }
 </div>
+
+
+
 

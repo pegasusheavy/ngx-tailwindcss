@@ -1,0 +1,435 @@
+/**
+ * Accessibility Styles for Music Components
+ *
+ * Provides reduced motion, high contrast, and screen reader utilities.
+ */
+
+// ============================================================================
+// REDUCED MOTION SUPPORT
+// ============================================================================
+
+// Remove all animations and transitions when reduced motion is preferred
+@media (prefers-reduced-motion: reduce) {
+  // Global animation removal
+  .tw-music-animated,
+  .tw-music-transition {
+    animation: none !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+
+  // Specific component animations
+  .tw-music-meter-segment,
+  .tw-music-spectrum-bar,
+  .tw-music-waveform,
+  .tw-music-oscilloscope,
+  .tw-music-visualizer {
+    transition: none !important;
+  }
+
+  // Dial/knob rotation
+  .tw-music-dial-indicator,
+  .tw-music-knob {
+    transition: none !important;
+  }
+
+  // Fader movement
+  .tw-music-fader-thumb,
+  .tw-music-fader-fill {
+    transition: none !important;
+  }
+
+  // Progress bars
+  .tw-music-progress,
+  .tw-music-scrubber-fill {
+    transition: none !important;
+  }
+
+  // Metronome pendulum
+  .tw-music-metronome-pendulum {
+    animation: none !important;
+  }
+
+  // Beat indicators
+  .tw-music-beat-indicator {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  // Piano key press animations
+  .tw-music-piano-key {
+    transition: none !important;
+  }
+
+  // Scroll behavior
+  * {
+    scroll-behavior: auto !important;
+  }
+}
+
+// Utility class to opt-out of reduced motion (use sparingly)
+.tw-music-motion-essential {
+  @media (prefers-reduced-motion: reduce) {
+    // Allow essential motion for understanding UI state
+    transition-duration: 150ms !important;
+  }
+}
+
+// ============================================================================
+// HIGH CONTRAST MODE
+// ============================================================================
+
+// Windows High Contrast mode
+@media (forced-colors: active) {
+  // Ensure all interactive elements are visible
+  .tw-music-interactive {
+    forced-color-adjust: none;
+    border: 2px solid currentColor !important;
+  }
+
+  // Buttons and controls
+  .tw-music-button,
+  .tw-music-control {
+    border: 2px solid ButtonText !important;
+    background-color: ButtonFace !important;
+    color: ButtonText !important;
+
+    &:hover,
+    &:focus {
+      border-color: Highlight !important;
+      outline: 2px solid Highlight !important;
+    }
+
+    &:disabled {
+      border-color: GrayText !important;
+      color: GrayText !important;
+    }
+  }
+
+  // Meters and progress indicators
+  .tw-music-meter-fill,
+  .tw-music-progress-fill,
+  .tw-music-fader-fill {
+    background-color: Highlight !important;
+  }
+
+  .tw-music-meter-track,
+  .tw-music-progress-track,
+  .tw-music-fader-track {
+    background-color: Canvas !important;
+    border: 1px solid CanvasText !important;
+  }
+
+  // Piano keys
+  .tw-music-piano-white-key {
+    background-color: Canvas !important;
+    border: 1px solid CanvasText !important;
+
+    &.active,
+    &:hover {
+      background-color: Highlight !important;
+    }
+  }
+
+  .tw-music-piano-black-key {
+    background-color: CanvasText !important;
+
+    &.active,
+    &:hover {
+      background-color: Highlight !important;
+    }
+  }
+
+  // SVG elements
+  .tw-music-dial path,
+  .tw-music-knob circle {
+    stroke: CanvasText !important;
+  }
+
+  .tw-music-dial-fill,
+  .tw-music-dial-indicator {
+    stroke: Highlight !important;
+  }
+}
+
+// Prefers more contrast
+@media (prefers-contrast: more) {
+  :root {
+    // Enhanced contrast colors
+    --tw-music-border-width: 2px;
+    --tw-music-focus-ring-width: 3px;
+    --tw-music-text-contrast: 1.2;
+  }
+
+  // Thicker borders
+  .tw-music-bordered {
+    border-width: 2px !important;
+  }
+
+  // Larger focus rings
+  .tw-music-focusable:focus-visible {
+    outline-width: 3px !important;
+    outline-offset: 2px !important;
+  }
+
+  // Higher contrast text
+  .tw-music-text {
+    font-weight: 500;
+  }
+
+  // Clearer separators
+  .tw-music-separator {
+    opacity: 1 !important;
+  }
+}
+
+// ============================================================================
+// HIGH CONTRAST THEME CLASS (Manual Override)
+// ============================================================================
+
+.tw-music-high-contrast {
+  // Background colors
+  --tw-music-bg-primary: #000000;
+  --tw-music-bg-secondary: #1a1a1a;
+  --tw-music-bg-tertiary: #333333;
+
+  // Text colors
+  --tw-music-text-primary: #ffffff;
+  --tw-music-text-secondary: #e0e0e0;
+  --tw-music-text-muted: #b0b0b0;
+
+  // Accent colors (use high saturation)
+  --tw-music-accent-primary: #ffff00;
+  --tw-music-accent-secondary: #00ffff;
+  --tw-music-accent-success: #00ff00;
+  --tw-music-accent-warning: #ffaa00;
+  --tw-music-accent-error: #ff0000;
+
+  // Border colors
+  --tw-music-border-primary: #ffffff;
+  --tw-music-border-secondary: #808080;
+
+  // Interactive states
+  --tw-music-hover-bg: rgba(255, 255, 255, 0.2);
+  --tw-music-active-bg: rgba(255, 255, 255, 0.3);
+  --tw-music-focus-ring: 0 0 0 3px #ffff00;
+
+  // Apply to all children
+  background-color: var(--tw-music-bg-primary);
+  color: var(--tw-music-text-primary);
+
+  // Borders
+  * {
+    border-color: var(--tw-music-border-secondary);
+  }
+
+  // Links and interactive elements
+  a,
+  button,
+  [role="button"],
+  [role="slider"],
+  [tabindex="0"] {
+    &:focus-visible {
+      outline: 3px solid var(--tw-music-accent-primary);
+      outline-offset: 2px;
+    }
+  }
+}
+
+// ============================================================================
+// SCREEN READER UTILITIES
+// ============================================================================
+
+// Visually hidden but accessible to screen readers
+.tw-music-sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+// Show on focus (for skip links)
+.tw-music-sr-only-focusable:focus,
+.tw-music-sr-only-focusable:active {
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  padding: inherit !important;
+  margin: inherit !important;
+  overflow: visible !important;
+  clip: auto !important;
+  white-space: normal !important;
+}
+
+// Hide from screen readers
+.tw-music-aria-hidden {
+  // Use this class when content is decorative
+}
+
+// ============================================================================
+// FOCUS STYLES
+// ============================================================================
+
+// Default focus style
+.tw-music-focus-ring {
+  &:focus-visible {
+    outline: 2px solid var(--tw-music-color-primary, #3b82f6);
+    outline-offset: 2px;
+  }
+
+  &:focus:not(:focus-visible) {
+    outline: none;
+  }
+}
+
+// Focus within (for composite controls)
+.tw-music-focus-within {
+  &:focus-within {
+    outline: 2px solid var(--tw-music-color-primary, #3b82f6);
+    outline-offset: 2px;
+  }
+}
+
+// High visibility focus
+.tw-music-focus-high-visibility {
+  &:focus-visible {
+    outline: 3px solid var(--tw-music-accent-primary, #ffff00);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.5);
+  }
+}
+
+// ============================================================================
+// KEYBOARD NAVIGATION
+// ============================================================================
+
+// Skip link
+.tw-music-skip-link {
+  @extend .tw-music-sr-only;
+  @extend .tw-music-sr-only-focusable;
+
+  &:focus {
+    position: fixed !important;
+    top: 1rem;
+    left: 1rem;
+    z-index: 9999;
+    padding: 0.5rem 1rem;
+    background: var(--tw-music-bg-primary, #000);
+    color: var(--tw-music-text-primary, #fff);
+    border: 2px solid var(--tw-music-accent-primary, #ffff00);
+    border-radius: 4px;
+    text-decoration: none;
+    font-weight: 600;
+  }
+}
+
+// Keyboard-only focus styles
+.tw-music-keyboard-focus {
+  // Only show focus ring for keyboard navigation
+  &:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--tw-music-color-primary, #3b82f6);
+    outline-offset: 2px;
+  }
+}
+
+// ============================================================================
+// TOUCH TARGET SIZES
+// ============================================================================
+
+// Ensure minimum touch target size (44x44 per WCAG)
+.tw-music-touch-target {
+  min-width: 44px;
+  min-height: 44px;
+
+  // Expand hit area for smaller visual elements
+  &.tw-music-touch-expand::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+  }
+}
+
+// ============================================================================
+// COLOR BLINDNESS SUPPORT
+// ============================================================================
+
+// Patterns for distinguishing states without color alone
+.tw-music-pattern-success {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 2px,
+    currentColor 2px,
+    currentColor 4px
+  );
+}
+
+.tw-music-pattern-warning {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 2px,
+    currentColor 2px,
+    currentColor 4px
+  );
+}
+
+.tw-music-pattern-error {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 2px,
+    currentColor 2px,
+    currentColor 4px
+  );
+}
+
+// Use shapes in addition to colors for meters
+.tw-music-meter-zone-safe::after {
+  content: '✓';
+  position: absolute;
+  right: 4px;
+  color: inherit;
+}
+
+.tw-music-meter-zone-warning::after {
+  content: '!';
+  position: absolute;
+  right: 4px;
+  color: inherit;
+  font-weight: bold;
+}
+
+.tw-music-meter-zone-danger::after {
+  content: '⚠';
+  position: absolute;
+  right: 4px;
+  color: inherit;
+}
+
+// ============================================================================
+// TEXT SCALING SUPPORT
+// ============================================================================
+
+// Ensure text scales with user preferences
+.tw-music-text-scalable {
+  font-size: clamp(0.75rem, 1vw + 0.5rem, 1.25rem);
+}
+
+// Prevent text from becoming too small
+.tw-music-text-min {
+  font-size: max(12px, 0.75rem);
+}
+

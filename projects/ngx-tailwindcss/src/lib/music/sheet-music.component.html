@@ -1,26 +1,65 @@
-<div [class]="containerClasses()" [style.padding]="'16px'">
-  <!-- Title and Composer -->
-  @if (showTitle() && musicData().title) {
-    <h2 [class]="titleClasses()">{{ musicData().title }}</h2>
-  }
-  @if (showComposer() && (musicData().composer || musicData().arranger)) {
-    <p [class]="subtitleClasses()">
-      @if (musicData().composer) {
-        <span>{{ musicData().composer }}</span>
+<div [class]="wrapperClasses()">
+  <!-- Zoom Controls -->
+  @if (showZoomControls() && !printFriendly()) {
+    <div class="zoom-controls absolute top-2 right-2 z-20 no-print">
+      <button
+        type="button"
+        (click)="zoomOut()"
+        [disabled]="currentZoom() <= minZoom()"
+        title="Zoom Out"
+      >−</button>
+      <span class="zoom-display">{{ Math.round(currentZoom() * 100) }}%</span>
+      <button
+        type="button"
+        (click)="zoomIn()"
+        [disabled]="currentZoom() >= maxZoom()"
+        title="Zoom In"
+      >+</button>
+      <button
+        type="button"
+        (click)="resetZoom()"
+        title="Reset Zoom"
+        class="text-xs"
+      >↺</button>
+      @if (printFriendly() || variant() === 'printed') {
+        <button
+          type="button"
+          (click)="print()"
+          title="Print"
+          class="ml-2"
+        >🖨</button>
       }
-      @if (musicData().arranger) {
-        <span class="ml-4">arr. {{ musicData().arranger }}</span>
-      }
-    </p>
-  }
-  @if (showTempo() && musicData().tempo) {
-    <p class="text-center text-xs text-slate-500 mb-4">
-      ♩ = {{ musicData().tempo }}
-    </p>
+    </div>
   }
 
-  <!-- Sheet Music Content -->
-  <div class="relative">
+  <div
+    [class]="containerClasses()"
+    [style.padding]="'16px'"
+    [style.transform]="'scale(' + currentZoom() + ')'"
+    [style.transformOrigin]="'top left'"
+  >
+    <!-- Title and Composer -->
+    @if (showTitle() && musicData().title) {
+      <h2 [class]="titleClasses()">{{ musicData().title }}</h2>
+    }
+    @if (showComposer() && (musicData().composer || musicData().arranger)) {
+      <p [class]="subtitleClasses()">
+        @if (musicData().composer) {
+          <span>{{ musicData().composer }}</span>
+        }
+        @if (musicData().arranger) {
+          <span class="ml-4">arr. {{ musicData().arranger }}</span>
+        }
+      </p>
+    }
+    @if (showTempo() && musicData().tempo) {
+      <p class="text-center text-xs text-slate-500 mb-4">
+        ♩ = {{ musicData().tempo }}
+      </p>
+    }
+
+    <!-- Sheet Music Content -->
+    <div class="relative">
     @switch (layout()) {
       @case ('scroll') {
         <!-- Scrollable layout - all lines -->
@@ -75,14 +114,12 @@
                 }
               }
 
-              <!-- Playback position indicator -->
-              @for (measure of line; track $index; let measureInLineIndex = $index) {
-                @if (isPlaybackPosition(getMeasureGlobalIndex(lineIndex, measureInLineIndex))) {
-                  <div
-                    class="absolute top-0 bottom-0 w-1 bg-blue-500 opacity-50 transition-all"
-                    [style.left.px]="getMeasureStartX(getMeasureGlobalIndex(lineIndex, measureInLineIndex), lineIndex)"
-                  ></div>
-                }
+              <!-- Enhanced Playback Cursor -->
+              @if (isPlaybackInLine(lineIndex) && playbackPosition() !== null) {
+                <div
+                  class="playback-cursor"
+                  [style.left.px]="getPlaybackCursorX(Math.floor(playbackPosition()!), lineIndex)"
+                ></div>
               }
             </div>
           }
@@ -187,12 +224,16 @@
     }
   </div>
 
-  <!-- Empty state -->
-  @if (musicData().measures.length === 0) {
-    <div class="text-center py-12 text-slate-500">
-      <p class="text-lg">No music to display</p>
-      <p class="text-sm mt-2">Add measures to see the sheet music</p>
-    </div>
-  }
+    <!-- Empty state -->
+    @if (musicData().measures.length === 0) {
+      <div class="text-center py-12 text-slate-500">
+        <p class="text-lg">No music to display</p>
+        <p class="text-sm mt-2">Add measures to see the sheet music</p>
+      </div>
+    }
+  </div>
 </div>
+
+
+
 

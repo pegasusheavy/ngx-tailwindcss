@@ -1,0 +1,510 @@
+<svg
+  [attr.class]="containerClasses()"
+  [attr.width]="svgWidth()"
+  [attr.height]="svgHeight()"
+  [style.overflow]="'visible'"
+>
+  <!-- DYNAMICS (pp, p, mp, mf, f, ff, sfz, etc.) -->
+  @if (category() === 'dynamic' && dynamicData()) {
+    <text
+      [attr.x]="x()"
+      [attr.y]="y()"
+      [attr.font-size]="size()"
+      [attr.fill]="effectiveColor()"
+      [attr.font-style]="dynamicData()!.isItalic ? 'italic' : 'normal'"
+      font-family="serif"
+      font-weight="bold"
+      text-anchor="middle"
+      dominant-baseline="middle"
+      class="select-none"
+    >{{ dynamicData()!.symbol }}</text>
+  }
+
+  <!-- ARTICULATIONS (staccato, accent, tenuto, fermata, etc.) -->
+  @if (category() === 'articulation' && articulationData()) {
+    @switch (articulation()) {
+      @case ('staccato') {
+        <circle
+          [attr.cx]="x()"
+          [attr.cy]="y()"
+          [attr.r]="size() * 0.15"
+          [attr.fill]="effectiveColor()"
+        />
+      }
+      @case ('staccatissimo') {
+        <path
+          [attr.d]="'M ' + x() + ' ' + (y() - size() * 0.3) + ' L ' + (x() - size() * 0.1) + ' ' + (y() + size() * 0.15) + ' L ' + (x() + size() * 0.1) + ' ' + (y() + size() * 0.15) + ' Z'"
+          [attr.fill]="effectiveColor()"
+        />
+      }
+      @case ('accent') {
+        <path
+          [attr.d]="'M ' + (x() - size() * 0.4) + ' ' + y() + ' L ' + (x() + size() * 0.4) + ' ' + (y() - size() * 0.2) + ' L ' + (x() + size() * 0.4) + ' ' + (y() + size() * 0.2) + ' Z'"
+          [attr.fill]="effectiveColor()"
+        />
+      }
+      @case ('marcato') {
+        <path
+          [attr.d]="'M ' + x() + ' ' + (y() - size() * 0.35) + ' L ' + (x() - size() * 0.2) + ' ' + (y() + size() * 0.15) + ' M ' + x() + ' ' + (y() - size() * 0.35) + ' L ' + (x() + size() * 0.2) + ' ' + (y() + size() * 0.15)"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="2"
+          fill="none"
+        />
+      }
+      @case ('tenuto') {
+        <line
+          [attr.x1]="x() - size() * 0.35"
+          [attr.y1]="y()"
+          [attr.x2]="x() + size() * 0.35"
+          [attr.y2]="y()"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="2.5"
+        />
+      }
+      @case ('fermata') {
+        <g [attr.transform]="'translate(' + x() + ',' + y() + ')'">
+          <!-- Arc -->
+          <path
+            [attr.d]="'M ' + (-size() * 0.5) + ' 0 Q 0 ' + (-size() * 0.8) + ' ' + (size() * 0.5) + ' 0'"
+            [attr.stroke]="effectiveColor()"
+            stroke-width="2"
+            fill="none"
+          />
+          <!-- Dot -->
+          <circle
+            cx="0"
+            [attr.cy]="-size() * 0.25"
+            [attr.r]="size() * 0.1"
+            [attr.fill]="effectiveColor()"
+          />
+        </g>
+      }
+      @case ('breath') {
+        <text
+          [attr.x]="x()"
+          [attr.y]="y()"
+          [attr.font-size]="size() * 1.5"
+          [attr.fill]="effectiveColor()"
+          font-family="serif"
+          text-anchor="middle"
+          class="select-none"
+        >,</text>
+      }
+      @case ('caesura') {
+        <g [attr.transform]="'translate(' + x() + ',' + y() + ')'">
+          <line
+            [attr.x1]="-size() * 0.15"
+            [attr.y1]="size() * 0.4"
+            [attr.x2]="size() * 0.1"
+            [attr.y2]="-size() * 0.4"
+            [attr.stroke]="effectiveColor()"
+            stroke-width="2"
+          />
+          <line
+            [attr.x1]="size() * 0.15"
+            [attr.y1]="size() * 0.4"
+            [attr.x2]="size() * 0.4"
+            [attr.y2]="-size() * 0.4"
+            [attr.stroke]="effectiveColor()"
+            stroke-width="2"
+          />
+        </g>
+      }
+      @default {
+        <text
+          [attr.x]="x()"
+          [attr.y]="y()"
+          [attr.font-size]="size()"
+          [attr.fill]="effectiveColor()"
+          font-family="serif"
+          text-anchor="middle"
+          class="select-none"
+        >{{ articulationData()!.symbol }}</text>
+      }
+    }
+  }
+
+  <!-- ORNAMENTS (trill, mordent, turn, grace notes, etc.) -->
+  @if (category() === 'ornament' && ornamentData()) {
+    @switch (ornament()) {
+      @case ('trill') {
+        <text
+          [attr.x]="x()"
+          [attr.y]="y()"
+          [attr.font-size]="size() * 0.9"
+          [attr.fill]="effectiveColor()"
+          font-family="serif"
+          font-style="italic"
+          text-anchor="middle"
+          class="select-none"
+        >tr</text>
+        <!-- Wavy line -->
+        <path
+          [attr.d]="'M ' + (x() + size() * 0.4) + ' ' + y() + ' q ' + (size() * 0.15) + ' ' + (-size() * 0.15) + ' ' + (size() * 0.3) + ' 0 t ' + (size() * 0.3) + ' 0 t ' + (size() * 0.3) + ' 0'"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1.5"
+          fill="none"
+        />
+      }
+      @case ('mordent') {
+        <path
+          [attr.d]="'M ' + (x() - size() * 0.4) + ' ' + y() + ' l ' + (size() * 0.2) + ' ' + (-size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (-size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (size() * 0.3)"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1.5"
+          fill="none"
+        />
+      }
+      @case ('invertedMordent') {
+        <path
+          [attr.d]="'M ' + (x() - size() * 0.4) + ' ' + y() + ' l ' + (size() * 0.2) + ' ' + (size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (-size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (-size() * 0.3)"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1.5"
+          fill="none"
+        />
+        <!-- Vertical line through -->
+        <line
+          [attr.x1]="x()"
+          [attr.y1]="y() - size() * 0.4"
+          [attr.x2]="x()"
+          [attr.y2]="y() + size() * 0.4"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1"
+        />
+      }
+      @case ('turn') {
+        <path
+          [attr.d]="'M ' + (x() - size() * 0.5) + ' ' + (y() + size() * 0.1) + ' q ' + (size() * 0.25) + ' ' + (-size() * 0.4) + ' ' + (size() * 0.5) + ' 0 q ' + (size() * 0.25) + ' ' + (size() * 0.4) + ' ' + (size() * 0.5) + ' 0'"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="2"
+          fill="none"
+        />
+      }
+      @case ('invertedTurn') {
+        <path
+          [attr.d]="'M ' + (x() - size() * 0.5) + ' ' + (y() - size() * 0.1) + ' q ' + (size() * 0.25) + ' ' + (size() * 0.4) + ' ' + (size() * 0.5) + ' 0 q ' + (size() * 0.25) + ' ' + (-size() * 0.4) + ' ' + (size() * 0.5) + ' 0'"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="2"
+          fill="none"
+        />
+      }
+      @case ('graceNote') {
+        <!-- Small note head -->
+        <ellipse
+          [attr.cx]="x()"
+          [attr.cy]="y()"
+          [attr.rx]="size() * 0.25"
+          [attr.ry]="size() * 0.2"
+          [attr.fill]="effectiveColor()"
+          [attr.transform]="'rotate(-15, ' + x() + ', ' + y() + ')'"
+        />
+        <!-- Stem -->
+        <line
+          [attr.x1]="x() + size() * 0.2"
+          [attr.y1]="y()"
+          [attr.x2]="x() + size() * 0.2"
+          [attr.y2]="y() - size() * 0.8"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1"
+        />
+        <!-- Flag -->
+        <path
+          [attr.d]="'M ' + (x() + size() * 0.2) + ' ' + (y() - size() * 0.8) + ' q ' + (size() * 0.3) + ' ' + (size() * 0.2) + ' ' + (size() * 0.25) + ' ' + (size() * 0.5)"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1"
+          fill="none"
+        />
+      }
+      @case ('acciaccatura') {
+        <!-- Small note head -->
+        <ellipse
+          [attr.cx]="x()"
+          [attr.cy]="y()"
+          [attr.rx]="size() * 0.25"
+          [attr.ry]="size() * 0.2"
+          [attr.fill]="effectiveColor()"
+          [attr.transform]="'rotate(-15, ' + x() + ', ' + y() + ')'"
+        />
+        <!-- Stem -->
+        <line
+          [attr.x1]="x() + size() * 0.2"
+          [attr.y1]="y()"
+          [attr.x2]="x() + size() * 0.2"
+          [attr.y2]="y() - size() * 0.8"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1"
+        />
+        <!-- Slash through stem -->
+        <line
+          [attr.x1]="x() - size() * 0.1"
+          [attr.y1]="y() - size() * 0.3"
+          [attr.x2]="x() + size() * 0.4"
+          [attr.y2]="y() - size() * 0.7"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1"
+        />
+        <!-- Flag -->
+        <path
+          [attr.d]="'M ' + (x() + size() * 0.2) + ' ' + (y() - size() * 0.8) + ' q ' + (size() * 0.3) + ' ' + (size() * 0.2) + ' ' + (size() * 0.25) + ' ' + (size() * 0.5)"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1"
+          fill="none"
+        />
+      }
+      @default {
+        <text
+          [attr.x]="x()"
+          [attr.y]="y()"
+          [attr.font-size]="size()"
+          [attr.fill]="effectiveColor()"
+          font-family="serif"
+          text-anchor="middle"
+          class="select-none"
+        >{{ ornamentData()!.symbol }}</text>
+      }
+    }
+  }
+
+  <!-- REPEAT SIGNS (start, end, D.C., D.S., Coda, etc.) -->
+  @if (category() === 'repeat' && repeatData()) {
+    @switch (repeat()) {
+      @case ('repeatStart') {
+        <g [attr.transform]="'translate(' + x() + ',' + y() + ')'">
+          <!-- Thick bar -->
+          <rect
+            x="0"
+            [attr.y]="-size() * 1.5"
+            [attr.width]="size() * 0.2"
+            [attr.height]="size() * 3"
+            [attr.fill]="effectiveColor()"
+          />
+          <!-- Thin bar -->
+          <rect
+            [attr.x]="size() * 0.35"
+            [attr.y]="-size() * 1.5"
+            [attr.width]="size() * 0.08"
+            [attr.height]="size() * 3"
+            [attr.fill]="effectiveColor()"
+          />
+          <!-- Dots -->
+          <circle
+            [attr.cx]="size() * 0.65"
+            [attr.cy]="-size() * 0.5"
+            [attr.r]="size() * 0.12"
+            [attr.fill]="effectiveColor()"
+          />
+          <circle
+            [attr.cx]="size() * 0.65"
+            [attr.cy]="size() * 0.5"
+            [attr.r]="size() * 0.12"
+            [attr.fill]="effectiveColor()"
+          />
+        </g>
+      }
+      @case ('repeatEnd') {
+        <g [attr.transform]="'translate(' + x() + ',' + y() + ')'">
+          <!-- Dots -->
+          <circle
+            [attr.cx]="-size() * 0.65"
+            [attr.cy]="-size() * 0.5"
+            [attr.r]="size() * 0.12"
+            [attr.fill]="effectiveColor()"
+          />
+          <circle
+            [attr.cx]="-size() * 0.65"
+            [attr.cy]="size() * 0.5"
+            [attr.r]="size() * 0.12"
+            [attr.fill]="effectiveColor()"
+          />
+          <!-- Thin bar -->
+          <rect
+            [attr.x]="-size() * 0.43"
+            [attr.y]="-size() * 1.5"
+            [attr.width]="size() * 0.08"
+            [attr.height]="size() * 3"
+            [attr.fill]="effectiveColor()"
+          />
+          <!-- Thick bar -->
+          <rect
+            [attr.x]="-size() * 0.2"
+            [attr.y]="-size() * 1.5"
+            [attr.width]="size() * 0.2"
+            [attr.height]="size() * 3"
+            [attr.fill]="effectiveColor()"
+          />
+        </g>
+      }
+      @case ('coda') {
+        <g [attr.transform]="'translate(' + x() + ',' + y() + ')'">
+          <!-- Circle -->
+          <circle
+            cx="0"
+            cy="0"
+            [attr.r]="size() * 0.4"
+            fill="none"
+            [attr.stroke]="effectiveColor()"
+            stroke-width="2"
+          />
+          <!-- Cross -->
+          <line
+            x1="0"
+            [attr.y1]="-size() * 0.6"
+            x2="0"
+            [attr.y2]="size() * 0.6"
+            [attr.stroke]="effectiveColor()"
+            stroke-width="2"
+          />
+          <line
+            [attr.x1]="-size() * 0.6"
+            y1="0"
+            [attr.x2]="size() * 0.6"
+            y2="0"
+            [attr.stroke]="effectiveColor()"
+            stroke-width="2"
+          />
+        </g>
+      }
+      @case ('segno') {
+        <g [attr.transform]="'translate(' + x() + ',' + y() + ')'">
+          <!-- S-curve -->
+          <path
+            [attr.d]="'M ' + (-size() * 0.35) + ' ' + (size() * 0.4) + ' Q 0 ' + (size() * 0.2) + ' 0 0 Q 0 ' + (-size() * 0.2) + ' ' + (size() * 0.35) + ' ' + (-size() * 0.4)"
+            [attr.stroke]="effectiveColor()"
+            stroke-width="2"
+            fill="none"
+          />
+          <!-- Diagonal line -->
+          <line
+            [attr.x1]="-size() * 0.5"
+            [attr.y1]="size() * 0.5"
+            [attr.x2]="size() * 0.5"
+            [attr.y2]="-size() * 0.5"
+            [attr.stroke]="effectiveColor()"
+            stroke-width="2"
+          />
+          <!-- Dots -->
+          <circle
+            [attr.cx]="-size() * 0.35"
+            [attr.cy]="-size() * 0.25"
+            [attr.r]="size() * 0.1"
+            [attr.fill]="effectiveColor()"
+          />
+          <circle
+            [attr.cx]="size() * 0.35"
+            [attr.cy]="size() * 0.25"
+            [attr.r]="size() * 0.1"
+            [attr.fill]="effectiveColor()"
+          />
+        </g>
+      }
+      @default {
+        <!-- Text-based repeat symbols -->
+        <text
+          [attr.x]="x()"
+          [attr.y]="y()"
+          [attr.font-size]="size() * 0.8"
+          [attr.fill]="effectiveColor()"
+          font-family="serif"
+          font-style="italic"
+          text-anchor="middle"
+          class="select-none"
+        >{{ repeatData()!.text || repeatData()!.symbol }}</text>
+      }
+    }
+  }
+
+  <!-- HAIRPINS (crescendo/decrescendo) -->
+  @if (category() === 'hairpin' && hairpinPath()) {
+    <path
+      [attr.d]="hairpinPath()"
+      [attr.stroke]="effectiveColor()"
+      stroke-width="1.5"
+      fill="none"
+      stroke-linecap="round"
+    />
+  }
+
+  <!-- PEDAL MARKINGS -->
+  @if (category() === 'pedal' && pedalData()) {
+    @switch (pedal()) {
+      @case ('pedalDown') {
+        <text
+          [attr.x]="x()"
+          [attr.y]="y()"
+          [attr.font-size]="size() * 0.9"
+          [attr.fill]="effectiveColor()"
+          font-family="serif"
+          font-style="italic"
+          text-anchor="middle"
+          class="select-none"
+        >Ped.</text>
+      }
+      @case ('pedalUp') {
+        <text
+          [attr.x]="x()"
+          [attr.y]="y()"
+          [attr.font-size]="size() * 1.2"
+          [attr.fill]="effectiveColor()"
+          font-family="serif"
+          text-anchor="middle"
+          class="select-none"
+        >*</text>
+      }
+      @case ('pedalSustain') {
+        <!-- Sostenuto pedal bracket -->
+        <path
+          [attr.d]="'M ' + x() + ' ' + y() + ' l 0 ' + (-size() * 0.3) + ' l ' + (size() * 0.8) + ' 0'"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1.5"
+          fill="none"
+        />
+      }
+      @case ('pedalLine') {
+        <!-- Pedal line with notches -->
+        <line
+          [attr.x1]="x()"
+          [attr.y1]="y()"
+          [attr.x2]="x() + hairpinWidth()"
+          [attr.y2]="y()"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1.5"
+        />
+        <!-- Up notch at end -->
+        <line
+          [attr.x1]="x() + hairpinWidth()"
+          [attr.y1]="y()"
+          [attr.x2]="x() + hairpinWidth()"
+          [attr.y2]="y() - size() * 0.4"
+          [attr.stroke]="effectiveColor()"
+          stroke-width="1.5"
+        />
+      }
+    }
+  }
+
+  <!-- TEMPO MARKINGS -->
+  @if (category() === 'tempo' && tempoData()) {
+    <text
+      [attr.x]="x()"
+      [attr.y]="y()"
+      [attr.font-size]="size()"
+      [attr.fill]="effectiveColor()"
+      font-family="serif"
+      font-weight="bold"
+      font-style="italic"
+      text-anchor="start"
+      class="select-none"
+    >{{ tempoData()!.text }}</text>
+  }
+
+  <!-- SLURS AND PHRASE MARKS -->
+  @if ((category() === 'slur' || category() === 'phrase') && slurPath()) {
+    <path
+      [attr.d]="slurPath()"
+      [attr.stroke]="effectiveColor()"
+      [attr.stroke-width]="category() === 'phrase' ? 2.5 : 1.5"
+      fill="none"
+      stroke-linecap="round"
+    />
+  }
+</svg>
+

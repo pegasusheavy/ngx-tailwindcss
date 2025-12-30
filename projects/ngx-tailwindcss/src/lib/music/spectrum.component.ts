@@ -16,7 +16,7 @@ import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
 export type SpectrumVariant = 'bars' | 'line' | 'gradient' | 'mirror';
-export type SpectrumColorScheme = 'classic' | 'fire' | 'ice' | 'neon' | 'mono';
+export type SpectrumColorScheme = 'classic' | 'fire' | 'ice' | 'neon' | 'mono' | 'light' | 'highContrast';
 export type FrequencyScale = 'linear' | 'logarithmic';
 
 interface ColorStop {
@@ -49,6 +49,16 @@ const COLOR_SCHEMES: Record<SpectrumColorScheme, ColorStop[]> = {
     { position: 0, color: '#64748b' },
     { position: 0.5, color: '#94a3b8' },
     { position: 1, color: '#cbd5e1' },
+  ],
+  light: [
+    { position: 0, color: '#3B82F6' },
+    { position: 0.5, color: '#8B5CF6' },
+    { position: 1, color: '#EC4899' },
+  ],
+  highContrast: [
+    { position: 0, color: '#00FF00' },
+    { position: 0.5, color: '#FFFF00' },
+    { position: 1, color: '#FF0000' },
   ],
 };
 
@@ -96,6 +106,28 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   readonly showLabels = input(false);
   readonly backgroundColor = input<string>('');
   readonly classOverride = input('');
+
+  // Custom sizing via CSS variables (override individual dimensions)
+  readonly customWidth = input<number | null>(null);
+  readonly customHeight = input<number | null>(null);
+  readonly customBarGap = input<number | null>(null);
+  readonly customBarRadius = input<number | null>(null);
+
+  // Effective dimensions (custom overrides take precedence)
+  protected readonly effectiveWidth = computed(() => this.customWidth() ?? this.width());
+  protected readonly effectiveHeight = computed(() => this.customHeight() ?? this.height());
+  protected readonly effectiveBarGap = computed(() => this.customBarGap() ?? this.barGap());
+  protected readonly effectiveBarRadius = computed(() => this.customBarRadius() ?? this.barRadius());
+
+  // CSS variable style bindings for custom sizing
+  protected readonly cssVarStyles = computed(() => {
+    const styles: Record<string, string> = {};
+    if (this.customWidth()) styles['--tw-music-spectrum-width'] = `${this.customWidth()}px`;
+    if (this.customHeight()) styles['--tw-music-spectrum-height'] = `${this.customHeight()}px`;
+    if (this.customBarGap()) styles['--tw-music-spectrum-bar-gap'] = `${this.customBarGap()}px`;
+    if (this.customBarRadius()) styles['--tw-music-spectrum-bar-radius'] = `${this.customBarRadius()}px`;
+    return styles;
+  });
 
   // Frequency scaling
   readonly frequencyScale = input<FrequencyScale>('logarithmic'); // 'linear' or 'logarithmic'

@@ -30,7 +30,7 @@ import {
   TwDividerComponent,
   TwAlertComponent,
   TwChipComponent,
-} from '@pegasus-heavy/ngx-tailwindcss';
+} from '@pegasusheavy/ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface User {
