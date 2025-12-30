@@ -198,7 +198,7 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 - [x] Visual metronome with beat indicator
 - [x] BPM control (tap tempo)
 - [x] Time signature selector (7 signatures)
-- [ ] Accent pattern configuration
+- [x] Accent pattern configuration - 4 levels (none/soft/medium/strong), presets per time signature
 - [x] Subdivision options
 - [x] Multiple variants (default, minimal, pendulum, digital)
 

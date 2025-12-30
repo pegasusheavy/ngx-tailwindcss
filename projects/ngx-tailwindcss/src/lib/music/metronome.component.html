@@ -58,26 +58,61 @@
     />
   }
 
-  <!-- Beat Indicators -->
+  <!-- Beat Indicators with Accent Levels -->
   @if (showVisualBeat() && variant() !== 'pendulum') {
-    <div class="flex items-center justify-center gap-2">
-      @for (beat of beatIndicators(); track beat) {
-        <div
-          class="rounded-full transition-all duration-75"
-          [class.w-4]="size() === 'sm'"
-          [class.h-4]="size() === 'sm'"
-          [class.w-5]="size() === 'md'"
-          [class.h-5]="size() === 'md'"
-          [class.w-6]="size() === 'lg'"
-          [class.h-6]="size() === 'lg'"
-          [class.bg-blue-500]="currentBeat() === beat && !accentFirstBeat()"
-          [class.bg-amber-500]="currentBeat() === beat && accentFirstBeat() && beat === 1"
-          [class.bg-green-500]="currentBeat() === beat && accentFirstBeat() && beat !== 1"
-          [class.bg-slate-700]="currentBeat() !== beat"
-          [class.scale-125]="currentBeat() === beat"
-          [class.shadow-lg]="currentBeat() === beat"
-        ></div>
+    <div class="flex flex-col items-center gap-2">
+      <div class="flex items-center justify-center gap-2">
+        @for (beat of beatIndicators(); track beat) {
+          <button
+            type="button"
+            [class]="getAccentIndicatorClass(beat)"
+            (click)="showAccentConfig() ? cycleAccent(beat) : null"
+            [title]="showAccentConfig() ? 'Click to cycle accent: ' + getAccentForBeat(beat) : 'Beat ' + beat"
+          ></button>
+        }
+      </div>
+
+      <!-- Accent Legend (when config is shown) -->
+      @if (showAccentConfig()) {
+        <div class="flex items-center gap-3 text-[10px] text-slate-500">
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-slate-600"></span> None
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-blue-600/60"></span> Soft
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-amber-600/70"></span> Medium
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-red-600"></span> Strong
+          </span>
+        </div>
       }
+    </div>
+  }
+
+  <!-- Accent Pattern Presets -->
+  @if (showAccentConfig() && availablePresets().length > 0) {
+    <div class="flex flex-col gap-1">
+      <span class="text-[10px] text-slate-500 uppercase tracking-wider">Pattern</span>
+      <div class="flex items-center gap-1 flex-wrap justify-center">
+        @for (preset of availablePresets(); track preset.name; let i = $index) {
+          <button
+            type="button"
+            class="px-2 py-1 rounded text-xs transition-colors"
+            [class.bg-blue-600]="selectedPresetIndex() === i"
+            [class.text-white]="selectedPresetIndex() === i"
+            [class.bg-slate-700]="selectedPresetIndex() !== i"
+            [class.text-slate-300]="selectedPresetIndex() !== i"
+            [class.hover:bg-slate-600]="selectedPresetIndex() !== i"
+            [disabled]="disabled()"
+            (click)="selectPreset(i)"
+          >
+            {{ preset.name }}
+          </button>
+        }
+      </div>
     </div>
   }
 
