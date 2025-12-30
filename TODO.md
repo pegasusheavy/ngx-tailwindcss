@@ -188,8 +188,8 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 - [x] Interactive piano keyboard
 - [x] Configurable octave range
 - [x] Highlight active notes
-- [ ] Velocity-sensitive display
-- [ ] MIDI input visualization
+- [x] Velocity-sensitive display - velocitySensitive, velocityColorMode (brightness/hue/saturation)
+- [x] MIDI input visualization - enableMidi, midiChannel, auto-connects to MIDI devices
 - [x] Compact and full-size variants (3 sizes)
 - [x] Touch/click to play notes
 - [x] MIDI note events output
