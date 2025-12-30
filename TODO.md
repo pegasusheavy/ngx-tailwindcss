@@ -92,7 +92,7 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 
 ### Waveform Display ✅
 - [x] Static waveform visualization from audio buffer
-- [ ] Real-time waveform (oscilloscope mode)
+- [x] Real-time waveform (oscilloscope mode) - mode='realtime' with analyserNode
 - [x] Playback progress overlay
 - [x] Click-to-seek functionality
 - [ ] Zoom and pan controls
