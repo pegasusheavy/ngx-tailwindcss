@@ -80,6 +80,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/components/image/image-demo.component').then(m => m.ImageDemoComponent),
       },
 
+      // Music/Audio
+      {
+        path: 'music',
+        loadComponent: () => import('./pages/components/music/music-demo.component').then(m => m.MusicDemoComponent),
+      },
+
       // Feedback
       {
         path: 'alert',

@@ -74,7 +74,8 @@ import {
   faSun,
   faMoon,
   faCircleHalfStroke,
-  faTableRows,
+  faMusic,
+  faVolumeHigh,
 } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
 import { ThemeService } from './services/theme.service';
@@ -206,7 +207,7 @@ export class App implements AfterViewInit, OnDestroy {
     sun: faSun,
     moon: faMoon,
     system: faCircleHalfStroke,
-    tableRows: faTableRows,
+    tableRows: faTable,
   };
 
   protected mainNavItems: NavItem[] = [
@@ -275,7 +276,7 @@ export class App implements AfterViewInit, OnDestroy {
         { label: 'Avatar', path: '/components/avatar', icon: faUserCircle },
         { label: 'Chip', path: '/components/chip', icon: faTag },
         { label: 'Table', path: '/components/table', icon: faTable },
-        { label: 'DataTables', path: '/components/datatables', icon: faTableRows },
+        { label: 'DataTables', path: '/components/datatables', icon: faTable },
         { label: 'Tree', path: '/components/tree', icon: faCodeBranch },
         { label: 'Timeline', path: '/components/timeline', icon: faHistory },
       ],
@@ -316,6 +317,13 @@ export class App implements AfterViewInit, OnDestroy {
       icon: faImage,
       items: [
         { label: 'Image', path: '/components/image', icon: faImage },
+      ],
+    },
+    {
+      label: 'Music/Audio',
+      icon: faMusic,
+      items: [
+        { label: 'Music Components', path: '/components/music', icon: faVolumeHigh },
       ],
     },
   ];
