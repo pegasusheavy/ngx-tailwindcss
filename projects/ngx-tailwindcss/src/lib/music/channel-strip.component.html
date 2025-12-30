@@ -1,0 +1,121 @@
+<div [class]="containerClasses()">
+  <!-- Channel Label -->
+  @if (showLabel()) {
+    <div [class]="labelClasses()">
+      <span class="text-slate-400">{{ channelNumber() }}</span>
+      <span class="text-white ml-1">{{ label() }}</span>
+    </div>
+  }
+
+  <!-- Record Button -->
+  @if (showRecord()) {
+    <button
+      type="button"
+      [class]="buttonSize()"
+      class="rounded-full flex items-center justify-center font-bold transition-all"
+      [class.bg-red-600]="record()"
+      [class.text-white]="record()"
+      [class.bg-slate-700]="!record()"
+      [class.text-slate-400]="!record()"
+      [class.hover:bg-red-500]="!record()"
+      [class.animate-pulse]="record()"
+      [disabled]="disabled()"
+      (click)="toggleRecord()"
+      title="Record Arm"
+    >
+      R
+    </button>
+  }
+
+  <!-- VU Meter -->
+  @if (showMeter()) {
+    <div class="flex-1 flex items-center justify-center py-1">
+      @if (stereo()) {
+        <tw-vu-meter
+          [leftValue]="meterLevel()"
+          [rightValue]="meterLevelRight()"
+          [stereo]="true"
+          [segmentCount]="size() === 'sm' ? 8 : 12"
+          [height]="size() === 'sm' ? 60 : size() === 'lg' ? 100 : 80"
+          variant="led"
+        ></tw-vu-meter>
+      } @else {
+        <tw-vu-meter
+          [value]="meterLevel()"
+          [segmentCount]="size() === 'sm' ? 8 : 12"
+          [height]="size() === 'sm' ? 60 : size() === 'lg' ? 100 : 80"
+          variant="led"
+        ></tw-vu-meter>
+      }
+    </div>
+  }
+
+  <!-- Volume Fader / Dial -->
+  <tw-volume-dial
+    [ngModel]="volume()"
+    (ngModelChange)="onVolumeChange($event)"
+    [min]="0"
+    [max]="100"
+    [step]="1"
+    [size]="dialSize()"
+    [variant]="variant() === 'vintage' ? 'vintage' : 'modern'"
+    [disabled]="disabled() || mute()"
+    label=""
+    [showValue]="size() !== 'sm'"
+  ></tw-volume-dial>
+
+  <!-- Pan Control -->
+  @if (showPan()) {
+    <tw-volume-dial
+      [ngModel]="pan()"
+      (ngModelChange)="onPanChange($event)"
+      [min]="-100"
+      [max]="100"
+      [step]="1"
+      [size]="size() === 'lg' ? 'md' : 'sm'"
+      [variant]="variant() === 'vintage' ? 'vintage' : 'minimal'"
+      [disabled]="disabled()"
+      [centerDetent]="true"
+      [detentValue]="0"
+      label=""
+      [showValue]="false"
+    ></tw-volume-dial>
+    <span class="text-[10px] text-slate-500">PAN</span>
+  }
+
+  <!-- Mute / Solo Buttons -->
+  @if (showMuteSolo()) {
+    <div class="flex gap-1">
+      <button
+        type="button"
+        [class]="buttonSize()"
+        class="rounded flex items-center justify-center font-bold transition-all"
+        [class.bg-amber-500]="mute()"
+        [class.text-black]="mute()"
+        [class.bg-slate-700]="!mute()"
+        [class.text-slate-400]="!mute()"
+        [class.hover:bg-amber-400]="!mute()"
+        [disabled]="disabled()"
+        (click)="toggleMute()"
+        title="Mute"
+      >
+        M
+      </button>
+      <button
+        type="button"
+        [class]="buttonSize()"
+        class="rounded flex items-center justify-center font-bold transition-all"
+        [class.bg-green-500]="solo()"
+        [class.text-black]="solo()"
+        [class.bg-slate-700]="!solo()"
+        [class.text-slate-400]="!solo()"
+        [class.hover:bg-green-400]="!solo()"
+        [disabled]="disabled()"
+        (click)="toggleSolo()"
+        title="Solo"
+      >
+        S
+      </button>
+    </div>
+  }
+</div>

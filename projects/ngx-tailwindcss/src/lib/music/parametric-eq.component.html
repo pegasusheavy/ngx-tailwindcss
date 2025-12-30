@@ -1,0 +1,74 @@
+<div [class]="containerClasses()">
+  <!-- Canvas for EQ visualization -->
+  <canvas
+    #canvas
+    [attr.width]="width()"
+    [attr.height]="height()"
+    class="block"
+    [class.cursor-pointer]="interactive()"
+    [class.cursor-grab]="interactive() && !isDragging()"
+    [class.cursor-grabbing]="isDragging()"
+  ></canvas>
+
+  <!-- Band selector buttons -->
+  <div class="flex items-center justify-center gap-1 mt-2 flex-wrap">
+    @for (band of bands(); track band.id) {
+      <button
+        type="button"
+        class="flex items-center gap-1.5 px-2 py-1 rounded text-xs font-medium transition-all"
+        [class.opacity-100]="band.enabled"
+        [class.opacity-40]="!band.enabled"
+        [class.ring-2]="selectedBandId() === band.id"
+        [class.ring-white]="selectedBandId() === band.id"
+        [style.backgroundColor]="band.color"
+        [style.color]="'white'"
+        (click)="selectBand(band)"
+        (dblclick)="toggleBand(band)"
+        [title]="band.enabled ? 'Double-click to disable' : 'Double-click to enable'"
+      >
+        <span class="w-2 h-2 rounded-full" [class.bg-white]="band.enabled" [class.bg-transparent]="!band.enabled" [class.border]="!band.enabled" [class.border-white]="!band.enabled"></span>
+        <span>{{ band.frequency >= 1000 ? (band.frequency / 1000).toFixed(1) + 'k' : band.frequency }}Hz</span>
+      </button>
+    }
+  </div>
+
+  <!-- Selected band controls -->
+  @if (selectedBandId()) {
+    @for (band of bands(); track band.id) {
+      @if (band.id === selectedBandId()) {
+        <div class="mt-3 p-3 bg-slate-800/50 rounded-lg">
+          <div class="grid grid-cols-3 gap-3 text-xs">
+            <!-- Frequency -->
+            <div class="space-y-1">
+              <label class="text-slate-400 block">Frequency</label>
+              <div class="text-white font-mono">
+                {{ band.frequency >= 1000 ? (band.frequency / 1000).toFixed(2) + ' kHz' : band.frequency.toFixed(0) + ' Hz' }}
+              </div>
+            </div>
+
+            <!-- Gain -->
+            <div class="space-y-1">
+              <label class="text-slate-400 block">Gain</label>
+              <div class="text-white font-mono">
+                {{ band.gain > 0 ? '+' : '' }}{{ band.gain.toFixed(1) }} dB
+              </div>
+            </div>
+
+            <!-- Q -->
+            <div class="space-y-1">
+              <label class="text-slate-400 block">Q</label>
+              <div class="text-white font-mono">
+                {{ band.q.toFixed(2) }}
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-2 text-[10px] text-slate-500">
+            Drag node to adjust • Shift+drag for Q • Double-click to reset
+          </div>
+        </div>
+      }
+    }
+  }
+</div>
+

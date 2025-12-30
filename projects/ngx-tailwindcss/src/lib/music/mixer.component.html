@@ -1,0 +1,83 @@
+<div [class]="containerClasses()">
+  <!-- Scroll Left Button -->
+  @if (scrollable() && channels().length > maxVisibleChannels()) {
+    <button
+      type="button"
+      class="flex items-center justify-center w-6 bg-slate-800 hover:bg-slate-700 rounded text-slate-400 hover:text-white transition-colors self-stretch"
+      [class.opacity-50]="!canScrollLeft()"
+      [class.cursor-not-allowed]="!canScrollLeft()"
+      [disabled]="!canScrollLeft() || disabled()"
+      (click)="scrollLeft()"
+      title="Scroll Left"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+      </svg>
+    </button>
+  }
+
+  <!-- Channel Strips -->
+  <div class="flex gap-1 overflow-hidden">
+    @for (channel of visibleChannels(); track channel.id; let i = $index) {
+      <tw-channel-strip
+        [label]="channel.label"
+        [channelNumber]="scrollOffset() + i + 1"
+        [variant]="channelStripVariant()"
+        [size]="stripSize()"
+        [showMeter]="true"
+        [showPan]="true"
+        [showMuteSolo]="true"
+        [showRecord]="showRecordArm()"
+        [showLabel]="showChannelNumbers()"
+        [meterLevel]="channel.meterLevel || 0"
+        [meterLevelRight]="channel.meterLevelRight || 0"
+        [stereo]="true"
+        [disabled]="disabled()"
+        [ngModel]="getChannelState(channel)"
+        (stateChange)="onChannelStateChange($event, scrollOffset() + i)"
+        (soloChange)="onChannelSoloChange($event, scrollOffset() + i)"
+      ></tw-channel-strip>
+    }
+  </div>
+
+  <!-- Scroll Right Button -->
+  @if (scrollable() && channels().length > maxVisibleChannels()) {
+    <button
+      type="button"
+      class="flex items-center justify-center w-6 bg-slate-800 hover:bg-slate-700 rounded text-slate-400 hover:text-white transition-colors self-stretch"
+      [class.opacity-50]="!canScrollRight()"
+      [class.cursor-not-allowed]="!canScrollRight()"
+      [disabled]="!canScrollRight() || disabled()"
+      (click)="scrollRight()"
+      title="Scroll Right"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+      </svg>
+    </button>
+  }
+
+  <!-- Master Channel -->
+  @if (showMasterChannel()) {
+    <div class="border-l border-slate-700 pl-2 ml-1">
+      <tw-channel-strip
+        [label]="masterLabel()"
+        [channelNumber]="0"
+        [variant]="channelStripVariant()"
+        [size]="stripSize()"
+        [showMeter]="true"
+        [showPan]="false"
+        [showMuteSolo]="false"
+        [showRecord]="false"
+        [showLabel]="true"
+        [meterLevel]="masterMeterLevel()"
+        [meterLevelRight]="masterMeterLevelRight()"
+        [stereo]="true"
+        [disabled]="disabled()"
+        [ngModel]="{ volume: internalMasterVolume(), pan: 0, mute: masterMute(), solo: false, record: false }"
+        (volumeChange)="onMasterVolumeChange($event)"
+      ></tw-channel-strip>
+    </div>
+  }
+</div>
+
