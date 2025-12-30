@@ -201,6 +201,8 @@ export class TwMixerComponent {
       mute: channel.mute,
       solo: channel.solo,
       record: channel.record ?? false,
+      inputGain: 0,
+      auxSends: [],
     };
   }
 }

@@ -15,9 +15,10 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TwClassService } from '../core/tw-class.service';
 
 export type DialVariant = 'modern' | 'vintage' | 'minimal' | 'led';
-export type DialSize = 'sm' | 'md' | 'lg' | 'xl';
+export type DialSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 const DIAL_SIZES: Record<DialSize, { size: number; strokeWidth: number; tickLength: number; fontSize: string }> = {
+  xs: { size: 32, strokeWidth: 3, tickLength: 3, fontSize: 'text-[8px]' },
   sm: { size: 48, strokeWidth: 4, tickLength: 4, fontSize: 'text-[10px]' },
   md: { size: 72, strokeWidth: 5, tickLength: 6, fontSize: 'text-xs' },
   lg: { size: 96, strokeWidth: 6, tickLength: 8, fontSize: 'text-sm' },

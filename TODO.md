@@ -128,10 +128,10 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 - [x] Volume dial with meter
 - [x] Pan knob
 - [x] Mute/Solo/Record buttons
-- [ ] Aux send knobs
+- [x] Aux send knobs - showAuxSends, auxSendCount, auxSendLabels inputs
 - [x] Channel label/rename
-- [ ] Input gain control
-- [ ] Signal present indicator
+- [x] Input gain control - showInputGain input (-20 to +20 dB)
+- [x] Signal present indicator - showSignalIndicator, signalThreshold inputs
 
 ### Mixer Console ✅
 - [x] Multi-channel mixer layout

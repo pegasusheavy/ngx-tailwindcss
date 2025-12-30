@@ -16,12 +16,21 @@ import { TwVuMeterComponent } from './vu-meter.component';
 export type ChannelStripVariant = 'default' | 'compact' | 'minimal' | 'vintage';
 export type ChannelStripSize = 'sm' | 'md' | 'lg';
 
+export interface AuxSend {
+  id: string;
+  label: string;
+  value: number; // 0-100
+  preFader?: boolean;
+}
+
 export interface ChannelStripState {
   volume: number; // 0-100
   pan: number; // -100 to 100
   mute: boolean;
   solo: boolean;
   record: boolean;
+  inputGain: number; // -20 to +20 dB
+  auxSends: AuxSend[];
 }
 
 @Component({
@@ -51,6 +60,12 @@ export class TwChannelStripComponent implements ControlValueAccessor {
   readonly showMuteSolo = input(true);
   readonly showRecord = input(false);
   readonly showLabel = input(true);
+  readonly showInputGain = input(false); // NEW: Input gain control
+  readonly showAuxSends = input(false); // NEW: Aux send knobs
+  readonly showSignalIndicator = input(true); // NEW: Signal present indicator
+  readonly auxSendCount = input(2, { transform: numberAttribute }); // Number of aux sends
+  readonly auxSendLabels = input<string[]>(['Aux 1', 'Aux 2', 'Aux 3', 'Aux 4']); // Labels for aux sends
+  readonly signalThreshold = input(5, { transform: numberAttribute }); // Signal present threshold (0-100)
   readonly meterLevel = input(0, { transform: numberAttribute }); // 0-100
   readonly meterPeak = input(0, { transform: numberAttribute }); // 0-100
   readonly stereo = input(false);
@@ -64,6 +79,8 @@ export class TwChannelStripComponent implements ControlValueAccessor {
   readonly muteChange = output<boolean>();
   readonly soloChange = output<boolean>();
   readonly recordChange = output<boolean>();
+  readonly inputGainChange = output<number>();
+  readonly auxSendChange = output<{ index: number; value: number }>();
   readonly stateChange = output<ChannelStripState>();
 
   protected readonly volume = signal(75);
@@ -71,6 +88,28 @@ export class TwChannelStripComponent implements ControlValueAccessor {
   protected readonly mute = signal(false);
   protected readonly solo = signal(false);
   protected readonly record = signal(false);
+  protected readonly inputGain = signal(0); // -20 to +20 dB
+  protected readonly auxSends = signal<number[]>([0, 0, 0, 0]); // Up to 4 aux sends
+
+  // Signal present detection
+  protected readonly signalPresent = computed(() => {
+    const level = this.stereo()
+      ? Math.max(this.meterLevel(), this.meterLevelRight())
+      : this.meterLevel();
+    return level >= this.signalThreshold();
+  });
+
+  // Aux sends array for template iteration
+  protected readonly auxSendArray = computed(() => {
+    const count = this.auxSendCount();
+    const labels = this.auxSendLabels();
+    const values = this.auxSends();
+    return Array.from({ length: count }, (_, i) => ({
+      index: i,
+      label: labels[i] || `Aux ${i + 1}`,
+      value: values[i] || 0,
+    }));
+  });
 
   private onChange: (value: ChannelStripState) => void = () => {};
   private onTouched: () => void = () => {};
@@ -116,6 +155,10 @@ export class TwChannelStripComponent implements ControlValueAccessor {
     return [base, sizeClass].join(' ');
   });
 
+  protected readonly auxKnobSize = computed(() => {
+    return this.size() === 'lg' ? 'sm' : 'xs';
+  });
+
   protected onVolumeChange(value: number): void {
     this.volume.set(value);
     this.volumeChange.emit(value);
@@ -149,13 +192,39 @@ export class TwChannelStripComponent implements ControlValueAccessor {
     this.emitState();
   }
 
+  protected onInputGainChange(value: number): void {
+    this.inputGain.set(value);
+    this.inputGainChange.emit(value);
+    this.emitState();
+  }
+
+  protected onAuxSendChange(index: number, value: number): void {
+    const sends = [...this.auxSends()];
+    sends[index] = value;
+    this.auxSends.set(sends);
+    this.auxSendChange.emit({ index, value });
+    this.emitState();
+  }
+
+  protected formatGain(value: number): string {
+    return value >= 0 ? `+${value}` : `${value}`;
+  }
+
   private emitState(): void {
+    const auxSendLabels = this.auxSendLabels();
+    const auxSendValues = this.auxSends();
     const state: ChannelStripState = {
       volume: this.volume(),
       pan: this.pan(),
       mute: this.mute(),
       solo: this.solo(),
       record: this.record(),
+      inputGain: this.inputGain(),
+      auxSends: auxSendValues.slice(0, this.auxSendCount()).map((value, i) => ({
+        id: `aux-${i}`,
+        label: auxSendLabels[i] || `Aux ${i + 1}`,
+        value,
+      })),
     };
     this.stateChange.emit(state);
     this.onChange(state);
@@ -169,6 +238,10 @@ export class TwChannelStripComponent implements ControlValueAccessor {
       this.mute.set(value.mute ?? false);
       this.solo.set(value.solo ?? false);
       this.record.set(value.record ?? false);
+      this.inputGain.set(value.inputGain ?? 0);
+      if (value.auxSends) {
+        this.auxSends.set(value.auxSends.map(aux => aux.value));
+      }
     }
   }
 
