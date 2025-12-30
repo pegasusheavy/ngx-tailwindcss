@@ -19,6 +19,7 @@ import { TwClassService } from '../core/tw-class.service';
 
 export type WaveformVariant = 'bars' | 'line' | 'mirror' | 'gradient';
 export type WaveformColorScheme = 'blue' | 'green' | 'purple' | 'orange' | 'mono';
+export type WaveformMode = 'static' | 'realtime';
 
 interface WaveformColors {
   primary: string;
@@ -89,6 +90,14 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   readonly peaks = input<number[]>([]);
   readonly duration = input(0);
 
+  // Real-time mode inputs
+  readonly mode = input<WaveformMode>('static'); // 'static' or 'realtime'
+  readonly analyserNode = input<AnalyserNode | null>(null); // For real-time mode
+  readonly fftSize = input(2048); // FFT size for real-time analysis
+  readonly smoothing = input(0.8); // Smoothing factor for real-time
+  readonly showTriggerLine = input(false); // Show center trigger line in realtime mode
+  readonly gain = input(1); // Amplitude gain for realtime mode
+
   // Display options
   readonly width = input(600);
   readonly height = input(128);
@@ -128,6 +137,10 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   private peakData: number[] = [];
   private animationFrame: number | null = null;
 
+  // Real-time mode data
+  private timeDomainData: Uint8Array<ArrayBuffer> | null = null;
+  private isRealTimeRunning = false;
+
   // For template
   protected readonly Math = Math;
 
@@ -141,15 +154,33 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
   ngAfterViewInit(): void {
     this.initCanvas();
-    this.processPeaks();
+
+    if (this.mode() === 'realtime') {
+      this.setupRealTimeMode();
+    } else {
+      this.processPeaks();
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['audioBuffer'] || changes['peaks']) {
-      this.processPeaks();
+      if (this.mode() === 'static') {
+        this.processPeaks();
+      }
     }
     if (changes['width'] || changes['height'] || changes['variant'] || changes['colorScheme']) {
       this.draw();
+    }
+    if (changes['mode']) {
+      if (this.mode() === 'realtime') {
+        this.setupRealTimeMode();
+      } else {
+        this.stopRealTimeMode();
+        this.processPeaks();
+      }
+    }
+    if (changes['analyserNode'] && this.mode() === 'realtime') {
+      this.setupRealTimeMode();
     }
   }
 
@@ -227,8 +258,257 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     }
   }
 
+  // Real-time mode setup
+  private setupRealTimeMode(): void {
+    const analyser = this.analyserNode();
+    if (!analyser) {
+      this.drawEmpty();
+      return;
+    }
+
+    // Configure analyser
+    analyser.fftSize = this.fftSize();
+    analyser.smoothingTimeConstant = this.smoothing();
+
+    // Create data buffer
+    this.timeDomainData = new Uint8Array(analyser.fftSize) as Uint8Array<ArrayBuffer>;
+
+    // Start real-time loop
+    this.isRealTimeRunning = true;
+    this.drawRealTime();
+  }
+
+  private stopRealTimeMode(): void {
+    this.isRealTimeRunning = false;
+    if (this.animationFrame) {
+      cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = null;
+    }
+  }
+
+  private drawRealTime(): void {
+    if (!this.isRealTimeRunning || !this.ctx) return;
+
+    const analyser = this.analyserNode();
+    if (!analyser || !this.timeDomainData) {
+      this.animationFrame = requestAnimationFrame(() => this.drawRealTime());
+      return;
+    }
+
+    // Get time domain data
+    analyser.getByteTimeDomainData(this.timeDomainData);
+
+    const variant = this.variant();
+    switch (variant) {
+      case 'bars':
+        this.drawRealTimeBars();
+        break;
+      case 'line':
+        this.drawRealTimeLine();
+        break;
+      case 'mirror':
+        this.drawRealTimeMirror();
+        break;
+      case 'gradient':
+        this.drawRealTimeGradient();
+        break;
+    }
+
+    // Continue animation loop
+    this.animationFrame = requestAnimationFrame(() => this.drawRealTime());
+  }
+
+  private drawRealTimeLine(): void {
+    if (!this.ctx || !this.timeDomainData) return;
+
+    const colors = this.colors();
+    const w = this.width();
+    const h = this.height();
+    const bufferLength = this.timeDomainData.length;
+    const gainValue = this.gain();
+
+    // Clear canvas
+    this.ctx.fillStyle = colors.background;
+    this.ctx.fillRect(0, 0, w, h);
+
+    // Draw trigger line
+    if (this.showTriggerLine()) {
+      this.ctx.strokeStyle = `${colors.primary}30`;
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, h / 2);
+      this.ctx.lineTo(w, h / 2);
+      this.ctx.stroke();
+    }
+
+    // Draw waveform
+    this.ctx.strokeStyle = colors.primary;
+    this.ctx.lineWidth = 2;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    this.ctx.beginPath();
+
+    const sliceWidth = w / bufferLength;
+    let x = 0;
+
+    for (let i = 0; i < bufferLength; i++) {
+      // Convert byte (0-255) to normalized (-1 to 1)
+      const v = ((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const y = (v * h) / 2 + h / 2;
+
+      if (i === 0) {
+        this.ctx.moveTo(x, y);
+      } else {
+        this.ctx.lineTo(x, y);
+      }
+
+      x += sliceWidth;
+    }
+
+    this.ctx.stroke();
+  }
+
+  private drawRealTimeBars(): void {
+    if (!this.ctx || !this.timeDomainData) return;
+
+    const colors = this.colors();
+    const w = this.width();
+    const h = this.height();
+    const bufferLength = this.timeDomainData.length;
+    const barW = this.barWidth();
+    const gap = this.barGap();
+    const radius = this.barRadius();
+    const gainValue = this.gain();
+
+    // Clear canvas
+    this.ctx.fillStyle = colors.background;
+    this.ctx.fillRect(0, 0, w, h);
+
+    const barCount = Math.floor(w / (barW + gap));
+    const samplesPerBar = Math.floor(bufferLength / barCount);
+
+    for (let i = 0; i < barCount; i++) {
+      const x = i * (barW + gap);
+
+      // Get max amplitude for this bar
+      let maxAmp = 0;
+      for (let j = 0; j < samplesPerBar; j++) {
+        const idx = i * samplesPerBar + j;
+        if (idx < bufferLength) {
+          const v = Math.abs((this.timeDomainData[idx] / 128.0) - 1);
+          if (v > maxAmp) maxAmp = v;
+        }
+      }
+
+      maxAmp *= gainValue;
+      const barH = Math.max(2, maxAmp * (h - 4));
+      const y = (h - barH) / 2;
+
+      this.ctx.fillStyle = colors.primary;
+      this.roundRect(x, y, barW, barH, radius);
+    }
+  }
+
+  private drawRealTimeMirror(): void {
+    if (!this.ctx || !this.timeDomainData) return;
+
+    const colors = this.colors();
+    const w = this.width();
+    const h = this.height();
+    const bufferLength = this.timeDomainData.length;
+    const gainValue = this.gain();
+
+    // Clear canvas
+    this.ctx.fillStyle = colors.background;
+    this.ctx.fillRect(0, 0, w, h);
+
+    const centerY = h / 2;
+    const sliceWidth = w / bufferLength;
+
+    // Draw mirrored waveform
+    this.ctx.beginPath();
+
+    // Top half
+    let x = 0;
+    for (let i = 0; i < bufferLength; i++) {
+      const v = Math.abs((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const y = centerY - v * (h / 2 - 2);
+
+      if (i === 0) {
+        this.ctx.moveTo(x, y);
+      } else {
+        this.ctx.lineTo(x, y);
+      }
+      x += sliceWidth;
+    }
+
+    // Bottom half (mirror)
+    for (let i = bufferLength - 1; i >= 0; i--) {
+      const v = Math.abs((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const xPos = (i / bufferLength) * w;
+      const y = centerY + v * (h / 2 - 2);
+      this.ctx.lineTo(xPos, y);
+    }
+
+    this.ctx.closePath();
+    this.ctx.fillStyle = `${colors.primary}80`;
+    this.ctx.fill();
+  }
+
+  private drawRealTimeGradient(): void {
+    if (!this.ctx || !this.timeDomainData) return;
+
+    const colors = this.colors();
+    const w = this.width();
+    const h = this.height();
+    const bufferLength = this.timeDomainData.length;
+    const gainValue = this.gain();
+
+    // Clear canvas
+    this.ctx.fillStyle = colors.background;
+    this.ctx.fillRect(0, 0, w, h);
+
+    // Create gradient
+    const gradient = this.ctx.createLinearGradient(0, 0, 0, h);
+    gradient.addColorStop(0, colors.primary);
+    gradient.addColorStop(0.5, colors.secondary);
+    gradient.addColorStop(1, colors.primary);
+
+    const centerY = h / 2;
+    const sliceWidth = w / bufferLength;
+
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, centerY);
+
+    // Top path
+    let x = 0;
+    for (let i = 0; i < bufferLength; i++) {
+      const v = Math.abs((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const y = centerY - v * (h / 2 - 2);
+      this.ctx.lineTo(x, y);
+      x += sliceWidth;
+    }
+
+    this.ctx.lineTo(w, centerY);
+
+    // Bottom path (mirror)
+    for (let i = bufferLength - 1; i >= 0; i--) {
+      const v = Math.abs((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const xPos = (i / bufferLength) * w;
+      const y = centerY + v * (h / 2 - 2);
+      this.ctx.lineTo(xPos, y);
+    }
+
+    this.ctx.closePath();
+    this.ctx.fillStyle = gradient;
+    this.ctx.fill();
+  }
+
   // Drawing methods
   private draw(): void {
+    // In realtime mode, drawing is handled by drawRealTime loop
+    if (this.mode() === 'realtime') return;
+
     if (!this.ctx || this.peakData.length === 0) {
       this.drawEmpty();
       return;
@@ -569,6 +849,37 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   clearSelection(): void {
     this.selectionStart.set(null);
     this.selectionEnd.set(null);
+  }
+
+  /**
+   * Connect an AnalyserNode for real-time visualization
+   */
+  connectAnalyser(analyser: AnalyserNode): void {
+    // Update would need to use a writable signal, but since analyserNode is an input,
+    // the parent component should update the input binding instead
+  }
+
+  /**
+   * Start real-time visualization (call when mode is 'realtime')
+   */
+  startRealTime(): void {
+    if (this.mode() === 'realtime' && !this.isRealTimeRunning) {
+      this.setupRealTimeMode();
+    }
+  }
+
+  /**
+   * Stop real-time visualization
+   */
+  stopRealTime(): void {
+    this.stopRealTimeMode();
+  }
+
+  /**
+   * Check if real-time mode is currently running
+   */
+  isRealTimeActive(): boolean {
+    return this.isRealTimeRunning;
   }
 }
 
