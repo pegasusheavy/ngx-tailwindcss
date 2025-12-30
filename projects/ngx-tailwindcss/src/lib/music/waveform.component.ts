@@ -20,6 +20,23 @@ import { TwClassService } from '../core/tw-class.service';
 export type WaveformVariant = 'bars' | 'line' | 'mirror' | 'gradient';
 export type WaveformColorScheme = 'blue' | 'green' | 'purple' | 'orange' | 'mono';
 export type WaveformMode = 'static' | 'realtime';
+export type WaveformSize = 'mini' | 'sm' | 'md' | 'lg' | 'auto';
+
+// Size presets for different display contexts
+interface SizePreset {
+  width: number;
+  height: number;
+  barWidth: number;
+  barGap: number;
+  barRadius: number;
+}
+
+const SIZE_PRESETS: Record<Exclude<WaveformSize, 'auto'>, SizePreset> = {
+  mini: { width: 100, height: 24, barWidth: 1, barGap: 1, barRadius: 0 },
+  sm: { width: 200, height: 48, barWidth: 2, barGap: 1, barRadius: 1 },
+  md: { width: 400, height: 80, barWidth: 3, barGap: 1, barRadius: 1 },
+  lg: { width: 600, height: 128, barWidth: 3, barGap: 2, barRadius: 2 },
+};
 
 interface WaveformColors {
   primary: string;
@@ -99,6 +116,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   readonly gain = input(1); // Amplitude gain for realtime mode
 
   // Display options
+  readonly size = input<WaveformSize>('auto'); // 'mini', 'sm', 'md', 'lg', or 'auto'
   readonly width = input(600);
   readonly height = input(128);
   readonly variant = input<WaveformVariant>('bars');
@@ -106,6 +124,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   readonly barWidth = input(3);
   readonly barGap = input(1);
   readonly barRadius = input(1);
+  readonly responsive = input(false); // Enable responsive width
 
   // Playback state
   readonly progress = input(0);
@@ -184,12 +203,54 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     }
   }
 
-  // Computed values
+  // Computed values - Size-aware dimensions
+  protected readonly effectiveWidth = computed(() => {
+    const sizeVal = this.size();
+    if (sizeVal !== 'auto' && SIZE_PRESETS[sizeVal]) {
+      return SIZE_PRESETS[sizeVal].width;
+    }
+    return this.width();
+  });
+
+  protected readonly effectiveHeight = computed(() => {
+    const sizeVal = this.size();
+    if (sizeVal !== 'auto' && SIZE_PRESETS[sizeVal]) {
+      return SIZE_PRESETS[sizeVal].height;
+    }
+    return this.height();
+  });
+
+  protected readonly effectiveBarWidth = computed(() => {
+    const sizeVal = this.size();
+    if (sizeVal !== 'auto' && SIZE_PRESETS[sizeVal]) {
+      return SIZE_PRESETS[sizeVal].barWidth;
+    }
+    return this.barWidth();
+  });
+
+  protected readonly effectiveBarGap = computed(() => {
+    const sizeVal = this.size();
+    if (sizeVal !== 'auto' && SIZE_PRESETS[sizeVal]) {
+      return SIZE_PRESETS[sizeVal].barGap;
+    }
+    return this.barGap();
+  });
+
+  protected readonly effectiveBarRadius = computed(() => {
+    const sizeVal = this.size();
+    if (sizeVal !== 'auto' && SIZE_PRESETS[sizeVal]) {
+      return SIZE_PRESETS[sizeVal].barRadius;
+    }
+    return this.barRadius();
+  });
+
+  protected readonly isMini = computed(() => this.size() === 'mini');
+
   protected readonly containerClasses = computed(() => {
-    return this.twClass.merge(
-      'relative overflow-hidden rounded-lg',
-      this.classOverride()
-    );
+    const base = 'relative overflow-hidden';
+    const sizeClasses = this.isMini() ? 'rounded' : 'rounded-lg';
+    const responsiveClasses = this.responsive() ? 'w-full' : '';
+    return this.twClass.merge(base, sizeClasses, responsiveClasses, this.classOverride());
   });
 
   protected readonly canvasClasses = computed(() => {
@@ -233,11 +294,11 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     try {
       const channelData = buffer.getChannelData(0);
       const sampleRate = buffer.sampleRate;
-      const samplesPerPixel = Math.floor(channelData.length / this.width());
+      const samplesPerPixel = Math.floor(channelData.length / this.effectiveWidth());
 
       this.peakData = [];
 
-      for (let i = 0; i < this.width(); i++) {
+      for (let i = 0; i < this.effectiveWidth(); i++) {
         const start = i * samplesPerPixel;
         const end = start + samplesPerPixel;
         let max = 0;
@@ -322,8 +383,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (!this.ctx || !this.timeDomainData) return;
 
     const colors = this.colors();
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const bufferLength = this.timeDomainData.length;
     const gainValue = this.gain();
 
@@ -372,12 +433,12 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (!this.ctx || !this.timeDomainData) return;
 
     const colors = this.colors();
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const bufferLength = this.timeDomainData.length;
-    const barW = this.barWidth();
-    const gap = this.barGap();
-    const radius = this.barRadius();
+    const barW = this.effectiveBarWidth();
+    const gap = this.effectiveBarGap();
+    const radius = this.effectiveBarRadius();
     const gainValue = this.gain();
 
     // Clear canvas
@@ -413,8 +474,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (!this.ctx || !this.timeDomainData) return;
 
     const colors = this.colors();
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const bufferLength = this.timeDomainData.length;
     const gainValue = this.gain();
 
@@ -459,8 +520,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (!this.ctx || !this.timeDomainData) return;
 
     const colors = this.colors();
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const bufferLength = this.timeDomainData.length;
     const gainValue = this.gain();
 
@@ -546,14 +607,14 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     const colors = this.colors();
     this.ctx.fillStyle = colors.background;
-    this.ctx.fillRect(0, 0, this.width(), this.height());
+    this.ctx.fillRect(0, 0, this.effectiveWidth(), this.effectiveHeight());
 
     // Draw center line
     this.ctx.strokeStyle = `${colors.primary}40`;
     this.ctx.lineWidth = 1;
     this.ctx.beginPath();
-    this.ctx.moveTo(0, this.height() / 2);
-    this.ctx.lineTo(this.width(), this.height() / 2);
+    this.ctx.moveTo(0, this.effectiveHeight() / 2);
+    this.ctx.lineTo(this.effectiveWidth(), this.effectiveHeight() / 2);
     this.ctx.stroke();
   }
 
@@ -561,12 +622,12 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (!this.ctx) return;
 
     const colors = this.colors();
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const progress = this.progress();
-    const barW = this.barWidth();
-    const gap = this.barGap();
-    const radius = this.barRadius();
+    const barW = this.effectiveBarWidth();
+    const gap = this.effectiveBarGap();
+    const radius = this.effectiveBarRadius();
 
     // Clear canvas
     this.ctx.fillStyle = colors.background;
@@ -603,8 +664,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (!this.ctx) return;
 
     const colors = this.colors();
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const progress = this.progress();
 
     // Clear canvas
@@ -652,8 +713,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (!this.ctx) return;
 
     const colors = this.colors();
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const progress = this.progress();
 
     // Clear canvas
@@ -721,8 +782,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (!this.ctx) return;
 
     const colors = this.colors();
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
 
     // Clear canvas
     this.ctx.fillStyle = colors.background;

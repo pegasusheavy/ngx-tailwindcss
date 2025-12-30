@@ -1,10 +1,11 @@
-<div [class]="containerClasses()">
+<div [class]="containerClasses()" [style.width.px]="responsive() ? null : effectiveWidth()">
   <!-- Canvas for waveform rendering -->
   <canvas
     #waveformCanvas
-    [width]="width()"
-    [height]="height()"
+    [width]="effectiveWidth()"
+    [height]="effectiveHeight()"
     [class]="canvasClasses()"
+    [class.w-full]="responsive()"
     (click)="onCanvasClick($event)"
     (mousedown)="onMouseDown($event)"
     (mousemove)="onMouseMove($event)"
@@ -12,8 +13,8 @@
     (mouseleave)="onMouseLeave()"
   ></canvas>
 
-  <!-- Progress overlay -->
-  @if (showProgress()) {
+  <!-- Progress overlay (hidden in mini mode) -->
+  @if (showProgress() && !isMini()) {
     <div
       class="absolute top-0 bottom-0 left-0 bg-blue-500/20 pointer-events-none transition-all duration-100"
       [style.width.%]="progress() * 100"
@@ -23,16 +24,20 @@
   <!-- Playhead -->
   @if (showPlayhead()) {
     <div
-      class="absolute top-0 bottom-0 w-0.5 bg-blue-500 pointer-events-none transition-all"
+      class="absolute top-0 bottom-0 bg-blue-500 pointer-events-none transition-all"
+      [class]="isMini() ? 'w-px' : 'w-0.5'"
       [class.duration-100]="!isDragging()"
       [style.left.%]="progress() * 100"
     >
-      <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-blue-500"></div>
+      <!-- Playhead arrow (hidden in mini mode) -->
+      @if (!isMini()) {
+        <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-blue-500"></div>
+      }
     </div>
   }
 
-  <!-- Hover time indicator -->
-  @if (showHoverTime() && hoverPosition() !== null) {
+  <!-- Hover time indicator (hidden in mini mode) -->
+  @if (showHoverTime() && hoverPosition() !== null && !isMini()) {
     <div
       class="absolute top-0 bottom-0 w-px bg-slate-400/50 pointer-events-none"
       [style.left.%]="hoverPosition()! * 100"
@@ -43,8 +48,8 @@
     </div>
   }
 
-  <!-- Region selection -->
-  @if (selectionStart() !== null && selectionEnd() !== null) {
+  <!-- Region selection (hidden in mini mode) -->
+  @if (selectionStart() !== null && selectionEnd() !== null && !isMini()) {
     <div
       class="absolute top-0 bottom-0 bg-blue-500/30 border-l border-r border-blue-500 pointer-events-none"
       [style.left.%]="Math.min(selectionStart()!, selectionEnd()!) * 100"
@@ -52,8 +57,8 @@
     ></div>
   }
 
-  <!-- Time display -->
-  @if (showTime()) {
+  <!-- Time display (hidden in mini mode) -->
+  @if (showTime() && !isMini()) {
     <div class="absolute bottom-2 left-2 right-2 flex justify-between text-xs font-mono text-slate-500 dark:text-slate-400 pointer-events-none">
       <span>{{ formatTime(progress() * duration()) }}</span>
       <span>{{ formatTime(duration()) }}</span>
