@@ -14,7 +14,14 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 
-export type PitchDisplayVariant = 'default' | 'minimal' | 'digital' | 'wheel' | 'dj' | 'light' | 'highContrast';
+export type PitchDisplayVariant =
+  | 'default'
+  | 'minimal'
+  | 'digital'
+  | 'wheel'
+  | 'dj'
+  | 'light'
+  | 'highContrast';
 export type PitchDisplaySize = 'sm' | 'md' | 'lg';
 export type PitchBendStyle = 'vertical' | 'horizontal' | 'arc';
 
@@ -131,7 +138,7 @@ export class TwPitchDisplayComponent implements OnInit {
 
   // Computed values
   protected readonly totalCents = computed(() => {
-    return (this.internalSemitones() * 100) + this.internalCents();
+    return this.internalSemitones() * 100 + this.internalCents();
   });
 
   protected readonly effectivePitchBend = computed(() => {
@@ -148,7 +155,7 @@ export class TwPitchDisplayComponent implements OnInit {
     }
 
     const semitones = this.internalSemitones();
-    const newIndex = ((refIndex + semitones) % 12 + 12) % 12;
+    const newIndex = (((refIndex + semitones) % 12) + 12) % 12;
     const octaveChange = Math.floor((refIndex + semitones) / 12);
 
     return {
@@ -172,7 +179,7 @@ export class TwPitchDisplayComponent implements OnInit {
   protected readonly pitchWheelPosition = computed(() => {
     // 0 = center (50%), -1 = bottom (0%), +1 = top (100%)
     const bend = this.internalPitchBend();
-    return 50 - (bend * 50);
+    return 50 - bend * 50;
   });
 
   // Pitch as percentage (for DJ displays)
@@ -435,4 +442,3 @@ export class TwPitchDisplayComponent implements OnInit {
     return variantClasses[variant];
   });
 }
-

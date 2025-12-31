@@ -172,4 +172,3 @@ export class TwDropZoneDirective {
     return acceptTypes.includes(type);
   }
 }
-

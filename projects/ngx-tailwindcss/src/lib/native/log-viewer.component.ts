@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  signal,
-  computed,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LogEntry, LogFilter } from './native.types';
@@ -26,11 +19,23 @@ import { LogEntry, LogFilter } from './native.types';
   template: `
     <div class="flex flex-col h-full bg-white dark:bg-gray-900 rounded-lg overflow-hidden">
       <!-- Toolbar -->
-      <div class="flex items-center gap-2 px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+      <div
+        class="flex items-center gap-2 px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
+      >
         <!-- Search -->
         <div class="flex-1 relative">
-          <svg class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          <svg
+            class="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
           <input
             type="text"
@@ -65,7 +70,12 @@ import { LogEntry, LogFilter } from './native.types';
             (click)="autoScroll.set(!autoScroll())"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 14l-7 7m0 0l-7-7m7 7V3"
+              />
             </svg>
           </button>
           <button
@@ -75,7 +85,12 @@ import { LogEntry, LogFilter } from './native.types';
             (click)="exportLogs()"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+              />
             </svg>
           </button>
           <button
@@ -85,7 +100,12 @@ import { LogEntry, LogFilter } from './native.types';
             (click)="clearLogs.emit()"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
             </svg>
           </button>
         </div>
@@ -112,7 +132,9 @@ import { LogEntry, LogFilter } from './native.types';
                   (click)="selectEntry(entry)"
                 >
                   <!-- Timestamp -->
-                  <td class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap font-mono text-xs">
+                  <td
+                    class="px-3 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap font-mono text-xs"
+                  >
                     {{ formatTimestamp(entry.timestamp) }}
                   </td>
 
@@ -125,7 +147,9 @@ import { LogEntry, LogFilter } from './native.types';
 
                   <!-- Source -->
                   @if (showSource()) {
-                    <td class="px-2 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap text-xs">
+                    <td
+                      class="px-2 py-2 text-gray-500 dark:text-gray-400 whitespace-nowrap text-xs"
+                    >
                       {{ entry.source || '-' }}
                     </td>
                   }
@@ -142,7 +166,9 @@ import { LogEntry, LogFilter } from './native.types';
       </div>
 
       <!-- Status bar -->
-      <div class="flex items-center justify-between px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-b-lg">
+      <div
+        class="flex items-center justify-between px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-b-lg"
+      >
         <span>{{ filteredEntries().length }} / {{ entries().length }} entries</span>
         <span>
           @if (autoScroll()) {
@@ -171,7 +197,9 @@ export class TwLogViewerComponent {
 
   // State
   protected readonly searchQuery = signal('');
-  protected readonly activeLevels = signal<Set<LogEntry['level']>>(new Set(['debug', 'info', 'warn', 'error', 'fatal']));
+  protected readonly activeLevels = signal<Set<LogEntry['level']>>(
+    new Set(['debug', 'info', 'warn', 'error', 'fatal'])
+  );
   protected readonly autoScroll = signal(true);
   protected readonly selectedEntry = signal<LogEntry | null>(null);
 
@@ -270,4 +298,3 @@ export class TwLogViewerComponent {
     this.exportClick.emit(this.filteredEntries());
   }
 }
-

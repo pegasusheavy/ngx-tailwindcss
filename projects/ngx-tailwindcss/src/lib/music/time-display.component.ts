@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  inject,
-  input,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -154,21 +148,14 @@ export class TwTimeDisplayComponent {
       );
     }
     if (isSeparator) {
-      return this.twClass.merge(
-        baseClasses,
-        'text-emerald-400/70 mx-0.5'
-      );
+      return this.twClass.merge(baseClasses, 'text-emerald-400/70 mx-0.5');
     }
     return this.twClass.merge(baseClasses, 'text-emerald-400/50');
   }
 
   protected readonly digitalClasses = computed(() => {
     const size = this.sizeConfig();
-    return this.twClass.merge(
-      'font-mono font-bold relative',
-      size.led,
-      'text-amber-400'
-    );
+    return this.twClass.merge('font-mono font-bold relative', size.led, 'text-amber-400');
   });
 
   protected readonly flipCardClasses = computed(() => {
@@ -181,10 +168,7 @@ export class TwTimeDisplayComponent {
 
   protected readonly separatorClasses = computed(() => {
     const size = this.sizeConfig();
-    return this.twClass.merge(
-      'text-slate-500 font-bold',
-      size.flip
-    );
+    return this.twClass.merge('text-slate-500 font-bold', size.flip);
   });
 
   protected readonly defaultClasses = computed(() => {
@@ -222,7 +206,3 @@ export class TwTimeDisplayComponent {
     return result;
   }
 }
-
-
-
-

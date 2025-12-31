@@ -19,7 +19,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent, Subject, debounceTime } from 'rxjs';
 
 import { TwStaffComponent, ClefType, KeySignature, StaffTimeSignature } from './staff.component';
-import { TwNoteComponent, NoteDuration, NoteAccidental, NoteName, NoteData } from './note.component';
+import {
+  TwNoteComponent,
+  NoteDuration,
+  NoteAccidental,
+  NoteName,
+  NoteData,
+} from './note.component';
 
 export type Voice = 1 | 2 | 3 | 4;
 
@@ -54,7 +60,20 @@ export interface ClipboardData {
 
 // MIDI note number to note name mapping
 const MIDI_NOTE_NAMES: NoteName[] = ['C', 'C', 'D', 'D', 'E', 'F', 'F', 'G', 'G', 'A', 'A', 'B'];
-const MIDI_NOTE_ACCIDENTALS: (NoteAccidental | null)[] = [null, 'sharp', null, 'sharp', null, null, 'sharp', null, 'sharp', null, 'sharp', null];
+const MIDI_NOTE_ACCIDENTALS: (NoteAccidental | null)[] = [
+  null,
+  'sharp',
+  null,
+  'sharp',
+  null,
+  null,
+  'sharp',
+  null,
+  'sharp',
+  null,
+  'sharp',
+  null,
+];
 
 // Keyboard shortcuts for note durations
 const DURATION_SHORTCUTS: Record<string, NoteDuration> = {
@@ -68,13 +87,13 @@ const DURATION_SHORTCUTS: Record<string, NoteDuration> = {
 
 // Keyboard shortcuts for note names
 const NOTE_SHORTCUTS: Record<string, NoteName> = {
-  'c': 'C',
-  'd': 'D',
-  'e': 'E',
-  'f': 'F',
-  'g': 'G',
-  'a': 'A',
-  'b': 'B',
+  c: 'C',
+  d: 'D',
+  e: 'E',
+  f: 'F',
+  g: 'G',
+  a: 'A',
+  b: 'B',
 };
 
 @Component({
@@ -132,7 +151,14 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
   protected readonly currentAccidental = signal<NoteAccidental>(null);
   protected readonly isDotted = signal(false);
   protected readonly isRest = signal(false);
-  protected readonly hoverPosition = signal<{ x: number; y: number; note: NoteName; octave: number; measure: number; beat: number } | null>(null);
+  protected readonly hoverPosition = signal<{
+    x: number;
+    y: number;
+    note: NoteName;
+    octave: number;
+    measure: number;
+    beat: number;
+  } | null>(null);
   protected readonly isDragging = signal(false);
   protected readonly draggedNote = signal<PlacedNote | null>(null);
   protected readonly clipboard = signal<ClipboardData | null>(null);
@@ -260,7 +286,16 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     this.hoverPosition.set(null);
   }
 
-  private getPositionFromEvent(event: MouseEvent): { x: number; y: number; note: NoteName; octave: number; measure: number; beat: number } | null {
+  private getPositionFromEvent(
+    event: MouseEvent
+  ): {
+    x: number;
+    y: number;
+    note: NoteName;
+    octave: number;
+    measure: number;
+    beat: number;
+  } | null {
     const container = this.staffContainer()?.nativeElement;
     if (!container) return null;
 
@@ -307,7 +342,22 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     const position = (y - staffTop) / (spacing / 2);
 
     // Map position to note (treble clef: F5 at top)
-    const noteNames: NoteName[] = ['F', 'E', 'D', 'C', 'B', 'A', 'G', 'F', 'E', 'D', 'C', 'B', 'A', 'G'];
+    const noteNames: NoteName[] = [
+      'F',
+      'E',
+      'D',
+      'C',
+      'B',
+      'A',
+      'G',
+      'F',
+      'E',
+      'D',
+      'C',
+      'B',
+      'A',
+      'G',
+    ];
     const octaves = [5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3];
 
     const index = Math.round(position);
@@ -319,7 +369,13 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     };
   }
 
-  private placeNote(position: { x: number; note: NoteName; octave: number; measure: number; beat: number }): void {
+  private placeNote(position: {
+    x: number;
+    note: NoteName;
+    octave: number;
+    measure: number;
+    beat: number;
+  }): void {
     const newNote: PlacedNote = {
       id: `note-${this.noteIdCounter++}`,
       name: position.note,
@@ -371,7 +427,13 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     document.addEventListener('mouseup', onMouseUp);
   }
 
-  private updateDraggedNotePosition(position: { x: number; note: NoteName; octave: number; measure: number; beat: number }): void {
+  private updateDraggedNotePosition(position: {
+    x: number;
+    note: NoteName;
+    octave: number;
+    measure: number;
+    beat: number;
+  }): void {
     const dragged = this.draggedNote();
     if (!dragged) return;
 
@@ -394,9 +456,7 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
 
       const previousState = this.notes().find(n => n.id === dragged.id);
 
-      this.notes.update(notes =>
-        notes.map(n => n.id === dragged.id ? dragged : n)
-      );
+      this.notes.update(notes => notes.map(n => (n.id === dragged.id ? dragged : n)));
 
       this.noteMoved.emit({
         type: 'move',
@@ -573,9 +633,9 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
       this.midiConnected.set(true);
 
       const inputs = this.midiAccess.inputs;
-      inputs.forEach((input) => {
+      inputs.forEach(input => {
         this.midiDeviceName.set(input.name ?? 'Unknown MIDI Device');
-        input.onmidimessage = (event) => this.handleMidiMessage(event as MIDIMessageEvent);
+        input.onmidimessage = event => this.handleMidiMessage(event as MIDIMessageEvent);
       });
 
       // Listen for device changes
@@ -594,10 +654,10 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     const inputs = this.midiAccess.inputs;
     let hasInputs = false;
 
-    inputs.forEach((input) => {
+    inputs.forEach(input => {
       hasInputs = true;
       this.midiDeviceName.set(input.name ?? 'Unknown MIDI Device');
-      input.onmidimessage = (event) => this.handleMidiMessage(event as MIDIMessageEvent);
+      input.onmidimessage = event => this.handleMidiMessage(event as MIDIMessageEvent);
     });
 
     if (!hasInputs) {
@@ -639,7 +699,11 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     }
   }
 
-  private midiNoteToNote(midiNote: number): { note: NoteName; octave: number; accidental: NoteAccidental } {
+  private midiNoteToNote(midiNote: number): {
+    note: NoteName;
+    octave: number;
+    accidental: NoteAccidental;
+  } {
     const noteIndex = midiNote % 12;
     const octave = Math.floor(midiNote / 12) - 1;
 
@@ -656,13 +720,13 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
       return this.contentStartX() + 20;
     }
 
-    const lastNote = allNotes.reduce((prev, curr) => curr.x > prev.x ? curr : prev);
+    const lastNote = allNotes.reduce((prev, curr) => (curr.x > prev.x ? curr : prev));
     return lastNote.x + this.measureWidth() / this.gridDivision();
   }
 
   private disconnectMidi(): void {
     if (this.midiAccess) {
-      this.midiAccess.inputs.forEach((input) => {
+      this.midiAccess.inputs.forEach(input => {
         input.onmidimessage = null;
       });
       this.midiAccess = null;
@@ -750,10 +814,12 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     const allNotes = this.notes();
     const threshold = this.lineSpacing() * 0.8;
 
-    return allNotes.find(note => {
-      const noteY = this.noteToY(note.name, note.octave);
-      return Math.abs(note.x - x) < threshold && Math.abs(noteY - y) < threshold;
-    }) ?? null;
+    return (
+      allNotes.find(note => {
+        const noteY = this.noteToY(note.name, note.octave);
+        return Math.abs(note.x - x) < threshold && Math.abs(noteY - y) < threshold;
+      }) ?? null
+    );
   }
 
   protected noteToY(name: NoteName, octave: number): number {
@@ -762,7 +828,13 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
 
     // Map note to position (treble clef)
     const notePositions: Record<NoteName, number> = {
-      'F': 0, 'E': 1, 'D': 2, 'C': 3, 'B': 4, 'A': 5, 'G': 6,
+      F: 0,
+      E: 1,
+      D: 2,
+      C: 3,
+      B: 4,
+      A: 5,
+      G: 6,
     };
 
     const basePosition = notePositions[name];
@@ -841,7 +913,9 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
         }
 
         // Calculate new X position
-        const newX = this.contentStartX() + newMeasure * this.measureWidth() +
+        const newX =
+          this.contentStartX() +
+          newMeasure * this.measureWidth() +
           (newBeat / grid) * this.measureWidth();
 
         return {
@@ -922,4 +996,3 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     this.isRest.set(rest);
   }
 }
-

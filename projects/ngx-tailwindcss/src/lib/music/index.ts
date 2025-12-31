@@ -149,7 +149,4 @@ export const TW_MUSIC_COMPONENTS = [
 ] as const;
 
 // Convenience array for directives only
-export const TW_MUSIC_DIRECTIVES = [
-  TwTouchGuardDirective,
-  TwMidiLearnDirective,
-] as const;
+export const TW_MUSIC_DIRECTIVES = [TwTouchGuardDirective, TwMidiLearnDirective] as const;

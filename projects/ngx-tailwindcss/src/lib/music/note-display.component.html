@@ -45,11 +45,13 @@
               [class.bg-blue-500]="i < 0 && centsPosition() <= 50 + i * 10"
               [class.bg-green-500]="i === 0 && isInTune()"
               [class.bg-amber-500]="i > 0 && centsPosition() >= 50 + i * 10"
-              [class.bg-slate-700]="!(
-                (i < 0 && centsPosition() <= 50 + i * 10) ||
-                (i === 0 && isInTune()) ||
-                (i > 0 && centsPosition() >= 50 + i * 10)
-              )"
+              [class.bg-slate-700]="
+                !(
+                  (i < 0 && centsPosition() <= 50 + i * 10) ||
+                  (i === 0 && isInTune()) ||
+                  (i > 0 && centsPosition() >= 50 + i * 10)
+                )
+              "
               [class.h-3]="i === 0"
             ></div>
           }
@@ -91,7 +93,7 @@
             [class.bg-blue-600]="i === 0"
             [class.text-slate-300]="i > 0"
             [class.text-white]="i === 0"
-            [style.opacity]="1 - (i * 0.1)"
+            [style.opacity]="1 - i * 0.1"
           >
             {{ entry.note.replace('#', '♯') }}{{ entry.octave }}
           </div>
@@ -102,12 +104,6 @@
 
   <!-- No Note State -->
   @if (!currentNote()) {
-    <div class="text-slate-500 text-sm">
-      Waiting for input...
-    </div>
+    <div class="text-slate-500 text-sm">Waiting for input...</div>
   }
 </div>
-
-
-
-

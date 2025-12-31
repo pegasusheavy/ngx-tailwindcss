@@ -2,7 +2,12 @@ import { Component, DebugElement, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TimelineAlign, TimelineEvent, TimelineLayout, TwTimelineComponent } from './timeline.component';
+import {
+  TimelineAlign,
+  TimelineEvent,
+  TimelineLayout,
+  TwTimelineComponent,
+} from './timeline.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
@@ -21,9 +26,27 @@ import { TwClassService } from '../core/tw-class.service';
 class TestHostComponent {
   @ViewChild(TwTimelineComponent) timeline!: TwTimelineComponent;
   events = signal<TimelineEvent[]>([
-    { id: '1', title: 'Event 1', description: 'Description 1', date: '2024-01-01', color: 'primary' },
-    { id: '2', title: 'Event 2', description: 'Description 2', date: '2024-02-01', color: 'success' },
-    { id: '3', title: 'Event 3', description: 'Description 3', date: '2024-03-01', color: 'warning' },
+    {
+      id: '1',
+      title: 'Event 1',
+      description: 'Description 1',
+      date: '2024-01-01',
+      color: 'primary',
+    },
+    {
+      id: '2',
+      title: 'Event 2',
+      description: 'Description 2',
+      date: '2024-02-01',
+      color: 'success',
+    },
+    {
+      id: '3',
+      title: 'Event 3',
+      description: 'Description 3',
+      date: '2024-03-01',
+      color: 'warning',
+    },
   ]);
   layout = signal<TimelineLayout>('vertical');
   align = signal<TimelineAlign>('left');
@@ -147,27 +170,21 @@ describe('TwTimelineComponent', () => {
     });
 
     it('should apply danger color', () => {
-      component.events.set([
-        { id: '1', title: 'Event', color: 'danger' },
-      ]);
+      component.events.set([{ id: '1', title: 'Event', color: 'danger' }]);
       fixture.detectChanges();
       const markers = timelineEl.queryAll(By.css('.rounded-full'));
       expect(markers[0].nativeElement.className).toContain('bg-rose-600');
     });
 
     it('should apply info color', () => {
-      component.events.set([
-        { id: '1', title: 'Event', color: 'info' },
-      ]);
+      component.events.set([{ id: '1', title: 'Event', color: 'info' }]);
       fixture.detectChanges();
       const markers = timelineEl.queryAll(By.css('.rounded-full'));
       expect(markers[0].nativeElement.className).toContain('bg-cyan-600');
     });
 
     it('should apply secondary color', () => {
-      component.events.set([
-        { id: '1', title: 'Event', color: 'secondary' },
-      ]);
+      component.events.set([{ id: '1', title: 'Event', color: 'secondary' }]);
       fixture.detectChanges();
       const markers = timelineEl.queryAll(By.css('.rounded-full'));
       expect(markers[0].nativeElement.className).toContain('bg-slate-600');

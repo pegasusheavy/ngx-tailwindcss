@@ -268,12 +268,14 @@ describe('TwSliderComponent with NgModel', () => {
 
   it('should bind with ngModel', async () => {
     await fixture.whenStable();
-    const input = fixture.debugElement.query(By.css('input[type="range"]')).nativeElement as HTMLInputElement;
+    const input = fixture.debugElement.query(By.css('input[type="range"]'))
+      .nativeElement as HTMLInputElement;
     expect(input.value).toBe('50');
   });
 
   it('should update ngModel on change', async () => {
-    const input = fixture.debugElement.query(By.css('input[type="range"]')).nativeElement as HTMLInputElement;
+    const input = fixture.debugElement.query(By.css('input[type="range"]'))
+      .nativeElement as HTMLInputElement;
     input.value = '75';
     input.dispatchEvent(new Event('change'));
     fixture.detectChanges();
@@ -298,12 +300,14 @@ describe('TwSliderComponent with FormControl', () => {
   });
 
   it('should bind with FormControl', () => {
-    const input = fixture.debugElement.query(By.css('input[type="range"]')).nativeElement as HTMLInputElement;
+    const input = fixture.debugElement.query(By.css('input[type="range"]'))
+      .nativeElement as HTMLInputElement;
     expect(input.value).toBe('25');
   });
 
   it('should update FormControl on change', () => {
-    const input = fixture.debugElement.query(By.css('input[type="range"]')).nativeElement as HTMLInputElement;
+    const input = fixture.debugElement.query(By.css('input[type="range"]'))
+      .nativeElement as HTMLInputElement;
     input.value = '60';
     input.dispatchEvent(new Event('change'));
     fixture.detectChanges();
@@ -313,7 +317,8 @@ describe('TwSliderComponent with FormControl', () => {
   it('should disable slider when FormControl is disabled', () => {
     component.control.disable();
     fixture.detectChanges();
-    const input = fixture.debugElement.query(By.css('input[type="range"]')).nativeElement as HTMLInputElement;
+    const input = fixture.debugElement.query(By.css('input[type="range"]'))
+      .nativeElement as HTMLInputElement;
     expect(input.disabled).toBe(true);
   });
 });

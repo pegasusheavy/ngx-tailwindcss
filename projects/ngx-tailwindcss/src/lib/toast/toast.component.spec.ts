@@ -6,7 +6,7 @@ import {
   TwToastComponent,
   TwToastContainerComponent,
   TwToastService,
-  ToastVariant
+  ToastVariant,
 } from './toast.component';
 
 @Component({
@@ -240,8 +240,8 @@ describe('TwToastComponent', () => {
       fixture.detectChanges();
       const buttons = toastEl.querySelectorAll('button');
       // Check if there's no standalone dismiss button (action button might exist)
-      const dismissBtns = Array.from(buttons).filter(b =>
-        !b.className.includes('action') && b.textContent?.trim() === ''
+      const dismissBtns = Array.from(buttons).filter(
+        b => !b.className.includes('action') && b.textContent?.trim() === ''
       );
       expect(dismissBtns.length).toBe(0);
     });

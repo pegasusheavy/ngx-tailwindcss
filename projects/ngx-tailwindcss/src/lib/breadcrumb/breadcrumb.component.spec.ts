@@ -6,11 +6,7 @@ import { TwBreadcrumbComponent, BreadcrumbItem, BreadcrumbSeparator } from './br
 
 @Component({
   template: `
-    <tw-breadcrumb
-      [items]="items()"
-      [separator]="separator()"
-      [size]="size()"
-    ></tw-breadcrumb>
+    <tw-breadcrumb [items]="items()" [separator]="separator()" [size]="size()"></tw-breadcrumb>
   `,
   standalone: true,
   imports: [TwBreadcrumbComponent],

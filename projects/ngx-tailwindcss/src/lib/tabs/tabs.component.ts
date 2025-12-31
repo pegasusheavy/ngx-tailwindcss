@@ -34,7 +34,8 @@ const TABS_VARIANTS: Record<TabsVariant, { list: string; tab: string; activeTab:
   enclosed: {
     list: 'border-b border-slate-200 dark:border-slate-700 gap-1',
     tab: 'border border-transparent rounded-t-lg -mb-px text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800',
-    activeTab: 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 border-b-white dark:border-b-slate-800 text-slate-900 dark:text-slate-100',
+    activeTab:
+      'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 border-b-white dark:border-b-slate-800 text-slate-900 dark:text-slate-100',
   },
   pills: {
     list: 'gap-2',

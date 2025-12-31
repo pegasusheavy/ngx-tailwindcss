@@ -169,8 +169,8 @@ export class AudioWorkerService implements OnDestroy {
         this.handleResponse(event.data);
       };
 
-      this.worker.onerror = (error) => {
-        this._errorCount.update((n) => n + 1);
+      this.worker.onerror = error => {
+        this._errorCount.update(n => n + 1);
         this._lastError.set(error.message || 'Worker error');
         console.error('Audio worker error:', error);
       };
@@ -289,7 +289,9 @@ export class AudioWorkerService implements OnDestroy {
    * @param options Conversion options
    * @returns Converted frequencies
    */
-  async convertFrequencies(options: FrequencyConversionOptions): Promise<FrequencyConversionResult> {
+  async convertFrequencies(
+    options: FrequencyConversionOptions
+  ): Promise<FrequencyConversionResult> {
     return this.sendMessage('convertFrequencies', options);
   }
 
@@ -303,7 +305,7 @@ export class AudioWorkerService implements OnDestroy {
    * @returns Array of results
    */
   async processFFTBatch(frames: FFTProcessOptions[]): Promise<FFTProcessResult[]> {
-    return Promise.all(frames.map((frame) => this.processFFT(frame)));
+    return Promise.all(frames.map(frame => this.processFFT(frame)));
   }
 
   /**
@@ -355,7 +357,7 @@ export class AudioWorkerService implements OnDestroy {
     return new Promise<T>((resolve, reject) => {
       const timeoutId = setTimeout(() => {
         this.pendingRequests.delete(id);
-        this._pendingCount.update((n) => Math.max(0, n - 1));
+        this._pendingCount.update(n => Math.max(0, n - 1));
         reject(new Error(`Worker request timeout: ${type}`));
       }, this.config.timeout);
 
@@ -366,7 +368,7 @@ export class AudioWorkerService implements OnDestroy {
         timestamp: Date.now(),
       });
 
-      this._pendingCount.update((n) => n + 1);
+      this._pendingCount.update(n => n + 1);
 
       const message: WorkerMessage = { id, type, data };
       this.worker!.postMessage(message);
@@ -379,10 +381,10 @@ export class AudioWorkerService implements OnDestroy {
 
     clearTimeout(pending.timeoutId);
     this.pendingRequests.delete(response.id);
-    this._pendingCount.update((n) => Math.max(0, n - 1));
+    this._pendingCount.update(n => Math.max(0, n - 1));
 
     if (response.error) {
-      this._errorCount.update((n) => n + 1);
+      this._errorCount.update(n => n + 1);
       this._lastError.set(response.error);
       pending.reject(new Error(response.error));
     } else {
@@ -439,4 +441,3 @@ export type {
   FrequencyConversionOptions,
   FrequencyConversionResult,
 };
-

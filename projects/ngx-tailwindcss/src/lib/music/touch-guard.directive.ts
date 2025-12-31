@@ -1,12 +1,4 @@
-import {
-  Directive,
-  ElementRef,
-  inject,
-  input,
-  OnDestroy,
-  OnInit,
-  output,
-} from '@angular/core';
+import { Directive, ElementRef, inject, input, OnDestroy, OnInit, output } from '@angular/core';
 import { MobileSupportService, TouchGuardConfig } from './mobile-support.service';
 
 /**
@@ -131,7 +123,10 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
       if (!this.isDragging && this.mobileSupport.validateDragDistance(e, this.minDragDistance())) {
         this.isDragging = true;
 
-        if (this.getConfig().cooldownMs && !this.mobileSupport.shouldAllowAction(this.getConfig())) {
+        if (
+          this.getConfig().cooldownMs &&
+          !this.mobileSupport.shouldAllowAction(this.getConfig())
+        ) {
           return;
         }
 
@@ -249,4 +244,3 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
     };
   }
 }
-

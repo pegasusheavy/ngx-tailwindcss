@@ -122,8 +122,7 @@ function processFFT(options: FFTProcessOptions): FFTProcessResult {
   if (previousData && previousData.length === processedData.length) {
     for (let i = 0; i < processedData.length; i++) {
       processedData[i] =
-        smoothingFactor * (previousData[i] as number) +
-        (1 - smoothingFactor) * processedData[i];
+        smoothingFactor * (previousData[i] as number) + (1 - smoothingFactor) * processedData[i];
     }
   }
 
@@ -474,7 +473,11 @@ function smoothData(options: SmoothDataOptions): SmoothDataResult {
     for (let i = 0; i < data.length; i++) {
       let sum = 0;
       let count = 0;
-      for (let j = Math.max(0, i - halfWindow); j <= Math.min(data.length - 1, i + halfWindow); j++) {
+      for (
+        let j = Math.max(0, i - halfWindow);
+        j <= Math.min(data.length - 1, i + halfWindow);
+        j++
+      ) {
         sum += data[j];
         count++;
       }
@@ -541,7 +544,7 @@ export interface FrequencyConversionResult {
 function convertFrequencies(options: FrequencyConversionOptions): FrequencyConversionResult {
   const { bins, sampleRate, fftSize, toHz = true } = options;
 
-  const frequencies = bins.map((val) => {
+  const frequencies = bins.map(val => {
     if (toHz) {
       return (val * sampleRate) / fftSize;
     } else {
@@ -659,4 +662,3 @@ self.onmessage=function(e){
 
 // Export types and the message handler for testing
 export { handleMessage };
-

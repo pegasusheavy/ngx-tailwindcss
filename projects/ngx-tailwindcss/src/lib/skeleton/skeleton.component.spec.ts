@@ -7,7 +7,7 @@ import {
   TwSkeletonTextComponent,
   TwSkeletonCardComponent,
   TwSkeletonTableComponent,
-  SkeletonVariant
+  SkeletonVariant,
 } from './skeleton.component';
 
 @Component({
@@ -72,10 +72,7 @@ class CardTestComponent {
 
 @Component({
   template: `
-    <tw-skeleton-table
-      [rowCount]="rowCount()"
-      [columnCount]="columnCount()"
-    ></tw-skeleton-table>
+    <tw-skeleton-table [rowCount]="rowCount()" [columnCount]="columnCount()"></tw-skeleton-table>
   `,
   standalone: true,
   imports: [TwSkeletonTableComponent],

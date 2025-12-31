@@ -15,7 +15,9 @@
 
   <div [class]="sliderContainerClasses()">
     @if (showMinMax()) {
-      <span class="text-xs text-slate-500 mr-3 tabular-nums min-w-6">{{ valueFormat()(min()) }}</span>
+      <span class="text-xs text-slate-500 mr-3 tabular-nums min-w-6">{{
+        valueFormat()(min())
+      }}</span>
     }
 
     <div class="relative flex-1">

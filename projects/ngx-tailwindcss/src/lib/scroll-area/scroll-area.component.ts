@@ -38,7 +38,8 @@ export type ScrollAreaScrollbar = 'auto' | 'always' | 'hover' | 'hidden';
       [style.height]="height"
       [style.maxHeight]="maxHeight"
       [style.width]="width"
-      [style.maxWidth]="maxWidth">
+      [style.maxWidth]="maxWidth"
+    >
       <ng-content></ng-content>
     </div>
   `,
@@ -211,4 +212,3 @@ export class TwScrollAreaComponent {
     }
   }
 }
-

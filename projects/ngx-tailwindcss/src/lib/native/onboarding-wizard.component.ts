@@ -18,7 +18,9 @@ export interface OnboardingStep {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
 
-        <div class="relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+        <div
+          class="relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden"
+        >
           <!-- Progress -->
           <div class="absolute top-0 left-0 right-0 h-1 bg-slate-200 dark:bg-slate-700">
             <div
@@ -48,9 +50,21 @@ export interface OnboardingStep {
                     class="mx-auto max-h-48 mb-6"
                   />
                 } @else {
-                  <div class="mx-auto w-24 h-24 mb-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                    <svg class="w-12 h-12 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  <div
+                    class="mx-auto w-24 h-24 mb-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center"
+                  >
+                    <svg
+                      class="w-12 h-12 text-blue-600 dark:text-blue-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
                     </svg>
                   </div>
                 }
@@ -86,7 +100,9 @@ export interface OnboardingStep {
           </div>
 
           <!-- Navigation -->
-          <div class="flex justify-between px-8 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
+          <div
+            class="flex justify-between px-8 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700"
+          >
             <button
               (click)="previous()"
               [disabled]="currentIndex() === 0"
@@ -122,7 +138,9 @@ export interface OnboardingStep {
                   (change)="dontShowAgain.set($any($event.target).checked)"
                   class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
-                <span class="text-sm text-slate-600 dark:text-slate-400">Don't show this again</span>
+                <span class="text-sm text-slate-600 dark:text-slate-400"
+                  >Don't show this again</span
+                >
               </label>
             </div>
           }
@@ -204,4 +222,3 @@ export class TwOnboardingWizardComponent {
     this.close();
   }
 }
-

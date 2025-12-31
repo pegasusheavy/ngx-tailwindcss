@@ -10,7 +10,13 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwStaffComponent, ClefType, KeySignature, StaffTimeSignature } from './staff.component';
-import { TwNoteComponent, NoteData, NoteName, NoteDuration, NoteAccidental } from './note.component';
+import {
+  TwNoteComponent,
+  NoteData,
+  NoteName,
+  NoteDuration,
+  NoteAccidental,
+} from './note.component';
 
 export type SheetMusicVariant = 'default' | 'printed' | 'handwritten' | 'minimal';
 export type SheetMusicLayout = 'scroll' | 'pages' | 'single';
@@ -127,7 +133,7 @@ export function parseMusicXML(xmlString: string): SheetMusicData | null {
 
       // Parse notes
       const noteElements = measureEl.querySelectorAll('note');
-      noteElements.forEach((noteEl) => {
+      noteElements.forEach(noteEl => {
         // Skip rest for now (could add rest support)
         const isRest = noteEl.querySelector('rest') !== null;
         if (isRest) return;
@@ -140,13 +146,15 @@ export function parseMusicXML(xmlString: string): SheetMusicData | null {
         const pitch = noteEl.querySelector('pitch');
         if (!pitch) return;
 
-        const step = pitch.querySelector('step')?.textContent as NoteName || 'C';
+        const step = (pitch.querySelector('step')?.textContent as NoteName) || 'C';
         const octave = parseInt(pitch.querySelector('octave')?.textContent || '4', 10);
         const alter = parseInt(pitch.querySelector('alter')?.textContent || '0', 10);
 
         // Duration
         const durationEl = noteEl.querySelector('duration');
-        const duration = durationEl ? parseInt(durationEl.textContent || '1', 10) : currentDivisions;
+        const duration = durationEl
+          ? parseInt(durationEl.textContent || '1', 10)
+          : currentDivisions;
         const type = noteEl.querySelector('type')?.textContent || 'quarter';
 
         // Accidental
@@ -206,13 +214,39 @@ function fifthsToKeySignature(fifths: number, mode: string): KeySignature {
   // Key signatures based on circle of fifths
   // Positive = sharps, Negative = flats
   const majorKeys: Record<number, KeySignature> = {
-    [-7]: 'Cb', [-6]: 'Gb', [-5]: 'Db', [-4]: 'Ab', [-3]: 'Eb', [-2]: 'Bb', [-1]: 'F',
-    [0]: 'C', [1]: 'G', [2]: 'D', [3]: 'A', [4]: 'E', [5]: 'B', [6]: 'F#', [7]: 'C#',
+    [-7]: 'Cb',
+    [-6]: 'Gb',
+    [-5]: 'Db',
+    [-4]: 'Ab',
+    [-3]: 'Eb',
+    [-2]: 'Bb',
+    [-1]: 'F',
+    [0]: 'C',
+    [1]: 'G',
+    [2]: 'D',
+    [3]: 'A',
+    [4]: 'E',
+    [5]: 'B',
+    [6]: 'F#',
+    [7]: 'C#',
   };
   // Minor keys - map to relative major's key signature
   const minorToMajor: Record<number, KeySignature> = {
-    [-7]: 'Cb', [-6]: 'Gb', [-5]: 'Db', [-4]: 'Ab', [-3]: 'Eb', [-2]: 'Bb', [-1]: 'F',
-    [0]: 'C', [1]: 'G', [2]: 'D', [3]: 'A', [4]: 'E', [5]: 'B', [6]: 'F#', [7]: 'C#',
+    [-7]: 'Cb',
+    [-6]: 'Gb',
+    [-5]: 'Db',
+    [-4]: 'Ab',
+    [-3]: 'Eb',
+    [-2]: 'Bb',
+    [-1]: 'F',
+    [0]: 'C',
+    [1]: 'G',
+    [2]: 'D',
+    [3]: 'A',
+    [4]: 'E',
+    [5]: 'B',
+    [6]: 'F#',
+    [7]: 'C#',
   };
 
   // For minor keys, we use the same key signature as the relative major
@@ -223,10 +257,10 @@ function fifthsToKeySignature(fifths: number, mode: string): KeySignature {
 
 function musicXMLTypeToDuration(type: string): NoteDuration {
   const mapping: Record<string, NoteDuration> = {
-    'whole': 'whole',
-    'half': 'half',
-    'quarter': 'quarter',
-    'eighth': 'eighth',
+    whole: 'whole',
+    half: 'half',
+    quarter: 'quarter',
+    eighth: 'eighth',
     '16th': 'sixteenth',
     '32nd': 'thirtysecond',
   };
@@ -334,8 +368,21 @@ function abcKeyToKeySignature(key: string): KeySignature {
 
   // Map to KeySignature
   const keyMap: Record<string, KeySignature> = {
-    'C': 'C', 'G': 'G', 'D': 'D', 'A': 'A', 'E': 'E', 'B': 'B', 'F#': 'F#', 'C#': 'C#',
-    'F': 'F', 'Bb': 'Bb', 'Eb': 'Eb', 'Ab': 'Ab', 'Db': 'Db', 'Gb': 'Gb', 'Cb': 'Cb',
+    C: 'C',
+    G: 'G',
+    D: 'D',
+    A: 'A',
+    E: 'E',
+    B: 'B',
+    'F#': 'F#',
+    'C#': 'C#',
+    F: 'F',
+    Bb: 'Bb',
+    Eb: 'Eb',
+    Ab: 'Ab',
+    Db: 'Db',
+    Gb: 'Gb',
+    Cb: 'Cb',
   };
 
   return keyMap[keyLetter] || 'C';
@@ -505,7 +552,14 @@ function parseABCNote(token: string, defaultDuration: NoteDuration): NoteData | 
 
 function abcDurationToDuration(mod: string, defaultDuration: NoteDuration): NoteDuration {
   // Duration modifiers: 2 = double, /2 = half, 3/2 = dotted, etc.
-  const durationOrder: NoteDuration[] = ['thirtysecond', 'sixteenth', 'eighth', 'quarter', 'half', 'whole'];
+  const durationOrder: NoteDuration[] = [
+    'thirtysecond',
+    'sixteenth',
+    'eighth',
+    'quarter',
+    'half',
+    'whole',
+  ];
   const defaultIndex = durationOrder.indexOf(defaultDuration);
 
   if (mod === '2') {
@@ -553,9 +607,7 @@ export const SAMPLE_MUSIC: SheetMusicData = {
       ],
     },
     {
-      notes: [
-        { name: 'C', octave: 4, duration: 'whole' },
-      ],
+      notes: [{ name: 'C', octave: 4, duration: 'whole' }],
     },
   ],
 };
@@ -689,7 +741,7 @@ export class TwSheetMusicComponent {
     const composerHeight = this.showComposer() && this.musicData().composer ? 24 : 0;
     const lineGap = 40;
 
-    return titleHeight + composerHeight + (lines * (staffH + lineGap));
+    return titleHeight + composerHeight + lines * (staffH + lineGap);
   });
 
   protected readonly containerClasses = computed(() => {
@@ -704,7 +756,9 @@ export class TwSheetMusicComponent {
     };
 
     const variantClasses: Record<SheetMusicVariant, string> = {
-      default: isPrint ? 'bg-white' : 'bg-white dark:bg-slate-100 shadow-sm border border-slate-200',
+      default: isPrint
+        ? 'bg-white'
+        : 'bg-white dark:bg-slate-100 shadow-sm border border-slate-200',
       printed: 'bg-[#FFFFF8] shadow-md print:shadow-none',
       handwritten: 'bg-[#FDF6E3] shadow-inner print:shadow-none',
       minimal: 'bg-transparent',
@@ -712,16 +766,20 @@ export class TwSheetMusicComponent {
 
     const printClasses = isPrint ? 'print:shadow-none print:border-none print:rounded-none' : '';
 
-    return [base, layoutClasses[layout], variantClasses[this.variant()], printClasses, this.classOverride()]
+    return [
+      base,
+      layoutClasses[layout],
+      variantClasses[this.variant()],
+      printClasses,
+      this.classOverride(),
+    ]
       .filter(Boolean)
       .join(' ');
   });
 
   protected readonly wrapperClasses = computed(() => {
     const isPrint = this.printFriendly();
-    return isPrint
-      ? 'sheet-music-wrapper print-mode'
-      : 'sheet-music-wrapper';
+    return isPrint ? 'sheet-music-wrapper print-mode' : 'sheet-music-wrapper';
   });
 
   protected readonly titleClasses = computed(() => {
@@ -765,7 +823,12 @@ export class TwSheetMusicComponent {
     return margin + measureInLine * measureWidth;
   }
 
-  protected getNoteX(measureIndex: number, noteIndex: number, totalNotes: number, lineIndex: number): number {
+  protected getNoteX(
+    measureIndex: number,
+    noteIndex: number,
+    totalNotes: number,
+    lineIndex: number
+  ): number {
     const measureX = this.getMeasureStartX(measureIndex, lineIndex);
     const perLine = this.measuresPerLine();
     const width = this.width();
@@ -779,7 +842,7 @@ export class TwSheetMusicComponent {
 
   protected isNoteHighlighted(measureIndex: number, noteIndex: number): boolean {
     return this.highlightedNotes().some(
-      (h) => h.measure === measureIndex && h.noteIndex === noteIndex
+      h => h.measure === measureIndex && h.noteIndex === noteIndex
     );
   }
 
@@ -815,13 +878,13 @@ export class TwSheetMusicComponent {
   protected nextPage(): void {
     const maxPage = this.totalLines() - 1;
     if (this.currentPage() < maxPage) {
-      this.currentPage.update((p) => p + 1);
+      this.currentPage.update(p => p + 1);
     }
   }
 
   protected prevPage(): void {
     if (this.currentPage() > 0) {
-      this.currentPage.update((p) => p - 1);
+      this.currentPage.update(p => p - 1);
     }
   }
 
@@ -867,7 +930,7 @@ export class TwSheetMusicComponent {
     const availableWidth = width - margin - 20;
     const measureWidth = availableWidth / perLine;
 
-    return measureX + (beatPart * measureWidth);
+    return measureX + beatPart * measureWidth;
   }
 
   protected getPlaybackLineIndex(measureIndex: number): number {
@@ -903,7 +966,3 @@ export class TwSheetMusicComponent {
 
   protected readonly Math = Math;
 }
-
-
-
-

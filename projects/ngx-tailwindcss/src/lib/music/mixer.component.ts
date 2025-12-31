@@ -24,8 +24,8 @@ export interface ChannelGroup {
   color?: string;
   collapsed?: boolean;
   linkVolume?: boolean; // When true, volume changes affect all grouped channels
-  linkMute?: boolean;   // When true, mute affects all grouped channels
-  linkSolo?: boolean;   // When true, solo affects all grouped channels
+  linkMute?: boolean; // When true, mute affects all grouped channels
+  linkSolo?: boolean; // When true, solo affects all grouped channels
 }
 
 export interface MixerSection {
@@ -60,7 +60,10 @@ export interface MixerState {
 }
 
 // Responsive breakpoint configurations
-const BREAKPOINT_CONFIGS: Record<MixerBreakpoint, { maxChannels: number; size: MixerSize; showLabels: boolean }> = {
+const BREAKPOINT_CONFIGS: Record<
+  MixerBreakpoint,
+  { maxChannels: number; size: MixerSize; showLabels: boolean }
+> = {
   xs: { maxChannels: 2, size: 'sm', showLabels: false },
   sm: { maxChannels: 4, size: 'sm', showLabels: true },
   md: { maxChannels: 6, size: 'md', showLabels: true },
@@ -71,7 +74,13 @@ const BREAKPOINT_CONFIGS: Record<MixerBreakpoint, { maxChannels: number; size: M
 @Component({
   selector: 'tw-mixer',
   standalone: true,
-  imports: [CommonModule, FormsModule, TwChannelStripComponent, TwVolumeDialComponent, TwVuMeterComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    TwChannelStripComponent,
+    TwVolumeDialComponent,
+    TwVuMeterComponent,
+  ],
   templateUrl: './mixer.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -175,7 +184,11 @@ export class TwMixerComponent {
       return [{ section: null, channels, collapsed: false }];
     }
 
-    const result: Array<{ section: MixerSection | null; channels: MixerChannel[]; collapsed: boolean }> = [];
+    const result: Array<{
+      section: MixerSection | null;
+      channels: MixerChannel[];
+      collapsed: boolean;
+    }> = [];
     const assignedIds = new Set<string>();
 
     for (const section of sectionsList) {
@@ -298,7 +311,11 @@ export class TwMixerComponent {
   }
 
   // Apply changes to linked group members
-  private applyGroupChanges(original: MixerChannel, updated: MixerChannel, group: ChannelGroup): MixerChannel[] {
+  private applyGroupChanges(
+    original: MixerChannel,
+    updated: MixerChannel,
+    group: ChannelGroup
+  ): MixerChannel[] {
     const linkedChannels: MixerChannel[] = [];
     const channels = this.channels();
 
@@ -354,14 +371,14 @@ export class TwMixerComponent {
 
   protected scrollLeft(): void {
     if (this.canScrollLeft()) {
-      this.scrollOffset.update((v) => Math.max(0, v - 1));
+      this.scrollOffset.update(v => Math.max(0, v - 1));
     }
   }
 
   protected scrollRight(): void {
     if (this.canScrollRight()) {
       const max = this.channels().length - this.effectiveMaxChannels();
-      this.scrollOffset.update((v) => Math.min(max, v + 1));
+      this.scrollOffset.update(v => Math.min(max, v + 1));
     }
   }
 
@@ -423,4 +440,3 @@ export class TwMixerComponent {
     };
   }
 }
-

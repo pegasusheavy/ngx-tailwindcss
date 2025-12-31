@@ -156,7 +156,8 @@ export class TwScrubberComponent {
 
   protected readonly progressClasses = computed(() => {
     const variant = this.variant();
-    const baseClasses = 'absolute top-0 left-0 h-full pointer-events-none transition-all duration-75';
+    const baseClasses =
+      'absolute top-0 left-0 h-full pointer-events-none transition-all duration-75';
 
     const colorClasses: Record<ScrubberVariant, string> = {
       default: 'bg-blue-500',
@@ -171,7 +172,8 @@ export class TwScrubberComponent {
 
   protected readonly thumbClasses = computed(() => {
     const variant = this.variant();
-    const baseClasses = 'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-75 pointer-events-none';
+    const baseClasses =
+      'absolute top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-75 pointer-events-none';
 
     const sizeClasses: Record<ScrubberVariant, string> = {
       default: 'w-4 h-4',
@@ -240,10 +242,7 @@ export class TwScrubberComponent {
     if (!sprite) return null;
 
     const time = pos * this.duration();
-    const frameIndex = Math.min(
-      Math.floor(time / sprite.interval),
-      sprite.totalFrames - 1
-    );
+    const frameIndex = Math.min(Math.floor(time / sprite.interval), sprite.totalFrames - 1);
 
     const col = frameIndex % sprite.columns;
     const row = Math.floor(frameIndex / sprite.columns);
@@ -329,7 +328,7 @@ export class TwScrubberComponent {
     const current = this.currentTime();
     let newTime = current;
     const smallStep = dur * 0.01; // 1%
-    const largeStep = dur * 0.1;  // 10%
+    const largeStep = dur * 0.1; // 10%
 
     switch (event.key) {
       case 'ArrowRight': {
@@ -426,10 +425,7 @@ export class TwScrubberComponent {
     time: number,
     sprite: ThumbnailSpriteConfig
   ): ScrubberThumbnail | null {
-    const frameIndex = Math.min(
-      Math.floor(time / sprite.interval),
-      sprite.totalFrames - 1
-    );
+    const frameIndex = Math.min(Math.floor(time / sprite.interval), sprite.totalFrames - 1);
 
     return {
       time: frameIndex * sprite.interval,
@@ -466,7 +462,3 @@ export class TwScrubberComponent {
     }
   }
 }
-
-
-
-

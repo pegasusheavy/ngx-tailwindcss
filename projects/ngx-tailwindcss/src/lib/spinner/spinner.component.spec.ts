@@ -2,16 +2,16 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwSpinnerComponent, TwLoadingOverlayComponent, SpinnerSize, SpinnerVariant, SpinnerColor } from './spinner.component';
+import {
+  TwSpinnerComponent,
+  TwLoadingOverlayComponent,
+  SpinnerSize,
+  SpinnerVariant,
+  SpinnerColor,
+} from './spinner.component';
 
 @Component({
-  template: `
-    <tw-spinner
-      [size]="size()"
-      [variant]="variant()"
-      [color]="color()"
-    ></tw-spinner>
-  `,
+  template: ` <tw-spinner [size]="size()" [variant]="variant()" [color]="color()"></tw-spinner> `,
   standalone: true,
   imports: [TwSpinnerComponent],
 })

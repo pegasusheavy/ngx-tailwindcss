@@ -159,7 +159,10 @@ export class TwLeadSheetComponent {
   protected readonly textClasses = computed(() => {
     const variant = this.variant();
 
-    const classes: Record<LeadSheetVariant, { title: string; subtitle: string; chord: string; section: string; rehearsal: string }> = {
+    const classes: Record<
+      LeadSheetVariant,
+      { title: string; subtitle: string; chord: string; section: string; rehearsal: string }
+    > = {
       default: {
         title: 'text-slate-900 dark:text-white',
         subtitle: 'text-slate-600 dark:text-slate-400',
@@ -264,7 +267,13 @@ export class TwLeadSheetComponent {
     if (style === 'roman') {
       // Roman numeral conversion
       const romanMap: Record<string, string> = {
-        '1': 'I', '2': 'ii', '3': 'iii', '4': 'IV', '5': 'V', '6': 'vi', '7': 'vii°',
+        '1': 'I',
+        '2': 'ii',
+        '3': 'iii',
+        '4': 'IV',
+        '5': 'V',
+        '6': 'vi',
+        '7': 'vii°',
       };
       const keyMap = NASHVILLE_MAP[key];
       if (keyMap) {
@@ -304,7 +313,7 @@ export class TwLeadSheetComponent {
     if (measure.chords.length === 0) return beatsPerMeasure;
 
     // If all chords have explicit beats, calculate slashes
-    const hasExplicitBeats = measure.chords.every((c) => c.beat !== undefined);
+    const hasExplicitBeats = measure.chords.every(c => c.beat !== undefined);
     if (hasExplicitBeats) {
       return beatsPerMeasure;
     }
@@ -429,19 +438,51 @@ export class TwLeadSheetComponent {
   protected getKeySignature(): KeySignature {
     const key = this.data()?.key || 'C';
     // Convert key string to KeySignature type
-    const validKeys: KeySignature[] = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#', 'F', 'Bb', 'Eb', 'Ab', 'Db', 'Gb', 'Cb'];
+    const validKeys: KeySignature[] = [
+      'C',
+      'G',
+      'D',
+      'A',
+      'E',
+      'B',
+      'F#',
+      'C#',
+      'F',
+      'Bb',
+      'Eb',
+      'Ab',
+      'Db',
+      'Gb',
+      'Cb',
+    ];
     return validKeys.includes(key as KeySignature) ? (key as KeySignature) : 'C';
   }
 
   // Get time signature for staff
   protected getStaffTimeSignature(): StaffTimeSignature {
     const ts = this.data()?.timeSignature || '4/4';
-    const validTimeSigs: StaffTimeSignature[] = ['2/4', '3/4', '4/4', '5/4', '6/8', '7/8', '9/8', '12/8', 'C', 'C|'];
+    const validTimeSigs: StaffTimeSignature[] = [
+      '2/4',
+      '3/4',
+      '4/4',
+      '5/4',
+      '6/8',
+      '7/8',
+      '9/8',
+      '12/8',
+      'C',
+      'C|',
+    ];
     return validTimeSigs.includes(ts as StaffTimeSignature) ? (ts as StaffTimeSignature) : '4/4';
   }
 
   // Render rhythmic slash with stem
-  protected getRhythmicSlashPath(beat: number, isAccent: boolean, measureWidth: number, beatsPerMeasure: number): string {
+  protected getRhythmicSlashPath(
+    beat: number,
+    isAccent: boolean,
+    measureWidth: number,
+    beatsPerMeasure: number
+  ): string {
     const x = ((beat - 0.5) / beatsPerMeasure) * measureWidth;
     const y = 30;
     const slashHeight = isAccent ? 16 : 12;
@@ -456,7 +497,3 @@ export class TwLeadSheetComponent {
     return `${headPath} ${stemPath}`;
   }
 }
-
-
-
-

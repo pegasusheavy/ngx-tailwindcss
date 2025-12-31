@@ -9,11 +9,7 @@ export type ActivityIndicatorSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div
-      [class]="containerClasses()"
-      role="status"
-      [attr.aria-label]="label() || 'Loading'"
-    >
+    <div [class]="containerClasses()" role="status" [attr.aria-label]="label() || 'Loading'">
       @switch (variant()) {
         @case ('spinner') {
           <svg
@@ -50,10 +46,7 @@ export type ActivityIndicatorSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
           </div>
         }
         @case ('pulse') {
-          <div
-            [class]="sizeClasses()"
-            class="rounded-full bg-current animate-pulse"
-          ></div>
+          <div [class]="sizeClasses()" class="rounded-full bg-current animate-pulse"></div>
         }
         @case ('bars') {
           <div class="flex items-end gap-0.5">
@@ -79,12 +72,20 @@ export type ActivityIndicatorSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
       }
     </div>
   `,
-  styles: [`
-    @keyframes bounce {
-      0%, 80%, 100% { transform: translateY(0); }
-      40% { transform: translateY(-50%); }
-    }
-  `],
+  styles: [
+    `
+      @keyframes bounce {
+        0%,
+        80%,
+        100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-50%);
+        }
+      }
+    `,
+  ],
 })
 export class TwActivityIndicatorComponent {
   public readonly variant = input<ActivityIndicatorVariant>('spinner');
@@ -148,4 +149,3 @@ export class TwActivityIndicatorComponent {
     return `${sizeMap[this.size()]} text-slate-600 dark:text-slate-400`;
   });
 }
-

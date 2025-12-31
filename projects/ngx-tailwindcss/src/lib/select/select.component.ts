@@ -197,7 +197,9 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
       hasError
         ? 'border-rose-500 focus:ring-rose-500 focus:border-rose-500'
         : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 dark:hover:border-slate-500',
-      this.isDisabled() ? 'opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900' : 'cursor-pointer',
+      this.isDisabled()
+        ? 'opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900'
+        : 'cursor-pointer',
       this.isOpen() ? 'ring-2 ring-blue-500 border-blue-500' : ''
     );
   });
@@ -205,7 +207,9 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   protected valueDisplayClasses = computed(() => {
     return this.twClass.merge(
       'truncate text-left',
-      this.selectedOption() ? 'text-slate-900 dark:text-slate-100' : 'text-slate-400 dark:text-slate-500'
+      this.selectedOption()
+        ? 'text-slate-900 dark:text-slate-100'
+        : 'text-slate-400 dark:text-slate-500'
     );
   });
 

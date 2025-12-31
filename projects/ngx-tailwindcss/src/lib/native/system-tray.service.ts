@@ -146,19 +146,23 @@ export class SystemTrayService {
         menuItems.push(await MenuItem.new({ id: 'separator', text: '-', enabled: false }));
       } else if (item.submenu) {
         const submenuItems = await this.buildTauriMenu(item.submenu);
-        menuItems.push(await Submenu.new({
-          id: item.id,
-          text: item.label,
-          items: submenuItems.items,
-        }));
+        menuItems.push(
+          await Submenu.new({
+            id: item.id,
+            text: item.label,
+            items: submenuItems.items,
+          })
+        );
       } else {
-        menuItems.push(await MenuItem.new({
-          id: item.id,
-          text: item.label,
-          enabled: !item.disabled,
-          accelerator: item.shortcut,
-          action: item.action,
-        }));
+        menuItems.push(
+          await MenuItem.new({
+            id: item.id,
+            text: item.label,
+            enabled: !item.disabled,
+            accelerator: item.shortcut,
+            action: item.action,
+          })
+        );
       }
     }
 

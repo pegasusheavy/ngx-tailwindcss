@@ -17,7 +17,9 @@
       text-anchor="middle"
       dominant-baseline="middle"
       class="select-none"
-    >{{ dynamicData()!.symbol }}</text>
+    >
+      {{ dynamicData()!.symbol }}
+    </text>
   }
 
   <!-- ARTICULATIONS (staccato, accent, tenuto, fermata, etc.) -->
@@ -33,19 +35,64 @@
       }
       @case ('staccatissimo') {
         <path
-          [attr.d]="'M ' + x() + ' ' + (y() - size() * 0.3) + ' L ' + (x() - size() * 0.1) + ' ' + (y() + size() * 0.15) + ' L ' + (x() + size() * 0.1) + ' ' + (y() + size() * 0.15) + ' Z'"
+          [attr.d]="
+            'M ' +
+            x() +
+            ' ' +
+            (y() - size() * 0.3) +
+            ' L ' +
+            (x() - size() * 0.1) +
+            ' ' +
+            (y() + size() * 0.15) +
+            ' L ' +
+            (x() + size() * 0.1) +
+            ' ' +
+            (y() + size() * 0.15) +
+            ' Z'
+          "
           [attr.fill]="effectiveColor()"
         />
       }
       @case ('accent') {
         <path
-          [attr.d]="'M ' + (x() - size() * 0.4) + ' ' + y() + ' L ' + (x() + size() * 0.4) + ' ' + (y() - size() * 0.2) + ' L ' + (x() + size() * 0.4) + ' ' + (y() + size() * 0.2) + ' Z'"
+          [attr.d]="
+            'M ' +
+            (x() - size() * 0.4) +
+            ' ' +
+            y() +
+            ' L ' +
+            (x() + size() * 0.4) +
+            ' ' +
+            (y() - size() * 0.2) +
+            ' L ' +
+            (x() + size() * 0.4) +
+            ' ' +
+            (y() + size() * 0.2) +
+            ' Z'
+          "
           [attr.fill]="effectiveColor()"
         />
       }
       @case ('marcato') {
         <path
-          [attr.d]="'M ' + x() + ' ' + (y() - size() * 0.35) + ' L ' + (x() - size() * 0.2) + ' ' + (y() + size() * 0.15) + ' M ' + x() + ' ' + (y() - size() * 0.35) + ' L ' + (x() + size() * 0.2) + ' ' + (y() + size() * 0.15)"
+          [attr.d]="
+            'M ' +
+            x() +
+            ' ' +
+            (y() - size() * 0.35) +
+            ' L ' +
+            (x() - size() * 0.2) +
+            ' ' +
+            (y() + size() * 0.15) +
+            ' M ' +
+            x() +
+            ' ' +
+            (y() - size() * 0.35) +
+            ' L ' +
+            (x() + size() * 0.2) +
+            ' ' +
+            (y() + size() * 0.15)
+          "
           [attr.stroke]="effectiveColor()"
           stroke-width="2"
           fill="none"
@@ -65,7 +112,7 @@
         <g [attr.transform]="'translate(' + x() + ',' + y() + ')'">
           <!-- Arc -->
           <path
-            [attr.d]="'M ' + (-size() * 0.5) + ' 0 Q 0 ' + (-size() * 0.8) + ' ' + (size() * 0.5) + ' 0'"
+            [attr.d]="'M ' + -size() * 0.5 + ' 0 Q 0 ' + -size() * 0.8 + ' ' + size() * 0.5 + ' 0'"
             [attr.stroke]="effectiveColor()"
             stroke-width="2"
             fill="none"
@@ -88,7 +135,9 @@
           font-family="serif"
           text-anchor="middle"
           class="select-none"
-        >,</text>
+        >
+          ,
+        </text>
       }
       @case ('caesura') {
         <g [attr.transform]="'translate(' + x() + ',' + y() + ')'">
@@ -119,7 +168,9 @@
           font-family="serif"
           text-anchor="middle"
           class="select-none"
-        >{{ articulationData()!.symbol }}</text>
+        >
+          {{ articulationData()!.symbol }}
+        </text>
       }
     }
   }
@@ -137,10 +188,28 @@
           font-style="italic"
           text-anchor="middle"
           class="select-none"
-        >tr</text>
+        >
+          tr
+        </text>
         <!-- Wavy line -->
         <path
-          [attr.d]="'M ' + (x() + size() * 0.4) + ' ' + y() + ' q ' + (size() * 0.15) + ' ' + (-size() * 0.15) + ' ' + (size() * 0.3) + ' 0 t ' + (size() * 0.3) + ' 0 t ' + (size() * 0.3) + ' 0'"
+          [attr.d]="
+            'M ' +
+            (x() + size() * 0.4) +
+            ' ' +
+            y() +
+            ' q ' +
+            size() * 0.15 +
+            ' ' +
+            -size() * 0.15 +
+            ' ' +
+            size() * 0.3 +
+            ' 0 t ' +
+            size() * 0.3 +
+            ' 0 t ' +
+            size() * 0.3 +
+            ' 0'
+          "
           [attr.stroke]="effectiveColor()"
           stroke-width="1.5"
           fill="none"
@@ -148,7 +217,28 @@
       }
       @case ('mordent') {
         <path
-          [attr.d]="'M ' + (x() - size() * 0.4) + ' ' + y() + ' l ' + (size() * 0.2) + ' ' + (-size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (-size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (size() * 0.3)"
+          [attr.d]="
+            'M ' +
+            (x() - size() * 0.4) +
+            ' ' +
+            y() +
+            ' l ' +
+            size() * 0.2 +
+            ' ' +
+            -size() * 0.3 +
+            ' l ' +
+            size() * 0.2 +
+            ' ' +
+            size() * 0.3 +
+            ' l ' +
+            size() * 0.2 +
+            ' ' +
+            -size() * 0.3 +
+            ' l ' +
+            size() * 0.2 +
+            ' ' +
+            size() * 0.3
+          "
           [attr.stroke]="effectiveColor()"
           stroke-width="1.5"
           fill="none"
@@ -156,7 +246,28 @@
       }
       @case ('invertedMordent') {
         <path
-          [attr.d]="'M ' + (x() - size() * 0.4) + ' ' + y() + ' l ' + (size() * 0.2) + ' ' + (size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (-size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (size() * 0.3) + ' l ' + (size() * 0.2) + ' ' + (-size() * 0.3)"
+          [attr.d]="
+            'M ' +
+            (x() - size() * 0.4) +
+            ' ' +
+            y() +
+            ' l ' +
+            size() * 0.2 +
+            ' ' +
+            size() * 0.3 +
+            ' l ' +
+            size() * 0.2 +
+            ' ' +
+            -size() * 0.3 +
+            ' l ' +
+            size() * 0.2 +
+            ' ' +
+            size() * 0.3 +
+            ' l ' +
+            size() * 0.2 +
+            ' ' +
+            -size() * 0.3
+          "
           [attr.stroke]="effectiveColor()"
           stroke-width="1.5"
           fill="none"
@@ -173,7 +284,25 @@
       }
       @case ('turn') {
         <path
-          [attr.d]="'M ' + (x() - size() * 0.5) + ' ' + (y() + size() * 0.1) + ' q ' + (size() * 0.25) + ' ' + (-size() * 0.4) + ' ' + (size() * 0.5) + ' 0 q ' + (size() * 0.25) + ' ' + (size() * 0.4) + ' ' + (size() * 0.5) + ' 0'"
+          [attr.d]="
+            'M ' +
+            (x() - size() * 0.5) +
+            ' ' +
+            (y() + size() * 0.1) +
+            ' q ' +
+            size() * 0.25 +
+            ' ' +
+            -size() * 0.4 +
+            ' ' +
+            size() * 0.5 +
+            ' 0 q ' +
+            size() * 0.25 +
+            ' ' +
+            size() * 0.4 +
+            ' ' +
+            size() * 0.5 +
+            ' 0'
+          "
           [attr.stroke]="effectiveColor()"
           stroke-width="2"
           fill="none"
@@ -181,7 +310,25 @@
       }
       @case ('invertedTurn') {
         <path
-          [attr.d]="'M ' + (x() - size() * 0.5) + ' ' + (y() - size() * 0.1) + ' q ' + (size() * 0.25) + ' ' + (size() * 0.4) + ' ' + (size() * 0.5) + ' 0 q ' + (size() * 0.25) + ' ' + (-size() * 0.4) + ' ' + (size() * 0.5) + ' 0'"
+          [attr.d]="
+            'M ' +
+            (x() - size() * 0.5) +
+            ' ' +
+            (y() - size() * 0.1) +
+            ' q ' +
+            size() * 0.25 +
+            ' ' +
+            size() * 0.4 +
+            ' ' +
+            size() * 0.5 +
+            ' 0 q ' +
+            size() * 0.25 +
+            ' ' +
+            -size() * 0.4 +
+            ' ' +
+            size() * 0.5 +
+            ' 0'
+          "
           [attr.stroke]="effectiveColor()"
           stroke-width="2"
           fill="none"
@@ -208,7 +355,20 @@
         />
         <!-- Flag -->
         <path
-          [attr.d]="'M ' + (x() + size() * 0.2) + ' ' + (y() - size() * 0.8) + ' q ' + (size() * 0.3) + ' ' + (size() * 0.2) + ' ' + (size() * 0.25) + ' ' + (size() * 0.5)"
+          [attr.d]="
+            'M ' +
+            (x() + size() * 0.2) +
+            ' ' +
+            (y() - size() * 0.8) +
+            ' q ' +
+            size() * 0.3 +
+            ' ' +
+            size() * 0.2 +
+            ' ' +
+            size() * 0.25 +
+            ' ' +
+            size() * 0.5
+          "
           [attr.stroke]="effectiveColor()"
           stroke-width="1"
           fill="none"
@@ -244,7 +404,20 @@
         />
         <!-- Flag -->
         <path
-          [attr.d]="'M ' + (x() + size() * 0.2) + ' ' + (y() - size() * 0.8) + ' q ' + (size() * 0.3) + ' ' + (size() * 0.2) + ' ' + (size() * 0.25) + ' ' + (size() * 0.5)"
+          [attr.d]="
+            'M ' +
+            (x() + size() * 0.2) +
+            ' ' +
+            (y() - size() * 0.8) +
+            ' q ' +
+            size() * 0.3 +
+            ' ' +
+            size() * 0.2 +
+            ' ' +
+            size() * 0.25 +
+            ' ' +
+            size() * 0.5
+          "
           [attr.stroke]="effectiveColor()"
           stroke-width="1"
           fill="none"
@@ -259,7 +432,9 @@
           font-family="serif"
           text-anchor="middle"
           class="select-none"
-        >{{ ornamentData()!.symbol }}</text>
+        >
+          {{ ornamentData()!.symbol }}
+        </text>
       }
     }
   }
@@ -367,7 +542,20 @@
         <g [attr.transform]="'translate(' + x() + ',' + y() + ')'">
           <!-- S-curve -->
           <path
-            [attr.d]="'M ' + (-size() * 0.35) + ' ' + (size() * 0.4) + ' Q 0 ' + (size() * 0.2) + ' 0 0 Q 0 ' + (-size() * 0.2) + ' ' + (size() * 0.35) + ' ' + (-size() * 0.4)"
+            [attr.d]="
+              'M ' +
+              -size() * 0.35 +
+              ' ' +
+              size() * 0.4 +
+              ' Q 0 ' +
+              size() * 0.2 +
+              ' 0 0 Q 0 ' +
+              -size() * 0.2 +
+              ' ' +
+              size() * 0.35 +
+              ' ' +
+              -size() * 0.4
+            "
             [attr.stroke]="effectiveColor()"
             stroke-width="2"
             fill="none"
@@ -407,7 +595,9 @@
           font-style="italic"
           text-anchor="middle"
           class="select-none"
-        >{{ repeatData()!.text || repeatData()!.symbol }}</text>
+        >
+          {{ repeatData()!.text || repeatData()!.symbol }}
+        </text>
       }
     }
   }
@@ -436,7 +626,9 @@
           font-style="italic"
           text-anchor="middle"
           class="select-none"
-        >Ped.</text>
+        >
+          Ped.
+        </text>
       }
       @case ('pedalUp') {
         <text
@@ -447,12 +639,14 @@
           font-family="serif"
           text-anchor="middle"
           class="select-none"
-        >*</text>
+        >
+          *
+        </text>
       }
       @case ('pedalSustain') {
         <!-- Sostenuto pedal bracket -->
         <path
-          [attr.d]="'M ' + x() + ' ' + y() + ' l 0 ' + (-size() * 0.3) + ' l ' + (size() * 0.8) + ' 0'"
+          [attr.d]="'M ' + x() + ' ' + y() + ' l 0 ' + -size() * 0.3 + ' l ' + size() * 0.8 + ' 0'"
           [attr.stroke]="effectiveColor()"
           stroke-width="1.5"
           fill="none"
@@ -493,7 +687,9 @@
       font-style="italic"
       text-anchor="start"
       class="select-none"
-    >{{ tempoData()!.text }}</text>
+    >
+      {{ tempoData()!.text }}
+    </text>
   }
 
   <!-- SLURS AND PHRASE MARKS -->
@@ -507,4 +703,3 @@
     />
   }
 </svg>
-

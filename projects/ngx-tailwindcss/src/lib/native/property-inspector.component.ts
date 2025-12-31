@@ -17,7 +17,9 @@ export interface PropertyItem {
   template: `
     <div class="h-full flex flex-col bg-white dark:bg-slate-900">
       <!-- Header -->
-      <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+      <div
+        class="flex items-center justify-between px-4 py-3 border-b border-slate-200 dark:border-slate-700"
+      >
         <h3 class="font-medium text-slate-900 dark:text-slate-100">{{ title() }}</h3>
         <button
           (click)="refresh.emit()"
@@ -25,7 +27,12 @@ export interface PropertyItem {
           title="Refresh"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+            />
           </svg>
         </button>
       </div>
@@ -45,7 +52,12 @@ export interface PropertyItem {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
               {{ category || 'General' }}
             </button>
@@ -53,9 +65,14 @@ export interface PropertyItem {
             @if (!collapsedCategories().has(category)) {
               <div class="pb-2">
                 @for (prop of getPropertiesByCategory(category); track prop.key) {
-                  <div class="flex items-start px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                  <div
+                    class="flex items-start px-4 py-2 hover:bg-slate-50 dark:hover:bg-slate-800/50"
+                  >
                     <div class="w-1/2 flex items-center gap-2 pr-2">
-                      <span class="text-sm text-slate-600 dark:text-slate-400 truncate" [title]="prop.key">
+                      <span
+                        class="text-sm text-slate-600 dark:text-slate-400 truncate"
+                        [title]="prop.key"
+                      >
                         {{ prop.key }}
                       </span>
                       <button
@@ -64,7 +81,12 @@ export interface PropertyItem {
                         title="Copy value"
                       >
                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -112,7 +134,11 @@ export interface PropertyItem {
                       } @else {
                         @switch (prop.type) {
                           @case ('boolean') {
-                            <span [class.text-green-600]="prop.value" [class.text-red-600]="!prop.value" class="text-sm font-mono">
+                            <span
+                              [class.text-green-600]="prop.value"
+                              [class.text-red-600]="!prop.value"
+                              class="text-sm font-mono"
+                            >
                               {{ prop.value }}
                             </span>
                           }
@@ -121,8 +147,13 @@ export interface PropertyItem {
                           }
                           @case ('color') {
                             <div class="flex items-center gap-2">
-                              <div class="w-4 h-4 rounded" [style.background-color]="prop.value"></div>
-                              <span class="text-sm font-mono text-slate-700 dark:text-slate-300">{{ prop.value }}</span>
+                              <div
+                                class="w-4 h-4 rounded"
+                                [style.background-color]="prop.value"
+                              ></div>
+                              <span class="text-sm font-mono text-slate-700 dark:text-slate-300">{{
+                                prop.value
+                              }}</span>
                             </div>
                           }
                           @case ('object') {
@@ -142,7 +173,9 @@ export interface PropertyItem {
                             </button>
                           }
                           @default {
-                            <span class="text-sm font-mono text-slate-700 dark:text-slate-300 break-all">
+                            <span
+                              class="text-sm font-mono text-slate-700 dark:text-slate-300 break-all"
+                            >
                               {{ formatValue(prop.value) }}
                             </span>
                           }
@@ -159,7 +192,12 @@ export interface PropertyItem {
         @if (properties().length === 0) {
           <div class="flex flex-col items-center justify-center py-12 text-slate-500">
             <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
             </svg>
             <p>No properties to display</p>
           </div>
@@ -221,4 +259,3 @@ export class TwPropertyInspectorComponent {
     return Array.isArray(value) ? value.length : 0;
   }
 }
-

@@ -178,4 +178,3 @@ export class TwSimpleGridComponent {
     return `repeat(auto-fit, minmax(${this.minChildWidth}, 1fr))`;
   }
 }
-

@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  signal,
-  computed,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FileTreeNode, FileTreeEvent } from './native.types';
 
@@ -25,7 +18,9 @@ import { FileTreeNode, FileTreeEvent } from './native.types';
   template: `
     <div class="text-sm select-none" role="tree" [attr.aria-label]="'File tree'">
       @for (node of nodes(); track node.id) {
-        <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: node, depth: 0 }"></ng-container>
+        <ng-container
+          *ngTemplateOutlet="nodeTemplate; context: { $implicit: node, depth: 0 }"
+        ></ng-container>
       }
     </div>
 
@@ -57,7 +52,9 @@ import { FileTreeNode, FileTreeEvent } from './native.types';
                 fill="currentColor"
                 viewBox="0 0 16 16"
               >
-                <path d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 010-1.06z"/>
+                <path
+                  d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 010-1.06z"
+                />
               </svg>
             </button>
           } @else {
@@ -71,17 +68,25 @@ import { FileTreeNode, FileTreeEvent } from './native.types';
             } @else if (node.type === 'folder') {
               @if (node.expanded) {
                 <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z" clip-rule="evenodd"/>
-                  <path d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z"/>
+                  <path
+                    fill-rule="evenodd"
+                    d="M2 6a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1H8a3 3 0 00-3 3v1.5a1.5 1.5 0 01-3 0V6z"
+                    clip-rule="evenodd"
+                  />
+                  <path d="M6 12a2 2 0 012-2h8a2 2 0 012 2v2a2 2 0 01-2 2H2h2a2 2 0 002-2v-2z" />
                 </svg>
               } @else {
                 <svg class="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+                  <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                 </svg>
               }
             } @else {
               <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/>
+                <path
+                  fill-rule="evenodd"
+                  d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"
+                  clip-rule="evenodd"
+                />
               </svg>
             }
           </span>
@@ -107,7 +112,9 @@ import { FileTreeNode, FileTreeEvent } from './native.types';
         @if (node.type === 'folder' && node.expanded && node.children?.length) {
           <div role="group">
             @for (child of node.children; track child.id) {
-              <ng-container *ngTemplateOutlet="nodeTemplate; context: { $implicit: child, depth: depth + 1 }"></ng-container>
+              <ng-container
+                *ngTemplateOutlet="nodeTemplate; context: { $implicit: child, depth: depth + 1 }"
+              ></ng-container>
             }
           </div>
         }
@@ -185,4 +192,3 @@ export class TwFileTreeComponent {
     return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
   }
 }
-

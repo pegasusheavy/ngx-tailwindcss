@@ -21,7 +21,17 @@ export interface PianoChordDefinition {
   name: string; // e.g., "C", "Am", "G7", "Dm/F"
   notes: PianoChordNote[];
   inversion?: number; // 0 = root, 1 = first, 2 = second
-  type?: 'major' | 'minor' | 'diminished' | 'augmented' | '7th' | 'maj7' | 'min7' | 'sus4' | 'sus2' | 'add9';
+  type?:
+    | 'major'
+    | 'minor'
+    | 'diminished'
+    | 'augmented'
+    | '7th'
+    | 'maj7'
+    | 'min7'
+    | 'sus4'
+    | 'sus2'
+    | 'add9';
 }
 
 // Piano chord definitions
@@ -494,7 +504,3 @@ export class TwPianoChordComponent {
     return padding + (octaveOffset + noteIndex) * whiteKeyWidth + whiteKeyWidth / 2;
   }
 }
-
-
-
-

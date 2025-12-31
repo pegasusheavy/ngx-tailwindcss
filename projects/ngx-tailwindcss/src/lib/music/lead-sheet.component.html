@@ -30,7 +30,10 @@
           }
         </p>
       }
-      <div class="flex items-center justify-center gap-4 mt-2 text-sm" [class]="textClasses().subtitle">
+      <div
+        class="flex items-center justify-center gap-4 mt-2 text-sm"
+        [class]="textClasses().subtitle"
+      >
         @if (data()?.key) {
           <span>Key: {{ data()?.key }}</span>
         }
@@ -58,7 +61,9 @@
   @for (section of data()?.sections || []; track $index; let sectionIndex = $index) {
     <div class="mb-6 last:mb-0">
       <!-- Section Name with Rehearsal Mark -->
-      @if ((showSectionNames() && section.name) || (showRehearsalMarks() && section.rehearsalMark)) {
+      @if (
+        (showSectionNames() && section.name) || (showRehearsalMarks() && section.rehearsalMark)
+      ) {
         <div class="flex items-center gap-3 mb-2">
           @if (showRehearsalMarks() && section.rehearsalMark) {
             <span
@@ -96,10 +101,14 @@
               class="flex-1"
               [class]="measureClasses()"
               [class.cursor-pointer]="interactive()"
-              [class.hover:bg-slate-50]="interactive() && variant() !== 'dark' && variant() !== 'fakebook'"
+              [class.hover:bg-slate-50]="
+                interactive() && variant() !== 'dark' && variant() !== 'fakebook'
+              "
               [class.dark:hover:bg-slate-800]="interactive() && variant() === 'default'"
               [class.hover:bg-amber-100]="interactive() && variant() === 'fakebook'"
-              (click)="onMeasureClick(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex)"
+              (click)="
+                onMeasureClick(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex)
+              "
             >
               <!-- Repeat/Navigation Markers -->
               <div class="flex items-start justify-between text-xs mb-1">
@@ -113,13 +122,16 @@
                   <span class="text-lg">𝄌</span>
                 }
                 @if (measure.ending) {
-                  <span class="border-l border-t border-current px-1">
-                    {{ measure.ending }}.
-                  </span>
+                  <span class="border-l border-t border-current px-1"> {{ measure.ending }}. </span>
                 }
                 @if (showMeasureNumbers()) {
                   <span class="text-[10px] opacity-50">
-                    {{ getMeasureGlobalIndex(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex) }}
+                    {{
+                      getMeasureGlobalIndex(
+                        sectionIndex,
+                        rowIndex * measuresPerRow() + measureInRowIndex
+                      )
+                    }}
                   </span>
                 }
                 @if (measure.repeatEnd) {
@@ -141,15 +153,41 @@
                         [class.font-mono]="variant() !== 'fakebook'"
                         [class.cursor-pointer]="interactive() || showChordDiagrams()"
                         [class.hover:underline]="interactive()"
-                        (click)="onChordClick(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex, chord); showChordDiagrams() && toggleDiagram(getChordId(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex, chordIndex)); $event.stopPropagation()"
+                        (click)="
+                          onChordClick(
+                            sectionIndex,
+                            rowIndex * measuresPerRow() + measureInRowIndex,
+                            chord
+                          );
+                          showChordDiagrams() &&
+                            toggleDiagram(
+                              getChordId(
+                                sectionIndex,
+                                rowIndex * measuresPerRow() + measureInRowIndex,
+                                chordIndex
+                              )
+                            );
+                          $event.stopPropagation()
+                        "
                       >
                         {{ convertChord(chord.chord) }}
                       </span>
 
                       <!-- Inline Chord Diagram (Popup) -->
-                      @if (showChordDiagrams() && isDiagramExpanded(getChordId(sectionIndex, rowIndex * measuresPerRow() + measureInRowIndex, chordIndex))) {
+                      @if (
+                        showChordDiagrams() &&
+                        isDiagramExpanded(
+                          getChordId(
+                            sectionIndex,
+                            rowIndex * measuresPerRow() + measureInRowIndex,
+                            chordIndex
+                          )
+                        )
+                      ) {
                         @if (getChordDiagram(chord); as diagram) {
-                          <div class="absolute z-10 top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-600">
+                          <div
+                            class="absolute z-10 top-full left-1/2 -translate-x-1/2 mt-1 p-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-600"
+                          >
                             <tw-chord-diagram
                               [chord]="diagram"
                               [size]="diagramSize()"
@@ -171,7 +209,10 @@
                 @if (slashStyle() === 'simple') {
                   <!-- Simple slashes (/) -->
                   @if (measure.chords.length <= 2) {
-                    <div class="flex items-center justify-center gap-1 mt-1" [class]="slashClasses()">
+                    <div
+                      class="flex items-center justify-center gap-1 mt-1"
+                      [class]="slashClasses()"
+                    >
                       @for (beat of getSlashPatternForMeasure(measure); track beat) {
                         @if (isRestBeat(measure, beat)) {
                           <span class="text-lg opacity-50">𝄽</span>
@@ -179,23 +220,42 @@
                           <span
                             class="text-lg"
                             [class.font-bold]="getAccentBeats(measure).includes(beat)"
-                          >/</span>
+                            >/</span
+                          >
                         }
                       }
                     </div>
                   }
                 } @else if (slashStyle() === 'rhythmic') {
                   <!-- Rhythmic notation (diamond noteheads with stems) -->
-                  <svg class="w-full h-10 mt-1" viewBox="0 0 100 40" preserveAspectRatio="xMidYMid meet">
+                  <svg
+                    class="w-full h-10 mt-1"
+                    viewBox="0 0 100 40"
+                    preserveAspectRatio="xMidYMid meet"
+                  >
                     <!-- Staff line (single) -->
-                    <line x1="0" y1="30" x2="100" y2="30" [class]="staffLineClasses()" stroke-width="0.5" />
+                    <line
+                      x1="0"
+                      y1="30"
+                      x2="100"
+                      y2="30"
+                      [class]="staffLineClasses()"
+                      stroke-width="0.5"
+                    />
 
                     @for (beat of getSlashPatternForMeasure(measure); track beat) {
                       @if (!isRestBeat(measure, beat)) {
                         <g [class]="slashClasses()">
                           <!-- Diamond notehead -->
                           <path
-                            [attr.d]="getRhythmicSlashPath(beat, getAccentBeats(measure).includes(beat), 100, getBeatsPerMeasure())"
+                            [attr.d]="
+                              getRhythmicSlashPath(
+                                beat,
+                                getAccentBeats(measure).includes(beat),
+                                100,
+                                getBeatsPerMeasure()
+                              )
+                            "
                             fill="currentColor"
                             stroke="currentColor"
                             stroke-width="1"
@@ -209,7 +269,9 @@
                           text-anchor="middle"
                           class="text-[12px]"
                           [class]="slashClasses()"
-                        >𝄽</text>
+                        >
+                          𝄽
+                        </text>
                       }
                     }
                   </svg>
@@ -243,7 +305,7 @@
   }
 
   <!-- Empty State -->
-  @if (!data() || (data()?.sections?.length === 0)) {
+  @if (!data() || data()?.sections?.length === 0) {
     <div class="text-center py-12" [class]="textClasses().subtitle">
       <p class="text-lg">No chart data</p>
       <p class="text-sm mt-2">Add sections and chords to see the lead sheet</p>

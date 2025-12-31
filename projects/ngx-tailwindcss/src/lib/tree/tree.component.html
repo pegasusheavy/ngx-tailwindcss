@@ -7,7 +7,11 @@
 <ng-template #nodeTemplate let-nodes let-level="level">
   @for (node of nodes; track node.key ?? $index) {
     @if (node.visible !== false) {
-      <div role="treeitem" [attr.aria-expanded]="node.expanded" [attr.aria-selected]="isSelected(node)">
+      <div
+        role="treeitem"
+        [attr.aria-expanded]="node.expanded"
+        [attr.aria-selected]="isSelected(node)"
+      >
         <div
           [class]="nodeClasses(node, level)"
           [style.paddingLeft.px]="level * indentSize"

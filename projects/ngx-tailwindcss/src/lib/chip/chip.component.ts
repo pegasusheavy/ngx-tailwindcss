@@ -31,7 +31,8 @@ const CHIP_VARIANTS: Record<ChipVariant, Record<ChipStyle, string>> = {
   success: {
     solid: 'bg-emerald-600 text-white',
     soft: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300',
-    outline: 'border border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400',
+    outline:
+      'border border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400',
   },
   warning: {
     solid: 'bg-amber-500 text-white',

@@ -50,15 +50,19 @@ const GUTTER_SIZES: Record<SplitterGutterSize, number> = {
         [class]="paneClasses(0)"
         [style.flexBasis.%]="sizes()[0]"
         [style.minWidth.px]="direction === 'horizontal' ? minSizes[0] : undefined"
-        [style.minHeight.px]="direction === 'vertical' ? minSizes[0] : undefined">
-        <ng-content select="[twSplitterPane]:first-of-type, tw-splitter-pane:first-of-type"></ng-content>
+        [style.minHeight.px]="direction === 'vertical' ? minSizes[0] : undefined"
+      >
+        <ng-content
+          select="[twSplitterPane]:first-of-type, tw-splitter-pane:first-of-type"
+        ></ng-content>
       </div>
 
       <div
         #gutter
         [class]="gutterClasses()"
         (mousedown)="onGutterMouseDown($event)"
-        (touchstart)="onGutterTouchStart($event)">
+        (touchstart)="onGutterTouchStart($event)"
+      >
         <div [class]="gutterHandleClasses()"></div>
       </div>
 
@@ -66,8 +70,11 @@ const GUTTER_SIZES: Record<SplitterGutterSize, number> = {
         [class]="paneClasses(1)"
         [style.flexBasis.%]="sizes()[1]"
         [style.minWidth.px]="direction === 'horizontal' ? minSizes[1] : undefined"
-        [style.minHeight.px]="direction === 'vertical' ? minSizes[1] : undefined">
-        <ng-content select="[twSplitterPane]:last-of-type, tw-splitter-pane:last-of-type"></ng-content>
+        [style.minHeight.px]="direction === 'vertical' ? minSizes[1] : undefined"
+      >
+        <ng-content
+          select="[twSplitterPane]:last-of-type, tw-splitter-pane:last-of-type"
+        ></ng-content>
       </div>
     </div>
   `,
@@ -157,7 +164,9 @@ export class TwSplitterComponent implements AfterViewInit, OnDestroy {
 
     return this.twClass.merge(
       'flex items-center justify-center flex-shrink-0 transition-colors',
-      isHorizontal ? `w-[${size}px] h-full cursor-col-resize` : `h-[${size}px] w-full cursor-row-resize`,
+      isHorizontal
+        ? `w-[${size}px] h-full cursor-col-resize`
+        : `h-[${size}px] w-full cursor-row-resize`,
       this.showGutter ? 'bg-slate-200 hover:bg-slate-300' : 'bg-transparent hover:bg-slate-200',
       this.isDragging() ? 'bg-blue-400' : '',
       this.disabled ? 'cursor-default pointer-events-none opacity-50' : ''
@@ -195,9 +204,10 @@ export class TwSplitterComponent implements AfterViewInit, OnDestroy {
     this.isDragging.set(true);
     this.startPos = pos;
     this.startSizes = [...this.sizes()] as [number, number];
-    this.containerSize = this.direction === 'horizontal'
-      ? this.containerRef.nativeElement.offsetWidth
-      : this.containerRef.nativeElement.offsetHeight;
+    this.containerSize =
+      this.direction === 'horizontal'
+        ? this.containerRef.nativeElement.offsetWidth
+        : this.containerRef.nativeElement.offsetHeight;
     this.dragStart.emit();
   }
 
@@ -292,4 +302,3 @@ export class TwSplitterComponent implements AfterViewInit, OnDestroy {
   ],
 })
 export class TwSplitterPaneComponent {}
-

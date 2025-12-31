@@ -346,9 +346,11 @@ export class TwPopoverComponent implements OnDestroy {
     const baseClasses = 'absolute w-2.5 h-2.5 bg-white dark:bg-slate-800 rotate-45 shadow-sm';
     const positionClasses: Record<PopoverPosition, string> = {
       top: 'bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 border-b border-r border-slate-200 dark:border-slate-700',
-      bottom: 'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 border-t border-l border-slate-200 dark:border-slate-700',
+      bottom:
+        'top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 border-t border-l border-slate-200 dark:border-slate-700',
       left: 'right-0 top-1/2 -translate-y-1/2 translate-x-1/2 border-t border-r border-slate-200 dark:border-slate-700',
-      right: 'left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 border-b border-l border-slate-200 dark:border-slate-700',
+      right:
+        'left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 border-b border-l border-slate-200 dark:border-slate-700',
     };
     return this.twClass.merge(baseClasses, positionClasses[this.position]);
   }

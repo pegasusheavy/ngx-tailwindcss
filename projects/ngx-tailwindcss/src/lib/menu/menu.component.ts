@@ -69,8 +69,10 @@ export class TwMenuComponent {
   protected containerClasses = computed(() => {
     const variantClasses = {
       default: 'bg-white dark:bg-slate-800',
-      bordered: 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg',
-      elevated: 'bg-white dark:bg-slate-800 rounded-lg shadow-lg dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700',
+      bordered:
+        'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg',
+      elevated:
+        'bg-white dark:bg-slate-800 rounded-lg shadow-lg dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700',
     };
 
     return this.twClass.merge('py-1 min-w-48', variantClasses[this.variant], this.classOverride);

@@ -6,13 +6,7 @@ import { TwSpacerComponent, TwWrapComponent, SpacerSize } from './spacer.compone
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
-  template: `
-    <tw-spacer
-      [axis]="axis()"
-      [size]="size()"
-      [class]="customClass()"
-    ></tw-spacer>
-  `,
+  template: ` <tw-spacer [axis]="axis()" [size]="size()" [class]="customClass()"></tw-spacer> `,
   standalone: true,
   imports: [TwSpacerComponent],
 })
@@ -25,12 +19,7 @@ class SpacerTestComponent {
 
 @Component({
   template: `
-    <tw-wrap
-      [spacing]="spacing()"
-      [align]="align()"
-      [justify]="justify()"
-      [class]="customClass()"
-    >
+    <tw-wrap [spacing]="spacing()" [align]="align()" [justify]="justify()" [class]="customClass()">
       <span>Item 1</span>
       <span>Item 2</span>
       <span>Item 3</span>

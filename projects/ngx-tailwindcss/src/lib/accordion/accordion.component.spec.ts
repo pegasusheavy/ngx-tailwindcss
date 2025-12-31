@@ -19,17 +19,8 @@ import { TwAccordionComponent, TwAccordionItemComponent } from './accordion.comp
       >
         Content for item 1
       </tw-accordion-item>
-      <tw-accordion-item
-        value="item2"
-        itemTitle="Item 2"
-      >
-        Content for item 2
-      </tw-accordion-item>
-      <tw-accordion-item
-        value="item3"
-        itemTitle="Item 3"
-        [itemDisabled]="true"
-      >
+      <tw-accordion-item value="item2" itemTitle="Item 2"> Content for item 2 </tw-accordion-item>
+      <tw-accordion-item value="item3" itemTitle="Item 3" [itemDisabled]="true">
         Content for item 3
       </tw-accordion-item>
     </tw-accordion>

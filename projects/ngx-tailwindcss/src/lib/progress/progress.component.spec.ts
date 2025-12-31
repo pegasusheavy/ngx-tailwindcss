@@ -2,7 +2,12 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwProgressComponent, TwProgressCircularComponent, ProgressSize, ProgressVariant } from './progress.component';
+import {
+  TwProgressComponent,
+  TwProgressCircularComponent,
+  ProgressSize,
+  ProgressVariant,
+} from './progress.component';
 
 @Component({
   template: `
@@ -249,7 +254,9 @@ describe('TwProgressCircularComponent', () => {
     fixture = TestBed.createComponent(CircularTestComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
-    progressEl = fixture.debugElement.query(By.directive(TwProgressCircularComponent)).nativeElement;
+    progressEl = fixture.debugElement.query(
+      By.directive(TwProgressCircularComponent)
+    ).nativeElement;
   });
 
   it('should create the circular progress', () => {

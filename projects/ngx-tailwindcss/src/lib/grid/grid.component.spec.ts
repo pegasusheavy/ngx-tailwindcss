@@ -41,11 +41,7 @@ class GridTestComponent {
 
 @Component({
   template: `
-    <tw-simple-grid
-      [minChildWidth]="minChildWidth()"
-      [gap]="gap()"
-      [class]="customClass()"
-    >
+    <tw-simple-grid [minChildWidth]="minChildWidth()" [gap]="gap()" [class]="customClass()">
       <div>Card 1</div>
       <div>Card 2</div>
       <div>Card 3</div>

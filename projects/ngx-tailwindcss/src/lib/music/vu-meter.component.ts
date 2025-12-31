@@ -108,10 +108,7 @@ export class TwVuMeterComponent implements OnInit {
 
   ngOnInit(): void {
     // Initialize RMS buffers
-    this.rmsBuffers = [
-      new Float32Array(RMS_WINDOW_SIZE),
-      new Float32Array(RMS_WINDOW_SIZE),
-    ];
+    this.rmsBuffers = [new Float32Array(RMS_WINDOW_SIZE), new Float32Array(RMS_WINDOW_SIZE)];
 
     // Setup peak decay
     if (this.showPeak()) {
@@ -223,7 +220,8 @@ export class TwVuMeterComponent implements OnInit {
       led: 'bg-slate-900 dark:bg-black border border-slate-700',
       gradient: 'bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700',
       solid: 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shadow-sm',
-      retro: 'bg-amber-50 dark:bg-amber-950 border-2 border-amber-200 dark:border-amber-800 rounded-xl',
+      retro:
+        'bg-amber-50 dark:bg-amber-950 border-2 border-amber-200 dark:border-amber-800 rounded-xl',
       light: 'bg-white border border-slate-200 shadow-sm',
       highContrast: 'bg-black border-2 border-white',
     };
@@ -499,7 +497,7 @@ export class TwVuMeterComponent implements OnInit {
 
     peaks.forEach((peak, i) => {
       if (peak > values[i]) {
-        peaks[i] = Math.max(values[i], peak - (this.max() * this.peakDecayRate()));
+        peaks[i] = Math.max(values[i], peak - this.max() * this.peakDecayRate());
         changed = true;
       }
     });
@@ -515,7 +513,7 @@ export class TwVuMeterComponent implements OnInit {
 
     rmsVals.forEach((rms, i) => {
       if (rms > 0) {
-        rmsVals[i] = Math.max(0, rms - (this.max() * this.rmsDecayRate()));
+        rmsVals[i] = Math.max(0, rms - this.max() * this.rmsDecayRate());
         changed = true;
       }
     });
@@ -551,7 +549,7 @@ export class TwVuMeterComponent implements OnInit {
     this.resetAllClips();
 
     // Clear RMS buffers
-    this.rmsBuffers.forEach((buffer) => buffer.fill(0));
+    this.rmsBuffers.forEach(buffer => buffer.fill(0));
     this.rmsWriteIndices = [0, 0];
   }
 
@@ -563,4 +561,3 @@ export class TwVuMeterComponent implements OnInit {
     return (rms / this.max()) * 100;
   }
 }
-

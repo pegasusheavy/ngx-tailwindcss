@@ -16,9 +16,20 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { TwStaffComponent, ClefType, KeySignature, StaffTimeSignature } from './staff.component';
-import { TwNoteComponent, NoteDuration, NoteAccidental, NoteName, NoteData } from './note.component';
+import {
+  TwNoteComponent,
+  NoteDuration,
+  NoteAccidental,
+  NoteName,
+  NoteData,
+} from './note.component';
 import { TwNoteInputComponent, PlacedNote, ClipboardData } from './note-input.component';
-import { parseMusicXML, parseABCNotation, SheetMusicData, MeasureData } from './sheet-music.component';
+import {
+  parseMusicXML,
+  parseABCNotation,
+  SheetMusicData,
+  MeasureData,
+} from './sheet-music.component';
 
 // ==================== TYPES ====================
 
@@ -76,10 +87,10 @@ export interface TransposeOptions {
 export const INSTRUMENT_PRESETS: Record<string, Partial<InstrumentPart>> = {
   'piano-treble': { name: 'Piano', abbreviation: 'Pno.', clef: 'treble', transposition: 0 },
   'piano-bass': { name: 'Piano', abbreviation: 'Pno.', clef: 'bass', transposition: 0 },
-  'violin': { name: 'Violin', abbreviation: 'Vln.', clef: 'treble', transposition: 0 },
-  'viola': { name: 'Viola', abbreviation: 'Vla.', clef: 'alto', transposition: 0 },
-  'cello': { name: 'Cello', abbreviation: 'Vc.', clef: 'bass', transposition: 0 },
-  'flute': { name: 'Flute', abbreviation: 'Fl.', clef: 'treble', transposition: 0 },
+  violin: { name: 'Violin', abbreviation: 'Vln.', clef: 'treble', transposition: 0 },
+  viola: { name: 'Viola', abbreviation: 'Vla.', clef: 'alto', transposition: 0 },
+  cello: { name: 'Cello', abbreviation: 'Vc.', clef: 'bass', transposition: 0 },
+  flute: { name: 'Flute', abbreviation: 'Fl.', clef: 'treble', transposition: 0 },
   'clarinet-bb': { name: 'Clarinet in Bb', abbreviation: 'Cl.', clef: 'treble', transposition: 2 },
   'trumpet-bb': { name: 'Trumpet in Bb', abbreviation: 'Tpt.', clef: 'treble', transposition: 2 },
   'horn-f': { name: 'Horn in F', abbreviation: 'Hn.', clef: 'treble', transposition: 7 },
@@ -87,7 +98,7 @@ export const INSTRUMENT_PRESETS: Record<string, Partial<InstrumentPart>> = {
   'voice-alto': { name: 'Alto', abbreviation: 'A.', clef: 'treble', transposition: 0 },
   'voice-tenor': { name: 'Tenor', abbreviation: 'T.', clef: 'treble', transposition: 0 },
   'voice-bass': { name: 'Bass', abbreviation: 'B.', clef: 'bass', transposition: 0 },
-  'guitar': { name: 'Guitar', abbreviation: 'Gtr.', clef: 'treble', transposition: 12 },
+  guitar: { name: 'Guitar', abbreviation: 'Gtr.', clef: 'treble', transposition: 12 },
   'bass-guitar': { name: 'Bass Guitar', abbreviation: 'Bass', clef: 'bass', transposition: 12 },
 };
 
@@ -109,7 +120,13 @@ const CHROMATIC_TO_NOTE: { note: NoteName; accidental: NoteAccidental }[] = [
 ];
 
 const NOTE_TO_CHROMATIC: Record<NoteName, number> = {
-  'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11,
+  C: 0,
+  D: 2,
+  E: 4,
+  F: 5,
+  G: 7,
+  A: 9,
+  B: 11,
 };
 
 @Component({
@@ -283,9 +300,7 @@ export class TwScoreEditorComponent implements OnDestroy {
 
   updatePart(partId: string, updates: Partial<InstrumentPart>): void {
     this.saveHistory('Update Part');
-    this.parts.update(parts =>
-      parts.map(p => p.id === partId ? { ...p, ...updates } : p)
-    );
+    this.parts.update(parts => parts.map(p => (p.id === partId ? { ...p, ...updates } : p)));
     this.emitScoreChanged();
   }
 
@@ -316,8 +331,14 @@ export class TwScoreEditorComponent implements OnDestroy {
 
   private getPartColor(index: number): string {
     const colors = [
-      '#1E293B', '#2563EB', '#059669', '#DC2626',
-      '#7C3AED', '#EA580C', '#0891B2', '#4F46E5',
+      '#1E293B',
+      '#2563EB',
+      '#059669',
+      '#DC2626',
+      '#7C3AED',
+      '#EA580C',
+      '#0891B2',
+      '#4F46E5',
     ];
     return colors[index % colors.length];
   }
@@ -398,7 +419,11 @@ export class TwScoreEditorComponent implements OnDestroy {
     this.emitScoreChanged();
   }
 
-  private transposeNote(note: PlacedNote, semitones: number, preserveEnharmonic: boolean): PlacedNote {
+  private transposeNote(
+    note: PlacedNote,
+    semitones: number,
+    preserveEnharmonic: boolean
+  ): PlacedNote {
     // Convert note to chromatic position
     let chromaticPosition = NOTE_TO_CHROMATIC[note.name];
 
@@ -457,10 +482,7 @@ export class TwScoreEditorComponent implements OnDestroy {
 
     this.saveHistory('Add Lyric');
     this.parts.update(parts =>
-      parts.map(p => p.id === partId
-        ? { ...p, lyrics: [...p.lyrics, lyric] }
-        : p
-      )
+      parts.map(p => (p.id === partId ? { ...p, lyrics: [...p.lyrics, lyric] } : p))
     );
     this.emitScoreChanged();
   }
@@ -468,12 +490,13 @@ export class TwScoreEditorComponent implements OnDestroy {
   updateLyric(partId: string, lyricId: string, updates: Partial<LyricEntry>): void {
     this.saveHistory('Update Lyric');
     this.parts.update(parts =>
-      parts.map(p => p.id === partId
-        ? {
-            ...p,
-            lyrics: p.lyrics.map(l => l.id === lyricId ? { ...l, ...updates } : l),
-          }
-        : p
+      parts.map(p =>
+        p.id === partId
+          ? {
+              ...p,
+              lyrics: p.lyrics.map(l => (l.id === lyricId ? { ...l, ...updates } : l)),
+            }
+          : p
       )
     );
     this.emitScoreChanged();
@@ -482,9 +505,8 @@ export class TwScoreEditorComponent implements OnDestroy {
   removeLyric(partId: string, lyricId: string): void {
     this.saveHistory('Remove Lyric');
     this.parts.update(parts =>
-      parts.map(p => p.id === partId
-        ? { ...p, lyrics: p.lyrics.filter(l => l.id !== lyricId) }
-        : p
+      parts.map(p =>
+        p.id === partId ? { ...p, lyrics: p.lyrics.filter(l => l.id !== lyricId) } : p
       )
     );
     this.emitScoreChanged();
@@ -525,11 +547,14 @@ export class TwScoreEditorComponent implements OnDestroy {
     this.undoStack.update(s => s.slice(0, -1));
 
     // Save current state to redo stack
-    this.redoStack.update(s => [...s, {
-      parts: JSON.parse(JSON.stringify(this.parts())),
-      timestamp: Date.now(),
-      action: 'Redo',
-    }]);
+    this.redoStack.update(s => [
+      ...s,
+      {
+        parts: JSON.parse(JSON.stringify(this.parts())),
+        timestamp: Date.now(),
+        action: 'Redo',
+      },
+    ]);
 
     this.parts.set(entry.parts);
     this.emitScoreChanged();
@@ -543,11 +568,14 @@ export class TwScoreEditorComponent implements OnDestroy {
     this.redoStack.update(s => s.slice(0, -1));
 
     // Save current state to undo stack
-    this.undoStack.update(s => [...s, {
-      parts: JSON.parse(JSON.stringify(this.parts())),
-      timestamp: Date.now(),
-      action: 'Undo',
-    }]);
+    this.undoStack.update(s => [
+      ...s,
+      {
+        parts: JSON.parse(JSON.stringify(this.parts())),
+        timestamp: Date.now(),
+        action: 'Undo',
+      },
+    ]);
 
     this.parts.set(entry.parts);
     this.emitScoreChanged();
@@ -558,7 +586,8 @@ export class TwScoreEditorComponent implements OnDestroy {
   exportToMusicXML(): string {
     const score = this.scoreData();
     let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-    xml += '<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">\n';
+    xml +=
+      '<!DOCTYPE score-partwise PUBLIC "-//Recordare//DTD MusicXML 4.0 Partwise//EN" "http://www.musicxml.org/dtds/partwise.dtd">\n';
     xml += '<score-partwise version="4.0">\n';
 
     // Work
@@ -656,26 +685,41 @@ export class TwScoreEditorComponent implements OnDestroy {
 
   private keySignatureToXml(key: KeySignature): string {
     const fifths: Record<KeySignature, number> = {
-      'C': 0, 'G': 1, 'D': 2, 'A': 3, 'E': 4, 'B': 5, 'F#': 6, 'C#': 7,
-      'F': -1, 'Bb': -2, 'Eb': -3, 'Ab': -4, 'Db': -5, 'Gb': -6, 'Cb': -7,
+      C: 0,
+      G: 1,
+      D: 2,
+      A: 3,
+      E: 4,
+      B: 5,
+      'F#': 6,
+      'C#': 7,
+      F: -1,
+      Bb: -2,
+      Eb: -3,
+      Ab: -4,
+      Db: -5,
+      Gb: -6,
+      Cb: -7,
     };
     return `        <key><fifths>${fifths[key]}</fifths></key>\n`;
   }
 
   private timeSignatureToXml(time: StaffTimeSignature): string {
-    if (time === 'C') return '        <time symbol="common"><beats>4</beats><beat-type>4</beat-type></time>\n';
-    if (time === 'C|') return '        <time symbol="cut"><beats>2</beats><beat-type>2</beat-type></time>\n';
+    if (time === 'C')
+      return '        <time symbol="common"><beats>4</beats><beat-type>4</beat-type></time>\n';
+    if (time === 'C|')
+      return '        <time symbol="cut"><beats>2</beats><beat-type>2</beat-type></time>\n';
     const [beats, beatType] = time.split('/');
     return `        <time><beats>${beats}</beats><beat-type>${beatType}</beat-type></time>\n`;
   }
 
   private clefToXml(clef: ClefType): string {
     const clefMap: Record<ClefType, { sign: string; line: number }> = {
-      'treble': { sign: 'G', line: 2 },
-      'bass': { sign: 'F', line: 4 },
-      'alto': { sign: 'C', line: 3 },
-      'tenor': { sign: 'C', line: 4 },
-      'percussion': { sign: 'percussion', line: 2 },
+      treble: { sign: 'G', line: 2 },
+      bass: { sign: 'F', line: 4 },
+      alto: { sign: 'C', line: 3 },
+      tenor: { sign: 'C', line: 4 },
+      percussion: { sign: 'percussion', line: 2 },
     };
     const c = clefMap[clef];
     return `        <clef><sign>${c.sign}</sign><line>${c.line}</line></clef>\n`;
@@ -696,7 +740,12 @@ export class TwScoreEditorComponent implements OnDestroy {
 
     // Duration (in divisions - assuming 4 divisions per quarter)
     const durationMap: Record<NoteDuration, number> = {
-      'whole': 16, 'half': 8, 'quarter': 4, 'eighth': 2, 'sixteenth': 1, 'thirtysecond': 0.5,
+      whole: 16,
+      half: 8,
+      quarter: 4,
+      eighth: 2,
+      sixteenth: 1,
+      thirtysecond: 0.5,
     };
     let dur = durationMap[note.duration] || 4;
     if (note.dotted) dur *= 1.5;
@@ -713,8 +762,11 @@ export class TwScoreEditorComponent implements OnDestroy {
     // Accidental (display)
     if (note.accidental) {
       const accMap: Record<string, string> = {
-        'sharp': 'sharp', 'flat': 'flat', 'natural': 'natural',
-        'doubleSharp': 'double-sharp', 'doubleFlat': 'double-flat',
+        sharp: 'sharp',
+        flat: 'flat',
+        natural: 'natural',
+        doubleSharp: 'double-sharp',
+        doubleFlat: 'double-flat',
       };
       xml += `        <accidental>${accMap[note.accidental]}</accidental>\n`;
     }
@@ -750,13 +802,13 @@ export class TwScoreEditorComponent implements OnDestroy {
     events.push(0);
     // Tempo meta event
     const microsPerQuarter = Math.round(60000000 / tempo);
-    events.push(0xFF, 0x51, 0x03);
-    events.push((microsPerQuarter >> 16) & 0xFF);
-    events.push((microsPerQuarter >> 8) & 0xFF);
-    events.push(microsPerQuarter & 0xFF);
+    events.push(0xff, 0x51, 0x03);
+    events.push((microsPerQuarter >> 16) & 0xff);
+    events.push((microsPerQuarter >> 8) & 0xff);
+    events.push(microsPerQuarter & 0xff);
 
     // End of track
-    events.push(0, 0xFF, 0x2F, 0x00);
+    events.push(0, 0xff, 0x2f, 0x00);
 
     return this.createMidiTrackChunk(new Uint8Array(events));
   }
@@ -766,23 +818,32 @@ export class TwScoreEditorComponent implements OnDestroy {
 
     // Track name
     events.push(0); // Delta time
-    events.push(0xFF, 0x03); // Track name meta event
+    events.push(0xff, 0x03); // Track name meta event
     const nameBytes = new TextEncoder().encode(part.name);
     events.push(nameBytes.length);
     events.push(...nameBytes);
 
     // Sort notes by position
-    const sortedNotes = [...part.notes].sort((a, b) =>
-      (a.measure * 1000 + a.beat) - (b.measure * 1000 + b.beat)
+    const sortedNotes = [...part.notes].sort(
+      (a, b) => a.measure * 1000 + a.beat - (b.measure * 1000 + b.beat)
     );
 
     let lastTick = 0;
 
     for (const note of sortedNotes) {
       const tick = (note.measure * 4 + note.beat / 2) * ticksPerQuarter;
-      const midiNote = this.noteToMidi(note.name, note.octave, note.accidental ?? null, part.transposition);
+      const midiNote = this.noteToMidi(
+        note.name,
+        note.octave,
+        note.accidental ?? null,
+        part.transposition
+      );
       const velocity = 80;
-      const durationTicks = this.durationToTicks(note.duration, note.dotted ?? false, ticksPerQuarter);
+      const durationTicks = this.durationToTicks(
+        note.duration,
+        note.dotted ?? false,
+        ticksPerQuarter
+      );
 
       // Note on
       const deltaOn = tick - lastTick;
@@ -797,12 +858,17 @@ export class TwScoreEditorComponent implements OnDestroy {
     }
 
     // End of track
-    events.push(0, 0xFF, 0x2F, 0x00);
+    events.push(0, 0xff, 0x2f, 0x00);
 
     return this.createMidiTrackChunk(new Uint8Array(events));
   }
 
-  private noteToMidi(name: NoteName, octave: number, accidental: NoteAccidental, transposition: number): number {
+  private noteToMidi(
+    name: NoteName,
+    octave: number,
+    accidental: NoteAccidental,
+    transposition: number
+  ): number {
     let midi = NOTE_TO_CHROMATIC[name] + (octave + 1) * 12;
     if (accidental === 'sharp') midi += 1;
     else if (accidental === 'flat') midi -= 1;
@@ -811,9 +877,18 @@ export class TwScoreEditorComponent implements OnDestroy {
     return Math.max(0, Math.min(127, midi - transposition));
   }
 
-  private durationToTicks(duration: NoteDuration, dotted: boolean, ticksPerQuarter: number): number {
+  private durationToTicks(
+    duration: NoteDuration,
+    dotted: boolean,
+    ticksPerQuarter: number
+  ): number {
     const durationMap: Record<NoteDuration, number> = {
-      'whole': 4, 'half': 2, 'quarter': 1, 'eighth': 0.5, 'sixteenth': 0.25, 'thirtysecond': 0.125,
+      whole: 4,
+      half: 2,
+      quarter: 1,
+      eighth: 0.5,
+      sixteenth: 0.25,
+      thirtysecond: 0.125,
     };
     let ticks = durationMap[duration] * ticksPerQuarter;
     if (dotted) ticks *= 1.5;
@@ -823,10 +898,10 @@ export class TwScoreEditorComponent implements OnDestroy {
   private toVariableLength(value: number): number[] {
     if (value < 128) return [value];
     const bytes: number[] = [];
-    bytes.unshift(value & 0x7F);
+    bytes.unshift(value & 0x7f);
     value >>= 7;
     while (value > 0) {
-      bytes.unshift((value & 0x7F) | 0x80);
+      bytes.unshift((value & 0x7f) | 0x80);
       value >>= 7;
     }
     return bytes;
@@ -835,13 +910,16 @@ export class TwScoreEditorComponent implements OnDestroy {
   private createMidiTrackChunk(data: Uint8Array): Uint8Array {
     const chunk = new Uint8Array(8 + data.length);
     // "MTrk"
-    chunk[0] = 0x4D; chunk[1] = 0x54; chunk[2] = 0x72; chunk[3] = 0x6B;
+    chunk[0] = 0x4d;
+    chunk[1] = 0x54;
+    chunk[2] = 0x72;
+    chunk[3] = 0x6b;
     // Length (big-endian)
     const len = data.length;
-    chunk[4] = (len >> 24) & 0xFF;
-    chunk[5] = (len >> 16) & 0xFF;
-    chunk[6] = (len >> 8) & 0xFF;
-    chunk[7] = len & 0xFF;
+    chunk[4] = (len >> 24) & 0xff;
+    chunk[5] = (len >> 16) & 0xff;
+    chunk[6] = (len >> 8) & 0xff;
+    chunk[7] = len & 0xff;
     chunk.set(data, 8);
     return chunk;
   }
@@ -852,18 +930,25 @@ export class TwScoreEditorComponent implements OnDestroy {
     let offset = 0;
 
     // Header chunk "MThd"
-    file[offset++] = 0x4D; file[offset++] = 0x54; file[offset++] = 0x68; file[offset++] = 0x64;
+    file[offset++] = 0x4d;
+    file[offset++] = 0x54;
+    file[offset++] = 0x68;
+    file[offset++] = 0x64;
     // Header length (6)
-    file[offset++] = 0; file[offset++] = 0; file[offset++] = 0; file[offset++] = 6;
+    file[offset++] = 0;
+    file[offset++] = 0;
+    file[offset++] = 0;
+    file[offset++] = 6;
     // Format (1 = multiple tracks)
-    file[offset++] = 0; file[offset++] = 1;
+    file[offset++] = 0;
+    file[offset++] = 1;
     // Number of tracks
     const numTracks = tracks.length;
-    file[offset++] = (numTracks >> 8) & 0xFF;
-    file[offset++] = numTracks & 0xFF;
+    file[offset++] = (numTracks >> 8) & 0xff;
+    file[offset++] = numTracks & 0xff;
     // Ticks per quarter
-    file[offset++] = (ticksPerQuarter >> 8) & 0xFF;
-    file[offset++] = ticksPerQuarter & 0xFF;
+    file[offset++] = (ticksPerQuarter >> 8) & 0xff;
+    file[offset++] = ticksPerQuarter & 0xff;
 
     // Tracks
     for (const track of tracks) {
@@ -882,7 +967,7 @@ export class TwScoreEditorComponent implements OnDestroy {
     abc += `X:1\n`;
     abc += `T:${score.title}\n`;
     if (score.composer) abc += `C:${score.composer}\n`;
-    abc += `M:${score.timeSignature === 'C' ? 'C' : (score.timeSignature === 'C|' ? 'C|' : score.timeSignature)}\n`;
+    abc += `M:${score.timeSignature === 'C' ? 'C' : score.timeSignature === 'C|' ? 'C|' : score.timeSignature}\n`;
     abc += `L:1/8\n`;
     abc += `Q:1/4=${score.tempo}\n`;
     abc += `K:${score.keySignature}\n`;
@@ -934,7 +1019,12 @@ export class TwScoreEditorComponent implements OnDestroy {
 
     // Duration
     const durationMap: Record<NoteDuration, string> = {
-      'whole': '8', 'half': '4', 'quarter': '2', 'eighth': '', 'sixteenth': '/2', 'thirtysecond': '/4',
+      whole: '8',
+      half: '4',
+      quarter: '2',
+      eighth: '',
+      sixteenth: '/2',
+      thirtysecond: '/4',
     };
     abc += durationMap[note.duration] || '';
 
@@ -982,8 +1072,8 @@ export class TwScoreEditorComponent implements OnDestroy {
 
     // Convert to PDF (basic - just an image)
     // For real PDF with text, use jsPDF
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
+    return new Promise(resolve => {
+      canvas.toBlob(blob => {
         resolve(blob!);
       }, 'application/pdf');
     });
@@ -1044,9 +1134,7 @@ export class TwScoreEditorComponent implements OnDestroy {
           return;
       }
 
-      const blob = typeof content === 'string'
-        ? new Blob([content], { type: mimeType })
-        : content;
+      const blob = typeof content === 'string' ? new Blob([content], { type: mimeType }) : content;
 
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1183,16 +1271,20 @@ export class TwScoreEditorComponent implements OnDestroy {
   // Note handler from TwNoteInputComponent
   onPartNotesChanged(partId: string, notes: PlacedNote[]): void {
     this.saveHistory('Edit Notes');
-    this.parts.update(parts =>
-      parts.map(p => p.id === partId ? { ...p, notes } : p)
-    );
+    this.parts.update(parts => parts.map(p => (p.id === partId ? { ...p, notes } : p)));
     this.emitScoreChanged();
   }
 
   protected readonly Math = Math;
   protected readonly Object = Object;
   protected readonly INSTRUMENT_PRESETS = INSTRUMENT_PRESETS;
-  protected readonly durationOptions: NoteDuration[] = ['whole', 'half', 'quarter', 'eighth', 'sixteenth'];
+  protected readonly durationOptions: NoteDuration[] = [
+    'whole',
+    'half',
+    'quarter',
+    'eighth',
+    'sixteenth',
+  ];
 
   protected readonly voiceColors: Record<number, string> = {
     1: '#1E293B',
@@ -1213,4 +1305,3 @@ export class TwScoreEditorComponent implements OnDestroy {
     this.currentVoice.set(voice as 1 | 2 | 3 | 4);
   }
 }
-

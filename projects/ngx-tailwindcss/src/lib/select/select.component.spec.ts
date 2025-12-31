@@ -49,7 +49,11 @@ class TestHostComponent {
 
 @Component({
   template: `
-    <tw-select [options]="options" [formControl]="selectControl" data-testid="form-select"></tw-select>
+    <tw-select
+      [options]="options"
+      [formControl]="selectControl"
+      data-testid="form-select"
+    ></tw-select>
   `,
   standalone: true,
   imports: [TwSelectComponent, ReactiveFormsModule],

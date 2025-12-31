@@ -3,7 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwRadioButtonComponent, TwRadioGroupComponent, RadioVariant, RadioSize } from './radio.component';
+import {
+  TwRadioButtonComponent,
+  TwRadioGroupComponent,
+  RadioVariant,
+  RadioSize,
+} from './radio.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
@@ -27,11 +32,7 @@ import { TwClassService } from '../core/tw-class.service';
         [variant]="variant()"
         [size]="size()"
       ></tw-radio-button>
-      <tw-radio-button
-        value="option3"
-        label="Option 3"
-        [disabled]="true"
-      ></tw-radio-button>
+      <tw-radio-button value="option3" label="Option 3" [disabled]="true"></tw-radio-button>
     </tw-radio-group>
   `,
   standalone: true,

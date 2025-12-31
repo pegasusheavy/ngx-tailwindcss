@@ -375,7 +375,7 @@ export class MidiService implements OnDestroy {
   private connectAllInputs(): void {
     if (!this._midiAccess) return;
 
-    this._midiAccess.inputs.forEach((input) => {
+    this._midiAccess.inputs.forEach(input => {
       this.connectInput(input);
     });
   }
@@ -451,25 +451,41 @@ export class MidiService implements OnDestroy {
     const type = status & 0xf0;
 
     switch (type) {
-      case 0x80: return 'noteOff';
-      case 0x90: return 'noteOn';
-      case 0xa0: return 'aftertouch';
-      case 0xb0: return 'controlChange';
-      case 0xc0: return 'programChange';
-      case 0xd0: return 'channelPressure';
-      case 0xe0: return 'pitchBend';
+      case 0x80:
+        return 'noteOff';
+      case 0x90:
+        return 'noteOn';
+      case 0xa0:
+        return 'aftertouch';
+      case 0xb0:
+        return 'controlChange';
+      case 0xc0:
+        return 'programChange';
+      case 0xd0:
+        return 'channelPressure';
+      case 0xe0:
+        return 'pitchBend';
       case 0xf0:
         switch (status) {
-          case 0xf0: return 'sysex';
-          case 0xf8: return 'clock';
-          case 0xfa: return 'start';
-          case 0xfb: return 'continue';
-          case 0xfc: return 'stop';
-          case 0xfe: return 'activeSensing';
-          case 0xff: return 'reset';
-          default: return 'unknown';
+          case 0xf0:
+            return 'sysex';
+          case 0xf8:
+            return 'clock';
+          case 0xfa:
+            return 'start';
+          case 0xfb:
+            return 'continue';
+          case 0xfc:
+            return 'stop';
+          case 0xfe:
+            return 'activeSensing';
+          case 0xff:
+            return 'reset';
+          default:
+            return 'unknown';
         }
-      default: return 'unknown';
+      default:
+        return 'unknown';
     }
   }
 
@@ -897,4 +913,3 @@ export class MidiService implements OnDestroy {
     }
   }
 }
-

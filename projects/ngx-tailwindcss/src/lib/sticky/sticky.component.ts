@@ -74,10 +74,7 @@ export class TwStickyComponent {
   constructor(private readonly twClass: TwClassService) {}
 
   protected stickyClasses(): string {
-    return this.twClass.merge(
-      this.disabled ? 'relative' : 'sticky',
-      this.class
-    );
+    return this.twClass.merge(this.disabled ? 'relative' : 'sticky', this.class);
   }
 
   protected stickyStyles(): Record<string, string> {
@@ -93,4 +90,3 @@ export class TwStickyComponent {
     };
   }
 }
-

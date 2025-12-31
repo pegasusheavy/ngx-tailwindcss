@@ -78,7 +78,9 @@ export interface ThemePreset {
                   }
                 }
               </div>
-              <span class="text-xs font-medium text-slate-700 dark:text-slate-300">{{ mode.label }}</span>
+              <span class="text-xs font-medium text-slate-700 dark:text-slate-300">{{
+                mode.label
+              }}</span>
             </button>
           }
         </div>
@@ -98,8 +100,18 @@ export interface ThemePreset {
               [title]="color.name"
             >
               @if (currentAccentColor() === color.value) {
-                <svg class="w-full h-full text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                <svg
+                  class="w-full h-full text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="3"
+                    d="M5 13l4 4L19 7"
+                  />
                 </svg>
               }
             </button>
@@ -134,7 +146,9 @@ export interface ThemePreset {
             class="flex-1 h-2 bg-slate-200 dark:bg-slate-700 rounded-lg appearance-none cursor-pointer"
           />
           <span class="text-lg text-slate-500">A</span>
-          <span class="w-12 text-sm text-slate-600 dark:text-slate-400 text-right">{{ fontSize() }}px</span>
+          <span class="w-12 text-sm text-slate-600 dark:text-slate-400 text-right"
+            >{{ fontSize() }}px</span
+          >
         </div>
       </div>
 
@@ -165,7 +179,9 @@ export interface ThemePreset {
                     [style.background-color]="preset.colors.accent"
                   ></div>
                 </div>
-                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{ preset.name }}</span>
+                <span class="text-sm font-medium text-slate-700 dark:text-slate-300">{{
+                  preset.name
+                }}</span>
               </button>
             }
           </div>
@@ -270,7 +286,8 @@ export class TwThemeSelectorComponent {
       const mode = this.currentMode();
       const isDark =
         mode === 'dark' ||
-        (mode === 'system' && this.document.defaultView?.matchMedia('(prefers-color-scheme: dark)').matches);
+        (mode === 'system' &&
+          this.document.defaultView?.matchMedia('(prefers-color-scheme: dark)').matches);
 
       if (isDark) {
         this.document.documentElement.classList.add('dark');
@@ -286,7 +303,10 @@ export class TwThemeSelectorComponent {
 
     // Apply accent color as CSS variable
     effect(() => {
-      this.document.documentElement.style.setProperty('--tw-accent-color', this.currentAccentColor());
+      this.document.documentElement.style.setProperty(
+        '--tw-accent-color',
+        this.currentAccentColor()
+      );
     });
   }
 
@@ -333,4 +353,3 @@ export class TwThemeSelectorComponent {
     }
   }
 }
-

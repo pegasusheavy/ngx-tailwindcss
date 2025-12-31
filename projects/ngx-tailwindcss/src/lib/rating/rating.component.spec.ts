@@ -43,9 +43,7 @@ class TestHostComponent {
 }
 
 @Component({
-  template: `
-    <tw-rating [formControl]="ratingControl" data-testid="form-rating"></tw-rating>
-  `,
+  template: ` <tw-rating [formControl]="ratingControl" data-testid="form-rating"></tw-rating> `,
   standalone: true,
   imports: [TwRatingComponent, ReactiveFormsModule],
 })

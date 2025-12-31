@@ -92,14 +92,14 @@ export class TwMidiLearnDirective implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Subscribe to CC changes
-    this.ccUnsubscribe = this.midiService.onCCChange((event) => {
+    this.ccUnsubscribe = this.midiService.onCCChange(event => {
       if (event.mappingId === this.twMidiLearn()) {
         this.midiValueChange.emit(event);
       }
     });
 
     // Subscribe to learn complete
-    this.learnUnsubscribe = this.midiService.onLearnComplete((mapping) => {
+    this.learnUnsubscribe = this.midiService.onLearnComplete(mapping => {
       if (mapping.id === this.twMidiLearn()) {
         this.midiLearnComplete.emit(mapping);
       }
@@ -216,4 +216,3 @@ export class TwMidiLearnDirective implements OnInit, OnDestroy {
     }
   }
 }
-

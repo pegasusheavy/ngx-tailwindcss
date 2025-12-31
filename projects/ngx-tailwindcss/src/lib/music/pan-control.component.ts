@@ -161,12 +161,12 @@ export class TwPanControlComponent implements ControlValueAccessor {
   protected readonly stereoWidthLeft = computed(() => {
     const value = this.internalValue();
     // At 0 (mono), both at center; at 100, full stereo
-    return 50 - (value / 2);
+    return 50 - value / 2;
   });
 
   protected readonly stereoWidthRight = computed(() => {
     const value = this.internalValue();
-    return 50 + (value / 2);
+    return 50 + value / 2;
   });
 
   // Value display
@@ -307,4 +307,3 @@ export class TwPanControlComponent implements ControlValueAccessor {
     this.setValue(100);
   }
 }
-

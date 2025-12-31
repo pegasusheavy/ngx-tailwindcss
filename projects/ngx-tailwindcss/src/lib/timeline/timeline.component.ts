@@ -63,7 +63,9 @@ export class TwTimelineComponent {
   readonly markerSize = input<'sm' | 'md' | 'lg'>('md');
 
   /** Track by function for ngFor */
-  readonly trackByFn = input<(event: TimelineEvent) => any>((event: TimelineEvent) => event.id ?? event);
+  readonly trackByFn = input<(event: TimelineEvent) => any>(
+    (event: TimelineEvent) => event.id ?? event
+  );
 
   /** Additional classes */
   readonly classOverride = input('');

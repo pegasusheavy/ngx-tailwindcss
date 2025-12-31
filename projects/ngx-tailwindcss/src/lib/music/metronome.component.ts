@@ -63,8 +63,40 @@ export const ACCENT_PRESETS: Record<TimeSignature, AccentPattern[]> = {
     { name: '2+2+3', pattern: ['strong', 'none', 'medium', 'none', 'medium', 'none', 'none'] },
   ],
   '12/8': [
-    { name: 'Compound', pattern: ['strong', 'none', 'none', 'medium', 'none', 'none', 'medium', 'none', 'none', 'medium', 'none', 'none'] },
-    { name: 'Shuffle', pattern: ['strong', 'none', 'soft', 'medium', 'none', 'soft', 'medium', 'none', 'soft', 'medium', 'none', 'soft'] },
+    {
+      name: 'Compound',
+      pattern: [
+        'strong',
+        'none',
+        'none',
+        'medium',
+        'none',
+        'none',
+        'medium',
+        'none',
+        'none',
+        'medium',
+        'none',
+        'none',
+      ],
+    },
+    {
+      name: 'Shuffle',
+      pattern: [
+        'strong',
+        'none',
+        'soft',
+        'medium',
+        'none',
+        'soft',
+        'medium',
+        'none',
+        'soft',
+        'medium',
+        'none',
+        'soft',
+      ],
+    },
   ],
 };
 
@@ -146,9 +178,7 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     // Fall back to legacy accentFirstBeat behavior
     const beats = this.beatsPerMeasure();
     const accentFirst = this.accentFirstBeat();
-    return Array.from({ length: beats }, (_, i) =>
-      i === 0 && accentFirst ? 'strong' : 'none'
-    );
+    return Array.from({ length: beats }, (_, i) => (i === 0 && accentFirst ? 'strong' : 'none'));
   });
 
   // Available presets for current time signature
@@ -183,7 +213,7 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
   protected readonly intervalMs = computed(() => {
     const bpm = this.currentBpm();
     const subs = this.subdivisions();
-    return (60000 / bpm) / subs;
+    return 60000 / bpm / subs;
   });
 
   protected readonly containerClasses = computed(() => {
@@ -215,7 +245,12 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     const size = this.size();
 
     const base = 'font-mono font-bold tabular-nums';
-    const variantClass = variant === 'digital' ? 'text-lime-400' : variant === 'pendulum' ? 'text-amber-400' : 'text-white';
+    const variantClass =
+      variant === 'digital'
+        ? 'text-lime-400'
+        : variant === 'pendulum'
+          ? 'text-amber-400'
+          : 'text-white';
     const sizeClass = size === 'sm' ? 'text-2xl' : size === 'lg' ? 'text-5xl' : 'text-4xl';
 
     return [base, variantClass, sizeClass].join(' ');
@@ -274,7 +309,7 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
           const isMainBeat = subBeat % subs === 1 || subs === 1;
 
           if (isMainBeat) {
-            const beatNum = ((this.currentBeat() % beats) + 1);
+            const beatNum = (this.currentBeat() % beats) + 1;
             this.currentBeat.set(beatNum);
 
             const accentLevel = this.getAccentForBeat(beatNum);
@@ -346,7 +381,7 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
   protected tapTempo(): void {
     const now = Date.now();
     const taps = this.tapTimes();
-    const recentTaps = [...taps, now].filter((t) => now - t < 3000); // Keep only taps within last 3 seconds
+    const recentTaps = [...taps, now].filter(t => now - t < 3000); // Keep only taps within last 3 seconds
 
     this.tapTimes.set(recentTaps);
 
@@ -458,6 +493,13 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     oscillator.stop(this.audioContext.currentTime + 0.05);
   }
 
-  protected readonly timeSignatures: TimeSignature[] = ['2/4', '3/4', '4/4', '5/4', '6/8', '7/8', '12/8'];
+  protected readonly timeSignatures: TimeSignature[] = [
+    '2/4',
+    '3/4',
+    '4/4',
+    '5/4',
+    '6/8',
+    '7/8',
+    '12/8',
+  ];
 }
-

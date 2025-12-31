@@ -2,7 +2,13 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwAvatarComponent, TwAvatarGroupComponent, AvatarSize, AvatarVariant, AvatarStatus } from './avatar.component';
+import {
+  TwAvatarComponent,
+  TwAvatarGroupComponent,
+  AvatarSize,
+  AvatarVariant,
+  AvatarStatus,
+} from './avatar.component';
 
 @Component({
   template: `
@@ -171,7 +177,9 @@ describe('TwAvatarComponent', () => {
 
   describe('status', () => {
     it('should not show status indicator by default', () => {
-      const status = avatarEl.querySelector('.bg-emerald-500, .bg-rose-500, .bg-amber-500, .bg-slate-400');
+      const status = avatarEl.querySelector(
+        '.bg-emerald-500, .bg-rose-500, .bg-amber-500, .bg-slate-400'
+      );
       expect(status).toBeNull();
     });
 

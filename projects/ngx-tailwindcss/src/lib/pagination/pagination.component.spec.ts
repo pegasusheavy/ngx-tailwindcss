@@ -138,8 +138,8 @@ describe('TwPaginationComponent', () => {
     it('should apply default variant', () => {
       const buttons = paginationEl.querySelectorAll('button');
       // Non-active buttons should not have border in default variant
-      const nonActiveButton = Array.from(buttons).find(b =>
-        !b.className.includes('bg-blue-600') && !b.disabled
+      const nonActiveButton = Array.from(buttons).find(
+        b => !b.className.includes('bg-blue-600') && !b.disabled
       );
       expect(nonActiveButton?.className).not.toContain('border-slate-300');
     });
@@ -148,8 +148,8 @@ describe('TwPaginationComponent', () => {
       component.variant.set('outlined');
       fixture.detectChanges();
       const buttons = paginationEl.querySelectorAll('button');
-      const nonActiveButton = Array.from(buttons).find(b =>
-        !b.className.includes('bg-blue-600') && !b.disabled
+      const nonActiveButton = Array.from(buttons).find(
+        b => !b.className.includes('bg-blue-600') && !b.disabled
       );
       expect(nonActiveButton?.className).toContain('border');
     });

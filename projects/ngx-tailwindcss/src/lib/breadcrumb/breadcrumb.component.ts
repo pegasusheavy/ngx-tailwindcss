@@ -45,9 +45,14 @@ export class TwBreadcrumbComponent {
     return sizeClasses[size];
   });
 
-  protected separatorClasses = computed(() => 'mx-2 text-slate-400 dark:text-slate-500 flex items-center');
+  protected separatorClasses = computed(
+    () => 'mx-2 text-slate-400 dark:text-slate-500 flex items-center'
+  );
 
-  protected linkClasses = computed(() => 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors');
+  protected linkClasses = computed(
+    () =>
+      'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors'
+  );
 
   protected currentClasses = computed(() => 'font-medium text-slate-900 dark:text-slate-100');
 }

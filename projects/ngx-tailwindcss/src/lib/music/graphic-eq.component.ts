@@ -36,9 +36,8 @@ const BAND_FREQUENCIES: Record<GraphicEQBandCount, number[]> = {
   10: [31, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000],
   15: [25, 40, 63, 100, 160, 250, 400, 630, 1000, 1600, 2500, 4000, 6300, 10000, 16000],
   31: [
-    20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630,
-    800, 1000, 1250, 1600, 2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000,
-    12500, 16000, 20000,
+    20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600,
+    2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000,
   ],
 };
 
@@ -101,7 +100,18 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Metal',
     description: 'Scooped mids, heavy bass and treble',
     category: 'music',
-    values: { 31: 4, 63: 3, 125: 2, 250: -1, 500: -3, 1000: -2, 2000: 0, 4000: 3, 8000: 4, 16000: 3 },
+    values: {
+      31: 4,
+      63: 3,
+      125: 2,
+      250: -1,
+      500: -3,
+      1000: -2,
+      2000: 0,
+      4000: 3,
+      8000: 4,
+      16000: 3,
+    },
   },
   {
     id: 'acoustic',
@@ -131,21 +141,54 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Voice Clarity',
     description: 'Enhanced speech intelligibility',
     category: 'voice',
-    values: { 31: -3, 63: -2, 125: -1, 250: 0, 500: 2, 1000: 3, 2000: 4, 4000: 3, 8000: 2, 16000: 0 },
+    values: {
+      31: -3,
+      63: -2,
+      125: -1,
+      250: 0,
+      500: 2,
+      1000: 3,
+      2000: 4,
+      4000: 3,
+      8000: 2,
+      16000: 0,
+    },
   },
   {
     id: 'podcast',
     name: 'Podcast',
     description: 'Clear voice, reduced rumble',
     category: 'voice',
-    values: { 31: -6, 63: -4, 125: -2, 250: 0, 500: 1, 1000: 2, 2000: 3, 4000: 2, 8000: 1, 16000: 0 },
+    values: {
+      31: -6,
+      63: -4,
+      125: -2,
+      250: 0,
+      500: 1,
+      1000: 2,
+      2000: 3,
+      4000: 2,
+      8000: 1,
+      16000: 0,
+    },
   },
   {
     id: 'broadcast',
     name: 'Broadcast',
     description: 'Professional radio/TV sound',
     category: 'voice',
-    values: { 31: -4, 63: -2, 125: 0, 250: 1, 500: 2, 1000: 3, 2000: 4, 4000: 3, 8000: 2, 16000: 1 },
+    values: {
+      31: -4,
+      63: -2,
+      125: 0,
+      250: 1,
+      500: 2,
+      1000: 3,
+      2000: 4,
+      4000: 3,
+      8000: 2,
+      16000: 1,
+    },
   },
   {
     id: 'deep-voice',
@@ -175,14 +218,36 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Mid Scoop',
     description: 'Reduced midrange for V-shaped response',
     category: 'instrument',
-    values: { 31: 3, 63: 2, 125: 1, 250: -1, 500: -3, 1000: -3, 2000: -1, 4000: 1, 8000: 2, 16000: 3 },
+    values: {
+      31: 3,
+      63: 2,
+      125: 1,
+      250: -1,
+      500: -3,
+      1000: -3,
+      2000: -1,
+      4000: 1,
+      8000: 2,
+      16000: 3,
+    },
   },
   {
     id: 'vocal-cut',
     name: 'Vocal Cut',
     description: 'Reduced vocal frequencies for karaoke',
     category: 'instrument',
-    values: { 31: 0, 63: 0, 125: 0, 250: -2, 500: -4, 1000: -6, 2000: -4, 4000: -2, 8000: 0, 16000: 0 },
+    values: {
+      31: 0,
+      63: 0,
+      125: 0,
+      250: -2,
+      500: -4,
+      1000: -6,
+      2000: -4,
+      4000: -2,
+      8000: 0,
+      16000: 0,
+    },
   },
   {
     id: 'guitar-presence',
@@ -226,14 +291,36 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Headphones',
     description: 'Natural response for headphones',
     category: 'correction',
-    values: { 31: -1, 63: 0, 125: 0, 250: 0, 500: 0, 1000: 0, 2000: -1, 4000: -1, 8000: 0, 16000: 0 },
+    values: {
+      31: -1,
+      63: 0,
+      125: 0,
+      250: 0,
+      500: 0,
+      1000: 0,
+      2000: -1,
+      4000: -1,
+      8000: 0,
+      16000: 0,
+    },
   },
   {
     id: 'hearing-protection',
     name: 'Hearing Protection',
     description: 'Reduced harsh frequencies',
     category: 'correction',
-    values: { 31: 0, 63: 0, 125: 0, 250: 0, 500: 0, 1000: 0, 2000: -2, 4000: -4, 8000: -3, 16000: -2 },
+    values: {
+      31: 0,
+      63: 0,
+      125: 0,
+      250: 0,
+      500: 0,
+      1000: 0,
+      2000: -2,
+      4000: -4,
+      8000: -3,
+      16000: -2,
+    },
   },
 ];
 
@@ -266,7 +353,13 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
   readonly showCurve = input(true);
   readonly showPresets = input(true);
   readonly showPresetDropdown = input(true);
-  readonly presetCategories = input<EQPresetCategory[]>(['flat', 'music', 'voice', 'instrument', 'correction']);
+  readonly presetCategories = input<EQPresetCategory[]>([
+    'flat',
+    'music',
+    'voice',
+    'instrument',
+    'correction',
+  ]);
   readonly customPresets = input<EQPreset[]>([]);
   readonly interactive = input(true);
   readonly disabled = input(false);
@@ -297,7 +390,9 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
   protected readonly availablePresets = computed(() => {
     const categories = this.presetCategories();
     const builtIn = EQ_PRESETS.filter(p => p.category && categories.includes(p.category));
-    const custom = this.customPresets().filter(p => !p.category || categories.includes(p.category) || categories.includes('custom'));
+    const custom = this.customPresets().filter(
+      p => !p.category || categories.includes(p.category) || categories.includes('custom')
+    );
     return [...builtIn, ...custom];
   });
 
@@ -308,10 +403,11 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
 
     if (!query) return presets;
 
-    return presets.filter(p =>
-      p.name.toLowerCase().includes(query) ||
-      p.description?.toLowerCase().includes(query) ||
-      p.category?.toLowerCase().includes(query)
+    return presets.filter(
+      p =>
+        p.name.toLowerCase().includes(query) ||
+        p.description?.toLowerCase().includes(query) ||
+        p.category?.toLowerCase().includes(query)
     );
   });
 
@@ -354,16 +450,19 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
   protected readonly colors = computed(() => {
     const variant = this.variant();
 
-    const schemes: Record<GraphicEQVariant, {
-      background: string;
-      slider: string;
-      fill: string;
-      track: string;
-      label: string;
-      value: string;
-      curve: string;
-      grid: string;
-    }> = {
+    const schemes: Record<
+      GraphicEQVariant,
+      {
+        background: string;
+        slider: string;
+        fill: string;
+        track: string;
+        label: string;
+        value: string;
+        curve: string;
+        grid: string;
+      }
+    > = {
       default: {
         background: 'bg-slate-900',
         slider: 'bg-slate-600',
@@ -432,7 +531,9 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
   protected readonly containerClasses = computed(() => {
     const base = 'rounded-xl p-4';
     const disabled = this.disabled() ? 'opacity-50 pointer-events-none' : '';
-    return [base, this.colors().background, disabled, this.classOverride()].filter(Boolean).join(' ');
+    return [base, this.colors().background, disabled, this.classOverride()]
+      .filter(Boolean)
+      .join(' ');
   });
 
   protected readonly curvePath = computed(() => {
@@ -542,7 +643,7 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
     gain = Math.round(gain / step) * step;
     gain = Math.max(minGain, Math.min(maxGain, gain));
 
-    this.bandValues.update((values) => {
+    this.bandValues.update(values => {
       const newValues = [...values];
       newValues[bandIndex] = gain;
       return newValues;
@@ -554,13 +655,13 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
   }
 
   private emitValues(): void {
-    const values = this.bands().map((b) => ({ frequency: b.frequency, gain: b.gain }));
+    const values = this.bands().map(b => ({ frequency: b.frequency, gain: b.gain }));
     this.onChange(values);
     this.valuesChange.emit(values);
   }
 
   protected resetBand(bandIndex: number): void {
-    this.bandValues.update((values) => {
+    this.bandValues.update(values => {
       const newValues = [...values];
       newValues[bandIndex] = 0;
       return newValues;
@@ -683,8 +784,8 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
   // ControlValueAccessor
   writeValue(value: EQBandValue[] | null): void {
     if (value) {
-      const gains = this.frequencies().map((freq) => {
-        const band = value.find((b) => b.frequency === freq);
+      const gains = this.frequencies().map(freq => {
+        const band = value.find(b => b.frequency === freq);
         return band?.gain ?? 0;
       });
       this.bandValues.set(gains);
@@ -705,7 +806,3 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
     // Handled via input
   }
 }
-
-
-
-

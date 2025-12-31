@@ -2,7 +2,12 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwDividerComponent, DividerOrientation, DividerVariant, DividerLabelPosition } from './divider.component';
+import {
+  TwDividerComponent,
+  DividerOrientation,
+  DividerVariant,
+  DividerLabelPosition,
+} from './divider.component';
 
 @Component({
   template: `

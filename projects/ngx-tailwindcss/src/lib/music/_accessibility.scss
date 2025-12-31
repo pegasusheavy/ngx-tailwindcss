@@ -228,9 +228,9 @@
   // Links and interactive elements
   a,
   button,
-  [role="button"],
-  [role="slider"],
-  [tabindex="0"] {
+  [role='button'],
+  [role='slider'],
+  [tabindex='0'] {
     &:focus-visible {
       outline: 3px solid var(--tw-music-accent-primary);
       outline-offset: 2px;
@@ -432,4 +432,3 @@
 .tw-music-text-min {
   font-size: max(12px, 0.75rem);
 }
-

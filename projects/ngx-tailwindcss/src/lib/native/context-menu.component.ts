@@ -68,7 +68,9 @@ import { NativeMenuItem, NativeContextMenuPosition, NativeContextMenuEvent } fro
                 <span class="w-4 flex items-center justify-center">
                   @if (item.checked) {
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"/>
+                      <path
+                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"
+                      />
                     </svg>
                   }
                 </span>
@@ -87,7 +89,9 @@ import { NativeMenuItem, NativeContextMenuPosition, NativeContextMenuEvent } fro
               <!-- Submenu arrow -->
               @if (item.type === 'submenu' && item.submenu?.length) {
                 <svg class="w-3 h-3 opacity-60" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 010-1.06z"/>
+                  <path
+                    d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 010-1.06z"
+                  />
                 </svg>
               }
             </button>
@@ -115,7 +119,9 @@ import { NativeMenuItem, NativeContextMenuPosition, NativeContextMenuEvent } fro
                       }
                       <span class="flex-1">{{ subItem.label }}</span>
                       @if (subItem.shortcut) {
-                        <span class="ml-4 text-xs opacity-60">{{ formatShortcut(subItem.shortcut) }}</span>
+                        <span class="ml-4 text-xs opacity-60">{{
+                          formatShortcut(subItem.shortcut)
+                        }}</span>
                       }
                     </button>
                   }
@@ -252,4 +258,3 @@ export class TwNativeContextMenuComponent implements OnInit, OnDestroy {
     }
   }
 }
-

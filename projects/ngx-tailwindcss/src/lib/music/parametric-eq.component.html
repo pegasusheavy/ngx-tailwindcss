@@ -26,8 +26,18 @@
         (dblclick)="toggleBand(band)"
         [title]="band.enabled ? 'Double-click to disable' : 'Double-click to enable'"
       >
-        <span class="w-2 h-2 rounded-full" [class.bg-white]="band.enabled" [class.bg-transparent]="!band.enabled" [class.border]="!band.enabled" [class.border-white]="!band.enabled"></span>
-        <span>{{ band.frequency >= 1000 ? (band.frequency / 1000).toFixed(1) + 'k' : band.frequency }}Hz</span>
+        <span
+          class="w-2 h-2 rounded-full"
+          [class.bg-white]="band.enabled"
+          [class.bg-transparent]="!band.enabled"
+          [class.border]="!band.enabled"
+          [class.border-white]="!band.enabled"
+        ></span>
+        <span
+          >{{
+            band.frequency >= 1000 ? (band.frequency / 1000).toFixed(1) + 'k' : band.frequency
+          }}Hz</span
+        >
       </button>
     }
   </div>
@@ -42,7 +52,11 @@
             <div class="space-y-1">
               <label class="text-slate-400 block">Frequency</label>
               <div class="text-white font-mono">
-                {{ band.frequency >= 1000 ? (band.frequency / 1000).toFixed(2) + ' kHz' : band.frequency.toFixed(0) + ' Hz' }}
+                {{
+                  band.frequency >= 1000
+                    ? (band.frequency / 1000).toFixed(2) + ' kHz'
+                    : band.frequency.toFixed(0) + ' Hz'
+                }}
               </div>
             </div>
 
@@ -71,7 +85,3 @@
     }
   }
 </div>
-
-
-
-

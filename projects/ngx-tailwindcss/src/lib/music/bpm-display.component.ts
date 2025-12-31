@@ -15,7 +15,14 @@ import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 
-export type BpmDisplayVariant = 'default' | 'minimal' | 'led' | 'digital' | 'analog' | 'light' | 'highContrast';
+export type BpmDisplayVariant =
+  | 'default'
+  | 'minimal'
+  | 'led'
+  | 'digital'
+  | 'analog'
+  | 'light'
+  | 'highContrast';
 export type BpmDisplaySize = 'sm' | 'md' | 'lg' | 'xl';
 export type BpmSyncStatus = 'disconnected' | 'searching' | 'synced' | 'master';
 
@@ -345,7 +352,8 @@ export class TwBpmDisplayComponent implements OnInit {
   protected readonly syncStatusIcon = computed(() => {
     const status = this.syncStatus();
     return {
-      disconnected: 'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636',
+      disconnected:
+        'M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636',
       searching: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
       synced: 'M5 13l4 4L19 7',
       master: 'M13 10V3L4 14h7v7l9-11h-7z',
@@ -437,7 +445,8 @@ export class TwBpmDisplayComponent implements OnInit {
 
     const variantClasses: Record<BpmDisplayVariant, string> = {
       default: 'bg-slate-700 hover:bg-slate-600 text-white',
-      minimal: 'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white',
+      minimal:
+        'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white',
       led: 'bg-slate-800 hover:bg-slate-700 text-red-400 border border-red-900/50',
       digital: 'bg-slate-800 hover:bg-slate-700 text-cyan-400',
       analog: 'bg-amber-900/50 hover:bg-amber-800/50 text-amber-300 border border-amber-700/50',
@@ -445,7 +454,9 @@ export class TwBpmDisplayComponent implements OnInit {
       highContrast: 'bg-white hover:bg-yellow-400 text-black border-2 border-white',
     };
 
-    return ['px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-50', variantClasses[variant]].join(' ');
+    return [
+      'px-3 py-1.5 rounded text-sm font-medium transition-colors disabled:opacity-50',
+      variantClasses[variant],
+    ].join(' ');
   });
 }
-

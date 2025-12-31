@@ -9,7 +9,14 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-export type AudioStatsVariant = 'default' | 'minimal' | 'detailed' | 'compact' | 'pro' | 'light' | 'highContrast';
+export type AudioStatsVariant =
+  | 'default'
+  | 'minimal'
+  | 'detailed'
+  | 'compact'
+  | 'pro'
+  | 'light'
+  | 'highContrast';
 export type AudioStatsSize = 'sm' | 'md' | 'lg';
 
 export interface AudioFileInfo {
@@ -33,22 +40,22 @@ export interface AudioFileInfo {
 
 // Common codec descriptions
 export const CODEC_INFO: Record<string, { name: string; description: string; lossy: boolean }> = {
-  'mp3': { name: 'MP3', description: 'MPEG Audio Layer III', lossy: true },
-  'aac': { name: 'AAC', description: 'Advanced Audio Coding', lossy: true },
+  mp3: { name: 'MP3', description: 'MPEG Audio Layer III', lossy: true },
+  aac: { name: 'AAC', description: 'Advanced Audio Coding', lossy: true },
   'aac-lc': { name: 'AAC-LC', description: 'Low Complexity AAC', lossy: true },
   'aac-he': { name: 'AAC-HE', description: 'High Efficiency AAC', lossy: true },
-  'opus': { name: 'Opus', description: 'Opus Interactive Audio', lossy: true },
-  'vorbis': { name: 'Vorbis', description: 'Ogg Vorbis', lossy: true },
-  'flac': { name: 'FLAC', description: 'Free Lossless Audio Codec', lossy: false },
-  'alac': { name: 'ALAC', description: 'Apple Lossless Audio Codec', lossy: false },
-  'wav': { name: 'WAV', description: 'Waveform Audio', lossy: false },
-  'pcm': { name: 'PCM', description: 'Pulse Code Modulation', lossy: false },
-  'aiff': { name: 'AIFF', description: 'Audio Interchange File Format', lossy: false },
-  'dsd': { name: 'DSD', description: 'Direct Stream Digital', lossy: false },
-  'wma': { name: 'WMA', description: 'Windows Media Audio', lossy: true },
-  'ac3': { name: 'AC-3', description: 'Dolby Digital', lossy: true },
-  'eac3': { name: 'E-AC-3', description: 'Dolby Digital Plus', lossy: true },
-  'dts': { name: 'DTS', description: 'Digital Theater Systems', lossy: true },
+  opus: { name: 'Opus', description: 'Opus Interactive Audio', lossy: true },
+  vorbis: { name: 'Vorbis', description: 'Ogg Vorbis', lossy: true },
+  flac: { name: 'FLAC', description: 'Free Lossless Audio Codec', lossy: false },
+  alac: { name: 'ALAC', description: 'Apple Lossless Audio Codec', lossy: false },
+  wav: { name: 'WAV', description: 'Waveform Audio', lossy: false },
+  pcm: { name: 'PCM', description: 'Pulse Code Modulation', lossy: false },
+  aiff: { name: 'AIFF', description: 'Audio Interchange File Format', lossy: false },
+  dsd: { name: 'DSD', description: 'Direct Stream Digital', lossy: false },
+  wma: { name: 'WMA', description: 'Windows Media Audio', lossy: true },
+  ac3: { name: 'AC-3', description: 'Dolby Digital', lossy: true },
+  eac3: { name: 'E-AC-3', description: 'Dolby Digital Plus', lossy: true },
+  dts: { name: 'DTS', description: 'Digital Theater Systems', lossy: true },
 };
 
 /**
@@ -162,11 +169,16 @@ export class TwAudioStatsComponent {
     const info = this.effectiveInfo();
     const channels = info.channels;
     switch (channels) {
-      case 1: return 'Mono';
-      case 2: return 'Stereo';
-      case 6: return '5.1 Surround';
-      case 8: return '7.1 Surround';
-      default: return `${channels} ch`;
+      case 1:
+        return 'Mono';
+      case 2:
+        return 'Stereo';
+      case 6:
+        return '5.1 Surround';
+      case 8:
+        return '7.1 Surround';
+      default:
+        return `${channels} ch`;
     }
   });
 
@@ -203,9 +215,11 @@ export class TwAudioStatsComponent {
     const bitrate = info.bitrate;
 
     // Lossless formats
-    if (info.codec?.toLowerCase().includes('flac') ||
-        info.codec?.toLowerCase().includes('alac') ||
-        info.format?.toLowerCase() === 'wav') {
+    if (
+      info.codec?.toLowerCase().includes('flac') ||
+      info.codec?.toLowerCase().includes('alac') ||
+      info.format?.toLowerCase() === 'wav'
+    ) {
       return 'lossless';
     }
 
@@ -225,20 +239,28 @@ export class TwAudioStatsComponent {
   protected readonly qualityIndicatorColor = computed(() => {
     const level = this.qualityLevel();
     switch (level) {
-      case 'lossless': return 'bg-emerald-500';
-      case 'high': return 'bg-blue-500';
-      case 'medium': return 'bg-amber-500';
-      case 'low': return 'bg-red-500';
+      case 'lossless':
+        return 'bg-emerald-500';
+      case 'high':
+        return 'bg-blue-500';
+      case 'medium':
+        return 'bg-amber-500';
+      case 'low':
+        return 'bg-red-500';
     }
   });
 
   protected readonly qualityLabel = computed(() => {
     const level = this.qualityLevel();
     switch (level) {
-      case 'lossless': return 'Lossless';
-      case 'high': return 'Hi-Res';
-      case 'medium': return 'Standard';
-      case 'low': return 'Low';
+      case 'lossless':
+        return 'Lossless';
+      case 'high':
+        return 'Hi-Res';
+      case 'medium':
+        return 'Standard';
+      case 'low':
+        return 'Low';
     }
   });
 
@@ -274,9 +296,10 @@ export class TwAudioStatsComponent {
   // Estimated storage for different durations
   protected readonly storageEstimates = computed(() => {
     const info = this.effectiveInfo();
-    const bytesPerSecond = info.fileSize && info.duration > 0
-      ? info.fileSize / info.duration
-      : this.estimateBytesPerSecond();
+    const bytesPerSecond =
+      info.fileSize && info.duration > 0
+        ? info.fileSize / info.duration
+        : this.estimateBytesPerSecond();
 
     return {
       perMinute: this.formatBytes(bytesPerSecond * 60),
@@ -366,14 +389,54 @@ export class TwAudioStatsComponent {
   protected readonly stats = computed(() => {
     const info = this.effectiveInfo();
     const stats: { key: string; label: string; value: string; show: boolean }[] = [
-      { key: 'duration', label: 'Duration', value: this.formattedDuration(), show: this.showDuration() },
-      { key: 'sampleRate', label: 'Sample Rate', value: this.formattedSampleRate(), show: this.showSampleRate() },
-      { key: 'bitDepth', label: 'Bit Depth', value: this.formattedBitDepth(), show: this.showBitDepth() && !!info.bitDepth },
-      { key: 'channels', label: 'Channels', value: this.formattedChannels(), show: this.showChannels() },
-      { key: 'fileSize', label: 'Size', value: this.formattedFileSize(), show: this.showFileSize() && !!info.fileSize },
-      { key: 'bitrate', label: 'Bitrate', value: this.formattedBitrate(), show: this.showBitrate() && !!info.bitrate },
-      { key: 'codec', label: 'Codec', value: this.formattedCodec(), show: this.showCodec() && !!info.codec },
-      { key: 'format', label: 'Format', value: this.formattedFormat(), show: this.showFormat() && !!info.format },
+      {
+        key: 'duration',
+        label: 'Duration',
+        value: this.formattedDuration(),
+        show: this.showDuration(),
+      },
+      {
+        key: 'sampleRate',
+        label: 'Sample Rate',
+        value: this.formattedSampleRate(),
+        show: this.showSampleRate(),
+      },
+      {
+        key: 'bitDepth',
+        label: 'Bit Depth',
+        value: this.formattedBitDepth(),
+        show: this.showBitDepth() && !!info.bitDepth,
+      },
+      {
+        key: 'channels',
+        label: 'Channels',
+        value: this.formattedChannels(),
+        show: this.showChannels(),
+      },
+      {
+        key: 'fileSize',
+        label: 'Size',
+        value: this.formattedFileSize(),
+        show: this.showFileSize() && !!info.fileSize,
+      },
+      {
+        key: 'bitrate',
+        label: 'Bitrate',
+        value: this.formattedBitrate(),
+        show: this.showBitrate() && !!info.bitrate,
+      },
+      {
+        key: 'codec',
+        label: 'Codec',
+        value: this.formattedCodec(),
+        show: this.showCodec() && !!info.codec,
+      },
+      {
+        key: 'format',
+        label: 'Format',
+        value: this.formattedFormat(),
+        show: this.showFormat() && !!info.format,
+      },
     ];
 
     return stats.filter(s => s.show);
@@ -447,4 +510,3 @@ export class TwAudioStatsComponent {
   // Expose CODEC_INFO for template
   protected readonly CODEC_INFO = CODEC_INFO;
 }
-

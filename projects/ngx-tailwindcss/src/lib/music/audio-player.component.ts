@@ -84,7 +84,6 @@ export class TwAudioPlayerComponent implements AfterViewInit, OnDestroy {
   protected readonly isLoading = signal(false);
   protected readonly audioBuffer = signal<AudioBuffer | null>(null);
 
-
   private audioContext: AudioContext | null = null;
 
   protected readonly progress = computed(() => {
@@ -249,7 +248,7 @@ export class TwAudioPlayerComponent implements AfterViewInit, OnDestroy {
   }
 
   protected toggleExpand(): void {
-    this.isExpanded.update((v) => !v);
+    this.isExpanded.update(v => !v);
   }
 
   // Audio element event handlers
@@ -303,4 +302,3 @@ export class TwAudioPlayerComponent implements AfterViewInit, OnDestroy {
     this.isLoading.set(false);
   }
 }
-
