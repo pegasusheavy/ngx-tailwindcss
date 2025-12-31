@@ -5,11 +5,11 @@ import {
   Component,
   computed,
   ContentChildren,
-  EventEmitter,
+  effect,
   forwardRef,
   inject,
-  Input,
-  Output,
+  input,
+  output,
   QueryList,
   signal,
 } from '@angular/core';
@@ -53,47 +53,57 @@ export class TwRadioButtonComponent {
   private readonly twClass = inject(TwClassService);
 
   /** Value of the radio button */
-  @Input({ required: true }) value: any;
+  readonly value = input.required<any>();
 
   /** Label text */
-  @Input() label = '';
+  readonly label = input('');
 
   /** Name attribute (set by parent group) */
-  @Input() name = '';
+  readonly name = input('');
 
   /** Visual variant */
-  @Input() variant: RadioVariant = 'primary';
+  readonly variant = input<RadioVariant>('primary');
 
   /** Size of the radio button */
-  @Input() size: RadioSize = 'md';
+  readonly size = input<RadioSize>('md');
 
   /** Whether the radio is disabled */
-  @Input({ transform: booleanAttribute }) disabled = false;
+  readonly disabled = input(false, { transform: booleanAttribute });
 
   /** Focus event */
-  @Output() onFocus = new EventEmitter<FocusEvent>();
+  readonly onFocus = output<FocusEvent>();
 
   /** Blur event */
-  @Output() onBlur = new EventEmitter<FocusEvent>();
+  readonly onBlur = output<FocusEvent>();
 
   /** Internal: selected value from parent */
   selectedValue = signal<any>(null);
 
+  /** Internal: disabled override from parent */
+  _disabledOverride = signal(false);
+
+  /** Internal: name override from parent */
+  _nameOverride = signal('');
+
   /** Internal: change callback from parent */
   onSelectionChange: (value: any) => void = () => {};
 
-  protected isChecked = computed(() => this.selectedValue() === this.value);
+  protected isDisabled = computed(() => this.disabled() || this._disabledOverride());
+
+  protected effectiveName = computed(() => this._nameOverride() || this.name());
+
+  protected isChecked = computed(() => this.selectedValue() === this.value());
 
   protected labelContainerClasses = computed(() => {
     return this.twClass.merge(
       'inline-flex items-center gap-2 cursor-pointer',
-      this.disabled ? 'opacity-50 cursor-not-allowed' : ''
+      this.isDisabled() ? 'opacity-50 cursor-not-allowed' : ''
     );
   });
 
   protected radioClasses = computed(() => {
-    const variantClasses = RADIO_VARIANTS[this.variant];
-    const sizeClasses = RADIO_SIZES[this.size].radio;
+    const variantClasses = RADIO_VARIANTS[this.variant()];
+    const sizeClasses = RADIO_SIZES[this.size()].radio;
 
     return this.twClass.merge(
       'rounded-full border-2 bg-white dark:bg-slate-800 transition-colors duration-150',
@@ -107,14 +117,14 @@ export class TwRadioButtonComponent {
   protected labelTextClasses = computed(() => {
     return this.twClass.merge(
       'text-slate-700 dark:text-slate-300 select-none',
-      RADIO_SIZES[this.size].label,
-      this.disabled ? 'text-slate-400 dark:text-slate-500' : ''
+      RADIO_SIZES[this.size()].label,
+      this.isDisabled() ? 'text-slate-400 dark:text-slate-500' : ''
     );
   });
 
   onRadioChange(): void {
-    if (!this.disabled) {
-      this.onSelectionChange(this.value);
+    if (!this.isDisabled()) {
+      this.onSelectionChange(this.value());
     }
   }
 }
@@ -148,23 +158,25 @@ export class TwRadioGroupComponent implements ControlValueAccessor, AfterContent
   private readonly twClass = inject(TwClassService);
 
   /** Name for all radio buttons in the group */
-  @Input() name = `tw-radio-group-${Math.random().toString(36).slice(2)}`;
+  readonly name = input(`tw-radio-group-${Math.random().toString(36).slice(2)}`);
 
   /** Orientation of the group */
-  @Input() orientation: 'horizontal' | 'vertical' = 'vertical';
+  readonly orientation = input<'horizontal' | 'vertical'>('vertical');
 
   /** Gap between radio buttons */
-  @Input() gap: 'sm' | 'md' | 'lg' = 'md';
+  readonly gap = input<'sm' | 'md' | 'lg'>('md');
 
   /** Whether all radios are disabled */
-  @Input({ transform: booleanAttribute }) disabled = false;
+  readonly disabled = input(false, { transform: booleanAttribute });
 
   /** Change event */
-  @Output() onChange = new EventEmitter<any>();
+  readonly onChange = output<any>();
 
   @ContentChildren(TwRadioButtonComponent) radioButtons!: QueryList<TwRadioButtonComponent>;
 
   protected selectedValue = signal<any>(null);
+  private _disabled = signal(false);
+  private contentInitialized = false;
 
   private onChangeFn: (value: any) => void = () => {};
   private onTouchedFn: () => void = () => {};
@@ -175,15 +187,31 @@ export class TwRadioGroupComponent implements ControlValueAccessor, AfterContent
     lg: 'gap-4',
   };
 
+  protected isDisabled = computed(() => this.disabled() || this._disabled());
+
   protected groupClasses = computed(() => {
     return this.twClass.merge(
       'flex',
-      this.orientation === 'vertical' ? 'flex-col' : 'flex-row flex-wrap',
-      this.GAPS[this.gap]
+      this.orientation() === 'vertical' ? 'flex-col' : 'flex-row flex-wrap',
+      this.GAPS[this.gap()]
     );
   });
 
+  constructor() {
+    // Watch for input changes and update child components
+    effect(() => {
+      // Access signals to track them
+      this.name();
+      this.isDisabled();
+
+      if (this.contentInitialized && this.radioButtons) {
+        this.updateRadioButtons();
+      }
+    });
+  }
+
   ngAfterContentInit(): void {
+    this.contentInitialized = true;
     this.updateRadioButtons();
     this.radioButtons.changes.subscribe(() => {
       this.updateRadioButtons();
@@ -192,9 +220,9 @@ export class TwRadioGroupComponent implements ControlValueAccessor, AfterContent
 
   private updateRadioButtons(): void {
     this.radioButtons.forEach(radio => {
-      radio.name = this.name;
+      radio._nameOverride.set(this.name());
       radio.selectedValue.set(this.selectedValue());
-      radio.disabled = this.disabled || radio.disabled;
+      radio._disabledOverride.set(this.isDisabled());
       radio.onSelectionChange = (value: any) => {
         this.selectedValue.set(value);
         this.onChangeFn(value);
@@ -227,7 +255,7 @@ export class TwRadioGroupComponent implements ControlValueAccessor, AfterContent
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this._disabled.set(isDisabled);
     if (this.radioButtons) {
       this.updateRadioButtons();
     }

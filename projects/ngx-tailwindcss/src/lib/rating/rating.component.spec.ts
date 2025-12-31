@@ -146,32 +146,33 @@ describe('TwRatingComponent', () => {
   describe('sizes', () => {
     it('should apply md size by default', () => {
       const starIcons = ratingEl.queryAll(By.css('svg'));
-      expect(starIcons[0].nativeElement.className).toContain('w-6');
-      expect(starIcons[0].nativeElement.className).toContain('h-6');
+      // SVG elements use getAttribute('class') instead of className
+      expect(starIcons[0].nativeElement.getAttribute('class')).toContain('w-6');
+      expect(starIcons[0].nativeElement.getAttribute('class')).toContain('h-6');
     });
 
     it('should apply sm size', () => {
       component.size.set('sm');
       fixture.detectChanges();
       const starIcons = ratingEl.queryAll(By.css('svg'));
-      expect(starIcons[0].nativeElement.className).toContain('w-4');
-      expect(starIcons[0].nativeElement.className).toContain('h-4');
+      expect(starIcons[0].nativeElement.getAttribute('class')).toContain('w-4');
+      expect(starIcons[0].nativeElement.getAttribute('class')).toContain('h-4');
     });
 
     it('should apply lg size', () => {
       component.size.set('lg');
       fixture.detectChanges();
       const starIcons = ratingEl.queryAll(By.css('svg'));
-      expect(starIcons[0].nativeElement.className).toContain('w-8');
-      expect(starIcons[0].nativeElement.className).toContain('h-8');
+      expect(starIcons[0].nativeElement.getAttribute('class')).toContain('w-8');
+      expect(starIcons[0].nativeElement.getAttribute('class')).toContain('h-8');
     });
 
     it('should apply xl size', () => {
       component.size.set('xl');
       fixture.detectChanges();
       const starIcons = ratingEl.queryAll(By.css('svg'));
-      expect(starIcons[0].nativeElement.className).toContain('w-10');
-      expect(starIcons[0].nativeElement.className).toContain('h-10');
+      expect(starIcons[0].nativeElement.getAttribute('class')).toContain('w-10');
+      expect(starIcons[0].nativeElement.getAttribute('class')).toContain('h-10');
     });
   });
 

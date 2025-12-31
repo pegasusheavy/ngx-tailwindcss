@@ -1,7 +1,7 @@
 import { Component, signal, ViewChild } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TwPopoverComponent, PopoverPosition, PopoverTrigger } from './popover.component';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -154,32 +154,37 @@ describe('TwPopoverComponent', () => {
 
   describe('hover trigger', () => {
     beforeEach(() => {
+      vi.useFakeTimers();
       component.trigger.set('hover');
       component.hoverDelay.set(0);
       fixture.detectChanges();
     });
 
-    it('should show on mouseenter', fakeAsync(() => {
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it('should show on mouseenter', () => {
       const triggerContainer = popoverEl.querySelector('div') as HTMLElement;
       triggerContainer.dispatchEvent(new MouseEvent('mouseenter'));
-      tick(10);
+      vi.advanceTimersByTime(10);
       fixture.detectChanges();
 
       expect(component.popover['visible']()).toBe(true);
-    }));
+    });
 
-    it('should hide on mouseleave', fakeAsync(() => {
+    it('should hide on mouseleave', () => {
       const triggerContainer = popoverEl.querySelector('div') as HTMLElement;
       triggerContainer.dispatchEvent(new MouseEvent('mouseenter'));
-      tick(10);
+      vi.advanceTimersByTime(10);
       fixture.detectChanges();
 
       triggerContainer.dispatchEvent(new MouseEvent('mouseleave'));
-      tick(10);
+      vi.advanceTimersByTime(10);
       fixture.detectChanges();
 
       expect(component.popover['visible']()).toBe(false);
-    }));
+    });
   });
 
   describe('position', () => {

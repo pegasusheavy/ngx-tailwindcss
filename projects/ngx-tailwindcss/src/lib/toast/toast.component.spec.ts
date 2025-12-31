@@ -1,7 +1,7 @@
 import { Component, signal, ViewChild } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   TwToastComponent,
   TwToastContainerComponent,
@@ -78,18 +78,22 @@ describe('TwToastService', () => {
       expect(service.toasts()[0].duration).toBe(5000);
     });
 
-    it('should auto-dismiss after duration', fakeAsync(() => {
+    it('should auto-dismiss after duration', async () => {
+      vi.useFakeTimers();
       service.show({ message: 'Test toast', duration: 1000 });
       expect(service.toasts().length).toBe(1);
-      tick(1100);
+      vi.advanceTimersByTime(1100);
       expect(service.toasts().length).toBe(0);
-    }));
+      vi.useRealTimers();
+    });
 
-    it('should not auto-dismiss when duration is 0', fakeAsync(() => {
+    it('should not auto-dismiss when duration is 0', async () => {
+      vi.useFakeTimers();
       service.show({ message: 'Test toast', duration: 0 });
-      tick(10000);
+      vi.advanceTimersByTime(10000);
       expect(service.toasts().length).toBe(1);
-    }));
+      vi.useRealTimers();
+    });
   });
 
   describe('convenience methods', () => {

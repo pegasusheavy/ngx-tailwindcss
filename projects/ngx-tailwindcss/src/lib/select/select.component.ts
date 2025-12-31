@@ -222,14 +222,14 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
       'animate-in fade-in-0 zoom-in-95 duration-100'
     );
 
-    if (this.appendTo === 'body') {
+    if (this.appendTo() === 'body') {
       return this.twClass.merge(baseClasses, 'fixed z-[9999]');
     }
     return this.twClass.merge(baseClasses, 'absolute z-50 w-full mt-1');
   });
 
   protected dropdownStyle = computed(() => {
-    if (this.appendTo === 'body') {
+    if (this.appendTo() === 'body') {
       const pos = this.dropdownPosition();
       if (pos) {
         return {
@@ -254,7 +254,7 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   }
 
   ngAfterViewInit(): void {
-    if (this.appendTo === 'body' && isPlatformBrowser(this.platformId)) {
+    if (this.appendTo() === 'body' && isPlatformBrowser(this.platformId)) {
       this.setupScrollListener();
       this.setupResizeListener();
     }
@@ -271,7 +271,7 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   }
 
   toggleDropdown(): void {
-    if (this.disabled) return;
+    if (this.isDisabled()) return;
 
     const willOpen = !this.isOpen();
     this.isOpen.set(willOpen);
@@ -343,7 +343,7 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   }
 
   private updateDropdownPosition(): void {
-    if (this.appendTo !== 'body' || !this.triggerButton) return;
+    if (this.appendTo() !== 'body' || !this.triggerButton) return;
 
     const triggerEl = this.triggerButton.nativeElement;
     const rect = triggerEl.getBoundingClientRect();
@@ -414,7 +414,7 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this._disabled.set(isDisabled);
   }
 
   /** Clear the selection */

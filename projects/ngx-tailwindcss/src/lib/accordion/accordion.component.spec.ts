@@ -79,20 +79,23 @@ describe('TwAccordionComponent', () => {
 
   describe('variants', () => {
     it('should apply default variant classes', () => {
-      expect(accordionEl.className).toContain('border');
-      expect(accordionEl.className).toContain('rounded-lg');
+      const innerDiv = accordionEl.querySelector('div');
+      expect(innerDiv?.className).toContain('border');
+      expect(innerDiv?.className).toContain('rounded-lg');
     });
 
     it('should apply bordered variant classes', () => {
       component.variant.set('bordered');
       fixture.detectChanges();
-      expect(accordionEl.className).not.toContain('divide-y');
+      const innerDiv = accordionEl.querySelector('div');
+      expect(innerDiv?.className).not.toContain('divide-y');
     });
 
     it('should apply separated variant classes', () => {
       component.variant.set('separated');
       fixture.detectChanges();
-      expect(accordionEl.className).not.toContain('divide-y');
+      const innerDiv = accordionEl.querySelector('div');
+      expect(innerDiv?.className).not.toContain('divide-y');
     });
   });
 
@@ -231,12 +234,13 @@ describe('TwAccordionItemComponent', () => {
     const items = fixture.debugElement.queryAll(By.directive(TwAccordionItemComponent));
     const icon = items[0].query(By.css('svg'));
 
-    expect(icon.nativeElement.className).not.toContain('rotate-180');
+    // SVG elements use getAttribute('class') instead of className
+    expect(icon.nativeElement.getAttribute('class')).not.toContain('rotate-180');
 
     items[0].query(By.css('button')).nativeElement.click();
     fixture.detectChanges();
 
-    expect(icon.nativeElement.className).toContain('rotate-180');
+    expect(icon.nativeElement.getAttribute('class')).toContain('rotate-180');
   });
 
   it('should emit openChange event', () => {

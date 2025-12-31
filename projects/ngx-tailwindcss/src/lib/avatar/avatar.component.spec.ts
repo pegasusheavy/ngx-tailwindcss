@@ -264,19 +264,22 @@ describe('TwAvatarGroupComponent', () => {
 
   describe('spacing', () => {
     it('should apply normal spacing by default', () => {
-      expect(groupEl.className).toContain('-space-x-2');
+      const innerDiv = groupEl.querySelector('div');
+      expect(innerDiv?.className).toContain('-space-x-2');
     });
 
     it('should apply tight spacing', () => {
       component.spacing.set('tight');
       fixture.detectChanges();
-      expect(groupEl.className).toContain('-space-x-3');
+      const innerDiv = groupEl.querySelector('div');
+      expect(innerDiv?.className).toContain('-space-x-3');
     });
 
     it('should apply loose spacing', () => {
       component.spacing.set('loose');
       fixture.detectChanges();
-      expect(groupEl.className).toContain('-space-x-1');
+      const innerDiv = groupEl.querySelector('div');
+      expect(innerDiv?.className).toContain('-space-x-1');
     });
   });
 

@@ -118,7 +118,9 @@ describe('TwRadioGroupComponent', () => {
     it('should switch to horizontal orientation', () => {
       component.orientation.set('horizontal');
       fixture.detectChanges();
-      expect(groupEl.querySelector('div')?.className).toContain('flex-row');
+      // tailwind-merge may optimize flex-row away since flex is default, check for flex-wrap instead
+      expect(groupEl.querySelector('div')?.className).toContain('flex-wrap');
+      expect(groupEl.querySelector('div')?.className).not.toContain('flex-col');
     });
   });
 
