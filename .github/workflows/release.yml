@@ -32,15 +32,15 @@ jobs:
           cache: 'pnpm'
           registry-url: 'https://registry.npmjs.org'
 
+      # Install only root/library dependencies (exclude docs which needs built library)
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --filter "!docs"
 
       - name: Build library
         run: pnpm run build
 
       - name: Run tests
         run: pnpm run test:run
-        continue-on-error: true  # TODO: Fix remaining failing tests and remove this
 
       - name: Publish to npm
         run: |
@@ -49,19 +49,19 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Generate changelog
-        id: changelog
-        uses: orhun/git-cliff-action@v3
-        with:
-          config: cliff.toml
-          args: --latest --strip header
-        env:
-          OUTPUT: CHANGELOG.md
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          body: ${{ steps.changelog.outputs.content }}
+          body: |
+            ## What's Changed
+            
+            See the [CHANGELOG](https://github.com/pegasusheavy/ngx-tailwindcss/blob/main/CHANGELOG.md) for details.
+            
+            ### Installation
+            
+            ```bash
+            npm install @pegasusheavy/ngx-tailwindcss@${{ github.ref_name }}
+            ```
           draft: false
           prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'rc') }}
         env:
@@ -96,12 +96,14 @@ jobs:
           node-version: 20.x
           cache: 'pnpm'
 
+      # Install only root/library dependencies first
       - name: Install root dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --filter "!docs"
 
       - name: Build library
         run: pnpm run build
 
+      # Now install docs dependencies (library dist exists)
       - name: Install docs dependencies
         run: cd docs && pnpm install --frozen-lockfile
 
@@ -119,4 +121,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
