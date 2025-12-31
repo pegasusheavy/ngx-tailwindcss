@@ -33,10 +33,13 @@ export class DockService {
       try {
         const tauriWindow = await importTauriWindow();
         if (!tauriWindow) return;
-        // Tauri doesn't have direct dock badge API, use window title instead
-        tauriWindow.getCurrentWindow();
-        // Badge functionality varies by platform in Tauri
-        console.warn('Dock badge not directly supported in Tauri, consider using notifications');
+        const appWindow = tauriWindow.getCurrentWindow();
+        // Tauri doesn't have direct dock badge API, so we append badge to window title
+        const currentTitle = await appWindow.title();
+        // Remove any existing badge from title (e.g., "App (3)" -> "App")
+        const baseTitle = currentTitle.replace(/\s*\(\d+\)\s*$/, '');
+        const newTitle = text ? `${baseTitle} (${text})` : baseTitle;
+        await appWindow.setTitle(newTitle);
       } catch (error) {
         console.error('Failed to set Tauri dock badge:', error);
       }
@@ -66,10 +69,9 @@ export class DockService {
     if (platform === PLATFORM_ELECTRON) {
       try {
         const electron = await importElectron();
-        if (!electron?.ipcRenderer) return;
         // Progress should be between 0 and 1, or -1 to clear
         const normalizedProgress = progress < 0 ? -1 : Math.min(1, Math.max(0, progress / 100));
-        electron.ipcRenderer.send('set-progress', normalizedProgress);
+        electron?.ipcRenderer?.send('set-progress', normalizedProgress);
       } catch (error) {
         console.error('Failed to set Electron progress:', error);
       }
