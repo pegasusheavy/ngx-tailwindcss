@@ -54,11 +54,11 @@ jobs:
         with:
           body: |
             ## What's Changed
-            
+
             See the [CHANGELOG](https://github.com/pegasusheavy/ngx-tailwindcss/blob/main/CHANGELOG.md) for details.
-            
+
             ### Installation
-            
+
             ```bash
             npm install @pegasusheavy/ngx-tailwindcss@${{ github.ref_name }}
             ```
@@ -108,7 +108,7 @@ jobs:
         run: cd docs && pnpm install --frozen-lockfile
 
       - name: Build docs
-        run: cd docs && pnpm run build --base-href /ngx-tailwindcss/
+        run: cd docs && pnpm run build --configuration github-pages
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
