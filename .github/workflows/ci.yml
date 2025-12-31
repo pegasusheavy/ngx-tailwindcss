@@ -126,7 +126,6 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/dist/docs/browser
-          cname: ngx-tailwindcss.dev
 
   docs-build-only:
     name: Build Docs (PR)
