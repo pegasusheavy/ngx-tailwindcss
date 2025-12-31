@@ -5,6 +5,139 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.4] - 2025-12-31
+
+### 🐛 Bug Fixes
+
+- **Volume Dial**: Refactored to use Angular's `model()` input for proper two-way binding support, fixing `NG0303` warning about `value` not being a known property
+- **Pagination**: Fixed `NG0955` duplicate keys warning by using unique identifiers for left/right ellipsis in page number arrays
+
+### 🧹 Code Quality
+
+- Removed redundant `valueChange` output from volume dial (now handled automatically by `model()`)
+- Cleaned up unused imports in volume dial component
+
+## [0.3.3] - 2025-12-31
+
+### 🎨 Dark Mode & UI Improvements
+
+- Added dark mode variants to ghost and outline button variants
+- Fixed ghost button icon visibility in dark mode
+- Fixed avatar ring shapes (add rounded-full to prevent square rings)
+- Fixed notification badge clipping (move outside button overflow)
+- Removed redundant rounded corners from terminal and log-viewer
+- Increased terminal and log-viewer demo heights to prevent cutoff
+- Fixed DAW mixer fader styling (rectangular instead of rounded)
+
+### 📦 Dependencies
+
+- Updated `@angular/router` to 21.0.6 to match other Angular packages
+
+## [0.3.2] - 2025-12-30
+
+### 🛠 CI/CD Fixes
+
+- Fixed GitHub Pages deployment for documentation
+- Removed CNAME configuration for github.io deployment
+- Deployed docs from main branch instead of release tags
+- Allow docs deployment even if npm publish fails
+
+## [0.3.1] - 2025-12-29
+
+### 🧪 Testing
+
+- Added comprehensive unit test coverage (1006 tests)
+- All components now have spec files with thorough testing
+- Fixed test utilities and improved test infrastructure
+
+## [0.3.0] - 2025-12-28
+
+### ✨ Native App UI Components
+
+Complete suite of UI components for building desktop-like applications with Tauri, Electron, or PWAs:
+
+#### Window & Chrome Components
+- **Title Bar** - Custom draggable title bar with platform-specific controls
+- **Window Controls** - macOS traffic lights, Windows, and Linux style buttons
+- **Menu Bar** - Native-style menu bar with keyboard navigation
+- **Context Menu** - Right-click context menus with submenus
+
+#### Navigation Components
+- **Sidebar** - Collapsible sidebar with tree navigation
+- **File Tree** - Hierarchical file/folder explorer
+- **Breadcrumb Navigation** - Path-based breadcrumbs
+- **Tab Bar** - Document tabs with close/reorder
+
+#### Search & Commands
+- **Command Palette** - VS Code-style command palette (Cmd+K)
+- **Search Bar** - Global search with suggestions
+- **Quick Switcher** - Quick file/tab switcher
+
+#### Settings & Preferences
+- **Settings Panel** - Categorized settings layout
+- **Preferences Dialog** - macOS-style preferences
+- **Keyboard Shortcuts Editor** - Visual shortcut editor
+- **Theme Selector** - Light/Dark/System mode toggle
+
+#### Dialogs & Notifications
+- **Alert Dialog** - Info, Warning, Error, Success variants
+- **Confirm Dialog** - Confirmation with custom buttons
+- **Prompt Dialog** - Text input prompts
+- **About Dialog** - App info with version, credits
+- **Update Dialog** - Update available notifications
+- **Onboarding Wizard** - Step-by-step introductions
+
+#### Data Display
+- **Property Inspector** - Key-value property display
+- **Terminal/Console** - Terminal output with ANSI colors
+- **Log Viewer** - Log entries with filtering
+- **Code/JSON Viewer** - Syntax highlighted code display
+
+#### Status & Feedback
+- **Status Bar** - Bottom status bar with sections
+- **Toolbar** - Icon buttons with overflow menu
+- **Activity Indicator** - Loading states
+- **Connection Status** - Online/offline indicators
+
+#### Interaction & Input
+- **Resizable Panels** - Drag-to-resize split panels
+- **Keyboard Shortcut Display** - Visual key combinations
+- **Drag & Drop Directives** - twDraggable, twDropZone
+- **Shortcut Directive** - twShortcut for keyboard bindings
+
+### 🔧 Services
+
+- `NativeAppPlatformService` - Window management, system info
+- `StorageService` - Local, secure, and file storage
+- `IpcService` - Tauri/Electron IPC communication
+- `UpdateService` - App update management
+- `FilePickerService` - Native file/folder dialogs
+- `SystemTrayService` - System tray icon and menu
+- `NativeNotificationsService` - System notifications
+- `DockService` - Dock/taskbar integration
+
+## [0.2.0] - 2025-12-26
+
+### ✨ Music/Audio Components
+
+Professional DAW-style audio components for music applications:
+
+- **Piano Keyboard** - Interactive piano with MIDI support
+- **Volume Dial** - Rotary volume/parameter control
+- **Mixer Faders** - Multi-channel mixing interface
+- **Waveform Display** - Audio waveform visualization
+- **Spectrum Analyzer** - Real-time frequency display
+- **VU Meter** - Level metering with peak hold
+- **Transport Controls** - Play/pause/stop/record buttons
+- **Timeline Ruler** - Time/beat markers
+
+### 🔧 Audio Services
+
+- `AudioContextService` - Web Audio API management
+- `MidiService` - MIDI device integration
+- `MobileSupportService` - Touch device optimization
+- `AccessibilityService` - Screen reader support for audio controls
+
 ## [0.1.2] - 2025-12-21
 
 ### 🛠 Packaging & Reliability
@@ -173,6 +306,12 @@ First public release of `@pegasus-heavy/ngx-tailwindcss` - A highly customizable
 - Zero bundled CSS - works with your Tailwind config
 - Signals-based reactive state management
 
+[0.3.4]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.4
+[0.3.3]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.3
+[0.3.2]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.2
+[0.3.1]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.1
+[0.3.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.0
+[0.2.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.2.0
 [0.1.2]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.2
 [0.1.1]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.1
 [0.1.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.0

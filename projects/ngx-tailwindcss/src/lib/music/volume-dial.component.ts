@@ -6,8 +6,8 @@ import {
   forwardRef,
   inject,
   input,
+  model,
   output,
-  signal,
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -103,6 +103,8 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
   private readonly dialSvg = viewChild<ElementRef<SVGElement>>('dialSvg');
 
   // Inputs
+  /** Initial/bound value - supports two-way binding with [(value)] */
+  readonly value = model(0);
   readonly min = input(0);
   readonly max = input(100);
   readonly step = input(1);
@@ -133,11 +135,8 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
   readonly reducedMotion = input<boolean | 'auto'>('auto'); // Respect reduced motion preference
 
   // Outputs
-  readonly valueChange = output<number>();
+  // Note: valueChange is automatically created by the model() signal
   readonly hapticTrigger = output<'change' | 'detent' | 'boundary'>(); // Haptic feedback trigger points
-
-  // Internal state
-  protected readonly value = signal(0);
   private isDragging = false;
   private startAngle = 0;
   private startValue = 0;
@@ -462,7 +461,6 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
     if (newValue !== this.value()) {
       this.value.set(newValue);
       this.onChangeFn(newValue);
-      this.valueChange.emit(newValue);
 
       // Announce to screen readers (debounced)
       if (this.announceChanges()) {
