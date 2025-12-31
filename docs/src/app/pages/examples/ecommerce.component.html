@@ -1,24 +1,24 @@
-<div class="min-h-screen bg-gradient-to-b from-emerald-50 via-teal-50/30 to-white">
+<div class="min-h-screen bg-gradient-to-b from-emerald-50 via-teal-50/30 to-white dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950">
   <!-- Top Navigation -->
-  <header class="bg-white/80 backdrop-blur-xl border-b border-emerald-200/50 sticky top-0 z-40 shadow-sm">
+  <header class="bg-white/80 dark:bg-zinc-900/90 backdrop-blur-xl border-b border-emerald-200/50 dark:border-zinc-700 sticky top-0 z-40 shadow-sm dark:shadow-black/20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Top Bar -->
       <div class="flex items-center justify-between h-16">
         <!-- Back to Docs & Logo -->
         <div class="flex items-center gap-3">
-          <a routerLink="/" class="flex items-center gap-2 px-3 py-2 text-emerald-700 hover:text-emerald-900 hover:bg-emerald-100 rounded-lg font-medium transition-colors">
+          <a routerLink="/" class="flex items-center gap-2 px-3 py-2 text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:bg-emerald-100 dark:hover:bg-zinc-800 rounded-lg font-medium transition-colors">
             <fa-icon [icon]="icons.arrowLeft" class="text-sm"></fa-icon>
             <span class="hidden sm:inline">Docs</span>
           </a>
 
-          <div class="h-6 w-px bg-emerald-300"></div>
+          <div class="h-6 w-px bg-emerald-300 dark:bg-zinc-600"></div>
 
           <div class="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-emerald-500/30">
             S
           </div>
           <div>
-            <h1 class="text-xl font-bold text-emerald-900">ShopHub</h1>
-            <p class="text-xs text-emerald-600">Premium Boutique</p>
+            <h1 class="text-xl font-bold text-emerald-900 dark:text-emerald-400">ShopHub</h1>
+            <p class="text-xs text-emerald-600 dark:text-emerald-500">Premium Boutique</p>
           </div>
         </div>
 
@@ -36,12 +36,12 @@
         <div class="flex items-center gap-3">
           <app-theme-toggle></app-theme-toggle>
 
-          <tw-button variant="ghost" size="sm">
+          <tw-button variant="ghost" size="sm" class="text-slate-700 dark:text-zinc-300">
             <fa-icon [icon]="icons.heart"></fa-icon>
             <span class="ml-1">Wishlist</span>
           </tw-button>
 
-          <tw-button variant="ghost" size="sm">
+          <tw-button variant="ghost" size="sm" class="text-slate-700 dark:text-zinc-300">
             <fa-icon [icon]="icons.user"></fa-icon>
             <span class="ml-1">Account</span>
           </tw-button>
@@ -62,14 +62,14 @@
       <aside class="col-span-12 lg:col-span-3">
         <tw-card [padded]="true">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="font-semibold text-slate-900">Filters</h3>
-            <tw-button variant="ghost" size="sm" (click)="clearFilters()">Clear</tw-button>
+            <h3 class="font-semibold text-slate-900 dark:text-zinc-100">Filters</h3>
+            <tw-button variant="ghost" size="sm" class="text-slate-700 dark:text-zinc-300" (click)="clearFilters()">Clear</tw-button>
           </div>
 
           <div class="space-y-6">
             <!-- Categories -->
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-2">Categories</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-zinc-300 mb-2">Categories</label>
               <tw-multiselect
                 [(ngModel)]="selectedCategories"
                 [groups]="categoryGroups"
@@ -83,7 +83,7 @@
 
             <!-- Brands -->
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-2">Brands</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-zinc-300 mb-2">Brands</label>
               <tw-multiselect
                 [(ngModel)]="selectedBrands"
                 [groups]="brandOptions"
@@ -98,7 +98,7 @@
 
             <!-- Price Range -->
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-2">
+              <label class="block text-sm font-medium text-slate-700 dark:text-zinc-300 mb-2">
                 Price Range: ${{ priceRange()[0] }} - ${{ priceRange()[1] }}
               </label>
               <tw-slider
@@ -114,12 +114,12 @@
 
             <!-- Rating Filter -->
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-3">Minimum Rating</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-zinc-300 mb-3">Minimum Rating</label>
               <div class="space-y-2">
                 @for (rating of [5, 4, 3, 2]; track rating) {
-                  <button class="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-slate-50 transition-colors">
+                  <button class="flex items-center gap-2 w-full p-2 rounded-lg hover:bg-slate-50 dark:hover:bg-zinc-700 transition-colors">
                     <tw-rating [ngModel]="rating" readonly size="sm"></tw-rating>
-                    <span class="text-sm text-slate-600">& Up</span>
+                    <span class="text-sm text-slate-600 dark:text-zinc-400">& Up</span>
                   </button>
                 }
               </div>
@@ -145,13 +145,13 @@
         <!-- Toolbar -->
         <div class="flex items-center justify-between mb-6">
           <div>
-            <h2 class="text-2xl font-bold text-slate-900">Products</h2>
-            <p class="text-sm text-slate-600">{{ filteredProducts().length }} items found</p>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-zinc-100">Products</h2>
+            <p class="text-sm text-slate-600 dark:text-zinc-400">{{ filteredProducts().length }} items found</p>
           </div>
 
           <div class="flex items-center gap-3">
             <!-- View Toggle -->
-            <div class="flex gap-1 bg-slate-100 p-1 rounded-lg">
+            <div class="flex gap-1 bg-slate-100 dark:bg-zinc-800 p-1 rounded-lg">
               <tw-button
                 [variant]="viewMode() === 'grid' ? 'primary' : 'ghost'"
                 size="sm"
@@ -191,7 +191,7 @@
                     }
                   </tw-chips>
                 </div>
-                <tw-button variant="ghost" size="sm" (click)="clearFilters()">Clear All</tw-button>
+                <tw-button variant="ghost" size="sm" class="text-slate-700 dark:text-zinc-300" (click)="clearFilters()">Clear All</tw-button>
               </div>
             </tw-alert>
           </div>
@@ -202,19 +202,19 @@
           <tw-card class="text-center" [padded]="true">
             <div class="py-8">
               <div class="text-6xl mb-4">🔍</div>
-              <h3 class="text-xl font-semibold text-slate-900 mb-2">No products found</h3>
-              <p class="text-slate-600 mb-4">Try adjusting your filters or search query</p>
+              <h3 class="text-xl font-semibold text-slate-900 dark:text-zinc-100 mb-2">No products found</h3>
+              <p class="text-slate-600 dark:text-zinc-400 mb-4">Try adjusting your filters or search query</p>
               <tw-button (click)="clearFilters()">Clear Filters</tw-button>
             </div>
           </tw-card>
         } @else {
           <div [class]="viewMode() === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'">
             @for (product of filteredProducts(); track product.id) {
-              <tw-card [class]="viewMode() === 'list' ? 'hover:shadow-lg transition-shadow' : ''" [padded]="true">
+              <tw-card [class]="viewMode() === 'list' ? 'hover:shadow-lg dark:hover:shadow-black/30 transition-shadow' : ''" [padded]="true">
                 <div [class]="viewMode() === 'list' ? 'flex gap-6' : ''">
                   <!-- Product Image -->
                   <div [class]="viewMode() === 'list' ? 'w-48 flex-shrink-0' : 'relative -mx-6 -mt-6 mb-4'">
-                    <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-7xl cursor-pointer hover:scale-105 transition-transform"
+                    <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 dark:from-zinc-700 dark:to-zinc-800 flex items-center justify-center text-7xl cursor-pointer hover:scale-105 transition-transform"
                          [class]="viewMode() === 'list' ? 'rounded-lg' : 'rounded-t-xl'"
                          (click)="openProductDetail(product)">
                       {{ product.image }}
@@ -235,25 +235,25 @@
                   <div [class]="viewMode() === 'list' ? 'flex-1' : ''">
                     <div class="flex items-start justify-between mb-2">
                       <div class="flex-1">
-                        <h3 class="font-semibold text-slate-900 hover:text-purple-600 cursor-pointer transition-colors"
+                        <h3 class="font-semibold text-slate-900 dark:text-zinc-100 hover:text-purple-600 dark:hover:text-purple-400 cursor-pointer transition-colors"
                             (click)="openProductDetail(product)">
                           {{ product.name }}
                         </h3>
-                        <p class="text-sm text-slate-600 mt-1">{{ product.brand }}</p>
+                        <p class="text-sm text-slate-600 dark:text-zinc-400 mt-1">{{ product.brand }}</p>
                       </div>
-                      <tw-button variant="ghost" size="sm">
+                      <tw-button variant="ghost" size="sm" class="text-slate-500 dark:text-zinc-400">
                         <fa-icon [icon]="icons.heartEmpty"></fa-icon>
                       </tw-button>
                     </div>
 
                     @if (viewMode() === 'list') {
-                      <p class="text-sm text-slate-600 mb-3">{{ product.description }}</p>
+                      <p class="text-sm text-slate-600 dark:text-zinc-400 mb-3">{{ product.description }}</p>
                     }
 
                     <!-- Rating -->
                     <div class="flex items-center gap-2 mb-3">
                       <tw-rating [(ngModel)]="product.rating" readonly size="sm"></tw-rating>
-                      <span class="text-sm text-slate-600">({{ product.reviews }})</span>
+                      <span class="text-sm text-slate-600 dark:text-zinc-400">({{ product.reviews }})</span>
                     </div>
 
                     <!-- Tags -->
@@ -267,9 +267,9 @@
                     <div class="flex items-center justify-between">
                       <div>
                         <div class="flex items-baseline gap-2">
-                          <span class="text-2xl font-bold text-slate-900">${{ product.price }}</span>
+                          <span class="text-2xl font-bold text-slate-900 dark:text-zinc-100">${{ product.price }}</span>
                           @if (product.originalPrice) {
-                            <span class="text-sm text-slate-500 line-through">${{ product.originalPrice }}</span>
+                            <span class="text-sm text-slate-500 dark:text-zinc-500 line-through">${{ product.originalPrice }}</span>
                           }
                         </div>
                       </div>
@@ -298,15 +298,15 @@
     position="right"
     width="500px">
     <div header>
-      <h2 class="text-xl font-bold text-slate-900">Shopping Cart</h2>
-      <p class="text-sm text-slate-600">{{ cartItemCount() }} items</p>
+      <h2 class="text-xl font-bold text-slate-900 dark:text-zinc-100">Shopping Cart</h2>
+      <p class="text-sm text-slate-600 dark:text-zinc-400">{{ cartItemCount() }} items</p>
     </div>
 
     @if (cart().length === 0) {
       <div class="flex flex-col items-center justify-center h-full text-center py-12">
         <div class="text-6xl mb-4">🛒</div>
-        <h3 class="text-lg font-semibold text-slate-900 mb-2">Your cart is empty</h3>
-        <p class="text-slate-600 mb-4">Add some products to get started!</p>
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-zinc-100 mb-2">Your cart is empty</h3>
+        <p class="text-slate-600 dark:text-zinc-400 mb-4">Add some products to get started!</p>
         <tw-button (click)="toggleCart()">Continue Shopping</tw-button>
       </div>
     } @else {
@@ -314,13 +314,13 @@
         @for (item of cart(); track item) {
           <tw-card [padded]="true">
             <div class="flex gap-4">
-              <div class="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">
+              <div class="w-20 h-20 bg-gradient-to-br from-slate-100 to-slate-200 dark:from-zinc-700 dark:to-zinc-800 rounded-lg flex items-center justify-center text-3xl flex-shrink-0">
                 {{ item.product.image }}
               </div>
 
               <div class="flex-1 min-w-0">
-                <h4 class="font-semibold text-slate-900 truncate">{{ item.product.name }}</h4>
-                <p class="text-sm text-slate-600">{{ item.product.brand }}</p>
+                <h4 class="font-semibold text-slate-900 dark:text-zinc-100 truncate">{{ item.product.name }}</h4>
+                <p class="text-sm text-slate-600 dark:text-zinc-400">{{ item.product.brand }}</p>
 
                 @if (item.selectedColor) {
                   <tw-badge  size="sm" class="mt-1">{{ item.selectedColor }}</tw-badge>
@@ -332,12 +332,12 @@
                 <div class="flex items-center justify-between mt-2">
                   <div class="flex items-center gap-2">
                     <tw-button variant="outline" size="sm" (click)="updateQuantity(item, item.quantity - 1)">-</tw-button>
-                    <span class="text-sm font-medium w-8 text-center">{{ item.quantity }}</span>
+                    <span class="text-sm font-medium w-8 text-center dark:text-zinc-100">{{ item.quantity }}</span>
                     <tw-button variant="outline" size="sm" (click)="updateQuantity(item, item.quantity + 1)">+</tw-button>
                   </div>
 
                   <div class="text-right">
-                    <p class="font-bold text-slate-900">${{ (item.product.price * item.quantity).toFixed(2) }}</p>
+                    <p class="font-bold text-slate-900 dark:text-zinc-100">${{ (item.product.price * item.quantity).toFixed(2) }}</p>
                     <tw-button variant="ghost" size="sm" (click)="removeFromCart(item)">
                       <fa-icon [icon]="icons.trash" class="text-rose-600"></fa-icon>
                     </tw-button>
@@ -356,21 +356,21 @@
 
         <div class="space-y-2 mb-4">
           <div class="flex justify-between text-sm">
-            <span class="text-slate-600">Subtotal</span>
-            <span class="font-medium">${{ cartTotal().toFixed(2) }}</span>
+            <span class="text-slate-600 dark:text-zinc-400">Subtotal</span>
+            <span class="font-medium dark:text-zinc-100">${{ cartTotal().toFixed(2) }}</span>
           </div>
           <div class="flex justify-between text-sm">
-            <span class="text-slate-600">Shipping</span>
-            <span class="font-medium">$10.00</span>
+            <span class="text-slate-600 dark:text-zinc-400">Shipping</span>
+            <span class="font-medium dark:text-zinc-100">$10.00</span>
           </div>
           <div class="flex justify-between text-sm">
-            <span class="text-slate-600">Tax</span>
-            <span class="font-medium">${{ (cartTotal() * 0.1).toFixed(2) }}</span>
+            <span class="text-slate-600 dark:text-zinc-400">Tax</span>
+            <span class="font-medium dark:text-zinc-100">${{ (cartTotal() * 0.1).toFixed(2) }}</span>
           </div>
           <tw-divider class="my-2"></tw-divider>
           <div class="flex justify-between text-lg">
-            <span class="font-bold text-slate-900">Total</span>
-            <span class="font-bold text-slate-900">${{ (cartTotal() + 10 + cartTotal() * 0.1).toFixed(2) }}</span>
+            <span class="font-bold text-slate-900 dark:text-zinc-100">Total</span>
+            <span class="font-bold text-slate-900 dark:text-zinc-100">${{ (cartTotal() + 10 + cartTotal() * 0.1).toFixed(2) }}</span>
           </div>
         </div>
 
@@ -390,13 +390,13 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <!-- Product Image -->
         <div>
-          <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center text-9xl mb-4">
+          <div class="aspect-square bg-gradient-to-br from-slate-100 to-slate-200 dark:from-zinc-700 dark:to-zinc-800 rounded-xl flex items-center justify-center text-9xl mb-4">
             {{ selectedProduct()!.image }}
           </div>
 
           @if (selectedProduct()!.colors && selectedProduct()!.colors!.length > 0) {
             <div class="mb-4">
-              <label class="block text-sm font-medium text-slate-700 mb-2">Color</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-zinc-300 mb-2">Color</label>
               <div class="flex gap-2">
                 @for (color of selectedProduct()!.colors; track color) {
                   <tw-button
@@ -412,7 +412,7 @@
 
           @if (selectedProduct()!.sizes && selectedProduct()!.sizes!.length > 0) {
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-2">Size</label>
+              <label class="block text-sm font-medium text-slate-700 dark:text-zinc-300 mb-2">Size</label>
               <div class="flex gap-2">
                 @for (size of selectedProduct()!.sizes; track size) {
                   <tw-button
@@ -433,20 +433,20 @@
             <tw-badge >{{ selectedProduct()!.category }}</tw-badge>
           </div>
 
-          <h2 class="text-3xl font-bold text-slate-900 mb-2">{{ selectedProduct()!.name }}</h2>
-          <p class="text-slate-600 mb-4">{{ selectedProduct()!.brand }}</p>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-zinc-100 mb-2">{{ selectedProduct()!.name }}</h2>
+          <p class="text-slate-600 dark:text-zinc-400 mb-4">{{ selectedProduct()!.brand }}</p>
 
           <div class="flex items-center gap-3 mb-6">
             <tw-rating [(ngModel)]="selectedProduct()!.rating" readonly></tw-rating>
-            <span class="text-sm text-slate-600">{{ selectedProduct()!.reviews }} reviews</span>
+            <span class="text-sm text-slate-600 dark:text-zinc-400">{{ selectedProduct()!.reviews }} reviews</span>
           </div>
 
-          <p class="text-slate-700 mb-6">{{ selectedProduct()!.description }}</p>
+          <p class="text-slate-700 dark:text-zinc-300 mb-6">{{ selectedProduct()!.description }}</p>
 
           <div class="flex items-baseline gap-3 mb-6">
-            <span class="text-4xl font-bold text-slate-900">${{ selectedProduct()!.price }}</span>
+            <span class="text-4xl font-bold text-slate-900 dark:text-zinc-100">${{ selectedProduct()!.price }}</span>
             @if (selectedProduct()!.originalPrice) {
-              <span class="text-xl text-slate-500 line-through">${{ selectedProduct()!.originalPrice }}</span>
+              <span class="text-xl text-slate-500 dark:text-zinc-500 line-through">${{ selectedProduct()!.originalPrice }}</span>
               <tw-badge variant="danger">Save {{ getDiscount(selectedProduct()!) }}%</tw-badge>
             }
           </div>
@@ -470,7 +470,7 @@
           <!-- Product Details Accordion -->
           <tw-accordion>
             <tw-accordion-item itemTitle="Product Details" [open]="true">
-              <ul class="list-disc list-inside space-y-1 text-sm text-slate-700">
+              <ul class="list-disc list-inside space-y-1 text-sm text-slate-700 dark:text-zinc-300">
                 <li>Premium quality materials</li>
                 <li>1-year manufacturer warranty</li>
                 <li>Free shipping on orders over $50</li>
@@ -479,7 +479,7 @@
             </tw-accordion-item>
 
             <tw-accordion-item itemTitle="Shipping Information">
-              <p class="text-sm text-slate-700">
+              <p class="text-sm text-slate-700 dark:text-zinc-300">
                 Standard shipping (5-7 business days): $10<br>
                 Express shipping (2-3 business days): $25<br>
                 Free shipping on orders over $100
@@ -487,7 +487,7 @@
             </tw-accordion-item>
 
             <tw-accordion-item itemTitle="Return Policy">
-              <p class="text-sm text-slate-700">
+              <p class="text-sm text-slate-700 dark:text-zinc-300">
                 We offer a 30-day return policy for all unused items in original packaging.
                 Return shipping is free for defective items.
               </p>
@@ -498,22 +498,22 @@
 
           <!-- Customer Reviews -->
           <div>
-            <h3 class="text-lg font-semibold text-slate-900 mb-4">Customer Reviews</h3>
+            <h3 class="text-lg font-semibold text-slate-900 dark:text-zinc-100 mb-4">Customer Reviews</h3>
             <div class="space-y-4">
               @for (review of reviews.slice(0, 3); track review.id) {
-                <div class="border-b border-slate-200 pb-4 last:border-0">
+                <div class="border-b border-slate-200 dark:border-zinc-700 pb-4 last:border-0">
                   <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2">
                       <tw-avatar [initials]="review.author[0]" size="sm"></tw-avatar>
                       <div>
-                        <p class="font-medium text-sm">{{ review.author }}</p>
+                        <p class="font-medium text-sm dark:text-zinc-100">{{ review.author }}</p>
                         <tw-rating [(ngModel)]="review.rating" readonly size="sm"></tw-rating>
                       </div>
                     </div>
-                    <span class="text-xs text-slate-500">{{ review.date }}</span>
+                    <span class="text-xs text-slate-500 dark:text-zinc-500">{{ review.date }}</span>
                   </div>
-                  <p class="text-sm text-slate-700">{{ review.comment }}</p>
-                  <button class="text-xs text-slate-500 hover:text-slate-700 mt-2">
+                  <p class="text-sm text-slate-700 dark:text-zinc-300">{{ review.comment }}</p>
+                  <button class="text-xs text-slate-500 dark:text-zinc-400 hover:text-slate-700 dark:hover:text-zinc-200 mt-2">
                     👍 Helpful ({{ review.helpful }})
                   </button>
                 </div>

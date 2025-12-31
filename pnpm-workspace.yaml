@@ -1,6 +1,10 @@
 packages:
-  - "docs"
+  - docs
 
 onlyBuiltDependencies:
+  - '@parcel/watcher'
+  - electron
   - esbuild
+  - less
   - lmdb
+  - msgpackr-extract

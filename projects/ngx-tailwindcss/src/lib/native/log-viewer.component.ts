@@ -17,7 +17,7 @@ import { LogEntry, LogFilter } from './native.types';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div class="flex flex-col h-full bg-white dark:bg-gray-900 rounded-lg overflow-hidden">
+    <div class="flex flex-col h-full bg-white dark:bg-gray-900 overflow-hidden">
       <!-- Toolbar -->
       <div
         class="flex items-center gap-2 px-3 py-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
@@ -167,7 +167,7 @@ import { LogEntry, LogFilter } from './native.types';
 
       <!-- Status bar -->
       <div
-        class="flex items-center justify-between px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-b-lg"
+        class="flex items-center justify-between px-3 py-1.5 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"
       >
         <span>{{ filteredEntries().length }} / {{ entries().length }} entries</span>
         <span>

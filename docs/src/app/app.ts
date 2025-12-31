@@ -263,6 +263,8 @@ export class App implements AfterViewInit, OnDestroy {
     { label: 'Portfolio', path: '/examples/portfolio', icon: faCamera },
     { label: 'Forum', path: '/examples/forum', icon: faComments },
     { label: 'Social Network', path: '/examples/social-network', icon: faUsers },
+    { label: 'File Explorer', path: '/examples/desktop-app', icon: faDesktop },
+    { label: 'DAW Studio', path: '/examples/daw', icon: faMusic },
   ];
 
   // Organized component categories for sidebar

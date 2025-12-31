@@ -103,7 +103,7 @@ import { TerminalLine, TerminalVariant } from './native.types';
       <!-- Input area -->
       @if (showInput()) {
         <div
-          class="flex items-center gap-2 px-4 py-2 border-t border-gray-700 bg-gray-800 rounded-b-lg"
+          class="flex items-center gap-2 px-4 py-2 border-t border-gray-700 bg-gray-800"
         >
           <span class="text-green-400 font-mono">{{ prompt() }}</span>
           <input
@@ -174,7 +174,7 @@ export class TwTerminalComponent implements AfterViewChecked {
   // Computed classes
   protected readonly containerClasses = computed(() => {
     const variant = this.variant();
-    const base = 'flex flex-col h-full overflow-hidden rounded-lg';
+    const base = 'flex flex-col h-full overflow-hidden';
 
     const variantClasses: Record<TerminalVariant, string> = {
       default: 'bg-gray-900 text-gray-100',
