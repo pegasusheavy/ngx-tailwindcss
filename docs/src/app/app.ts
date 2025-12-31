@@ -1,15 +1,16 @@
-import { Component, signal, inject, ViewChild, ElementRef, AfterViewInit, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { Component, signal, computed, inject, ViewChild, ElementRef, AfterViewInit, OnDestroy, PLATFORM_ID, afterNextRender } from '@angular/core';
 import { RouterOutlet, RouterLink, RouterLinkActive, Router, NavigationEnd } from '@angular/router';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import {
   TwToastContainerComponent,
   TwDropdownComponent,
   TwDropdownMenuComponent,
   TwDropdownItemDirective,
 } from '@pegasusheavy/ngx-tailwindcss';
-import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import { filter } from 'rxjs/operators';
+import { ThemeService } from './services/theme.service';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { IconDefinition } from '@fortawesome/fontawesome-svg-core';
 import {
   faHome,
   faCubes,
@@ -30,55 +31,55 @@ import {
   faPalette,
   faGear,
   faHeart,
-  faCheckSquare,
-  faToggleOn,
-  faDotCircle,
-  faListAlt,
-  faChartLine,
-  faSlidersH,
-  faStar,
-  faUserCircle,
-  faChartBar,
-  faSpinner,
-  faSquareFull,
-  faMapSigns,
-  faFileAlt,
-  faMinus,
-  faClipboardList,
-  faHistory,
-  faCommentDots,
-  faWindowRestore,
-  faBarsStaggered,
-  faTable,
-  faCodeBranch,
-  faImage,
-  faLayerGroup,
-  faEdit,
+  faPenToSquare,
   faDatabase,
   faCompass,
   faComments,
   faPuzzlePiece,
+  faLayerGroup,
   faUniversalAccess,
   faGlobe,
+  faChartLine,
   faShoppingCart,
   faCamera,
   faUsers,
-  faExpand,
-  faGripHorizontal,
-  faGripVertical,
-  faBorderAll,
-  faSquarePlus,
-  faCropSimple,
-  faAlignCenter,
-  faArrowsAlt,
   faSun,
   faMoon,
-  faCircleHalfStroke,
+  faDesktop,
+  faTable,
+  faSquareCheck,
+  faToggleOn,
+  faCircleDot,
+  faList,
+  faSliders,
+  faStar,
+  faUser,
+  faSpinner,
+  faSquareFull,
+  faMapSigns,
+  faFile,
+  faMinus,
+  faClipboardList,
+  faHistory,
+  faComment,
+  faWindowRestore,
+  faBarsStaggered,
+  faCodeBranch,
+  faImage,
+  faExpand,
+  faGripVertical,
+  faGripHorizontal,
+  faBorderAll,
+  faPlus,
+  faCropSimple,
+  faAlignCenter,
+  faArrowsUpDownLeftRight,
   faMusic,
   faVolumeHigh,
+  faChevronDown,
+  faChevronRight,
 } from '@fortawesome/free-solid-svg-icons';
 import { faGithub } from '@fortawesome/free-brands-svg-icons';
-import { ThemeService } from './services/theme.service';
 
 interface NavItem {
   label: string;
@@ -111,23 +112,27 @@ interface NavCategory {
 export class App implements AfterViewInit, OnDestroy {
   private readonly SIDEBAR_SCROLL_KEY = 'ngx-tailwindcss-sidebar-scroll';
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly router = inject(Router);
   private scrollListener: (() => void) | null = null;
 
   protected mobileMenuOpen = signal(false);
-  protected isExamplePage = signal(false);
+  protected currentUrl = signal('/');
+  protected isExamplePage = computed(() => this.currentUrl().startsWith('/examples/'));
   protected themeService = inject(ThemeService);
 
   @ViewChild('sidebarNav') sidebarNav!: ElementRef<HTMLElement>;
 
-  constructor(private router: Router) {
-    // Check initial URL on page load
-    this.isExamplePage.set(this.router.url.startsWith('/examples/'));
+  constructor() {
+    // Initialize URL after render to avoid change detection issues in zoneless mode
+    afterNextRender(() => {
+      this.currentUrl.set(this.router.url);
+    });
 
-    // Track if we're on an example page during navigation
+    // Track URL changes during navigation
     this.router.events
       .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
-        this.isExamplePage.set(event.urlAfterRedirects.startsWith('/examples/'));
+        this.currentUrl.set(event.urlAfterRedirects);
       });
   }
 
@@ -170,29 +175,29 @@ export class App implements AfterViewInit, OnDestroy {
     }
   }
 
-  // Icons for easy access in template
+  // FontAwesome icons
   protected icons = {
     home: faHome,
     cubes: faCubes,
     wand: faWandMagicSparkles,
-    button: faSquare,
+    square: faSquare,
     card: faIdCard,
-    input: faKeyboard,
-    badge: faTag,
-    alert: faBell,
-    modal: faWindowMaximize,
-    dropdown: faCaretDown,
-    tabs: faFolderOpen,
-    menu: faBars,
-    close: faXmark,
-    arrow: faArrowRight,
+    keyboard: faKeyboard,
+    tag: faTag,
+    bell: faBell,
+    window: faWindowMaximize,
+    caretDown: faCaretDown,
+    folder: faFolderOpen,
+    bars: faBars,
+    xmark: faXmark,
+    arrowRight: faArrowRight,
     code: faCode,
     rocket: faRocket,
     palette: faPalette,
     gear: faGear,
     github: faGithub,
     heart: faHeart,
-    edit: faEdit,
+    edit: faPenToSquare,
     database: faDatabase,
     compass: faCompass,
     comments: faComments,
@@ -206,8 +211,39 @@ export class App implements AfterViewInit, OnDestroy {
     users: faUsers,
     sun: faSun,
     moon: faMoon,
-    system: faCircleHalfStroke,
-    tableRows: faTable,
+    system: faDesktop,
+    table: faTable,
+    checkSquare: faSquareCheck,
+    toggle: faToggleOn,
+    radio: faCircleDot,
+    list: faList,
+    slider: faSliders,
+    star: faStar,
+    user: faUser,
+    spinner: faSpinner,
+    squareFull: faSquareFull,
+    map: faMapSigns,
+    file: faFile,
+    minus: faMinus,
+    clipboard: faClipboardList,
+    history: faHistory,
+    comment: faComment,
+    windowRestore: faWindowRestore,
+    barsStaggered: faBarsStaggered,
+    codeBranch: faCodeBranch,
+    image: faImage,
+    expand: faExpand,
+    gripV: faGripVertical,
+    gripH: faGripHorizontal,
+    border: faBorderAll,
+    plus: faPlus,
+    crop: faCropSimple,
+    align: faAlignCenter,
+    arrows: faArrowsUpDownLeftRight,
+    music: faMusic,
+    volume: faVolumeHigh,
+    chevronDown: faChevronDown,
+    chevronRight: faChevronRight,
   };
 
   protected mainNavItems: NavItem[] = [
@@ -233,16 +269,16 @@ export class App implements AfterViewInit, OnDestroy {
   protected componentCategories: NavCategory[] = [
     {
       label: 'Form',
-      icon: faEdit,
+      icon: faPenToSquare,
       items: [
         { label: 'Button', path: '/components/button', icon: faSquare },
         { label: 'Input', path: '/components/input', icon: faKeyboard },
-        { label: 'Checkbox', path: '/components/checkbox', icon: faCheckSquare },
+        { label: 'Checkbox', path: '/components/checkbox', icon: faSquareCheck },
         { label: 'Switch', path: '/components/switch', icon: faToggleOn },
-        { label: 'Radio', path: '/components/radio', icon: faDotCircle },
-        { label: 'Select', path: '/components/select', icon: faListAlt },
-        { label: 'Multiselect', path: '/components/multiselect', icon: faListAlt },
-        { label: 'Slider', path: '/components/slider', icon: faSlidersH },
+        { label: 'Radio', path: '/components/radio', icon: faCircleDot },
+        { label: 'Select', path: '/components/select', icon: faList },
+        { label: 'Multiselect', path: '/components/multiselect', icon: faList },
+        { label: 'Slider', path: '/components/slider', icon: faSliders },
         { label: 'Rating', path: '/components/rating', icon: faStar },
       ],
     },
@@ -254,9 +290,9 @@ export class App implements AfterViewInit, OnDestroy {
         { label: 'Stack', path: '/components/stack', icon: faGripVertical },
         { label: 'Grid', path: '/components/grid', icon: faBorderAll },
         { label: 'Center', path: '/components/center', icon: faAlignCenter },
-        { label: 'Spacer', path: '/components/spacer', icon: faArrowsAlt },
+        { label: 'Spacer', path: '/components/spacer', icon: faArrowsUpDownLeftRight },
         { label: 'Splitter', path: '/components/splitter', icon: faGripHorizontal },
-        { label: 'Sticky', path: '/components/sticky', icon: faSquarePlus },
+        { label: 'Sticky', path: '/components/sticky', icon: faPlus },
         { label: 'Scroll Area', path: '/components/scroll-area', icon: faWindowMaximize },
         { label: 'Columns', path: '/components/columns', icon: faBorderAll },
         { label: 'Bleed', path: '/components/bleed', icon: faExpand },
@@ -273,7 +309,7 @@ export class App implements AfterViewInit, OnDestroy {
       icon: faDatabase,
       items: [
         { label: 'Badge', path: '/components/badge', icon: faTag },
-        { label: 'Avatar', path: '/components/avatar', icon: faUserCircle },
+        { label: 'Avatar', path: '/components/avatar', icon: faUser },
         { label: 'Chip', path: '/components/chip', icon: faTag },
         { label: 'Table', path: '/components/table', icon: faTable },
         { label: 'DataTables', path: '/components/datatables', icon: faTable },
@@ -287,7 +323,7 @@ export class App implements AfterViewInit, OnDestroy {
       items: [
         { label: 'Menu', path: '/components/menu', icon: faBars },
         { label: 'Breadcrumb', path: '/components/breadcrumb', icon: faMapSigns },
-        { label: 'Pagination', path: '/components/pagination', icon: faFileAlt },
+        { label: 'Pagination', path: '/components/pagination', icon: faFile },
         { label: 'Steps', path: '/components/steps', icon: faClipboardList },
       ],
     },
@@ -296,8 +332,8 @@ export class App implements AfterViewInit, OnDestroy {
       icon: faComments,
       items: [
         { label: 'Alert', path: '/components/alert', icon: faBell },
-        { label: 'Toast', path: '/components/toast', icon: faCommentDots },
-        { label: 'Progress', path: '/components/progress', icon: faChartBar },
+        { label: 'Toast', path: '/components/toast', icon: faComment },
+        { label: 'Progress', path: '/components/progress', icon: faChartLine },
         { label: 'Spinner', path: '/components/spinner', icon: faSpinner },
         { label: 'Skeleton', path: '/components/skeleton', icon: faSquareFull },
       ],
@@ -326,6 +362,13 @@ export class App implements AfterViewInit, OnDestroy {
         { label: 'Music Components', path: '/components/music', icon: faVolumeHigh },
       ],
     },
+    {
+      label: 'Native App',
+      icon: faWindowMaximize,
+      items: [
+        { label: 'Native Components', path: '/components/native', icon: faWindowMaximize },
+      ],
+    },
   ];
 
   // Flat list for mobile menu
@@ -341,7 +384,7 @@ export class App implements AfterViewInit, OnDestroy {
     const theme = this.themeService.theme();
     if (theme === 'light') return faSun;
     if (theme === 'dark') return faMoon;
-    return faCircleHalfStroke;
+    return faDesktop;
   }
 
   protected getThemeLabel(): string {

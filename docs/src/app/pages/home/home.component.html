@@ -7,7 +7,7 @@
     <div class="flex items-center gap-2 mb-4">
       <tw-badge variant="info" badgeStyle="soft" [pill]="true">v0.1.0</tw-badge>
       <tw-badge variant="success" badgeStyle="soft" [pill]="true">
-        <fa-icon [icon]="icons.rocket" class="mr-1"></fa-icon>
+        <app-icon name="rocket" size="xs" class="mr-1"></app-icon>
         Tailwind CSS 4+
       </tw-badge>
     </div>
@@ -20,7 +20,7 @@
     </p>
     <div class="flex flex-wrap gap-4">
       <tw-button variant="secondary" size="lg" routerLink="/components/button">
-        <fa-icon [icon]="icons.arrow" class="mr-2"></fa-icon>
+        <app-icon name="arrow-right" size="sm" class="mr-2"></app-icon>
         Get Started
       </tw-button>
       <a
@@ -28,7 +28,7 @@
         target="_blank"
         rel="noopener noreferrer">
         <tw-button variant="outline" size="lg" classOverride="bg-transparent border-white/60 text-white hover:bg-white/10 hover:border-white focus-visible:ring-white">
-          <fa-icon [icon]="icons.github" class="mr-2 text-lg"></fa-icon>
+          <app-icon name="github" size="md" class="mr-2"></app-icon>
           View on GitHub
         </tw-button>
       </a>
@@ -42,7 +42,7 @@
     <tw-card variant="outlined" [hoverable]="true">
       <tw-card-body>
         <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-4">
-          <fa-icon [icon]="feature.icon" [class]="'text-2xl ' + feature.iconColor"></fa-icon>
+          <app-icon [name]="feature.icon" size="lg" [class]="feature.iconColor"></app-icon>
         </div>
         <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">{{ feature.title }}</h3>
         <p class="text-slate-600 dark:text-slate-300 text-sm">{{ feature.description }}</p>
@@ -54,7 +54,7 @@
 <!-- Quick Start -->
 <div class="mb-12">
   <h2 class="text-2xl font-bold text-slate-900 mb-4">
-    <fa-icon [icon]="icons.terminal" class="mr-2 text-slate-400"></fa-icon>
+    <app-icon name="code" size="md" class="mr-2 text-slate-400"></app-icon>
     Quick Start
   </h2>
   <div class="rounded-xl border border-slate-200 overflow-hidden">
@@ -78,7 +78,7 @@
         <tw-card variant="outlined" [hoverable]="true" [clickable]="true">
           <tw-card-body class="text-center">
             <div class="w-12 h-12 rounded-xl bg-slate-100 flex items-center justify-center mb-3 mx-auto group-hover:scale-110 transition-transform">
-              <fa-icon [icon]="component.icon" [class]="'text-xl ' + component.iconColor"></fa-icon>
+              <app-icon [name]="component.icon" size="lg" [class]="component.iconColor"></app-icon>
             </div>
             <h3 class="font-semibold text-slate-900 group-hover:text-blue-600 transition-colors">
               {{ component.name }}

@@ -18,8 +18,18 @@
           "builder": "@angular/build:application",
           "options": {
             "browser": "src/main.ts",
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
             "inlineStyleLanguage": "scss",
+            "externalDependencies": [
+              "electron",
+              "@tauri-apps/api",
+              "@tauri-apps/plugin-dialog",
+              "@tauri-apps/plugin-notification",
+              "@tauri-apps/plugin-store",
+              "@tauri-apps/plugin-process",
+              "@tauri-apps/plugin-updater"
+            ],
             "assets": [
               {
                 "glob": "**/*",

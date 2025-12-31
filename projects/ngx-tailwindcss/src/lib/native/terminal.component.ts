@@ -77,7 +77,7 @@ import { TerminalLine, TerminalVariant } from './native.types';
             @if (line.type === 'input') {
               <span class="text-green-400">{{ prompt() }}</span>
             }
-            <span [innerHTML]="parseAnsi(line.content)"></span>
+            <span>{{ stripAnsi(line.content) }}</span>
           </div>
         }
 
@@ -96,7 +96,7 @@ import { TerminalLine, TerminalVariant } from './native.types';
 
       <!-- Input area -->
       @if (showInput()) {
-        <div class="flex items-center gap-2 px-4 py-2 border-t border-gray-700 bg-gray-800">
+        <div class="flex items-center gap-2 px-4 py-2 border-t border-gray-700 bg-gray-800 rounded-b-lg">
           <span class="text-green-400 font-mono">{{ prompt() }}</span>
           <input
             type="text"
@@ -198,20 +198,10 @@ export class TwTerminalComponent implements AfterViewChecked {
     });
   }
 
-  protected parseAnsi(text: string): string {
-    // Basic ANSI color code parsing
-    // This is a simplified implementation - full ANSI support would be more complex
-    return text
-      .replace(/\x1b\[31m/g, '<span class="text-red-400">')
-      .replace(/\x1b\[32m/g, '<span class="text-green-400">')
-      .replace(/\x1b\[33m/g, '<span class="text-yellow-400">')
-      .replace(/\x1b\[34m/g, '<span class="text-blue-400">')
-      .replace(/\x1b\[35m/g, '<span class="text-purple-400">')
-      .replace(/\x1b\[36m/g, '<span class="text-cyan-400">')
-      .replace(/\x1b\[37m/g, '<span class="text-gray-200">')
-      .replace(/\x1b\[0m/g, '</span>')
-      .replace(/\x1b\[1m/g, '<span class="font-bold">')
-      .replace(/\x1b\[4m/g, '<span class="underline">');
+  protected stripAnsi(text: string): string {
+    // Strip ANSI color codes from text
+    // eslint-disable-next-line no-control-regex
+    return text.replace(/\x1b\[[0-9;]*m/g, '');
   }
 
   protected submitCommand(): void {

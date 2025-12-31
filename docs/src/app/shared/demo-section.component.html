@@ -14,10 +14,10 @@
           class="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
           (click)="toggleCode()">
           <span class="flex items-center gap-2">
-            <fa-icon [icon]="icons.code" class="text-slate-400 dark:text-slate-500"></fa-icon>
+            <app-icon name="code" size="sm" class="text-slate-400 dark:text-slate-500"></app-icon>
             {{ showCode() ? 'Hide' : 'Show' }} Code
           </span>
-          <fa-icon [icon]="showCode() ? icons.chevronUp : icons.chevronDown" class="text-slate-400 dark:text-slate-500"></fa-icon>
+          <app-icon [name]="showCode() ? 'chevron-down' : 'chevron-right'" size="sm" class="text-slate-400 dark:text-slate-500"></app-icon>
         </button>
         @if (showCode()) {
           <div class="relative bg-slate-900">
@@ -26,7 +26,7 @@
               class="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors"
               [class]="copied() ? 'bg-emerald-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600 hover:text-white'"
               (click)="copyCode()">
-              <fa-icon [icon]="copied() ? icons.check : icons.copy" class="text-xs"></fa-icon>
+              <app-icon [name]="copied() ? 'check' : 'copy'" size="xs"></app-icon>
               {{ copied() ? 'Copied!' : 'Copy' }}
             </button>
             <pre class="p-4 pr-24 text-sm text-slate-300 overflow-x-auto"><code class="language-html">{{ code }}</code></pre>

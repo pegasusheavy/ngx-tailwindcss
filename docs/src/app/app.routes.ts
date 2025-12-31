@@ -86,6 +86,12 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/components/music/music-demo.component').then(m => m.MusicDemoComponent),
       },
 
+      // Native App UI
+      {
+        path: 'native',
+        loadComponent: () => import('./pages/components/native/native-demo.component').then(m => m.NativeDemoComponent),
+      },
+
       // Feedback
       {
         path: 'alert',

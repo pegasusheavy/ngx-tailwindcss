@@ -1,0 +1,487 @@
+<app-page-header
+  title="Native App Components"
+  description="UI components for building Tauri, Electron, and native-feeling web applications. These components provide a desktop-class user experience.">
+</app-page-header>
+
+<div class="space-y-12 max-w-6xl mx-auto px-4 py-8">
+
+  <!-- Phase 1: Window & Chrome -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Window & Chrome</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Custom title bar, window controls, and menu components for native-feeling apps.</p>
+    </div>
+
+    <!-- Title Bar -->
+    <app-demo-section
+      title="Title Bar"
+      description="Custom draggable title bar with platform-specific styling."
+      [code]="codeExamples.titleBar">
+      <div class="bg-slate-800 rounded-lg overflow-hidden shadow-xl">
+        <tw-title-bar
+          [title]="appTitle"
+          platform="windows"
+          variant="default">
+        </tw-title-bar>
+        <div class="h-32 flex items-center justify-center text-slate-400">
+          Application Content Area
+        </div>
+      </div>
+    </app-demo-section>
+
+    <!-- Window Controls -->
+    <app-demo-section
+      title="Window Controls"
+      description="Platform-specific window control buttons."
+      [code]="codeExamples.windowControls">
+      <div class="flex flex-wrap gap-8 items-center">
+        <div class="text-center">
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">macOS</p>
+          <div class="bg-slate-800 p-4 rounded-lg">
+            <tw-window-controls platform="macos"></tw-window-controls>
+          </div>
+        </div>
+        <div class="text-center">
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Windows</p>
+          <div class="bg-slate-800 p-4 rounded-lg">
+            <tw-window-controls platform="windows"></tw-window-controls>
+          </div>
+        </div>
+        <div class="text-center">
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Linux</p>
+          <div class="bg-slate-800 p-4 rounded-lg">
+            <tw-window-controls platform="linux"></tw-window-controls>
+          </div>
+        </div>
+      </div>
+    </app-demo-section>
+
+    <!-- Menu Bar -->
+    <app-demo-section
+      title="Menu Bar"
+      description="Native-style menu bar with keyboard navigation and shortcuts."
+      [code]="codeExamples.menuBar">
+      <div class="bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+        <tw-menu-bar
+          [items]="menuBarItems"
+          (itemSelect)="onMenuAction($event)">
+        </tw-menu-bar>
+      </div>
+    </app-demo-section>
+
+  </section>
+
+  <!-- Phase 2: Navigation -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Navigation</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">File tree, tabs, breadcrumbs, and sidebar navigation.</p>
+    </div>
+
+    <!-- File Tree -->
+    <app-demo-section
+      title="File Tree"
+      description="Hierarchical file and folder display with expand/collapse."
+      [code]="codeExamples.fileTree">
+      <div class="bg-slate-100 dark:bg-slate-800 rounded-lg p-4 max-w-xs">
+        <tw-file-tree
+          [nodes]="fileTreeData"
+          (nodeSelect)="onFileSelect($event)">
+        </tw-file-tree>
+      </div>
+    </app-demo-section>
+
+    <!-- Tab Bar -->
+    <app-demo-section
+      title="Tab Bar"
+      description="Document tabs with close, dirty indicators, and pinning."
+      [code]="codeExamples.tabBar">
+      <div class="bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+        <tw-tab-bar
+          [tabs]="tabs"
+          [activeTabId]="activeTab()"
+          (tabSelect)="onTabSelect($event)"
+          (tabClose)="onTabClose($event)">
+        </tw-tab-bar>
+        <div class="p-4 text-slate-600 dark:text-slate-400">
+          Content for: {{ activeTab() }}
+        </div>
+      </div>
+    </app-demo-section>
+
+    <!-- Breadcrumbs -->
+    <app-demo-section
+      title="Breadcrumbs"
+      description="Path-based navigation trail."
+      [code]="codeExamples.breadcrumbs">
+      <tw-breadcrumbs-nav
+        [items]="[
+          { id: 'home', label: 'Home', path: '/' },
+          { id: 'projects', label: 'Projects', path: '/projects' },
+          { id: 'app', label: 'My App', path: '/projects/my-app' },
+          { id: 'src', label: 'src', path: '/projects/my-app/src' }
+        ]">
+      </tw-breadcrumbs-nav>
+    </app-demo-section>
+  </section>
+
+  <!-- Phase 3: Search & Commands -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Search & Commands</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Command palette, search bar, and quick switcher.</p>
+    </div>
+
+    <!-- Command Palette -->
+    <app-demo-section
+      title="Command Palette"
+      description="VS Code-style command palette with fuzzy search. Press Ctrl+K (or Cmd+K on Mac) to open."
+      [code]="codeExamples.commandPalette">
+      <div class="space-y-4">
+        <p class="text-slate-600 dark:text-slate-400">
+          The command palette opens with <tw-shortcut-display shortcut="Ctrl+K"></tw-shortcut-display> and provides fuzzy search for commands.
+        </p>
+        <tw-command-palette
+          [commands]="commands"
+          (commandSelect)="onCommandSelect($event)">
+        </tw-command-palette>
+      </div>
+    </app-demo-section>
+
+    <!-- Search Bar -->
+    <app-demo-section
+      title="Search Bar"
+      description="Global search input with suggestions."
+      [code]="codeExamples.searchBar">
+      <div class="max-w-md">
+        <tw-search-bar
+          placeholder="Search files, commands, or settings..."
+          (search)="onSearch($event)">
+        </tw-search-bar>
+      </div>
+    </app-demo-section>
+
+    <!-- Shortcut Display -->
+    <app-demo-section
+      title="Keyboard Shortcuts"
+      description="Visual representation of keyboard shortcuts."
+      [code]="codeExamples.shortcutDisplay">
+      <div class="flex flex-wrap gap-4">
+        <div class="flex items-center gap-2">
+          <span class="text-slate-600 dark:text-slate-400">Save:</span>
+          <tw-shortcut-display shortcut="Ctrl+S"></tw-shortcut-display>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-600 dark:text-slate-400">Undo:</span>
+          <tw-shortcut-display shortcut="Ctrl+Z"></tw-shortcut-display>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-600 dark:text-slate-400">Find:</span>
+          <tw-shortcut-display shortcut="Ctrl+Shift+F"></tw-shortcut-display>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-slate-600 dark:text-slate-400">Command Palette:</span>
+          <tw-shortcut-display shortcut="Ctrl+Shift+P"></tw-shortcut-display>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Phase 4: Settings -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Settings & Preferences</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Settings panel, theme selector, and shortcuts editor.</p>
+    </div>
+
+    <!-- Theme Selector -->
+    <app-demo-section
+      title="Theme Selector"
+      description="Light, dark, and system theme selection."
+      [code]="codeExamples.themeSelector">
+      <tw-theme-selector></tw-theme-selector>
+    </app-demo-section>
+  </section>
+
+  <!-- Phase 5: Dialogs -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Dialogs & Notifications</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Alert, confirm, prompt, and about dialogs.</p>
+    </div>
+
+    <!-- Dialog Triggers -->
+    <app-demo-section
+      title="Dialogs"
+      description="Various dialog types for user interaction."
+      [code]="codeExamples.dialogs">
+      <div class="flex flex-wrap gap-4">
+        <button
+          (click)="showAlertDialog.set(true)"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg">
+          Alert Dialog
+        </button>
+        <button
+          (click)="showConfirmDialog.set(true)"
+          class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-lg">
+          Confirm Dialog
+        </button>
+        <button
+          (click)="openPromptDialog()"
+          class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
+          Prompt Dialog
+        </button>
+        <button
+          (click)="showAboutDialog.set(true)"
+          class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg">
+          About Dialog
+        </button>
+      </div>
+
+      <tw-alert-dialog
+        [open]="showAlertDialog()"
+        title="Information"
+        message="This is an informational alert dialog."
+        type="info"
+        (confirm)="onAlertConfirm()"
+        (openChange)="showAlertDialog.set($event)">
+      </tw-alert-dialog>
+
+      <tw-native-confirm-dialog
+        [open]="showConfirmDialog()"
+        title="Confirm Action"
+        message="Are you sure you want to proceed with this action?"
+        confirmLabel="Proceed"
+        cancelLabel="Cancel"
+        (confirm)="showConfirmDialog.set(false)"
+        (cancel)="showConfirmDialog.set(false)"
+        (openChange)="showConfirmDialog.set($event)">
+      </tw-native-confirm-dialog>
+
+      <tw-prompt-dialog
+        #promptDialog
+        title="Enter Name"
+        message="Please enter your project name:"
+        placeholder="my-project"
+        (confirmed)="onPromptConfirmed($event)"
+        (cancelled)="showPromptDialog.set(false)">
+      </tw-prompt-dialog>
+
+      <tw-about-dialog
+        [open]="showAboutDialog()"
+        appName="ngx-tailwindcss"
+        version="0.2.0"
+        description="A comprehensive Angular component library with Tailwind CSS styling."
+        copyright="© 2024 Pegasus Heavy Industries"
+        (close)="showAboutDialog.set(false)"
+        (openChange)="showAboutDialog.set($event)">
+      </tw-about-dialog>
+    </app-demo-section>
+  </section>
+
+  <!-- Phase 6: Data Display -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Data Display</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Terminal, log viewer, and code viewer components.</p>
+    </div>
+
+    <!-- Terminal -->
+    <app-demo-section
+      title="Terminal"
+      description="Terminal output display with ANSI color support."
+      [code]="codeExamples.terminal">
+      <div class="bg-slate-900 rounded-lg overflow-hidden max-h-64">
+        <tw-terminal
+          [lines]="terminalLines"
+          [showTimestamps]="true">
+        </tw-terminal>
+      </div>
+    </app-demo-section>
+
+    <!-- Log Viewer -->
+    <app-demo-section
+      title="Log Viewer"
+      description="Filterable log entries with severity levels."
+      [code]="codeExamples.logViewer">
+      <div class="bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden h-64">
+        <tw-log-viewer
+          [entries]="logEntries"
+          [showSource]="true">
+        </tw-log-viewer>
+      </div>
+    </app-demo-section>
+
+    <!-- Code Viewer -->
+    <app-demo-section
+      title="Code Viewer"
+      description="Syntax-highlighted code display."
+      [code]="codeExamples.codeViewer">
+      <tw-code-viewer
+        [code]="codeContent"
+        language="typescript"
+        [showLineNumbers]="true">
+      </tw-code-viewer>
+    </app-demo-section>
+  </section>
+
+  <!-- Phase 7: Status & Feedback -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Status & Feedback</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Status bar, toolbar, and activity indicators.</p>
+    </div>
+
+    <!-- Status Bar -->
+    <app-demo-section
+      title="Status Bar"
+      description="Bottom status bar with information items."
+      [code]="codeExamples.statusBar">
+      <div class="bg-slate-800 rounded-lg overflow-hidden">
+        <tw-status-bar [items]="statusBarItems"></tw-status-bar>
+      </div>
+    </app-demo-section>
+
+    <!-- Toolbar -->
+    <app-demo-section
+      title="Toolbar"
+      description="Action toolbar with icon buttons."
+      [code]="codeExamples.toolbar">
+      <div class="bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+        <tw-toolbar [items]="toolbarItems"></tw-toolbar>
+      </div>
+    </app-demo-section>
+
+    <!-- Activity & Connection -->
+    <app-demo-section
+      title="Activity & Connection Status"
+      description="Loading indicators and connection status."
+      [code]="codeExamples.activityStatus">
+      <div class="flex flex-wrap gap-8 items-center">
+        <div class="text-center">
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Spinner</p>
+          <tw-activity-indicator variant="spinner" size="md"></tw-activity-indicator>
+        </div>
+        <div class="text-center">
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Dots</p>
+          <tw-activity-indicator variant="dots" size="md"></tw-activity-indicator>
+        </div>
+        <div class="text-center">
+          <p class="text-sm text-slate-500 dark:text-slate-400 mb-2">Connection Status</p>
+          <button
+            (click)="toggleConnection()"
+            class="cursor-pointer">
+            <tw-connection-status [state]="connectionStatus()"></tw-connection-status>
+          </button>
+          <p class="text-xs text-slate-400 mt-1">Click to toggle</p>
+        </div>
+      </div>
+    </app-demo-section>
+  </section>
+
+  <!-- Phase 8: Interaction -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Interaction & Input</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Resizable panels, drag and drop, and keyboard shortcuts.</p>
+    </div>
+
+    <!-- Resizable Panels -->
+    <app-demo-section
+      title="Resizable Panels"
+      description="Split panels with drag-to-resize handles."
+      [code]="codeExamples.resizablePanels">
+      <div class="h-64 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
+        <tw-resizable-panels direction="horizontal">
+          <div class="p-4 bg-slate-200 dark:bg-slate-700 h-full">
+            <h4 class="font-semibold text-slate-700 dark:text-slate-300">Left Panel</h4>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Drag the handle to resize</p>
+          </div>
+          <div class="p-4 bg-slate-100 dark:bg-slate-800 h-full">
+            <h4 class="font-semibold text-slate-700 dark:text-slate-300">Right Panel</h4>
+            <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Content area</p>
+          </div>
+        </tw-resizable-panels>
+      </div>
+    </app-demo-section>
+
+  </section>
+
+  <!-- Services Overview -->
+  <section class="space-y-8">
+    <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
+      <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Services</h2>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Platform integration services for Tauri and Electron.</p>
+    </div>
+
+    <!-- Platform Service -->
+    <app-demo-section
+      title="NativeAppPlatformService"
+      description="Platform detection and window management for Tauri/Electron."
+      [code]="codeExamples.platformService">
+      <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <p class="text-sm text-slate-600 dark:text-slate-400">Detects runtime platform and provides window controls.</p>
+      </div>
+    </app-demo-section>
+
+    <!-- File Picker Service -->
+    <app-demo-section
+      title="FilePickerService"
+      description="Native file open/save dialogs."
+      [code]="codeExamples.filePickerService">
+      <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <p class="text-sm text-slate-600 dark:text-slate-400">Opens native file dialogs for open/save operations.</p>
+      </div>
+    </app-demo-section>
+
+    <!-- Notifications Service -->
+    <app-demo-section
+      title="NativeNotificationsService"
+      description="System notifications with actions."
+      [code]="codeExamples.notificationsService">
+      <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <p class="text-sm text-slate-600 dark:text-slate-400">Sends system notifications with optional actions.</p>
+      </div>
+    </app-demo-section>
+
+    <!-- Update Service -->
+    <app-demo-section
+      title="UpdateService"
+      description="Check for updates, download, and install."
+      [code]="codeExamples.updateService">
+      <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <p class="text-sm text-slate-600 dark:text-slate-400">Manages application updates for Tauri and Electron.</p>
+      </div>
+    </app-demo-section>
+
+    <!-- Other Services Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <h4 class="font-semibold text-slate-900 dark:text-white">StorageService</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Local and secure storage with encryption support.</p>
+        <pre class="mt-2 text-xs bg-slate-200 dark:bg-slate-900 p-2 rounded overflow-x-auto"><code>await storage.set('key', 'value');
+const value = await storage.get('key');</code></pre>
+      </div>
+      <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <h4 class="font-semibold text-slate-900 dark:text-white">IpcService</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Inter-process communication for Tauri and Electron.</p>
+        <pre class="mt-2 text-xs bg-slate-200 dark:bg-slate-900 p-2 rounded overflow-x-auto"><code>await ipc.invoke('command', data);
+ipc.on('event', callback);</code></pre>
+      </div>
+      <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <h4 class="font-semibold text-slate-900 dark:text-white">SystemTrayService</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">System tray icon and context menu.</p>
+        <pre class="mt-2 text-xs bg-slate-200 dark:bg-slate-900 p-2 rounded overflow-x-auto"><code>await tray.setIcon('/path/to/icon.png');
+await tray.setMenu(menuItems);</code></pre>
+      </div>
+      <div class="p-4 bg-slate-100 dark:bg-slate-800 rounded-lg">
+        <h4 class="font-semibold text-slate-900 dark:text-white">DockService</h4>
+        <p class="text-sm text-slate-600 dark:text-slate-400 mt-1">Dock/taskbar badge, progress, and bounce.</p>
+        <pre class="mt-2 text-xs bg-slate-200 dark:bg-slate-900 p-2 rounded overflow-x-auto"><code>await dock.setBadge(5);
+await dock.setProgress(0.75);
+await dock.bounce();</code></pre>
+      </div>
+    </div>
+  </section>
+
+</div>

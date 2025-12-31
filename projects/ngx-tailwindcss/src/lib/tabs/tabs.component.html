@@ -14,9 +14,6 @@
         (click)="selectTab(panel.value)"
         (keydown)="onKeydown($event, panel.value)"
       >
-        @if (panel.icon) {
-          <span class="mr-2" [innerHTML]="panel.icon"></span>
-        }
         {{ panel.label }}
       </button>
     }

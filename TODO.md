@@ -519,13 +519,13 @@ This module focuses on UI components commonly needed in desktop applications bui
 |-------|--------|------------|
 | Phase 1 - Window & Chrome | ✅ Complete | Title Bar, Window Controls, Menu Bar, Context Menu |
 | Phase 2 - Navigation | ✅ Complete | Sidebar, File Tree, Breadcrumbs, Tab Bar |
-| Phase 3 - Search & Commands | 🔶 Partial | Command Palette ✅, Search Bar ✅, Quick Switcher 🔲 |
-| Phase 4 - Settings | 🔲 Pending | Settings Panel, Preferences, Shortcuts Editor, Theme Selector |
-| Phase 5 - Dialogs | 🔶 Partial | Alert ✅, Confirm ✅, Prompt 🔲, About ✅, Update 🔲, Toast (existing), Onboarding 🔲 |
-| Phase 6 - Data Display | 🔶 Partial | Property Inspector 🔲, Terminal ✅, Log Viewer ✅, Code Viewer 🔲, Data Table (existing) |
-| Phase 7 - Status & Feedback | 🔶 Partial | Status Bar ✅, Toolbar ✅, Progress (existing), Activity 🔲, Connection Status 🔲 |
-| Phase 8 - Interaction | 🔶 Partial | Drag & Drop ✅ (directives), Resizable Panels (existing Splitter), Shortcut ✅, Tooltip (existing) |
-| Phase 9 - Platform Integration | 🔲 Pending | File Picker, System Tray, Notifications, Dock |
+| Phase 3 - Search & Commands | ✅ Complete | Command Palette ✅, Search Bar ✅, Quick Switcher ✅ |
+| Phase 4 - Settings | ✅ Complete | Settings Panel ✅, Preferences Dialog ✅, Shortcuts Editor ✅, Theme Selector ✅ |
+| Phase 5 - Dialogs | ✅ Complete | Alert ✅, Confirm ✅, Prompt ✅, About ✅, Update ✅, Toast (existing), Onboarding ✅ |
+| Phase 6 - Data Display | ✅ Complete | Property Inspector ✅, Terminal ✅, Log Viewer ✅, Code Viewer ✅, Data Table (existing) |
+| Phase 7 - Status & Feedback | ✅ Complete | Status Bar ✅, Toolbar ✅, Progress (existing), Activity Indicator ✅, Connection Status ✅ |
+| Phase 8 - Interaction | ✅ Complete | Drag & Drop ✅ (directives), Resizable Panels ✅, Shortcut Display ✅, Tooltip (existing) |
+| Phase 9 - Platform Integration | ✅ Complete | File Picker ✅ (service), System Tray ✅ (service), Notifications ✅ (service), Dock ✅ (service) |
 
 ---
 
@@ -533,30 +533,32 @@ This module focuses on UI components commonly needed in desktop applications bui
 
 **Target: ~45 components + 5 services + 3 directives**
 
-**Completed: 17 components + 3 services + 3 directives**
+**Completed: 30 components + 7 services + 3 directives** ✅
 
 ### Components by Phase
-1. **Window & Chrome (4):** Title Bar, Window Controls, Menu Bar, Context Menu
-2. **Navigation (4):** Sidebar, File Tree, Breadcrumbs, Tab Bar
-3. **Search & Commands (3):** Command Palette, Search Bar, Quick Switcher
-4. **Settings (4):** Settings Panel, Preferences Dialog, Shortcuts Editor, Theme Selector
-5. **Dialogs (7):** Alert, Confirm, Prompt, About, Update, Toast, Onboarding Wizard
-6. **Data Display (5):** Property Inspector, Terminal, Log Viewer, Code Viewer, Data Table
-7. **Status & Feedback (5):** Status Bar, Toolbar, Progress Indicators, Activity Indicator, Connection Status
-8. **Interaction (4):** Drag & Drop Zone, Resizable Panels, Shortcut Display, Enhanced Tooltip
-9. **Platform Integration (4):** File Picker, System Tray, Native Notifications, Dock Integration
+1. **Window & Chrome (4):** Title Bar ✅, Window Controls ✅, Menu Bar ✅, Context Menu ✅
+2. **Navigation (4):** Sidebar ✅, File Tree ✅, Breadcrumbs ✅, Tab Bar ✅
+3. **Search & Commands (3):** Command Palette ✅, Search Bar ✅, Quick Switcher ✅
+4. **Settings (4):** Settings Panel ✅, Preferences Dialog ✅, Shortcuts Editor ✅, Theme Selector ✅
+5. **Dialogs (6):** Alert ✅, Confirm ✅, Prompt ✅, About ✅, Update ✅, Onboarding Wizard ✅
+6. **Data Display (4):** Property Inspector ✅, Terminal ✅, Log Viewer ✅, Code Viewer ✅
+7. **Status & Feedback (4):** Status Bar ✅, Toolbar ✅, Activity Indicator ✅, Connection Status ✅
+8. **Interaction (2):** Resizable Panels ✅, Shortcut Display ✅
 
-### Services (5)
-1. `NativePlatformService` - Window management, system info (extend existing)
-2. `StorageService` - Local, secure, and file storage
-3. `IpcService` - Tauri/Electron IPC communication
-4. `UpdateService` - App update management
-5. `ThemeService` - Platform theming and dark mode (extend existing)
+### Services (7)
+1. `NativeAppPlatformService` ✅ - Window management, system info, platform detection
+2. `StorageService` ✅ - Local, secure, and file storage
+3. `IpcService` ✅ - Tauri/Electron IPC communication
+4. `UpdateService` ✅ - App update management
+5. `FilePickerService` ✅ - Native file/folder dialogs
+6. `SystemTrayService` ✅ - System tray icon and menu
+7. `NativeNotificationsService` ✅ - System notifications
+8. `DockService` ✅ - Dock/taskbar integration
 
 ### Directives (3)
-1. `twDraggable` - Make elements draggable
-2. `twDropZone` - Define drop target areas
-3. `twShortcut` - Keyboard shortcut binding
+1. `twDraggable` ✅ - Make elements draggable
+2. `twDropZone` ✅ - Define drop target areas
+3. `twShortcut` ✅ - Keyboard shortcut binding
 
 ---
 

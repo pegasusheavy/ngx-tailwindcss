@@ -3,7 +3,7 @@
  */
 
 // Platform types
-export type Platform = 'macos' | 'windows' | 'linux' | 'web';
+export type Platform = 'macos' | 'windows' | 'linux' | 'web' | 'tauri' | 'electron';
 export type PlatformTheme = 'light' | 'dark' | 'system';
 
 // Window types
@@ -16,7 +16,7 @@ export interface WindowState {
 
 // Title Bar types
 export type TitleBarVariant = 'default' | 'transparent' | 'unified';
-export type TitleBarPlatform = 'macos' | 'windows' | 'linux' | 'web' | 'auto';
+export type TitleBarPlatform = 'macos' | 'windows' | 'linux' | 'web' | 'auto' | 'tauri' | 'electron';
 
 // Window Controls types
 export type WindowControlsPosition = 'left' | 'right';
