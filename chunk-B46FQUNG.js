@@ -1,0 +1,13 @@
+import{a as b,b as l}from"./chunk-QJALDVBT.js";import"./chunk-4ZZRKSRB.js";import{Ua as c,h as p}from"./chunk-5LPP6ASA.js";import{Ba as t,Jb as n,Ra as d,hb as m,ib as a,jb as e,kb as r}from"./chunk-2G56FVSW.js";var u=class s{items=[{label:"Home",url:"/"},{label:"Components",url:"/components"},{label:"Breadcrumb"}];basicCode=`<tw-breadcrumb [items]="items"></tw-breadcrumb>
+
+// Component
+items = [
+  { label: 'Home', url: '/' },
+  { label: 'Components', url: '/components' },
+  { label: 'Breadcrumb' },
+];`;separatorsCode=`<tw-breadcrumb [items]="items" separator="slash"></tw-breadcrumb>
+<tw-breadcrumb [items]="items" separator="chevron"></tw-breadcrumb>
+<tw-breadcrumb [items]="items" separator="arrow"></tw-breadcrumb>
+<tw-breadcrumb [items]="items" separator="dot"></tw-breadcrumb>`;sizesCode=`<tw-breadcrumb [items]="items" size="sm"></tw-breadcrumb>
+<tw-breadcrumb [items]="items" size="md"></tw-breadcrumb>
+<tw-breadcrumb [items]="items" size="lg"></tw-breadcrumb>`;static \u0275fac=function(o){return new(o||s)};static \u0275cmp=d({type:s,selectors:[["app-breadcrumb-demo"]],decls:36,vars:11,consts:[["title","Breadcrumb","description","Navigation breadcrumb component showing the current page location."],[1,"space-y-8"],["title","Basic Usage",3,"code"],[3,"items"],["title","Separators",3,"code"],[1,"space-y-4"],[1,"text-sm","text-slate-600","block","mb-2"],["separator","slash",3,"items"],["separator","chevron",3,"items"],["separator","arrow",3,"items"],["separator","dot",3,"items"],["title","Sizes",3,"code"],["size","sm",3,"items"],["size","md",3,"items"],["size","lg",3,"items"]],template:function(o,i){o&1&&(r(0,"app-page-header",0),a(1,"div",1)(2,"app-demo-section",2),r(3,"tw-breadcrumb",3),e(),a(4,"app-demo-section",4)(5,"div",5)(6,"div")(7,"span",6),n(8,"Slash (default)"),e(),r(9,"tw-breadcrumb",7),e(),a(10,"div")(11,"span",6),n(12,"Chevron"),e(),r(13,"tw-breadcrumb",8),e(),a(14,"div")(15,"span",6),n(16,"Arrow"),e(),r(17,"tw-breadcrumb",9),e(),a(18,"div")(19,"span",6),n(20,"Dot"),e(),r(21,"tw-breadcrumb",10),e()()(),a(22,"app-demo-section",11)(23,"div",5)(24,"div")(25,"span",6),n(26,"Small"),e(),r(27,"tw-breadcrumb",12),e(),a(28,"div")(29,"span",6),n(30,"Medium"),e(),r(31,"tw-breadcrumb",13),e(),a(32,"div")(33,"span",6),n(34,"Large"),e(),r(35,"tw-breadcrumb",14),e()()()()),o&2&&(t(2),m("code",i.basicCode),t(),m("items",i.items),t(),m("code",i.separatorsCode),t(5),m("items",i.items),t(4),m("items",i.items),t(4),m("items",i.items),t(4),m("items",i.items),t(),m("code",i.sizesCode),t(5),m("items",i.items),t(4),m("items",i.items),t(4),m("items",i.items))},dependencies:[p,c,b,l],encapsulation:2})};export{u as BreadcrumbDemoComponent};

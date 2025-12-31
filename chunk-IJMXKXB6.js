@@ -1,0 +1,18 @@
+import{a as w,b as d}from"./chunk-QJALDVBT.js";import"./chunk-4ZZRKSRB.js";import{Oa as n,Pa as m,h as v}from"./chunk-5LPP6ASA.js";import{Ba as a,Ra as o,hb as t,ib as e,jb as s,kb as r}from"./chunk-2G56FVSW.js";var l=class p{basicCode=`<tw-avatar src="https://i.pravatar.cc/150?img=1" alt="User"></tw-avatar>
+<tw-avatar initials="JD"></tw-avatar>
+<tw-avatar icon="user"></tw-avatar>`;sizesCode=`<tw-avatar size="xs" src="..."></tw-avatar>
+<tw-avatar size="sm" src="..."></tw-avatar>
+<tw-avatar size="md" src="..."></tw-avatar>
+<tw-avatar size="lg" src="..."></tw-avatar>
+<tw-avatar size="xl" src="..."></tw-avatar>`;shapesCode=`<tw-avatar shape="circle" src="..."></tw-avatar>
+<tw-avatar shape="square" src="..."></tw-avatar>
+<tw-avatar shape="rounded" src="..."></tw-avatar>`;statusCode=`<tw-avatar status="online" src="..."></tw-avatar>
+<tw-avatar status="offline" src="..."></tw-avatar>
+<tw-avatar status="away" src="..."></tw-avatar>
+<tw-avatar status="busy" src="..."></tw-avatar>`;groupCode=`<tw-avatar-group [max]="4">
+  <tw-avatar src="..."></tw-avatar>
+  <tw-avatar src="..."></tw-avatar>
+  <tw-avatar src="..."></tw-avatar>
+  <tw-avatar src="..."></tw-avatar>
+  <tw-avatar src="..."></tw-avatar>
+</tw-avatar-group>`;static \u0275fac=function(c){return new(c||p)};static \u0275cmp=o({type:p,selectors:[["app-avatar-demo"]],decls:33,vars:6,consts:[["title","Avatar","description","Avatar component for displaying user profile images, initials, or icons."],[1,"space-y-8"],["title","Basic Usage",3,"code"],[1,"flex","items-center","gap-4"],["src","https://i.pravatar.cc/150?img=1","alt","User"],["initials","JD"],["title","Sizes",3,"code"],[1,"flex","items-end","gap-4"],["size","xs","src","https://i.pravatar.cc/150?img=2"],["size","sm","src","https://i.pravatar.cc/150?img=3"],["size","md","src","https://i.pravatar.cc/150?img=4"],["size","lg","src","https://i.pravatar.cc/150?img=5"],["size","xl","src","https://i.pravatar.cc/150?img=6"],["title","Shapes",3,"code"],["shape","circle","src","https://i.pravatar.cc/150?img=7"],["shape","square","src","https://i.pravatar.cc/150?img=8"],["shape","rounded","src","https://i.pravatar.cc/150?img=9"],["title","Status Indicator",3,"code"],["status","online","src","https://i.pravatar.cc/150?img=10"],["status","offline","src","https://i.pravatar.cc/150?img=11"],["status","away","src","https://i.pravatar.cc/150?img=12"],["status","busy","src","https://i.pravatar.cc/150?img=13"],["title","Avatar Group",3,"code"],[3,"max"],["src","https://i.pravatar.cc/150?img=14"],["src","https://i.pravatar.cc/150?img=15"],["src","https://i.pravatar.cc/150?img=16"],["src","https://i.pravatar.cc/150?img=17"],["src","https://i.pravatar.cc/150?img=18"],["src","https://i.pravatar.cc/150?img=19"]],template:function(c,i){c&1&&(r(0,"app-page-header",0),e(1,"div",1)(2,"app-demo-section",2)(3,"div",3),r(4,"tw-avatar",4)(5,"tw-avatar",5)(6,"tw-avatar"),s()(),e(7,"app-demo-section",6)(8,"div",7),r(9,"tw-avatar",8)(10,"tw-avatar",9)(11,"tw-avatar",10)(12,"tw-avatar",11)(13,"tw-avatar",12),s()(),e(14,"app-demo-section",13)(15,"div",3),r(16,"tw-avatar",14)(17,"tw-avatar",15)(18,"tw-avatar",16),s()(),e(19,"app-demo-section",17)(20,"div",3),r(21,"tw-avatar",18)(22,"tw-avatar",19)(23,"tw-avatar",20)(24,"tw-avatar",21),s()(),e(25,"app-demo-section",22)(26,"tw-avatar-group",23),r(27,"tw-avatar",24)(28,"tw-avatar",25)(29,"tw-avatar",26)(30,"tw-avatar",27)(31,"tw-avatar",28)(32,"tw-avatar",29),s()()()),c&2&&(a(2),t("code",i.basicCode),a(5),t("code",i.sizesCode),a(7),t("code",i.shapesCode),a(5),t("code",i.statusCode),a(6),t("code",i.groupCode),a(),t("max",4))},dependencies:[v,n,m,w,d],encapsulation:2})};export{l as AvatarDemoComponent};
