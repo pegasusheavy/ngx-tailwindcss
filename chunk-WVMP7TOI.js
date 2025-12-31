@@ -1,4 +1,4 @@
-import{H as T,Na as A,a as C,b as E,pa as I,q as y,r as S,t as _,wa as k}from"./chunk-T3HYHWG2.js";import{a as x,b as O}from"./chunk-QJALDVBT.js";import"./chunk-4ZZRKSRB.js";import{W as u,h as s,mb as D,nb as b,ob as f,pb as v,qb as g,rb as h}from"./chunk-5LPP6ASA.js";import{Ba as i,Jb as e,Ra as l,hb as r,ib as t,jb as o,kb as d,tb as p}from"./chunk-2G56FVSW.js";var B=class m{icons={chevronDown:k,pen:I,copy:A,trash:S,ellipsis:_,share:T,eye:y};onAction(c){console.log("Action:",c)}basicCode=`<tw-dropdown>
+import{H as T,Na as A,a as C,b as E,pa as I,q as y,r as S,t as _,wa as k}from"./chunk-ICWF26FU.js";import{a as x,b as O}from"./chunk-QJALDVBT.js";import"./chunk-4ZZRKSRB.js";import{W as u,h as s,mb as D,nb as b,ob as f,pb as v,qb as g,rb as h}from"./chunk-5LPP6ASA.js";import{Ba as i,Jb as e,Ra as l,hb as r,ib as t,jb as o,kb as d,tb as p}from"./chunk-2G56FVSW.js";var B=class m{icons={chevronDown:k,pen:I,copy:A,trash:S,ellipsis:_,share:T,eye:y};onAction(c){console.log("Action:",c)}basicCode=`<tw-dropdown>
   <tw-button twDropdownTrigger variant="outline">
     Options
     <fa-icon [icon]="faChevronDown" class="ml-2"></fa-icon>
