@@ -1,7 +1,13 @@
 import { Component, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-export type ConnectionState = 'connected' | 'connecting' | 'disconnected' | 'error' | 'syncing' | 'synced';
+export type ConnectionState =
+  | 'connected'
+  | 'connecting'
+  | 'disconnected'
+  | 'error'
+  | 'syncing'
+  | 'synced';
 
 @Component({
   selector: 'tw-connection-status',
@@ -147,4 +153,3 @@ export class TwConnectionStatusComponent {
     this.retryClicked.emit();
   }
 }
-

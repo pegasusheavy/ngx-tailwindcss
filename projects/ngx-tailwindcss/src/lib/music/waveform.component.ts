@@ -309,10 +309,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   });
 
   protected readonly canvasClasses = computed(() => {
-    return this.twClass.merge(
-      'block',
-      this.seekable() ? 'cursor-pointer' : ''
-    );
+    return this.twClass.merge('block', this.seekable() ? 'cursor-pointer' : '');
   });
 
   protected readonly colors = computed(() => COLOR_SCHEMES[this.colorScheme()]);
@@ -469,7 +466,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     for (let i = 0; i < bufferLength; i++) {
       // Convert byte (0-255) to normalized (-1 to 1)
-      const v = ((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const v = (this.timeDomainData[i] / 128.0 - 1) * gainValue;
       const y = (v * h) / 2 + h / 2;
 
       if (i === 0) {
@@ -511,7 +508,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
       for (let j = 0; j < samplesPerBar; j++) {
         const idx = i * samplesPerBar + j;
         if (idx < bufferLength) {
-          const v = Math.abs((this.timeDomainData[idx] / 128.0) - 1);
+          const v = Math.abs(this.timeDomainData[idx] / 128.0 - 1);
           if (v > maxAmp) maxAmp = v;
         }
       }
@@ -547,7 +544,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     // Top half
     let x = 0;
     for (let i = 0; i < bufferLength; i++) {
-      const v = Math.abs((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const v = Math.abs(this.timeDomainData[i] / 128.0 - 1) * gainValue;
       const y = centerY - v * (h / 2 - 2);
 
       if (i === 0) {
@@ -560,7 +557,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     // Bottom half (mirror)
     for (let i = bufferLength - 1; i >= 0; i--) {
-      const v = Math.abs((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const v = Math.abs(this.timeDomainData[i] / 128.0 - 1) * gainValue;
       const xPos = (i / bufferLength) * w;
       const y = centerY + v * (h / 2 - 2);
       this.ctx.lineTo(xPos, y);
@@ -599,7 +596,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     // Top path
     let x = 0;
     for (let i = 0; i < bufferLength; i++) {
-      const v = Math.abs((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const v = Math.abs(this.timeDomainData[i] / 128.0 - 1) * gainValue;
       const y = centerY - v * (h / 2 - 2);
       this.ctx.lineTo(x, y);
       x += sliceWidth;
@@ -609,7 +606,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     // Bottom path (mirror)
     for (let i = bufferLength - 1; i >= 0; i--) {
-      const v = Math.abs((this.timeDomainData[i] / 128.0) - 1) * gainValue;
+      const v = Math.abs(this.timeDomainData[i] / 128.0 - 1) * gainValue;
       const xPos = (i / bufferLength) * w;
       const y = centerY + v * (h / 2 - 2);
       this.ctx.lineTo(xPos, y);
@@ -1021,7 +1018,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (clampedZoom === oldZoom) return;
 
     // Calculate new pan position to keep the center point stable
-    const center = centerPosition ?? (this.panPosition() + (1 / oldZoom) / 2);
+    const center = centerPosition ?? this.panPosition() + 1 / oldZoom / 2;
     const newVisibleWidth = 1 / clampedZoom;
     let newPan = center - newVisibleWidth / 2;
 
@@ -1087,7 +1084,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (position < start + margin) {
       this.setPan(position - margin);
     } else if (position > end - margin) {
-      this.setPan(position - (1 / this.zoomLevel()) + margin);
+      this.setPan(position - 1 / this.zoomLevel() + margin);
     }
   }
 
@@ -1272,4 +1269,3 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     return this.isRealTimeRunning;
   }
 }
-

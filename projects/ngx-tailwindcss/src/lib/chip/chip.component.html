@@ -1,22 +1,22 @@
 <span [class]="chipClasses()">
   <!-- Leading icon/image -->
-  @if (image) {
-    <img [src]="image" [alt]="imageAlt" [class]="imageClasses()" />
+  @if (image()) {
+    <img [src]="image()" [alt]="imageAlt()" [class]="imageClasses()" />
   } @else {
     <ng-content select="[twChipIcon]"></ng-content>
   }
 
   <!-- Label -->
   <span class="truncate">
-    @if (label) {
-      {{ label }}
+    @if (label()) {
+      {{ label() }}
     } @else {
       <ng-content></ng-content>
     }
   </span>
 
   <!-- Remove button -->
-  @if (removable && !disabled) {
+  @if (removable() && !disabled()) {
     <button
       type="button"
       [class]="removeButtonClasses()"

@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  computed,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ToolbarItem, ToolbarVariant, ToolbarPosition } from './native.types';
 
@@ -48,12 +42,16 @@ import { ToolbarItem, ToolbarVariant, ToolbarPosition } from './native.types';
                   <span class="text-sm">{{ item.label }}</span>
                 }
                 <svg class="w-3 h-3 ml-1" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
+                  <path
+                    d="M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"
+                  />
                 </svg>
               </button>
 
               @if (openDropdownId === item.id && item.items?.length) {
-                <div class="absolute top-full left-0 mt-1 py-1 min-w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+                <div
+                  class="absolute top-full left-0 mt-1 py-1 min-w-32 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+                >
                   @for (subItem of item.items; track subItem.id) {
                     @if (subItem.type === 'separator') {
                       <div class="h-px my-1 bg-gray-200 dark:bg-gray-700"></div>
@@ -208,4 +206,3 @@ export class TwToolbarComponent {
     this.openDropdownId = null;
   }
 }
-

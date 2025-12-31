@@ -171,7 +171,9 @@ export class MobileSupportService {
 
   private triggerIOSHaptic(type: HapticFeedbackType): void {
     // Check for iOS haptic engine via webkit
-    const webkit = (window as unknown as Record<string, unknown>)['webkit'] as Record<string, unknown> | undefined;
+    const webkit = (window as unknown as Record<string, unknown>)['webkit'] as
+      | Record<string, unknown>
+      | undefined;
     if (webkit?.['messageHandlers']) {
       const handlers = webkit['messageHandlers'] as Record<string, unknown>;
       const haptic = handlers['haptic'] as { postMessage?: (msg: unknown) => void } | undefined;
@@ -251,10 +253,7 @@ export class MobileSupportService {
   /**
    * Validate drag distance
    */
-  validateDragDistance(
-    event: TouchEvent | MouseEvent,
-    minDistance: number = 10
-  ): boolean {
+  validateDragDistance(event: TouchEvent | MouseEvent, minDistance: number = 10): boolean {
     let currentX: number, currentY: number;
 
     if ('touches' in event) {
@@ -330,10 +329,7 @@ export class MobileSupportService {
   /**
    * Update pinch gesture state and calculate scale
    */
-  updatePinchState(
-    event: TouchEvent,
-    initialState: PinchGestureState
-  ): PinchGestureState {
+  updatePinchState(event: TouchEvent, initialState: PinchGestureState): PinchGestureState {
     if (event.touches.length < 2) return initialState;
 
     const touch1 = event.touches[0];
@@ -396,19 +392,14 @@ export class MobileSupportService {
 
   private checkTouchSupport(): boolean {
     if (typeof window === 'undefined') return false;
-    return (
-      'ontouchstart' in window ||
-      navigator.maxTouchPoints > 0
-    );
+    return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
   }
 
   private getOrientation(): 'portrait' | 'landscape' {
     if (typeof window === 'undefined') return 'portrait';
 
     if (window.screen?.orientation?.type) {
-      return window.screen.orientation.type.includes('portrait')
-        ? 'portrait'
-        : 'landscape';
+      return window.screen.orientation.type.includes('portrait') ? 'portrait' : 'landscape';
     }
 
     return window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
@@ -446,4 +437,3 @@ export class MobileSupportService {
     return 'sm';
   }
 }
-

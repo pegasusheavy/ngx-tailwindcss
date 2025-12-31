@@ -11,7 +11,12 @@
       title="Scroll Left"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M15 19l-7-7 7-7"
+        ></path>
       </svg>
     </button>
   }
@@ -38,7 +43,12 @@
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
               </svg>
             </button>
           }
@@ -80,7 +90,9 @@
             </div>
           } @else {
             <!-- Collapsed Section Indicator -->
-            <div class="flex items-center justify-center h-20 px-4 text-xs text-slate-500 bg-slate-800/50 rounded">
+            <div
+              class="flex items-center justify-center h-20 px-4 text-xs text-slate-500 bg-slate-800/50 rounded"
+            >
               {{ sectionGroup.channels.length }} ch
             </div>
           }
@@ -136,7 +148,12 @@
       title="Scroll Right"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M9 5l7 7-7 7"
+        ></path>
       </svg>
     </button>
   }
@@ -158,10 +175,17 @@
         [meterLevelRight]="masterMeterLevelRight()"
         [stereo]="true"
         [disabled]="disabled()"
-        [ngModel]="{ volume: internalMasterVolume(), pan: 0, mute: masterMute(), solo: false, record: false, inputGain: 0, auxSends: [] }"
+        [ngModel]="{
+          volume: internalMasterVolume(),
+          pan: 0,
+          mute: masterMute(),
+          solo: false,
+          record: false,
+          inputGain: 0,
+          auxSends: [],
+        }"
         (volumeChange)="onMasterVolumeChange($event)"
       ></tw-channel-strip>
     </div>
   }
 </div>
-

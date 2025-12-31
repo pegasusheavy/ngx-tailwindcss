@@ -239,5 +239,7 @@ export class TwLoadingOverlayComponent {
     return ['flex items-center justify-center', overlayStyles[ovl]].join(' ');
   });
 
-  protected messageClasses = computed(() => 'text-sm font-medium text-slate-600 dark:text-slate-400');
+  protected messageClasses = computed(
+    () => 'text-sm font-medium text-slate-600 dark:text-slate-400'
+  );
 }

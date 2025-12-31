@@ -50,13 +50,16 @@ export class TwOscilloscopeComponent implements AfterViewInit, OnChanges, OnDest
   protected readonly colors = computed(() => {
     const variant = this.variant();
 
-    const schemes: Record<OscilloscopeVariant, {
-      background: string;
-      grid: string;
-      line: string;
-      centerLine: string;
-      glow?: string;
-    }> = {
+    const schemes: Record<
+      OscilloscopeVariant,
+      {
+        background: string;
+        grid: string;
+        line: string;
+        centerLine: string;
+        glow?: string;
+      }
+    > = {
       default: {
         background: '#0F172A',
         grid: '#1E3A5F',
@@ -292,7 +295,3 @@ export class TwOscilloscopeComponent implements AfterViewInit, OnChanges, OnDest
     this.ctx.fillText('-1', 4, canvas.height - 12);
   }
 }
-
-
-
-

@@ -1,11 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  inject,
-  computed,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NativeAppPlatformService } from './platform.service';
 import { TitleBarPlatform, WindowControlButton } from './native.types';
@@ -26,11 +19,7 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div
-      [class]="containerClasses()"
-      (mouseenter)="hovered = true"
-      (mouseleave)="hovered = false"
-    >
+    <div [class]="containerClasses()" (mouseenter)="hovered = true" (mouseleave)="hovered = false">
       @if (effectivePlatform() === 'macos') {
         <!-- macOS Traffic Lights -->
         <div class="flex items-center gap-2">
@@ -46,8 +35,16 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
               (click)="onClose()"
             >
               @if (hovered && !disabled()) {
-                <svg class="absolute inset-0 w-3 h-3 text-red-900 opacity-0 group-hover:opacity-100" viewBox="0 0 12 12">
-                  <path d="M3.5 3.5l5 5M8.5 3.5l-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <svg
+                  class="absolute inset-0 w-3 h-3 text-red-900 opacity-0 group-hover:opacity-100"
+                  viewBox="0 0 12 12"
+                >
+                  <path
+                    d="M3.5 3.5l5 5M8.5 3.5l-5 5"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
                 </svg>
               }
             </button>
@@ -64,8 +61,16 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
               (click)="onMinimize()"
             >
               @if (hovered && !disabled()) {
-                <svg class="absolute inset-0 w-3 h-3 text-yellow-900 opacity-0 group-hover:opacity-100" viewBox="0 0 12 12">
-                  <path d="M2.5 6h7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <svg
+                  class="absolute inset-0 w-3 h-3 text-yellow-900 opacity-0 group-hover:opacity-100"
+                  viewBox="0 0 12 12"
+                >
+                  <path
+                    d="M2.5 6h7"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  />
                 </svg>
               }
             </button>
@@ -82,13 +87,28 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
               (click)="onMaximize()"
             >
               @if (hovered && !disabled()) {
-                <svg class="absolute inset-0 w-3 h-3 text-green-900 opacity-0 group-hover:opacity-100" viewBox="0 0 12 12">
+                <svg
+                  class="absolute inset-0 w-3 h-3 text-green-900 opacity-0 group-hover:opacity-100"
+                  viewBox="0 0 12 12"
+                >
                   @if (showFullscreen()) {
                     <!-- Fullscreen arrows -->
-                    <path d="M2 4V2h2M10 4V2H8M2 8v2h2M10 8v2H8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path
+                      d="M2 4V2h2M10 4V2H8M2 8v2h2M10 8v2H8"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                   } @else {
                     <!-- Maximize diagonal -->
-                    <path d="M3 9L9 3M9 3H5M9 3v4" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path
+                      d="M3 9L9 3M9 3H5M9 3v4"
+                      stroke="currentColor"
+                      stroke-width="1.2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
                   }
                 </svg>
               }
@@ -107,7 +127,7 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
               (click)="onMinimize()"
             >
               <svg class="w-4 h-4 text-gray-600 dark:text-gray-300" viewBox="0 0 16 16">
-                <path d="M3 8h10" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+                <path d="M3 8h10" stroke="currentColor" stroke-width="1" stroke-linecap="round" />
               </svg>
             </button>
           }
@@ -122,13 +142,29 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
               @if (platformService.windowState().isMaximized) {
                 <!-- Restore icon -->
                 <svg class="w-4 h-4 text-gray-600 dark:text-gray-300" viewBox="0 0 16 16">
-                  <rect x="3" y="5" width="8" height="8" fill="none" stroke="currentColor" stroke-width="1"/>
-                  <path d="M5 5V3h8v8h-2" fill="none" stroke="currentColor" stroke-width="1"/>
+                  <rect
+                    x="3"
+                    y="5"
+                    width="8"
+                    height="8"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1"
+                  />
+                  <path d="M5 5V3h8v8h-2" fill="none" stroke="currentColor" stroke-width="1" />
                 </svg>
               } @else {
                 <!-- Maximize icon -->
                 <svg class="w-4 h-4 text-gray-600 dark:text-gray-300" viewBox="0 0 16 16">
-                  <rect x="3" y="3" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1"/>
+                  <rect
+                    x="3"
+                    y="3"
+                    width="10"
+                    height="10"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1"
+                  />
                 </svg>
               }
             </button>
@@ -141,8 +177,16 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
               [disabled]="disabled()"
               (click)="onClose()"
             >
-              <svg class="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-white" viewBox="0 0 16 16">
-                <path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1" stroke-linecap="round"/>
+              <svg
+                class="w-4 h-4 text-gray-600 dark:text-gray-300 group-hover:text-white"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M4 4l8 8M12 4l-8 8"
+                  stroke="currentColor"
+                  stroke-width="1"
+                  stroke-linecap="round"
+                />
               </svg>
             </button>
           }
@@ -159,7 +203,12 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
               (click)="onMinimize()"
             >
               <svg class="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" viewBox="0 0 14 14">
-                <path d="M2 10h10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                <path
+                  d="M2 10h10"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
               </svg>
             </button>
           }
@@ -172,7 +221,16 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
               (click)="onMaximize()"
             >
               <svg class="w-3.5 h-3.5 text-gray-600 dark:text-gray-300" viewBox="0 0 14 14">
-                <rect x="2" y="2" width="10" height="10" fill="none" stroke="currentColor" stroke-width="1.5" rx="1"/>
+                <rect
+                  x="2"
+                  y="2"
+                  width="10"
+                  height="10"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  rx="1"
+                />
               </svg>
             </button>
           }
@@ -184,8 +242,16 @@ import { TitleBarPlatform, WindowControlButton } from './native.types';
               [disabled]="disabled()"
               (click)="onClose()"
             >
-              <svg class="w-3.5 h-3.5 text-gray-600 dark:text-gray-300 group-hover:text-white" viewBox="0 0 14 14">
-                <path d="M3 3l8 8M11 3l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+              <svg
+                class="w-3.5 h-3.5 text-gray-600 dark:text-gray-300 group-hover:text-white"
+                viewBox="0 0 14 14"
+              >
+                <path
+                  d="M3 3l8 8M11 3l-8 8"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
               </svg>
             </button>
           }
@@ -259,4 +325,3 @@ export class TwWindowControlsComponent {
     }
   }
 }
-

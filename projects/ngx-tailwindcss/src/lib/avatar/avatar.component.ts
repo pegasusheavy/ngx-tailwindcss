@@ -193,7 +193,11 @@ export class TwAvatarGroupComponent {
       loose: '-space-x-1',
     };
 
-    return ['flex items-center', spacingClasses[sp], '[&>*]:ring-2 [&>*]:ring-white dark:[&>*]:ring-slate-800'].join(' ');
+    return [
+      'flex items-center',
+      spacingClasses[sp],
+      '[&>*]:ring-2 [&>*]:ring-white dark:[&>*]:ring-slate-800',
+    ].join(' ');
   });
 
   protected overflowClasses = computed(() => {

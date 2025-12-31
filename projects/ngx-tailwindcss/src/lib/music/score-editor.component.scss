@@ -100,11 +100,21 @@
     width: 1rem;
     height: 1rem;
 
-    &[data-duration="whole"]::before { content: "𝅝"; }
-    &[data-duration="half"]::before { content: "𝅗𝅥"; }
-    &[data-duration="quarter"]::before { content: "𝅘𝅥"; }
-    &[data-duration="eighth"]::before { content: "𝅘𝅥𝅮"; }
-    &[data-duration="sixteenth"]::before { content: "𝅘𝅥𝅯"; }
+    &[data-duration='whole']::before {
+      content: '𝅝';
+    }
+    &[data-duration='half']::before {
+      content: '𝅗𝅥';
+    }
+    &[data-duration='quarter']::before {
+      content: '𝅘𝅥';
+    }
+    &[data-duration='eighth']::before {
+      content: '𝅘𝅥𝅮';
+    }
+    &[data-duration='sixteenth']::before {
+      content: '𝅘𝅥𝅯';
+    }
   }
 }
 
@@ -662,4 +672,3 @@
     }
   }
 }
-

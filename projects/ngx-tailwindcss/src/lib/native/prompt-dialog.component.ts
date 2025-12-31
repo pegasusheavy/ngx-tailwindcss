@@ -1,12 +1,4 @@
-import {
-  Component,
-  input,
-  output,
-  signal,
-  effect,
-  ElementRef,
-  viewChild,
-} from '@angular/core';
+import { Component, input, output, signal, effect, ElementRef, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -20,13 +12,12 @@ export type PromptInputType = 'text' | 'password' | 'number' | 'email' | 'url';
     @if (isOpen()) {
       <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
         <!-- Backdrop -->
-        <div
-          class="absolute inset-0 bg-black/50 backdrop-blur-sm"
-          (click)="cancel()"
-        ></div>
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" (click)="cancel()"></div>
 
         <!-- Dialog -->
-        <div class="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-xl shadow-2xl overflow-hidden">
+        <div
+          class="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-xl shadow-2xl overflow-hidden"
+        >
           <!-- Header -->
           <div class="px-6 pt-6 pb-2">
             <h2 class="text-lg font-semibold text-slate-900 dark:text-slate-100">
@@ -196,4 +187,3 @@ export class TwPromptDialogComponent {
     return null;
   }
 }
-

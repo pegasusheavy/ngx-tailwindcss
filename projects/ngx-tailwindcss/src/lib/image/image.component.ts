@@ -3,11 +3,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  EventEmitter,
   HostListener,
   inject,
-  Input,
-  Output,
+  input,
+  output,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -36,58 +35,49 @@ export class TwImageComponent {
   private readonly twClass = inject(TwClassService);
 
   /** Image source URL */
-  @Input({ required: true }) src = '';
+  readonly src = input.required<string>();
 
   /** Alternative text */
-  @Input() alt = '';
+  readonly alt = input('');
 
   /** Preview source (larger image for preview) */
-  @Input() previewSrc = '';
+  readonly previewSrc = input('');
 
   /** Width of the image */
-  @Input() width = '';
+  readonly width = input('');
 
   /** Height of the image */
-  @Input() height = '';
+  readonly height = input('');
 
   /** Object fit */
-  @Input() set fit(value: ImageFit) {
-    this._fit.set(value);
-  }
-  protected _fit = signal<ImageFit>('cover');
+  readonly fit = input<ImageFit>('cover');
 
   /** Border radius */
-  @Input() set borderRadius(value: ImageBorderRadius) {
-    this._borderRadius.set(value);
-  }
-  protected _borderRadius = signal<ImageBorderRadius>('none');
+  readonly borderRadius = input<ImageBorderRadius>('none');
 
   /** Whether to enable preview on click */
-  @Input({ transform: booleanAttribute }) set preview(value: boolean) {
-    this._preview.set(value);
-  }
-  protected _preview = signal(false);
+  readonly preview = input(false, { transform: booleanAttribute });
 
   /** Whether zoom is enabled in preview */
-  @Input({ transform: booleanAttribute }) zoomable = true;
+  readonly zoomable = input(true, { transform: booleanAttribute });
 
   /** Whether rotation is enabled in preview */
-  @Input({ transform: booleanAttribute }) rotatable = true;
+  readonly rotatable = input(true, { transform: booleanAttribute });
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /** Preview show event */
-  @Output() onShow = new EventEmitter<void>();
+  readonly onShow = output<void>();
 
   /** Preview hide event */
-  @Output() onHide = new EventEmitter<void>();
+  readonly onHide = output<void>();
 
   /** Image load event */
-  @Output() onLoad = new EventEmitter<void>();
+  readonly onLoad = output<void>();
 
   /** Image error event */
-  @Output() onError = new EventEmitter<void>();
+  readonly onError = output<void>();
 
   protected loading = signal(true);
   protected previewVisible = signal(false);
@@ -111,21 +101,21 @@ export class TwImageComponent {
 
     return this.twClass.merge(
       'relative overflow-hidden inline-block',
-      radiusClasses[this._borderRadius()],
-      this._preview() ? 'cursor-zoom-in' : '',
-      this.classOverride
+      radiusClasses[this.borderRadius()],
+      this.preview() ? 'cursor-zoom-in' : '',
+      this.classOverride()
     );
   });
 
   protected containerStyles = computed(() => {
     const styles: Record<string, string> = {};
-    if (this.width) {
-      styles['width'] =
-        this.width.includes('px') || this.width.includes('%') ? this.width : `${this.width}px`;
+    const w = this.width();
+    const h = this.height();
+    if (w) {
+      styles['width'] = w.includes('px') || w.includes('%') ? w : `${w}px`;
     }
-    if (this.height) {
-      styles['height'] =
-        this.height.includes('px') || this.height.includes('%') ? this.height : `${this.height}px`;
+    if (h) {
+      styles['height'] = h.includes('px') || h.includes('%') ? h : `${h}px`;
     }
     return styles;
   });
@@ -139,7 +129,7 @@ export class TwImageComponent {
       'scale-down': 'object-scale-down',
     };
 
-    return this.twClass.merge('w-full h-full', fitClasses[this._fit()]);
+    return this.twClass.merge('w-full h-full', fitClasses[this.fit()]);
   });
 
   protected placeholderClasses = computed(() => {
@@ -172,7 +162,7 @@ export class TwImageComponent {
   }
 
   onImageClick(): void {
-    if (this._preview()) {
+    if (this.preview()) {
       this.openPreview();
     }
   }

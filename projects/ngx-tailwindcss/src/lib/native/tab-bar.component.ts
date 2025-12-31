@@ -25,11 +25,7 @@ import { TabItem, TabBarVariant, TabBarPosition, TabEvent } from './native.types
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div
-      [class]="containerClasses()"
-      role="tablist"
-      [attr.aria-label]="'Document tabs'"
-    >
+    <div [class]="containerClasses()" role="tablist" [attr.aria-label]="'Document tabs'">
       <!-- Tabs container with horizontal scroll -->
       <div
         class="flex items-center overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600"
@@ -56,8 +52,14 @@ import { TabItem, TabBarVariant, TabBarPosition, TabEvent } from './native.types
             >
               <!-- Pin indicator -->
               @if (tab.pinned) {
-                <svg class="w-3 h-3 text-gray-400 flex-shrink-0" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a5.927 5.927 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707-.195-.195.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a5.922 5.922 0 0 1 1.013.16l3.134-3.133a2.772 2.772 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146z"/>
+                <svg
+                  class="w-3 h-3 text-gray-400 flex-shrink-0"
+                  fill="currentColor"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M9.828.722a.5.5 0 0 1 .354.146l4.95 4.95a.5.5 0 0 1 0 .707c-.48.48-1.072.588-1.503.588-.177 0-.335-.018-.46-.039l-3.134 3.134a5.927 5.927 0 0 1 .16 1.013c.046.702-.032 1.687-.72 2.375a.5.5 0 0 1-.707 0l-2.829-2.828-3.182 3.182c-.195.195-1.219.902-1.414.707-.195-.195.512-1.22.707-1.414l3.182-3.182-2.828-2.829a.5.5 0 0 1 0-.707c.688-.688 1.673-.767 2.375-.72a5.922 5.922 0 0 1 1.013.16l3.134-3.133a2.772 2.772 0 0 1-.04-.461c0-.43.108-1.022.589-1.503a.5.5 0 0 1 .353-.146z"
+                  />
                 </svg>
               }
 
@@ -83,7 +85,9 @@ import { TabItem, TabBarVariant, TabBarPosition, TabEvent } from './native.types
                   (click)="closeTab(tab, i, $event)"
                 >
                   <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                    <path
+                      d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"
+                    />
                   </svg>
                 </button>
               }
@@ -106,7 +110,12 @@ import { TabItem, TabBarVariant, TabBarPosition, TabEvent } from './native.types
           (click)="addTab.emit()"
         >
           <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
           </svg>
         </button>
       }
@@ -121,12 +130,16 @@ import { TabItem, TabBarVariant, TabBarPosition, TabEvent } from './native.types
             (click)="overflowMenuOpen.set(!overflowMenuOpen())"
           >
             <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
+              <path
+                d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"
+              />
             </svg>
           </button>
 
           @if (overflowMenuOpen()) {
-            <div class="absolute right-0 top-full mt-1 w-48 py-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50">
+            <div
+              class="absolute right-0 top-full mt-1 w-48 py-1 bg-white dark:bg-gray-800 rounded-md shadow-lg border border-gray-200 dark:border-gray-700 z-50"
+            >
               <button
                 type="button"
                 class="w-full px-3 py-1.5 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
@@ -147,17 +160,19 @@ import { TabItem, TabBarVariant, TabBarPosition, TabEvent } from './native.types
       }
     </div>
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
-    .scrollbar-thin::-webkit-scrollbar {
-      height: 4px;
-    }
-    .scrollbar-thin::-webkit-scrollbar-thumb {
-      border-radius: 2px;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+      .scrollbar-thin::-webkit-scrollbar {
+        height: 4px;
+      }
+      .scrollbar-thin::-webkit-scrollbar-thumb {
+        border-radius: 2px;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'tw-tab-bar',
@@ -210,12 +225,14 @@ export class TwTabBarComponent {
 
     const variantClasses: Record<TabBarVariant, { active: string; inactive: string }> = {
       default: {
-        active: 'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-t-2 border-t-blue-500',
+        active:
+          'bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-t-2 border-t-blue-500',
         inactive: 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700',
       },
       pills: {
         active: 'bg-blue-500 text-white rounded-md',
-        inactive: 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md',
+        inactive:
+          'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md',
       },
       underline: {
         active: 'text-blue-600 dark:text-blue-400 font-medium',
@@ -223,7 +240,8 @@ export class TwTabBarComponent {
       },
       boxed: {
         active: 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md shadow-sm',
-        inactive: 'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-gray-800/50 rounded-md',
+        inactive:
+          'text-gray-600 dark:text-gray-400 hover:bg-white/50 dark:hover:bg-gray-800/50 rounded-md',
       },
     };
 
@@ -284,4 +302,3 @@ export class TwTabBarComponent {
     }
   }
 }
-

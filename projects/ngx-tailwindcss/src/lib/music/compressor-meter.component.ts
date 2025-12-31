@@ -17,7 +17,13 @@ import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 
-export type CompressorMeterVariant = 'default' | 'minimal' | 'studio' | 'vintage' | 'light' | 'highContrast';
+export type CompressorMeterVariant =
+  | 'default'
+  | 'minimal'
+  | 'studio'
+  | 'vintage'
+  | 'light'
+  | 'highContrast';
 export type CompressorMeterSize = 'sm' | 'md' | 'lg';
 export type AttackReleaseDisplay = 'none' | 'bars' | 'envelope' | 'graph';
 
@@ -188,7 +194,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
 
     // Update GR history for graph
     if (this.showGrHistory()) {
-      this.grHistory.update((history) => {
+      this.grHistory.update(history => {
         const newPoint: GainReductionHistoryPoint = { time: now, value: gr };
         const newHistory = [...history, newPoint];
         // Keep only the last N points
@@ -449,7 +455,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
     this.ctx.setLineDash([]);
 
     // Draw current input level marker
-    const inputX = this.inputMeterPercent() / 100 * width;
+    const inputX = (this.inputMeterPercent() / 100) * width;
     const currentOutput = this.internalOutputLevel();
     const outputY = height - ((currentOutput - minDb) / range) * height;
 
@@ -525,7 +531,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
     ctx.stroke();
 
     // Fill area under curve
-    ctx.lineTo((history.length - 1) / maxLength * width, 0);
+    ctx.lineTo(((history.length - 1) / maxLength) * width, 0);
     ctx.lineTo(0, 0);
     ctx.closePath();
     ctx.fillStyle = 'rgba(234, 179, 8, 0.2)'; // amber-500 with alpha
@@ -792,4 +798,3 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
     }[activity];
   });
 }
-

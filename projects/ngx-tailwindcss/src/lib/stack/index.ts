@@ -1,8 +1,4 @@
-import {
-  TwHStackComponent,
-  TwStackComponent,
-  TwVStackComponent,
-} from './stack.component';
+import { TwHStackComponent, TwStackComponent, TwVStackComponent } from './stack.component';
 
 export {
   TwStackComponent,

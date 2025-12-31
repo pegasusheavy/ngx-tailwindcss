@@ -194,7 +194,11 @@ export class TwNoteComponent {
     }
 
     // Line at middle C (between staffs)
-    if (y >= bottomLine && y <= bottomLine + spacing && Math.abs(y - bottomLine - spacing / 2) < 2) {
+    if (
+      y >= bottomLine &&
+      y <= bottomLine + spacing &&
+      Math.abs(y - bottomLine - spacing / 2) < 2
+    ) {
       lines.push(bottomLine + spacing);
     }
 
@@ -387,9 +391,7 @@ export class TwNoteComponent {
     const beamSpacing = size * 0.35;
 
     for (let level = 0; level < levels; level++) {
-      const yOffset = direction === 'up'
-        ? level * beamSpacing
-        : -level * beamSpacing;
+      const yOffset = direction === 'up' ? level * beamSpacing : -level * beamSpacing;
 
       const y = beamY + yOffset;
 
@@ -445,7 +447,3 @@ export class TwNoteComponent {
     return tuplet?.ratio[0] ?? 3;
   });
 }
-
-
-
-

@@ -42,9 +42,21 @@ import { CommandItem, CommandPaletteMode } from './native.types';
           (click)="$event.stopPropagation()"
         >
           <!-- Search input -->
-          <div class="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-            <svg class="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          <div
+            class="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-gray-700"
+          >
+            <svg
+              class="w-5 h-5 text-gray-400 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
             </svg>
             <input
               type="text"
@@ -62,11 +74,15 @@ import { CommandItem, CommandPaletteMode } from './native.types';
                 (click)="clearSearch()"
               >
                 <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                  <path
+                    d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"
+                  />
                 </svg>
               </button>
             }
-            <kbd class="hidden sm:inline-flex px-2 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 rounded text-gray-500 dark:text-gray-400">
+            <kbd
+              class="hidden sm:inline-flex px-2 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 rounded text-gray-500 dark:text-gray-400"
+            >
               ESC
             </kbd>
           </div>
@@ -84,7 +100,9 @@ import { CommandItem, CommandPaletteMode } from './native.types';
             } @else {
               @for (group of groupedCommands(); track group.category) {
                 @if (group.category) {
-                  <div class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900/50">
+                  <div
+                    class="px-4 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900/50"
+                  >
                     {{ group.category }}
                   </div>
                 }
@@ -94,10 +112,16 @@ import { CommandItem, CommandPaletteMode } from './native.types';
                     class="w-full px-4 py-2.5 flex items-center gap-3 text-left transition-colors"
                     [class.bg-blue-500]="selectedIndex() === getGlobalIndex(group.category, i)"
                     [class.text-white]="selectedIndex() === getGlobalIndex(group.category, i)"
-                    [class.hover:bg-gray-100]="selectedIndex() !== getGlobalIndex(group.category, i)"
-                    [class.dark:hover:bg-gray-700]="selectedIndex() !== getGlobalIndex(group.category, i)"
+                    [class.hover:bg-gray-100]="
+                      selectedIndex() !== getGlobalIndex(group.category, i)
+                    "
+                    [class.dark:hover:bg-gray-700]="
+                      selectedIndex() !== getGlobalIndex(group.category, i)
+                    "
                     [class.text-gray-900]="selectedIndex() !== getGlobalIndex(group.category, i)"
-                    [class.dark:text-gray-100]="selectedIndex() !== getGlobalIndex(group.category, i)"
+                    [class.dark:text-gray-100]="
+                      selectedIndex() !== getGlobalIndex(group.category, i)
+                    "
                     (click)="selectCommand(command)"
                     (mouseenter)="selectedIndex.set(getGlobalIndex(group.category, i))"
                   >
@@ -112,7 +136,9 @@ import { CommandItem, CommandPaletteMode } from './native.types';
                       @if (command.description) {
                         <div
                           class="truncate text-sm opacity-60"
-                          [class.text-blue-200]="selectedIndex() === getGlobalIndex(group.category, i)"
+                          [class.text-blue-200]="
+                            selectedIndex() === getGlobalIndex(group.category, i)
+                          "
                         >
                           {{ command.description }}
                         </div>
@@ -126,8 +152,12 @@ import { CommandItem, CommandPaletteMode } from './native.types';
                         [class.bg-blue-400]="selectedIndex() === getGlobalIndex(group.category, i)"
                         [class.text-white]="selectedIndex() === getGlobalIndex(group.category, i)"
                         [class.bg-gray-100]="selectedIndex() !== getGlobalIndex(group.category, i)"
-                        [class.dark:bg-gray-700]="selectedIndex() !== getGlobalIndex(group.category, i)"
-                        [class.text-gray-500]="selectedIndex() !== getGlobalIndex(group.category, i)"
+                        [class.dark:bg-gray-700]="
+                          selectedIndex() !== getGlobalIndex(group.category, i)
+                        "
+                        [class.text-gray-500]="
+                          selectedIndex() !== getGlobalIndex(group.category, i)
+                        "
                       >
                         {{ formatShortcut(command.shortcut) }}
                       </kbd>
@@ -139,7 +169,9 @@ import { CommandItem, CommandPaletteMode } from './native.types';
           </div>
 
           <!-- Footer -->
-          <div class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+          <div
+            class="px-4 py-2 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
+          >
             <div class="flex items-center gap-3">
               <span class="flex items-center gap-1">
                 <kbd class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">↑</kbd>
@@ -190,12 +222,7 @@ export class TwCommandPaletteComponent implements OnInit, OnDestroy {
     }
 
     return allCommands.filter(cmd => {
-      const searchText = [
-        cmd.label,
-        cmd.description,
-        cmd.category,
-        ...(cmd.keywords || []),
-      ]
+      const searchText = [cmd.label, cmd.description, cmd.category, ...(cmd.keywords || [])]
         .filter(Boolean)
         .join(' ')
         .toLowerCase();
@@ -346,4 +373,3 @@ export class TwCommandPaletteComponent implements OnInit, OnDestroy {
     }
   }
 }
-

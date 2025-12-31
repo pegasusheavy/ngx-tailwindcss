@@ -105,7 +105,10 @@ export class TwProgressComponent {
       lg: 'h-4',
     };
 
-    return ['w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700', sizeClasses[size]].join(' ');
+    return [
+      'w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700',
+      sizeClasses[size],
+    ].join(' ');
   });
 
   protected barClasses = computed(() => {

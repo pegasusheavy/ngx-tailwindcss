@@ -18,14 +18,14 @@
     </div>
   }
   <img
-    [src]="src"
-    [alt]="alt"
+    [src]="src()"
+    [alt]="alt()"
     [class]="imageClasses()"
     [style.display]="loading() ? 'none' : 'block'"
     (load)="onImageLoad()"
     (error)="onImageError()"
   />
-  @if (_preview() && !loading()) {
+  @if (preview() && !loading()) {
     <div [class]="previewIconClasses()">
       <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
         <path
@@ -46,7 +46,7 @@
   >
     <!-- Controls -->
     <div class="absolute top-4 right-4 flex items-center gap-2">
-      @if (zoomable) {
+      @if (zoomable()) {
         <button
           type="button"
           class="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
@@ -91,7 +91,7 @@
           {{ Math.round(zoomLevel() * 100) }}%
         </span>
       }
-      @if (rotatable) {
+      @if (rotatable()) {
         <button
           type="button"
           class="p-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
@@ -147,8 +147,8 @@
 
     <!-- Image -->
     <img
-      [src]="previewSrc || src"
-      [alt]="alt"
+      [src]="previewSrc() || src()"
+      [alt]="alt()"
       class="max-w-full max-h-full object-contain transition-transform duration-200"
       [style.transform]="'scale(' + zoomLevel() + ') rotate(' + rotation() + 'deg)'"
       (click)="$event.stopPropagation()"

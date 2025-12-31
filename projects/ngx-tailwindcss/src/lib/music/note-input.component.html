@@ -18,11 +18,21 @@
           [title]="dur"
         >
           @switch (dur) {
-            @case ('whole') { 𝅝 }
-            @case ('half') { 𝅗𝅥 }
-            @case ('quarter') { 𝅘𝅥 }
-            @case ('eighth') { 𝅘𝅥𝅮 }
-            @case ('sixteenth') { 𝅘𝅥𝅯 }
+            @case ('whole') {
+              𝅝
+            }
+            @case ('half') {
+              𝅗𝅥
+            }
+            @case ('quarter') {
+              𝅘𝅥
+            }
+            @case ('eighth') {
+              𝅘𝅥𝅮
+            }
+            @case ('sixteenth') {
+              𝅘𝅥𝅯
+            }
           }
         </button>
       }
@@ -41,7 +51,9 @@
         [class.dark:bg-slate-700]="currentAccidental() !== 'sharp'"
         (click)="setAccidental(currentAccidental() === 'sharp' ? null : 'sharp')"
         title="Sharp (#)"
-      >♯</button>
+      >
+        ♯
+      </button>
       <button
         type="button"
         class="w-8 h-8 flex items-center justify-center rounded text-lg transition-colors"
@@ -51,7 +63,9 @@
         [class.dark:bg-slate-700]="currentAccidental() !== 'flat'"
         (click)="setAccidental(currentAccidental() === 'flat' ? null : 'flat')"
         title="Flat (-)"
-      >♭</button>
+      >
+        ♭
+      </button>
       <button
         type="button"
         class="w-8 h-8 flex items-center justify-center rounded text-lg transition-colors"
@@ -61,7 +75,9 @@
         [class.dark:bg-slate-700]="currentAccidental() !== 'natural'"
         (click)="setAccidental(currentAccidental() === 'natural' ? null : 'natural')"
         title="Natural (=)"
-      >♮</button>
+      >
+        ♮
+      </button>
     </div>
 
     <div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
@@ -77,7 +93,9 @@
         [class.dark:bg-slate-700]="!isDotted()"
         (click)="setDotted(!isDotted())"
         title="Dotted (.)"
-      >•</button>
+      >
+        •
+      </button>
       <button
         type="button"
         class="w-8 h-8 flex items-center justify-center rounded text-lg transition-colors"
@@ -87,7 +105,9 @@
         [class.dark:bg-slate-700]="!isRest()"
         (click)="setRestMode(!isRest())"
         title="Rest (R)"
-      >𝄽</button>
+      >
+        𝄽
+      </button>
     </div>
 
     <div class="w-px h-6 bg-slate-300 dark:bg-slate-600"></div>
@@ -109,7 +129,9 @@
               [class.dark:bg-slate-700]="currentVoice() !== voice"
               (click)="setVoice($any(voice))"
               [title]="'Voice ' + voice + ' (Shift+' + voice + ')'"
-            >{{ voice }}</button>
+            >
+              {{ voice }}
+            </button>
           }
         }
       </div>
@@ -126,7 +148,9 @@
         [disabled]="undoStack().length === 0"
         [class.opacity-50]="undoStack().length === 0"
         title="Undo (Ctrl+Z)"
-      >Undo</button>
+      >
+        Undo
+      </button>
       <button
         type="button"
         class="px-2 py-1 text-xs rounded bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
@@ -134,7 +158,9 @@
         [disabled]="redoStack().length === 0"
         [class.opacity-50]="redoStack().length === 0"
         title="Redo (Ctrl+Shift+Z)"
-      >Redo</button>
+      >
+        Redo
+      </button>
       <button
         type="button"
         class="px-2 py-1 text-xs rounded bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
@@ -142,7 +168,9 @@
         [disabled]="selectedNotes().length === 0"
         [class.opacity-50]="selectedNotes().length === 0"
         title="Delete (Del)"
-      >Delete</button>
+      >
+        Delete
+      </button>
     </div>
 
     <!-- MIDI Status -->
@@ -215,15 +243,29 @@
           <!-- Note head -->
           <ellipse
             [attr.cx]="draggedNote()?.id === note.id ? draggedNote()!.x : note.x"
-            [attr.cy]="draggedNote()?.id === note.id
-              ? noteToY(draggedNote()!.name, draggedNote()!.octave)
-              : noteToY(note.name, note.octave)"
+            [attr.cy]="
+              draggedNote()?.id === note.id
+                ? noteToY(draggedNote()!.name, draggedNote()!.octave)
+                : noteToY(note.name, note.octave)
+            "
             [attr.rx]="lineSpacing() * 0.45"
             [attr.ry]="lineSpacing() * 0.35"
-            [attr.fill]="note.duration === 'whole' || note.duration === 'half' ? 'none' : getVoiceColor(note.voice)"
+            [attr.fill]="
+              note.duration === 'whole' || note.duration === 'half'
+                ? 'none'
+                : getVoiceColor(note.voice)
+            "
             [attr.stroke]="getVoiceColor(note.voice)"
             [attr.stroke-width]="note.duration === 'whole' || note.duration === 'half' ? 1.5 : 0"
-            [attr.transform]="'rotate(-15, ' + (draggedNote()?.id === note.id ? draggedNote()!.x : note.x) + ', ' + (draggedNote()?.id === note.id ? noteToY(draggedNote()!.name, draggedNote()!.octave) : noteToY(note.name, note.octave)) + ')'"
+            [attr.transform]="
+              'rotate(-15, ' +
+              (draggedNote()?.id === note.id ? draggedNote()!.x : note.x) +
+              ', ' +
+              (draggedNote()?.id === note.id
+                ? noteToY(draggedNote()!.name, draggedNote()!.octave)
+                : noteToY(note.name, note.octave)) +
+              ')'
+            "
           />
 
           <!-- Selection highlight -->
@@ -250,11 +292,21 @@
               text-anchor="end"
             >
               @switch (note.accidental) {
-                @case ('sharp') { ♯ }
-                @case ('flat') { ♭ }
-                @case ('natural') { ♮ }
-                @case ('doubleSharp') { 𝄪 }
-                @case ('doubleFlat') { 𝄫 }
+                @case ('sharp') {
+                  ♯
+                }
+                @case ('flat') {
+                  ♭
+                }
+                @case ('natural') {
+                  ♮
+                }
+                @case ('doubleSharp') {
+                  𝄪
+                }
+                @case ('doubleFlat') {
+                  𝄫
+                }
               }
             </text>
           }
@@ -291,10 +343,20 @@
             [attr.cy]="noteToY(hoverPosition()!.note, hoverPosition()!.octave)"
             [attr.rx]="lineSpacing() * 0.45"
             [attr.ry]="lineSpacing() * 0.35"
-            [attr.fill]="currentDuration() === 'whole' || currentDuration() === 'half' ? 'none' : getVoiceColor(currentVoice())"
+            [attr.fill]="
+              currentDuration() === 'whole' || currentDuration() === 'half'
+                ? 'none'
+                : getVoiceColor(currentVoice())
+            "
             [attr.stroke]="getVoiceColor(currentVoice())"
             stroke-width="1.5"
-            [attr.transform]="'rotate(-15, ' + hoverPosition()!.x + ', ' + noteToY(hoverPosition()!.note, hoverPosition()!.octave) + ')'"
+            [attr.transform]="
+              'rotate(-15, ' +
+              hoverPosition()!.x +
+              ', ' +
+              noteToY(hoverPosition()!.note, hoverPosition()!.octave) +
+              ')'
+            "
           />
           <text
             [attr.x]="hoverPosition()!.x"
@@ -303,7 +365,9 @@
             fill="#64748B"
             text-anchor="middle"
             font-family="sans-serif"
-          >{{ hoverPosition()!.note }}{{ hoverPosition()!.octave }}</text>
+          >
+            {{ hoverPosition()!.note }}{{ hoverPosition()!.octave }}
+          </text>
         </g>
       }
 
@@ -322,14 +386,20 @@
   </div>
 
   <!-- Status Bar -->
-  <div class="flex items-center justify-between px-3 py-1.5 text-xs text-slate-500 bg-slate-50 dark:bg-slate-900 rounded-lg">
+  <div
+    class="flex items-center justify-between px-3 py-1.5 text-xs text-slate-500 bg-slate-50 dark:bg-slate-900 rounded-lg"
+  >
     <div class="flex items-center gap-4">
       <span>Notes: {{ notes().length }}</span>
       @if (selectedNotes().length > 0) {
         <span>Selected: {{ selectedNotes().length }}</span>
       }
       @if (hoverPosition()) {
-        <span>{{ hoverPosition()!.note }}{{ hoverPosition()!.octave }} (M{{ hoverPosition()!.measure + 1 }})</span>
+        <span
+          >{{ hoverPosition()!.note }}{{ hoverPosition()!.octave }} (M{{
+            hoverPosition()!.measure + 1
+          }})</span
+        >
       }
     </div>
     <div class="flex items-center gap-4">
@@ -339,4 +409,3 @@
     </div>
   </div>
 </div>
-

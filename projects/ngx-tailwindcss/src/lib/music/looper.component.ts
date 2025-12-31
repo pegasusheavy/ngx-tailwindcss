@@ -31,7 +31,16 @@ export interface LoopLayer {
 }
 
 export interface LooperEvent {
-  type: 'record-start' | 'record-stop' | 'play' | 'stop' | 'overdub-start' | 'overdub-stop' | 'clear' | 'undo' | 'redo';
+  type:
+    | 'record-start'
+    | 'record-stop'
+    | 'play'
+    | 'stop'
+    | 'overdub-start'
+    | 'overdub-stop'
+    | 'clear'
+    | 'undo'
+    | 'redo';
   timestamp: number;
   layerId?: number;
 }
@@ -189,7 +198,7 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     // Start recording
     if (this.mediaStream) {
       this.mediaRecorder = new MediaRecorder(this.mediaStream);
-      this.mediaRecorder.ondataavailable = (e) => {
+      this.mediaRecorder.ondataavailable = e => {
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
@@ -252,7 +261,7 @@ export class TwLooperComponent implements OnInit, OnDestroy {
 
     if (this.mediaStream) {
       this.mediaRecorder = new MediaRecorder(this.mediaStream);
-      this.mediaRecorder.ondataavailable = (e) => {
+      this.mediaRecorder.ondataavailable = e => {
         if (e.data.size > 0) {
           this.recordedChunks.push(e.data);
         }
@@ -314,7 +323,7 @@ export class TwLooperComponent implements OnInit, OnDestroy {
   // Layer controls
   setLayerVolume(layerId: number, volume: number): void {
     this.layers.update(layers =>
-      layers.map(l => l.id === layerId ? { ...l, volume: Math.max(0, Math.min(1, volume)) } : l)
+      layers.map(l => (l.id === layerId ? { ...l, volume: Math.max(0, Math.min(1, volume)) } : l))
     );
 
     // Update gain node if playing
@@ -328,7 +337,7 @@ export class TwLooperComponent implements OnInit, OnDestroy {
 
   toggleLayerMute(layerId: number): void {
     this.layers.update(layers =>
-      layers.map(l => l.id === layerId ? { ...l, muted: !l.muted } : l)
+      layers.map(l => (l.id === layerId ? { ...l, muted: !l.muted } : l))
     );
 
     // Update gain node if playing
@@ -502,7 +511,8 @@ export class TwLooperComponent implements OnInit, OnDestroy {
   private updatePosition(): void {
     if (!this.audioContext || this.loopDuration() === 0) return;
 
-    const elapsed = (this.audioContext.currentTime - this.recordingStartTime) * this.playbackSpeed();
+    const elapsed =
+      (this.audioContext.currentTime - this.recordingStartTime) * this.playbackSpeed();
     const position = elapsed % this.loopDuration();
     this.currentPosition.set(position);
   }
@@ -521,7 +531,10 @@ export class TwLooperComponent implements OnInit, OnDestroy {
   }
 
   private drawWaveformFrame(): void {
-    if (!this.ctx || (this.state() !== 'playing' && this.state() !== 'recording' && this.state() !== 'overdubbing')) {
+    if (
+      !this.ctx ||
+      (this.state() !== 'playing' && this.state() !== 'recording' && this.state() !== 'overdubbing')
+    ) {
       return;
     }
 
@@ -562,7 +575,7 @@ export class TwLooperComponent implements OnInit, OnDestroy {
         let max = -1.0;
 
         for (let j = 0; j < step; j++) {
-          const datum = data[(i * step) + j];
+          const datum = data[i * step + j];
           if (datum < min) min = datum;
           if (datum > max) max = datum;
         }
@@ -672,7 +685,10 @@ export class TwLooperComponent implements OnInit, OnDestroy {
 
   protected readonly canUndo = computed(() => this.layers().length > 0);
   protected readonly canRedo = computed(() => this.redoStack.length > 0);
-  protected readonly canOverdub = computed(() => this.loopDuration() > 0 && this.layers().length < this.maxLayers());
-  protected readonly isActive = computed(() => this.state() !== 'idle' && this.state() !== 'stopped');
+  protected readonly canOverdub = computed(
+    () => this.loopDuration() > 0 && this.layers().length < this.maxLayers()
+  );
+  protected readonly isActive = computed(
+    () => this.state() !== 'idle' && this.state() !== 'stopped'
+  );
 }
-

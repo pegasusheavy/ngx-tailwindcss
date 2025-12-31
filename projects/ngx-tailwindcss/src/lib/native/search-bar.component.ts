@@ -37,13 +37,25 @@ import { SearchSuggestion, SearchFilter } from './native.types';
         [class.dark:border-gray-600]="!isFocused()"
       >
         <!-- Search icon -->
-        <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        <svg
+          class="w-4 h-4 text-gray-400 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
         </svg>
 
         <!-- Active filters -->
         @for (filter of activeFilters(); track filter.id) {
-          <span class="flex items-center gap-1 px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded">
+          <span
+            class="flex items-center gap-1 px-2 py-0.5 text-xs bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded"
+          >
             @if (filter.icon) {
               <span>{{ filter.icon }}</span>
             }
@@ -54,7 +66,9 @@ import { SearchSuggestion, SearchFilter } from './native.types';
               (click)="removeFilter(filter)"
             >
               <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 16 16">
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                <path
+                  d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"
+                />
               </svg>
             </button>
           </span>
@@ -77,8 +91,19 @@ import { SearchSuggestion, SearchFilter } from './native.types';
         <!-- Loading indicator -->
         @if (loading()) {
           <svg class="w-4 h-4 text-gray-400 animate-spin" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
           </svg>
         }
 
@@ -90,14 +115,18 @@ import { SearchSuggestion, SearchFilter } from './native.types';
             (click)="clearSearch()"
           >
             <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 16 16">
-              <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+              <path
+                d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"
+              />
             </svg>
           </button>
         }
 
         <!-- Shortcut hint -->
         @if (showShortcut() && !isFocused() && !query()) {
-          <kbd class="hidden sm:inline-flex px-1.5 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 rounded text-gray-400">
+          <kbd
+            class="hidden sm:inline-flex px-1.5 py-0.5 text-xs font-mono bg-gray-100 dark:bg-gray-700 rounded text-gray-400"
+          >
             {{ shortcutHint() }}
           </kbd>
         }
@@ -105,18 +134,32 @@ import { SearchSuggestion, SearchFilter } from './native.types';
 
       <!-- Suggestions dropdown -->
       @if (showSuggestions() && (suggestions().length > 0 || recentSearches().length > 0)) {
-        <div class="absolute top-full left-0 right-0 mt-1 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-80 overflow-y-auto">
+        <div
+          class="absolute top-full left-0 right-0 mt-1 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 z-50 max-h-80 overflow-y-auto"
+        >
           <!-- Recent searches -->
           @if (recentSearches().length > 0 && !query()) {
-            <div class="px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">Recent</div>
+            <div class="px-3 py-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+              Recent
+            </div>
             @for (recent of recentSearches(); track recent) {
               <button
                 type="button"
                 class="w-full px-3 py-2 flex items-center gap-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                 (click)="selectRecent(recent)"
               >
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <svg
+                  class="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
                 <span>{{ recent }}</span>
               </button>
@@ -137,11 +180,15 @@ import { SearchSuggestion, SearchFilter } from './native.types';
               <div class="flex-1 min-w-0">
                 <div class="text-gray-900 dark:text-gray-100 truncate">{{ suggestion.label }}</div>
                 @if (suggestion.description) {
-                  <div class="text-xs text-gray-500 dark:text-gray-400 truncate">{{ suggestion.description }}</div>
+                  <div class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                    {{ suggestion.description }}
+                  </div>
                 }
               </div>
               @if (suggestion.type) {
-                <span class="text-xs text-gray-400 px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">
+                <span
+                  class="text-xs text-gray-400 px-1.5 py-0.5 bg-gray-100 dark:bg-gray-700 rounded"
+                >
                   {{ suggestion.type }}
                 </span>
               }
@@ -263,4 +310,3 @@ export class TwSearchBarComponent {
     this.filterChange.emit([]);
   }
 }
-

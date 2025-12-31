@@ -1,19 +1,8 @@
 import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import {
-  DestroyRef,
-  inject,
-  Injectable,
-  PLATFORM_ID,
-  signal,
-} from '@angular/core';
+import { DestroyRef, inject, Injectable, PLATFORM_ID, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { fromEvent } from 'rxjs';
-import {
-  DEFAULT_THEME,
-  generateThemeCssProperties,
-  TW_THEME,
-  TwTheme,
-} from './theme';
+import { DEFAULT_THEME, generateThemeCssProperties, TW_THEME, TwTheme } from './theme';
 
 export type ColorMode = 'light' | 'dark' | 'system';
 
@@ -134,8 +123,7 @@ export class TwThemeService {
    */
   public cycleColorMode(): void {
     const current = this.colorMode();
-    const next: ColorMode =
-      current === 'light' ? 'dark' : current === 'dark' ? 'system' : 'light';
+    const next: ColorMode = current === 'light' ? 'dark' : current === 'dark' ? 'system' : 'light';
     this.setColorMode(next);
   }
 
@@ -200,10 +188,7 @@ export class TwThemeService {
   /**
    * Gets the current value of a theme color
    */
-  public getColor(
-    colorName: keyof TwTheme['colors'],
-    mode?: 'light' | 'dark'
-  ): string {
+  public getColor(colorName: keyof TwTheme['colors'], mode?: 'light' | 'dark'): string {
     const theme = this.theme();
     const colorValue = theme.colors[colorName];
     if (!colorValue) return '';
@@ -216,9 +201,7 @@ export class TwThemeService {
    * Gets the CSS variable name for a theme color
    */
   public getCssVar(colorName: string): string {
-    const kebabName = colorName
-      .replaceAll(/([\da-z])([A-Z])/g, '$1-$2')
-      .toLowerCase();
+    const kebabName = colorName.replaceAll(/([\da-z])([A-Z])/g, '$1-$2').toLowerCase();
     return `var(--tw-color-${kebabName})`;
   }
 
@@ -226,11 +209,7 @@ export class TwThemeService {
    * Gets the CSS variable reference for use in Tailwind arbitrary values
    * @example 'bg-[var(--tw-color-primary)]'
    */
-  public getTailwindClass(
-    property: 'bg' | 'text' | 'border' | 'ring',
-    colorName: string
-  ): string {
+  public getTailwindClass(property: 'bg' | 'text' | 'border' | 'ring', colorName: string): string {
     return `${property}-[${this.getCssVar(colorName)}]`;
   }
 }
-

@@ -3,15 +3,15 @@
     type="radio"
     [class]="radioClasses()"
     [checked]="isChecked()"
-    [disabled]="disabled"
-    [attr.name]="name"
-    [attr.value]="value"
+    [disabled]="isDisabled()"
+    [attr.name]="effectiveName()"
+    [attr.value]="value()"
     (change)="onRadioChange()"
     (focus)="onFocus.emit($event)"
     (blur)="onBlur.emit($event)"
   />
   <span [class]="labelTextClasses()">
-    {{ label }}
+    {{ label() }}
     <ng-content></ng-content>
   </span>
 </label>

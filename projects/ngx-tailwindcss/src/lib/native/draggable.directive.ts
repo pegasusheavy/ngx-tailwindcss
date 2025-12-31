@@ -95,4 +95,3 @@ export class TwDraggableDirective implements OnInit, OnDestroy {
     this.dragEnded.emit(event);
   }
 }
-

@@ -1,6 +1,6 @@
 <nav [class]="containerClasses()" aria-label="Progress">
   <ol [class]="listClasses()">
-    @for (step of steps; track step.id ?? $index; let i = $index; let last = $last) {
+    @for (step of steps(); track step.id ?? $index; let i = $index; let last = $last) {
       <li [class]="itemClasses(last)">
         <!-- Step content (indicator + label) -->
         <div [class]="stepContentClasses(i)" (click)="onStepClick(i)">
@@ -22,7 +22,7 @@
           </div>
 
           <!-- Label (for horizontal, shown below indicator) -->
-          @if (showLabels && orientation === 'horizontal') {
+          @if (showLabels() && orientation() === 'horizontal') {
             <div [class]="labelContainerClasses()">
               <span [class]="labelClasses(i)">{{ step.label }}</span>
               @if (step.description) {
@@ -33,7 +33,7 @@
         </div>
 
         <!-- Label (for vertical, shown next to indicator) -->
-        @if (showLabels && orientation === 'vertical') {
+        @if (showLabels() && orientation() === 'vertical') {
           <div class="ml-3">
             <span [class]="labelClasses(i)">{{ step.label }}</span>
             @if (step.description) {
@@ -43,13 +43,13 @@
         }
 
         <!-- Horizontal connector (inline between steps) -->
-        @if (!last && orientation === 'horizontal') {
+        @if (!last && orientation() === 'horizontal') {
           <div [class]="connectorClasses(i)" [ngStyle]="getHorizontalConnectorStyle()"></div>
         }
       </li>
 
       <!-- Vertical connector (between items) -->
-      @if (!last && orientation === 'vertical') {
+      @if (!last && orientation() === 'vertical') {
         <div [class]="verticalConnectorClasses(i)" [ngStyle]="getVerticalConnectorStyle()"></div>
       }
     }

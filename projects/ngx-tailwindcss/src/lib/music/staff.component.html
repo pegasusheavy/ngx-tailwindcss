@@ -43,7 +43,9 @@
                 [attr.fill]="colors().symbol"
                 font-family="serif"
                 class="select-none"
-              >𝄞</text>
+              >
+                𝄞
+              </text>
             }
             @case ('bass') {
               <!-- Bass Clef (F Clef) -->
@@ -54,7 +56,9 @@
                 [attr.fill]="colors().symbol"
                 font-family="serif"
                 class="select-none"
-              >𝄢</text>
+              >
+                𝄢
+              </text>
             }
             @case ('alto') {
               <!-- Alto Clef (C Clef) -->
@@ -65,7 +69,9 @@
                 [attr.fill]="colors().symbol"
                 font-family="serif"
                 class="select-none"
-              >𝄡</text>
+              >
+                𝄡
+              </text>
             }
             @case ('tenor') {
               <!-- Tenor Clef -->
@@ -76,7 +82,9 @@
                 [attr.fill]="colors().symbol"
                 font-family="serif"
                 class="select-none"
-              >𝄡</text>
+              >
+                𝄡
+              </text>
             }
             @case ('percussion') {
               <!-- Percussion Clef -->
@@ -109,7 +117,9 @@
             [attr.fill]="colors().symbol"
             font-family="serif"
             class="select-none"
-          >{{ acc.type === 'sharp' ? '♯' : '♭' }}</text>
+          >
+            {{ acc.type === 'sharp' ? '♯' : '♭' }}
+          </text>
         }
       }
 
@@ -126,7 +136,9 @@
               font-family="serif"
               font-weight="bold"
               class="select-none"
-            >{{ parts.top }}</text>
+            >
+              {{ parts.top }}
+            </text>
             <text
               [attr.x]="timeSignaturePosition()"
               [attr.y]="staffTop() + lineSpacing() * 3.5"
@@ -135,7 +147,9 @@
               font-family="serif"
               font-weight="bold"
               class="select-none"
-            >{{ parts.bottom }}</text>
+            >
+              {{ parts.bottom }}
+            </text>
           } @else {
             <!-- Common time or cut time -->
             <text
@@ -145,7 +159,9 @@
               [attr.fill]="colors().symbol"
               font-family="serif"
               class="select-none"
-            >{{ parts.top === 'C' ? '𝄴' : '𝄵' }}</text>
+            >
+              {{ parts.top === 'C' ? '𝄴' : '𝄵' }}
+            </text>
           }
         }
       }
@@ -207,7 +223,9 @@
             [attr.fill]="colors().symbol"
             font-family="serif"
             class="select-none"
-          >𝄢</text>
+          >
+            𝄢
+          </text>
         }
 
         <!-- Key Signature (adjusted for bass clef) -->
@@ -220,7 +238,9 @@
               [attr.fill]="colors().symbol"
               font-family="serif"
               class="select-none"
-            >{{ acc.type === 'sharp' ? '♯' : '♭' }}</text>
+            >
+              {{ acc.type === 'sharp' ? '♯' : '♭' }}
+            </text>
           }
         }
 
@@ -236,7 +256,9 @@
                 font-family="serif"
                 font-weight="bold"
                 class="select-none"
-              >{{ parts.top }}</text>
+              >
+                {{ parts.top }}
+              </text>
               <text
                 [attr.x]="timeSignaturePosition()"
                 [attr.y]="staffTop() + lineSpacing() * 3.5"
@@ -245,7 +267,9 @@
                 font-family="serif"
                 font-weight="bold"
                 class="select-none"
-              >{{ parts.bottom }}</text>
+              >
+                {{ parts.bottom }}
+              </text>
             } @else {
               <text
                 [attr.x]="timeSignaturePosition()"
@@ -254,7 +278,9 @@
                 [attr.fill]="colors().symbol"
                 font-family="serif"
                 class="select-none"
-              >{{ parts.top === 'C' ? '𝄴' : '𝄵' }}</text>
+              >
+                {{ parts.top === 'C' ? '𝄴' : '𝄵' }}
+              </text>
             }
           }
         }
@@ -293,7 +319,9 @@
 
       <!-- Brace for grand staff -->
       <path
-        [attr.d]="'M 8 ' + staffTop() + ' Q 0 ' + (height() + 10) + ' 8 ' + (height() * 2 + 20 - staffTop())"
+        [attr.d]="
+          'M 8 ' + staffTop() + ' Q 0 ' + (height() + 10) + ' 8 ' + (height() * 2 + 20 - staffTop())
+        "
         [attr.stroke]="colors().symbol"
         stroke-width="3"
         fill="none"
@@ -301,7 +329,3 @@
     }
   </svg>
 </div>
-
-
-
-

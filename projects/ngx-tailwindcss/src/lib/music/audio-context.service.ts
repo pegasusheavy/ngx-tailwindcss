@@ -333,15 +333,16 @@ export class AudioContextService implements OnDestroy {
     gain.connect(analyser);
     analyser.connect(ctx.destination);
 
-    const connectedSource: ConnectedSource & { start: (when?: number) => void; stop: () => void } = {
-      id,
-      type: 'buffer',
-      node: source,
-      analyser,
-      gain,
-      start: (when?: number) => source.start(when),
-      stop: () => source.stop(),
-    };
+    const connectedSource: ConnectedSource & { start: (when?: number) => void; stop: () => void } =
+      {
+        id,
+        type: 'buffer',
+        node: source,
+        analyser,
+        gain,
+        start: (when?: number) => source.start(when),
+        stop: () => source.stop(),
+      };
 
     this._sources.update(sources => {
       const newSources = new Map(sources);
@@ -382,7 +383,9 @@ export class AudioContextService implements OnDestroy {
     frequency: number = 440,
     type: OscillatorType = 'sine',
     config: AudioNodeConfig = {}
-  ): Promise<ConnectedSource & { start: () => void; stop: () => void; setFrequency: (f: number) => void }> {
+  ): Promise<
+    ConnectedSource & { start: () => void; stop: () => void; setFrequency: (f: number) => void }
+  > {
     const ctx = this.getContext();
     await this.resume();
 
@@ -460,10 +463,7 @@ export class AudioContextService implements OnDestroy {
    * @param name Name of the loaded worklet processor
    * @param options Optional node options
    */
-  createWorkletNode(
-    name: string,
-    options?: AudioWorkletNodeOptions
-  ): AudioWorkletNode {
+  createWorkletNode(name: string, options?: AudioWorkletNodeOptions): AudioWorkletNode {
     const ctx = this.getContext();
 
     const moduleInfo = this._workletModules().get(name);
@@ -609,11 +609,7 @@ export class AudioContextService implements OnDestroy {
    * @param nodes Array of processing nodes to connect in order
    * @param destination Optional destination (defaults to ctx.destination)
    */
-  buildChain(
-    source: AudioNode,
-    nodes: AudioNode[],
-    destination?: AudioNode
-  ): AudioChain {
+  buildChain(source: AudioNode, nodes: AudioNode[], destination?: AudioNode): AudioChain {
     const ctx = this.getContext();
     const dest = destination ?? ctx.destination;
 
@@ -761,4 +757,3 @@ export class AudioContextService implements OnDestroy {
     }
   }
 }
-

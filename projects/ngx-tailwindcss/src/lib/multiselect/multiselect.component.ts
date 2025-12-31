@@ -179,7 +179,9 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
     ];
 
     if (this.disabled) {
-      baseClasses.push('bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 cursor-not-allowed border-slate-300 dark:border-slate-700');
+      baseClasses.push(
+        'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 cursor-not-allowed border-slate-300 dark:border-slate-700'
+      );
     } else if (this.variant === 'filled') {
       baseClasses.push(
         'bg-slate-100 dark:bg-slate-700 border-slate-100 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
@@ -261,7 +263,9 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
     this.onTouchedFn();
 
     if (this.appendTo === 'body') {
-      setTimeout(() => { this.updateDropdownPosition(); }, 0);
+      setTimeout(() => {
+        this.updateDropdownPosition();
+      }, 0);
     }
   }
 
@@ -302,9 +306,8 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
       this.selectionChange.emit([]);
     } else {
       // Select all (respecting max selections)
-      const toSelect = this.maxSelections > 0
-        ? allOptions.slice(0, this.maxSelections)
-        : allOptions;
+      const toSelect =
+        this.maxSelections > 0 ? allOptions.slice(0, this.maxSelections) : allOptions;
       const values = toSelect.map(opt => opt.value);
       this.selectedValues.set(new Set(values));
       this.onChangeFn(values);
@@ -322,7 +325,7 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
   }
 
   isSomeSelected(): boolean {
-    const {size} = this.selectedValues();
+    const { size } = this.selectedValues();
     return size > 0 && size < this.allOptions().filter(opt => !opt.disabled).length;
   }
 
@@ -364,4 +367,3 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
     });
   }
 }
-

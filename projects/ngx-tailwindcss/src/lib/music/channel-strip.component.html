@@ -63,7 +63,11 @@
   @if (showAuxSends()) {
     <div class="flex flex-col gap-1 w-full border-t border-slate-700/50 pt-2">
       <span class="text-[8px] text-slate-500 text-center">SENDS</span>
-      <div class="grid gap-1" [class.grid-cols-2]="auxSendCount() > 2" [class.grid-cols-1]="auxSendCount() <= 2">
+      <div
+        class="grid gap-1"
+        [class.grid-cols-2]="auxSendCount() > 2"
+        [class.grid-cols-1]="auxSendCount() <= 2"
+      >
         @for (aux of auxSendArray(); track aux.index) {
           <div class="flex flex-col items-center">
             <tw-volume-dial

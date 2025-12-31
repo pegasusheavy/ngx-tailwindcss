@@ -66,7 +66,8 @@ export class TwDropdownDividerComponent {}
   selector: 'tw-dropdown-header',
   standalone: true,
   host: {
-    class: 'block px-4 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
+    class:
+      'block px-4 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
   },
   template: `<ng-content></ng-content>`,
 })
@@ -274,13 +275,19 @@ export class TwDropdownComponent implements OnDestroy {
 
     // Handle clicks on dropdown items
     if (this.closeOnSelect && this.portalElement) {
-      this.menuClickListener = this.renderer.listen(this.portalElement, 'click', (event: MouseEvent) => {
-        const target = event.target as HTMLElement;
-        if (target.hasAttribute('twdropdownitem') || target.closest('[twdropdownitem]')) {
-          // Use setTimeout to allow the Angular click handler to fire first
-          setTimeout(() => { this.close(); }, 0);
+      this.menuClickListener = this.renderer.listen(
+        this.portalElement,
+        'click',
+        (event: MouseEvent) => {
+          const target = event.target as HTMLElement;
+          if (target.hasAttribute('twdropdownitem') || target.closest('[twdropdownitem]')) {
+            // Use setTimeout to allow the Angular click handler to fire first
+            setTimeout(() => {
+              this.close();
+            }, 0);
+          }
         }
-      });
+      );
     }
   }
 

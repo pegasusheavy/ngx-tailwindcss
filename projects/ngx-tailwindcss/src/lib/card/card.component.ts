@@ -28,7 +28,8 @@ const CARD_VARIANTS: Record<CardVariant, string> = {
   // elevated: bg-white dark:bg-slate-800 shadow-md hover:shadow-lg dark:shadow-slate-900/50
   elevated: 'bg-white dark:bg-slate-800 shadow-md hover:shadow-lg dark:shadow-slate-900/50',
   // outlined: bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600
-  outlined: 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600',
+  outlined:
+    'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600',
   // filled: bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600
   filled: 'bg-slate-50 dark:bg-slate-700 hover:bg-slate-100 dark:hover:bg-slate-600',
   // ghost: bg-transparent
@@ -49,7 +50,10 @@ export class TwCardHeaderDirective {
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge('block px-6 py-4 border-b border-slate-100 dark:border-slate-700', this.class);
+    return this.twClass.merge(
+      'block px-6 py-4 border-b border-slate-100 dark:border-slate-700',
+      this.class
+    );
   }
 }
 
@@ -67,7 +71,10 @@ export class TwCardTitleDirective {
 
   @HostBinding('class')
   get hostClass(): string {
-    return this.twClass.merge('block text-lg font-semibold text-slate-900 dark:text-white', this.class);
+    return this.twClass.merge(
+      'block text-lg font-semibold text-slate-900 dark:text-white',
+      this.class
+    );
   }
 }
 

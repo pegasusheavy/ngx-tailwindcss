@@ -119,9 +119,13 @@ export class TwPaginationComponent {
     if (disabled) {
       baseClasses.push('text-slate-300 dark:text-slate-600 cursor-not-allowed');
     } else if (variant === 'outlined') {
-      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-600');
+      baseClasses.push(
+        'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-600'
+      );
     } else {
-      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800');
+      baseClasses.push(
+        'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+      );
     }
 
     return baseClasses.join(' ');
@@ -145,9 +149,13 @@ export class TwPaginationComponent {
     if (isActive) {
       baseClasses.push('bg-blue-600 text-white');
     } else if (variant === 'outlined') {
-      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-600');
+      baseClasses.push(
+        'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-600'
+      );
     } else {
-      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800');
+      baseClasses.push(
+        'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+      );
     }
 
     return baseClasses.join(' ');
@@ -173,7 +181,9 @@ export class TwPaginationComponent {
     if (disabled) {
       baseClasses.push('text-slate-300 dark:text-slate-600 cursor-not-allowed');
     } else {
-      baseClasses.push('text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800');
+      baseClasses.push(
+        'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+      );
     }
 
     return baseClasses.join(' ');

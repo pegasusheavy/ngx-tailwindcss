@@ -9,7 +9,21 @@ import { CommonModule } from '@angular/common';
 
 // ==================== TYPES ====================
 
-export type DynamicType = 'ppp' | 'pp' | 'p' | 'mp' | 'mf' | 'f' | 'ff' | 'fff' | 'sfz' | 'sfp' | 'fp' | 'rf' | 'rfz' | 'fz';
+export type DynamicType =
+  | 'ppp'
+  | 'pp'
+  | 'p'
+  | 'mp'
+  | 'mf'
+  | 'f'
+  | 'ff'
+  | 'fff'
+  | 'sfz'
+  | 'sfp'
+  | 'fp'
+  | 'rf'
+  | 'rfz'
+  | 'fz';
 
 export type ArticulationType =
   | 'staccato'
@@ -105,7 +119,10 @@ const DYNAMIC_SYMBOLS: Record<DynamicType, string> = {
   fz: 'fz',
 };
 
-const ARTICULATION_SYMBOLS: Record<ArticulationType, { symbol: string; isPath?: boolean; path?: string }> = {
+const ARTICULATION_SYMBOLS: Record<
+  ArticulationType,
+  { symbol: string; isPath?: boolean; path?: string }
+> = {
   staccato: { symbol: '•' },
   staccatissimo: { symbol: '▾' },
   accent: { symbol: '>' },
@@ -362,4 +379,3 @@ export class TwMusicalSymbolComponent {
     };
   });
 }
-

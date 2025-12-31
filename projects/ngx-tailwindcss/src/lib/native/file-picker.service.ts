@@ -95,7 +95,10 @@ export class FilePickerService {
       const paths = Array.isArray(result) ? result : [result];
       return paths.map(path => ({
         path: typeof path === 'string' ? path : path.path,
-        name: typeof path === 'string' ? path.split('/').pop() || path : path.name || path.path.split('/').pop() || '',
+        name:
+          typeof path === 'string'
+            ? path.split('/').pop() || path
+            : path.name || path.path.split('/').pop() || '',
       }));
     } catch (error) {
       console.error('Tauri file picker error:', error);
@@ -103,7 +106,9 @@ export class FilePickerService {
     }
   }
 
-  private async openFileElectron(options: NativeOpenFileOptions): Promise<FilePickerResult[] | null> {
+  private async openFileElectron(
+    options: NativeOpenFileOptions
+  ): Promise<FilePickerResult[] | null> {
     try {
       const { ipcRenderer } = await import('electron');
 
@@ -143,9 +148,7 @@ export class FilePickerService {
       }
 
       if (options.filters?.length) {
-        const accept = options.filters
-          .flatMap(f => f.extensions.map(ext => `.${ext}`))
-          .join(',');
+        const accept = options.filters.flatMap(f => f.extensions.map(ext => `.${ext}`)).join(',');
         input.accept = accept;
       }
 
@@ -263,7 +266,9 @@ export class FilePickerService {
     // Use the File System Access API if available
     if ('showDirectoryPicker' in window) {
       try {
-        const handle = await (window as { showDirectoryPicker: () => Promise<FileSystemDirectoryHandle> }).showDirectoryPicker();
+        const handle = await (
+          window as { showDirectoryPicker: () => Promise<FileSystemDirectoryHandle> }
+        ).showDirectoryPicker();
         return handle.name;
       } catch (error) {
         // User cancelled or API not supported
@@ -294,4 +299,3 @@ export class FilePickerService {
     });
   }
 }
-

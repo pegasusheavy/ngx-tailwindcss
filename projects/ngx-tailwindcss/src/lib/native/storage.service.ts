@@ -50,9 +50,10 @@ export class NativeStorageService {
       const data: Record<string, unknown> = { _value: value };
 
       if (options?.expires) {
-        const expiry = typeof options.expires === 'number'
-          ? Date.now() + options.expires
-          : options.expires.getTime();
+        const expiry =
+          typeof options.expires === 'number'
+            ? Date.now() + options.expires
+            : options.expires.getTime();
         data['_expires'] = expiry;
       }
 
@@ -82,7 +83,9 @@ export class NativeStorageService {
   public async getSecure<T>(key: string): Promise<T | null> {
     if (this.platformService.isTauri()) {
       try {
-        const storeModule = await import('@tauri-apps/plugin-store' as string) as TauriStoreModule;
+        const storeModule = (await import(
+          '@tauri-apps/plugin-store' as string
+        )) as TauriStoreModule;
         const store = new storeModule.Store('.secure-store');
         return (await store.get(key)) as T | null;
       } catch (err) {
@@ -109,7 +112,9 @@ export class NativeStorageService {
   public async setSecure<T>(key: string, value: T): Promise<void> {
     if (this.platformService.isTauri()) {
       try {
-        const storeModule = await import('@tauri-apps/plugin-store' as string) as TauriStoreModule;
+        const storeModule = (await import(
+          '@tauri-apps/plugin-store' as string
+        )) as TauriStoreModule;
         const store = new storeModule.Store('.secure-store');
         await store.set(key, value);
         await store.save();
@@ -137,7 +142,9 @@ export class NativeStorageService {
   public async removeSecure(key: string): Promise<void> {
     if (this.platformService.isTauri()) {
       try {
-        const storeModule = await import('@tauri-apps/plugin-store' as string) as TauriStoreModule;
+        const storeModule = (await import(
+          '@tauri-apps/plugin-store' as string
+        )) as TauriStoreModule;
         const store = new storeModule.Store('.secure-store');
         await store.delete(key);
         await store.save();
@@ -199,7 +206,7 @@ export class NativeStorageService {
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
 
-      request.onupgradeneeded = (event) => {
+      request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
         if (!db.objectStoreNames.contains('data')) {
           db.createObjectStore('data', { keyPath: 'key' });

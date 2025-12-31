@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  computed,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { StatusBarItem } from './native.types';
 
@@ -29,21 +23,27 @@ import { StatusBarItem } from './native.types';
       <!-- Left items -->
       <div class="flex items-center gap-2 min-w-0">
         @for (item of leftItems(); track item.id) {
-          <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"></ng-container>
+          <ng-container
+            *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"
+          ></ng-container>
         }
       </div>
 
       <!-- Center items -->
       <div class="flex items-center gap-2">
         @for (item of centerItems(); track item.id) {
-          <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"></ng-container>
+          <ng-container
+            *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"
+          ></ng-container>
         }
       </div>
 
       <!-- Right items -->
       <div class="flex items-center gap-2 min-w-0">
         @for (item of rightItems(); track item.id) {
-          <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"></ng-container>
+          <ng-container
+            *ngTemplateOutlet="itemTemplate; context: { $implicit: item }"
+          ></ng-container>
         }
       </div>
     </footer>
@@ -63,10 +63,7 @@ import { StatusBarItem } from './native.types';
           <span class="truncate">{{ item.content }}</span>
         </button>
       } @else {
-        <span
-          class="flex items-center gap-1 px-1.5 truncate"
-          [attr.title]="item.tooltip"
-        >
+        <span class="flex items-center gap-1 px-1.5 truncate" [attr.title]="item.tooltip">
           @if (item.icon) {
             <span class="flex-shrink-0">{{ item.icon }}</span>
           }
@@ -114,4 +111,3 @@ export class TwStatusBarComponent {
     this.itemClick.emit(item);
   }
 }
-

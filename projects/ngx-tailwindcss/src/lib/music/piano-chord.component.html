@@ -2,10 +2,7 @@
   <!-- Chord Name -->
   @if (showChordName() && displayName()) {
     <div class="text-center mb-2">
-      <span
-        class="text-lg font-bold"
-        [style.color]="colors().text"
-      >
+      <span class="text-lg font-bold" [style.color]="colors().text">
         {{ displayName() }}
       </span>
       @if (chordData()?.type) {
@@ -29,7 +26,9 @@
         [attr.y]="dimensions().padding"
         [attr.width]="dimensions().whiteKeyWidth - 1"
         [attr.height]="dimensions().whiteKeyHeight"
-        [attr.fill]="isNoteActive(key.note, key.octave) ? colors().whiteKeyActive : colors().whiteKey"
+        [attr.fill]="
+          isNoteActive(key.note, key.octave) ? colors().whiteKeyActive : colors().whiteKey
+        "
         [attr.stroke]="colors().border"
         stroke-width="1"
         rx="2"
@@ -58,7 +57,9 @@
         [attr.y]="dimensions().padding"
         [attr.width]="dimensions().blackKeyWidth"
         [attr.height]="dimensions().blackKeyHeight"
-        [attr.fill]="isNoteActive(key.note, key.octave) ? colors().blackKeyActive : colors().blackKey"
+        [attr.fill]="
+          isNoteActive(key.note, key.octave) ? colors().blackKeyActive : colors().blackKey
+        "
         rx="1"
         class="transition-colors duration-150"
       />
@@ -73,7 +74,9 @@
             [attr.cx]="getFingerX(note.note, note.octave)"
             [attr.cy]="getFingerY(isBlackKey(note.note))"
             [attr.r]="dimensions().fingerRadius"
-            [attr.fill]="highlightRoot() && note.isRoot ? colors().rootCircle : colors().fingerCircle"
+            [attr.fill]="
+              highlightRoot() && note.isRoot ? colors().rootCircle : colors().fingerCircle
+            "
             class="transition-colors duration-150"
           />
 
@@ -103,7 +106,9 @@
         <span
           class="text-xs px-1.5 py-0.5 rounded"
           [class.font-bold]="note.isRoot"
-          [style.background-color]="note.isRoot ? colors().rootCircle + '20' : colors().fingerCircle + '20'"
+          [style.background-color]="
+            note.isRoot ? colors().rootCircle + '20' : colors().fingerCircle + '20'
+          "
           [style.color]="colors().text"
         >
           {{ note.note }}{{ note.octave }}
@@ -112,7 +117,3 @@
     </div>
   }
 </div>
-
-
-
-

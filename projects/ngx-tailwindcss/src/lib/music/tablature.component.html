@@ -27,7 +27,9 @@
           [attr.fill]="colors().text"
           font-family="serif"
           class="select-none"
-        >{{ clef() === 'treble' ? '𝄞' : '𝄢' }}</text>
+        >
+          {{ clef() === 'treble' ? '𝄞' : '𝄢' }}
+        </text>
       }
 
       <!-- Staff Lines -->
@@ -60,9 +62,12 @@
           @for (note of getNoteAtBeat(measure, beat); track $index) {
             @if (autoCalculateNotes() || note.noteName) {
               <!-- Calculate note data -->
-              @let noteData = autoCalculateNotes() && typeof note.fret === 'number'
-                ? calculateNoteFromFret(note.string, note.fret)
-                : (note.noteName ? { note: note.noteName, octave: note.octave || 4, accidental: note.accidental } : null);
+              @let noteData =
+                autoCalculateNotes() && typeof note.fret === 'number'
+                  ? calculateNoteFromFret(note.string, note.fret)
+                  : note.noteName
+                    ? { note: note.noteName, octave: note.octave || 4, accidental: note.accidental }
+                    : null;
 
               @if (noteData) {
                 @let noteY = getNoteYOnStaff(noteData.note, noteData.octave);
@@ -93,7 +98,15 @@
                       font-family="serif"
                       text-anchor="middle"
                       class="select-none"
-                    >{{ noteData.accidental === 'sharp' ? '♯' : (noteData.accidental === 'flat' ? '♭' : '♮') }}</text>
+                    >
+                      {{
+                        noteData.accidental === 'sharp'
+                          ? '♯'
+                          : noteData.accidental === 'flat'
+                            ? '♭'
+                            : '♮'
+                      }}
+                    </text>
                   }
 
                   <!-- Note head -->
@@ -105,7 +118,9 @@
                     [attr.fill]="filled ? colors().note : 'none'"
                     [attr.stroke]="colors().note"
                     [attr.stroke-width]="filled ? 0 : 1.5"
-                    [attr.transform]="'rotate(-15, ' + getBeatX(measureIndex, beat) + ', ' + noteY + ')'"
+                    [attr.transform]="
+                      'rotate(-15, ' + getBeatX(measureIndex, beat) + ', ' + noteY + ')'
+                    "
                   />
 
                   <!-- Stem (not for whole notes) -->
@@ -122,7 +137,20 @@
                     <!-- Flags -->
                     @for (flag of [].constructor(flags); track $index) {
                       <path
-                        [attr.d]="'M ' + (getBeatX(measureIndex, beat) + staffLineSpacing() * 0.5) + ' ' + (noteY - staffLineSpacing() * 3.5 + $index * staffLineSpacing() * 0.5) + ' q ' + staffLineSpacing() + ' ' + staffLineSpacing() * 0.4 + ' ' + staffLineSpacing() * 0.8 + ' ' + staffLineSpacing() * 1.2"
+                        [attr.d]="
+                          'M ' +
+                          (getBeatX(measureIndex, beat) + staffLineSpacing() * 0.5) +
+                          ' ' +
+                          (noteY - staffLineSpacing() * 3.5 + $index * staffLineSpacing() * 0.5) +
+                          ' q ' +
+                          staffLineSpacing() +
+                          ' ' +
+                          staffLineSpacing() * 0.4 +
+                          ' ' +
+                          staffLineSpacing() * 0.8 +
+                          ' ' +
+                          staffLineSpacing() * 1.2
+                        "
                         [attr.stroke]="colors().note"
                         stroke-width="2"
                         fill="none"
@@ -171,7 +199,9 @@
           text-anchor="middle"
           font-family="monospace"
           class="select-none"
-        >{{ label }}</text>
+        >
+          {{ label }}
+        </text>
       }
       <!-- TAB label -->
       <text
@@ -182,7 +212,9 @@
         font-weight="bold"
         text-anchor="middle"
         class="select-none opacity-60"
-      >TAB</text>
+      >
+        TAB
+      </text>
     }
 
     <!-- String Lines -->
@@ -199,10 +231,7 @@
 
     <!-- Measures -->
     @for (measure of measures(); track $index; let measureIndex = $index) {
-      <g
-        [class.cursor-pointer]="interactive()"
-        (click)="onMeasureClick(measureIndex)"
-      >
+      <g [class.cursor-pointer]="interactive()" (click)="onMeasureClick(measureIndex)">
         <!-- Measure Number -->
         @if (showMeasureNumbers()) {
           <text
@@ -211,7 +240,9 @@
             [attr.fill]="colors().text"
             font-size="10"
             class="select-none opacity-50"
-          >{{ measureIndex + 1 }}</text>
+          >
+            {{ measureIndex + 1 }}
+          </text>
         }
 
         <!-- Bar Line at start -->
@@ -252,7 +283,9 @@
                 text-anchor="middle"
                 font-family="monospace"
                 class="select-none"
-              >{{ note.fret }}</text>
+              >
+                {{ note.fret }}
+              </text>
 
               <!-- Technique Symbol -->
               @if (note.technique) {
@@ -263,12 +296,20 @@
                   font-size="10"
                   font-weight="bold"
                   class="select-none"
-                >{{ getTechniqueSymbol(note.technique) }}</text>
+                >
+                  {{ getTechniqueSymbol(note.technique) }}
+                </text>
 
                 <!-- Bend arrow -->
                 @if (note.technique === 'bend' && note.bendTarget) {
                   <path
-                    [attr.d]="'M ' + (getBeatX(measureIndex, beat) + 6) + ' ' + (getStringY(note.string) - 2) + ' q 5 -8 10 0'"
+                    [attr.d]="
+                      'M ' +
+                      (getBeatX(measureIndex, beat) + 6) +
+                      ' ' +
+                      (getStringY(note.string) - 2) +
+                      ' q 5 -8 10 0'
+                    "
                     [attr.stroke]="colors().technique"
                     stroke-width="1.5"
                     fill="none"
@@ -279,7 +320,9 @@
                     [attr.fill]="colors().technique"
                     font-size="9"
                     class="select-none"
-                  >{{ note.bendTarget }}</text>
+                  >
+                    {{ note.bendTarget }}
+                  </text>
                 }
 
                 <!-- Slide line -->
@@ -329,11 +372,9 @@
         font-size="14"
         text-anchor="middle"
         class="select-none opacity-50"
-      >No tablature data</text>
+      >
+        No tablature data
+      </text>
     }
   </svg>
 </div>
-
-
-
-

@@ -9,8 +9,33 @@ import { CommonModule } from '@angular/common';
 
 export type ClefType = 'treble' | 'bass' | 'alto' | 'tenor' | 'percussion';
 export type StaffVariant = 'default' | 'printed' | 'handwritten' | 'minimal';
-export type KeySignature = 'C' | 'G' | 'D' | 'A' | 'E' | 'B' | 'F#' | 'C#' | 'F' | 'Bb' | 'Eb' | 'Ab' | 'Db' | 'Gb' | 'Cb';
-export type StaffTimeSignature = '2/4' | '3/4' | '4/4' | '5/4' | '6/8' | '7/8' | '9/8' | '12/8' | 'C' | 'C|';
+export type KeySignature =
+  | 'C'
+  | 'G'
+  | 'D'
+  | 'A'
+  | 'E'
+  | 'B'
+  | 'F#'
+  | 'C#'
+  | 'F'
+  | 'Bb'
+  | 'Eb'
+  | 'Ab'
+  | 'Db'
+  | 'Gb'
+  | 'Cb';
+export type StaffTimeSignature =
+  | '2/4'
+  | '3/4'
+  | '4/4'
+  | '5/4'
+  | '6/8'
+  | '7/8'
+  | '9/8'
+  | '12/8'
+  | 'C'
+  | 'C|';
 
 interface KeySignatureInfo {
   sharps: number;
@@ -19,26 +44,27 @@ interface KeySignatureInfo {
 }
 
 const KEY_SIGNATURES: Record<KeySignature, KeySignatureInfo> = {
-  'C': { sharps: 0, flats: 0, positions: [] },
-  'G': { sharps: 1, flats: 0, positions: [0] }, // F#
-  'D': { sharps: 2, flats: 0, positions: [0, 3] }, // F#, C#
-  'A': { sharps: 3, flats: 0, positions: [0, 3, -1] }, // F#, C#, G#
-  'E': { sharps: 4, flats: 0, positions: [0, 3, -1, 2] }, // F#, C#, G#, D#
-  'B': { sharps: 5, flats: 0, positions: [0, 3, -1, 2, 5] }, // F#, C#, G#, D#, A#
+  C: { sharps: 0, flats: 0, positions: [] },
+  G: { sharps: 1, flats: 0, positions: [0] }, // F#
+  D: { sharps: 2, flats: 0, positions: [0, 3] }, // F#, C#
+  A: { sharps: 3, flats: 0, positions: [0, 3, -1] }, // F#, C#, G#
+  E: { sharps: 4, flats: 0, positions: [0, 3, -1, 2] }, // F#, C#, G#, D#
+  B: { sharps: 5, flats: 0, positions: [0, 3, -1, 2, 5] }, // F#, C#, G#, D#, A#
   'F#': { sharps: 6, flats: 0, positions: [0, 3, -1, 2, 5, 1] },
   'C#': { sharps: 7, flats: 0, positions: [0, 3, -1, 2, 5, 1, 4] },
-  'F': { sharps: 0, flats: 1, positions: [4] }, // Bb
-  'Bb': { sharps: 0, flats: 2, positions: [4, 1] }, // Bb, Eb
-  'Eb': { sharps: 0, flats: 3, positions: [4, 1, 5] }, // Bb, Eb, Ab
-  'Ab': { sharps: 0, flats: 4, positions: [4, 1, 5, 2] },
-  'Db': { sharps: 0, flats: 5, positions: [4, 1, 5, 2, 6] },
-  'Gb': { sharps: 0, flats: 6, positions: [4, 1, 5, 2, 6, 3] },
-  'Cb': { sharps: 0, flats: 7, positions: [4, 1, 5, 2, 6, 3, 0] },
+  F: { sharps: 0, flats: 1, positions: [4] }, // Bb
+  Bb: { sharps: 0, flats: 2, positions: [4, 1] }, // Bb, Eb
+  Eb: { sharps: 0, flats: 3, positions: [4, 1, 5] }, // Bb, Eb, Ab
+  Ab: { sharps: 0, flats: 4, positions: [4, 1, 5, 2] },
+  Db: { sharps: 0, flats: 5, positions: [4, 1, 5, 2, 6] },
+  Gb: { sharps: 0, flats: 6, positions: [4, 1, 5, 2, 6, 3] },
+  Cb: { sharps: 0, flats: 7, positions: [4, 1, 5, 2, 6, 3, 0] },
 };
 
 // SVG paths for musical symbols
 const CLEF_PATHS = {
-  treble: 'M16.5 63c0-3.3-2.7-6-6-6s-6 2.7-6 6c0 2.2 1.2 4.2 3 5.2V98c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2V68.2c1.8-1 3-3 3-5.2zM10.5 45c0-8.3 6.7-15 15-15s15 6.7 15 15-6.7 15-15 15S10.5 53.3 10.5 45z',
+  treble:
+    'M16.5 63c0-3.3-2.7-6-6-6s-6 2.7-6 6c0 2.2 1.2 4.2 3 5.2V98c0 1.1.9 2 2 2h2c1.1 0 2-.9 2-2V68.2c1.8-1 3-3 3-5.2zM10.5 45c0-8.3 6.7-15 15-15s15 6.7 15 15-6.7 15-15 15S10.5 53.3 10.5 45z',
   bass: 'M8 32c0-4.4 3.6-8 8-8s8 3.6 8 8-3.6 8-8 8-8-3.6-8-8zm28-8c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zm0 16c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4z',
   alto: 'M4 16h8v64H4V16zm16 0h4v64h-4V16z',
   tenor: 'M4 16h8v64H4V16zm16 0h4v64h-4V16z',
@@ -253,4 +279,3 @@ export class TwStaffComponent {
     return lines;
   }
 }
-

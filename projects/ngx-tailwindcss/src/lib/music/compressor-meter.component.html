@@ -36,7 +36,9 @@
             class="absolute bottom-0 left-0 right-0 transition-all"
             [class.duration-75]="animated()"
             [style.height.%]="inputMeterPercent()"
-            [style.background]="'linear-gradient(to top, rgb(34, 197, 94), rgb(234, 179, 8) 70%, rgb(239, 68, 68) 90%)'"
+            [style.background]="
+              'linear-gradient(to top, rgb(34, 197, 94), rgb(234, 179, 8) 70%, rgb(239, 68, 68) 90%)'
+            "
           ></div>
 
           <!-- Peak hold line -->
@@ -68,7 +70,9 @@
           }
 
           <!-- Scale markers -->
-          <div class="absolute right-0.5 inset-y-0 flex flex-col justify-between py-1 pointer-events-none">
+          <div
+            class="absolute right-0.5 inset-y-0 flex flex-col justify-between py-1 pointer-events-none"
+          >
             <span class="text-[6px] text-white/50">+6</span>
             <span class="text-[6px] text-white/50">0</span>
             <span class="text-[6px] text-white/50">-∞</span>
@@ -93,7 +97,9 @@
             class="absolute top-0 left-0 right-0 transition-all"
             [class.duration-75]="animated()"
             [style.height.%]="gainReductionPercent()"
-            [style.background]="'linear-gradient(to bottom, rgb(234, 179, 8), rgb(249, 115, 22) 60%, rgb(239, 68, 68) 90%)'"
+            [style.background]="
+              'linear-gradient(to bottom, rgb(234, 179, 8), rgb(249, 115, 22) 60%, rgb(239, 68, 68) 90%)'
+            "
           ></div>
 
           <!-- Scale markers -->
@@ -110,9 +116,12 @@
         <span
           class="text-xs font-mono"
           [class.text-amber-400]="Math.abs(internalGainReduction()) < 10"
-          [class.text-orange-400]="Math.abs(internalGainReduction()) >= 10 && Math.abs(internalGainReduction()) < 20"
+          [class.text-orange-400]="
+            Math.abs(internalGainReduction()) >= 10 && Math.abs(internalGainReduction()) < 20
+          "
           [class.text-red-400]="Math.abs(internalGainReduction()) >= 20"
-        >{{ formatGainReduction() }} dB</span>
+          >{{ formatGainReduction() }} dB</span
+        >
       </div>
     }
 
@@ -129,7 +138,9 @@
             class="absolute bottom-0 left-0 right-0 transition-all"
             [class.duration-75]="animated()"
             [style.height.%]="outputMeterPercent()"
-            [style.background]="'linear-gradient(to top, rgb(34, 197, 94), rgb(234, 179, 8) 70%, rgb(239, 68, 68) 90%)'"
+            [style.background]="
+              'linear-gradient(to top, rgb(34, 197, 94), rgb(234, 179, 8) 70%, rgb(239, 68, 68) 90%)'
+            "
           ></div>
 
           <!-- Peak hold line -->
@@ -147,7 +158,9 @@
           }
 
           <!-- Scale markers -->
-          <div class="absolute left-0.5 inset-y-0 flex flex-col justify-between py-1 pointer-events-none">
+          <div
+            class="absolute left-0.5 inset-y-0 flex flex-col justify-between py-1 pointer-events-none"
+          >
             <span class="text-[6px] text-white/50">+6</span>
             <span class="text-[6px] text-white/50">0</span>
             <span class="text-[6px] text-white/50">-∞</span>
@@ -304,10 +317,7 @@
                     </svg>
                     <!-- Speed indicator -->
                     <div class="absolute bottom-0 left-0 right-0 h-1 bg-slate-700">
-                      <div
-                        class="h-full bg-green-500"
-                        [style.width.%]="attackBarPercent()"
-                      ></div>
+                      <div class="h-full bg-green-500" [style.width.%]="attackBarPercent()"></div>
                     </div>
                   </div>
                   <span class="text-[8px] text-slate-500">{{ attackSpeed() | titlecase }}</span>
@@ -335,10 +345,7 @@
                     </svg>
                     <!-- Speed indicator -->
                     <div class="absolute bottom-0 left-0 right-0 h-1 bg-slate-700">
-                      <div
-                        class="h-full bg-amber-500"
-                        [style.width.%]="releaseBarPercent()"
-                      ></div>
+                      <div class="h-full bg-amber-500" [style.width.%]="releaseBarPercent()"></div>
                     </div>
                   </div>
                   <span class="text-[8px] text-slate-500">{{ releaseSpeed() | titlecase }}</span>
@@ -375,7 +382,8 @@
         <div class="flex items-center justify-between">
           <span class="text-[10px] text-slate-500 uppercase">Makeup</span>
           <span class="text-xs font-mono text-slate-300">
-            {{ effectiveSettings().makeupGain > 0 ? '+' : '' }}{{ effectiveSettings().makeupGain }} dB
+            {{ effectiveSettings().makeupGain > 0 ? '+' : ''
+            }}{{ effectiveSettings().makeupGain }} dB
           </span>
         </div>
       }

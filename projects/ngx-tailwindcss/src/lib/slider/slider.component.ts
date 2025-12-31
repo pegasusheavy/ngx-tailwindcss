@@ -3,12 +3,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  EventEmitter,
   forwardRef,
   inject,
-  Input,
+  input,
   numberAttribute,
-  Output,
+  output,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -59,87 +58,90 @@ export class TwSliderComponent implements ControlValueAccessor {
   private readonly twClass = inject(TwClassService);
 
   /** Minimum value */
-  @Input({ transform: numberAttribute }) min = 0;
+  readonly min = input(0, { transform: numberAttribute });
 
   /** Maximum value */
-  @Input({ transform: numberAttribute }) max = 100;
+  readonly max = input(100, { transform: numberAttribute });
 
   /** Step increment */
-  @Input({ transform: numberAttribute }) step = 1;
+  readonly step = input(1, { transform: numberAttribute });
 
   /** Label text */
-  @Input() label = '';
+  readonly label = input('');
 
   /** Visual variant */
-  @Input() variant: SliderVariant = 'primary';
+  readonly variant = input<SliderVariant>('primary');
 
   /** Size of the slider */
-  @Input() size: SliderSize = 'md';
+  readonly size = input<SliderSize>('md');
 
   /** Whether the slider is disabled */
-  @Input({ transform: booleanAttribute }) disabled = false;
+  readonly disabled = input(false, { transform: booleanAttribute });
 
   /** Whether to show the current value */
-  @Input({ transform: booleanAttribute }) showValue = false;
+  readonly showValue = input(false, { transform: booleanAttribute });
 
   /** Whether to show min/max labels */
-  @Input({ transform: booleanAttribute }) showMinMax = false;
+  readonly showMinMax = input(false, { transform: booleanAttribute });
 
   /** Whether to show tick marks */
-  @Input({ transform: booleanAttribute }) showTicks = false;
+  readonly showTicks = input(false, { transform: booleanAttribute });
 
   /** Number of tick marks to show */
-  @Input({ transform: numberAttribute }) tickCount = 5;
+  readonly tickCount = input(5, { transform: numberAttribute });
 
   /** Whether to show value bubble while dragging */
-  @Input({ transform: booleanAttribute }) showValueBubble = false;
+  readonly showValueBubble = input(false, { transform: booleanAttribute });
 
   /** Format function for display value */
-  @Input() valueFormat: (value: number) => string = v => v.toString();
+  readonly valueFormat = input<(value: number) => string>(v => v.toString());
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /** Change event (fires on mouseup/touchend) */
-  @Output() onChange = new EventEmitter<number>();
+  readonly onChange = output<number>();
 
   /** Input event (fires continuously while dragging) */
-  @Output() onInput = new EventEmitter<number>();
+  readonly onInput = output<number>();
 
   /** Focus event */
-  @Output() onFocus = new EventEmitter<FocusEvent>();
+  readonly onFocus = output<FocusEvent>();
 
   /** Blur event */
-  @Output() onBlur = new EventEmitter<FocusEvent>();
+  readonly onBlur = output<FocusEvent>();
 
   protected value = signal(0);
   protected isDragging = signal(false);
+  private _disabled = signal(false);
 
   private onChangeFn: (value: number) => void = () => {};
   private onTouchedFn: () => void = () => {};
 
+  protected isDisabled = computed(() => this.disabled() || this._disabled());
+
   protected fillPercentage = computed(() => {
-    const range = this.max - this.min;
+    const range = this.max() - this.min();
     if (range === 0) return 0;
-    return ((this.value() - this.min) / range) * 100;
+    return ((this.value() - this.min()) / range) * 100;
   });
 
   protected displayValue = computed(() => {
-    return this.valueFormat(this.value());
+    return this.valueFormat()(this.value());
   });
 
   protected ticks = computed(() => {
-    if (this.tickCount <= 0) return [];
+    if (this.tickCount() <= 0) return [];
     const ticks: number[] = [];
-    const step = (this.max - this.min) / (this.tickCount - 1);
-    for (let i = 0; i < this.tickCount; i++) {
-      ticks.push(Math.round(this.min + step * i));
+    const step = (this.max() - this.min()) / (this.tickCount() - 1);
+    for (let i = 0; i < this.tickCount(); i++) {
+      ticks.push(Math.round(this.min() + step * i));
     }
     return ticks;
   });
 
   protected containerClasses = computed(() => {
-    return this.twClass.merge('w-full', this.classOverride);
+    return this.twClass.merge('w-full', this.classOverride());
   });
 
   protected labelClasses = computed(() => {
@@ -151,17 +153,17 @@ export class TwSliderComponent implements ControlValueAccessor {
   });
 
   protected trackClasses = computed(() => {
-    const sizeClasses = SLIDER_SIZES[this.size].track;
+    const sizeClasses = SLIDER_SIZES[this.size()].track;
     return this.twClass.merge(
       'w-full rounded-full bg-slate-200 dark:bg-slate-700',
       sizeClasses,
-      this.disabled ? 'opacity-50' : ''
+      this.isDisabled() ? 'opacity-50' : ''
     );
   });
 
   protected fillClasses = computed(() => {
-    const variant = SLIDER_VARIANTS[this.variant];
-    const sizeClasses = SLIDER_SIZES[this.size].track;
+    const variant = SLIDER_VARIANTS[this.variant()];
+    const sizeClasses = SLIDER_SIZES[this.size()].track;
     return this.twClass.merge(
       'rounded-full transition-all duration-100',
       variant.fill,
@@ -172,19 +174,19 @@ export class TwSliderComponent implements ControlValueAccessor {
   protected inputClasses = computed(() => {
     return this.twClass.merge(
       'absolute inset-0 w-full opacity-0 cursor-pointer',
-      this.disabled ? 'cursor-not-allowed' : ''
+      this.isDisabled() ? 'cursor-not-allowed' : ''
     );
   });
 
   protected thumbClasses = computed(() => {
-    const variant = SLIDER_VARIANTS[this.variant];
-    const sizeClasses = SLIDER_SIZES[this.size].thumb;
+    const variant = SLIDER_VARIANTS[this.variant()];
+    const sizeClasses = SLIDER_SIZES[this.size()].thumb;
     return this.twClass.merge(
       'rounded-full bg-white border-2 shadow-md transition-transform',
       variant.thumb,
       sizeClasses,
       this.isDragging() ? 'scale-110' : '',
-      this.disabled ? 'opacity-50' : ''
+      this.isDisabled() ? 'opacity-50' : ''
     );
   });
 
@@ -203,9 +205,9 @@ export class TwSliderComponent implements ControlValueAccessor {
     this.onChange.emit(newValue);
   }
 
-  onInputBlur(): void {
+  onInputBlur(event: FocusEvent): void {
     this.onTouchedFn();
-    this.onBlur.emit();
+    this.onBlur.emit(event);
   }
 
   onDragStart(): void {
@@ -218,7 +220,7 @@ export class TwSliderComponent implements ControlValueAccessor {
 
   // ControlValueAccessor implementation
   writeValue(value: number): void {
-    this.value.set(value ?? this.min);
+    this.value.set(value ?? this.min());
   }
 
   registerOnChange(fn: (value: number) => void): void {
@@ -230,6 +232,6 @@ export class TwSliderComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this._disabled.set(isDisabled);
   }
 }

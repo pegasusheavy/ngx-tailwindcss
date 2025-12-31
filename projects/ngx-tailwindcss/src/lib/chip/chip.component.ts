@@ -6,7 +6,9 @@ import {
   EventEmitter,
   inject,
   Input,
+  input,
   Output,
+  output,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -29,7 +31,8 @@ const CHIP_VARIANTS: Record<ChipVariant, Record<ChipStyle, string>> = {
   success: {
     solid: 'bg-emerald-600 text-white',
     soft: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300',
-    outline: 'border border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400',
+    outline:
+      'border border-emerald-600 dark:border-emerald-400 text-emerald-600 dark:text-emerald-400',
   },
   warning: {
     solid: 'bg-amber-500 text-white',
@@ -75,50 +78,50 @@ export class TwChipComponent {
   private readonly twClass = inject(TwClassService);
 
   /** Chip label text */
-  @Input() label = '';
+  readonly label = input('');
 
   /** Visual variant */
-  @Input() variant: ChipVariant = 'primary';
+  readonly variant = input<ChipVariant>('primary');
 
   /** Style variant */
-  @Input() chipStyle: ChipStyle = 'soft';
+  readonly chipStyle = input<ChipStyle>('soft');
 
   /** Size */
-  @Input() size: ChipSize = 'md';
+  readonly size = input<ChipSize>('md');
 
   /** Image URL for avatar chip */
-  @Input() image = '';
+  readonly image = input('');
 
   /** Image alt text */
-  @Input() imageAlt = '';
+  readonly imageAlt = input('');
 
   /** Whether the chip can be removed */
-  @Input({ transform: booleanAttribute }) removable = false;
+  readonly removable = input(false, { transform: booleanAttribute });
 
   /** Whether the chip is disabled */
-  @Input({ transform: booleanAttribute }) disabled = false;
+  readonly disabled = input(false, { transform: booleanAttribute });
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /** Remove event */
-  @Output() onRemove = new EventEmitter<void>();
+  readonly onRemove = output<void>();
 
   protected chipClasses = computed(() => {
-    const variantClasses = CHIP_VARIANTS[this.variant][this.chipStyle];
-    const sizeClasses = CHIP_SIZES[this.size].chip;
+    const variantClasses = CHIP_VARIANTS[this.variant()][this.chipStyle()];
+    const sizeClasses = CHIP_SIZES[this.size()].chip;
 
     return this.twClass.merge(
       'inline-flex items-center rounded-full font-medium transition-colors',
       variantClasses,
       sizeClasses,
-      this.disabled ? 'opacity-50 cursor-not-allowed' : '',
-      this.classOverride
+      this.disabled() ? 'opacity-50 cursor-not-allowed' : '',
+      this.classOverride()
     );
   });
 
   protected imageClasses = computed(() => {
-    const sizeClasses = CHIP_SIZES[this.size].image;
+    const sizeClasses = CHIP_SIZES[this.size()].image;
     return this.twClass.merge('rounded-full object-cover -ml-1', sizeClasses);
   });
 
@@ -131,7 +134,7 @@ export class TwChipComponent {
 
   onRemoveClick(event: Event): void {
     event.stopPropagation();
-    if (!this.disabled) {
+    if (!this.disabled()) {
       this.onRemove.emit();
     }
   }
@@ -147,23 +150,23 @@ export class TwChipComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div [class]="containerClasses()">
-      @for (value of values; track $index) {
+      @for (value of values(); track $index) {
         <tw-chip
           [label]="getDisplayValue(value)"
-          [variant]="variant"
-          [chipStyle]="chipStyle"
-          [size]="size"
-          [removable]="!disabled"
+          [variant]="variant()"
+          [chipStyle]="chipStyle()"
+          [size]="size()"
+          [removable]="!disabled()"
           (onRemove)="removeValue($index)"
         >
         </tw-chip>
       }
-      @if (allowAdd && !disabled) {
+      @if (allowAdd() && !disabled()) {
         <input
           type="text"
           [class]="inputClasses()"
-          [placeholder]="placeholder"
-          [disabled]="disabled"
+          [placeholder]="placeholder()"
+          [disabled]="disabled()"
           (keydown.enter)="onAddChip($event)"
           (keydown.backspace)="onBackspace($event)"
           #inputRef
@@ -175,26 +178,26 @@ export class TwChipComponent {
 export class TwChipsComponent {
   private readonly twClass = inject(TwClassService);
 
-  @Input() values: any[] = [];
-  @Input() variant: ChipVariant = 'primary';
-  @Input() chipStyle: ChipStyle = 'soft';
-  @Input() size: ChipSize = 'md';
-  @Input() placeholder = 'Add...';
-  @Input({ transform: booleanAttribute }) disabled = false;
-  @Input({ transform: booleanAttribute }) allowAdd = true;
-  @Input() field = '';
-  @Input() classOverride = '';
+  readonly values = input<any[]>([]);
+  readonly variant = input<ChipVariant>('primary');
+  readonly chipStyle = input<ChipStyle>('soft');
+  readonly size = input<ChipSize>('md');
+  readonly placeholder = input('Add...');
+  readonly disabled = input(false, { transform: booleanAttribute });
+  readonly allowAdd = input(true, { transform: booleanAttribute });
+  readonly field = input('');
+  readonly classOverride = input('');
 
-  @Output() valuesChange = new EventEmitter<any[]>();
-  @Output() onAdd = new EventEmitter<any>();
-  @Output() onRemove = new EventEmitter<{ value: any; index: number }>();
+  readonly valuesChange = output<any[]>();
+  readonly onAdd = output<any>();
+  readonly onRemove = output<{ value: any; index: number }>();
 
   protected containerClasses = computed(() => {
     return this.twClass.merge(
       'flex flex-wrap items-center gap-2 p-2 min-h-10',
       'border border-slate-300 dark:border-slate-600 rounded-lg focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500',
-      this.disabled ? 'bg-slate-50 dark:bg-slate-900 opacity-50' : 'bg-white dark:bg-slate-800',
-      this.classOverride
+      this.disabled() ? 'bg-slate-50 dark:bg-slate-900 opacity-50' : 'bg-white dark:bg-slate-800',
+      this.classOverride()
     );
   });
 
@@ -203,18 +206,18 @@ export class TwChipsComponent {
   });
 
   getDisplayValue(value: any): string {
-    if (typeof value === 'object' && this.field) {
-      return value[this.field];
+    if (typeof value === 'object' && this.field()) {
+      return value[this.field()];
     }
     return String(value);
   }
 
   removeValue(index: number): void {
-    const removed = this.values[index];
-    const newValues = [...this.values];
+    const currentValues = this.values();
+    const removed = currentValues[index];
+    const newValues = [...currentValues];
     newValues.splice(index, 1);
-    this.values = newValues;
-    this.valuesChange.emit(this.values);
+    this.valuesChange.emit(newValues);
     this.onRemove.emit({ value: removed, index });
   }
 
@@ -224,8 +227,8 @@ export class TwChipsComponent {
     const value = input.value.trim();
 
     if (value) {
-      this.values = [...this.values, value];
-      this.valuesChange.emit(this.values);
+      const newValues = [...this.values(), value];
+      this.valuesChange.emit(newValues);
       this.onAdd.emit(value);
       input.value = '';
     }
@@ -233,8 +236,8 @@ export class TwChipsComponent {
 
   onBackspace(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.value === '' && this.values.length > 0) {
-      this.removeValue(this.values.length - 1);
+    if (input.value === '' && this.values().length > 0) {
+      this.removeValue(this.values().length - 1);
     }
   }
 }

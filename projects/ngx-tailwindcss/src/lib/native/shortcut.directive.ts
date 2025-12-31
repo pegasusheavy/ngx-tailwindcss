@@ -1,12 +1,4 @@
-import {
-  Directive,
-  inject,
-  input,
-  output,
-  OnInit,
-  OnDestroy,
-  NgZone,
-} from '@angular/core';
+import { Directive, inject, input, output, OnInit, OnDestroy, NgZone } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { KeyboardShortcut } from './native.types';
 
@@ -72,7 +64,10 @@ export class TwShortcutDirective implements OnInit, OnDestroy {
   }
 
   private parseShortcut(shortcutStr: string): KeyboardShortcut | null {
-    const parts = shortcutStr.toLowerCase().split('+').map(p => p.trim());
+    const parts = shortcutStr
+      .toLowerCase()
+      .split('+')
+      .map(p => p.trim());
 
     if (parts.length === 0) return null;
 
@@ -125,42 +120,42 @@ export class TwShortcutDirective implements OnInit, OnDestroy {
 
   private normalizeKey(key: string): string {
     const keyMap: Record<string, string> = {
-      'space': ' ',
-      'spacebar': ' ',
-      'esc': 'Escape',
-      'escape': 'Escape',
-      'enter': 'Enter',
-      'return': 'Enter',
-      'tab': 'Tab',
-      'backspace': 'Backspace',
-      'delete': 'Delete',
-      'del': 'Delete',
-      'insert': 'Insert',
-      'ins': 'Insert',
-      'home': 'Home',
-      'end': 'End',
-      'pageup': 'PageUp',
-      'pagedown': 'PageDown',
-      'up': 'ArrowUp',
-      'down': 'ArrowDown',
-      'left': 'ArrowLeft',
-      'right': 'ArrowRight',
-      'arrowup': 'ArrowUp',
-      'arrowdown': 'ArrowDown',
-      'arrowleft': 'ArrowLeft',
-      'arrowright': 'ArrowRight',
-      'plus': '+',
-      'minus': '-',
-      'equal': '=',
-      'comma': ',',
-      'period': '.',
-      'dot': '.',
-      'slash': '/',
-      'backslash': '\\',
-      'semicolon': ';',
-      'quote': "'",
-      'bracketleft': '[',
-      'bracketright': ']',
+      space: ' ',
+      spacebar: ' ',
+      esc: 'Escape',
+      escape: 'Escape',
+      enter: 'Enter',
+      return: 'Enter',
+      tab: 'Tab',
+      backspace: 'Backspace',
+      delete: 'Delete',
+      del: 'Delete',
+      insert: 'Insert',
+      ins: 'Insert',
+      home: 'Home',
+      end: 'End',
+      pageup: 'PageUp',
+      pagedown: 'PageDown',
+      up: 'ArrowUp',
+      down: 'ArrowDown',
+      left: 'ArrowLeft',
+      right: 'ArrowRight',
+      arrowup: 'ArrowUp',
+      arrowdown: 'ArrowDown',
+      arrowleft: 'ArrowLeft',
+      arrowright: 'ArrowRight',
+      plus: '+',
+      minus: '-',
+      equal: '=',
+      comma: ',',
+      period: '.',
+      dot: '.',
+      slash: '/',
+      backslash: '\\',
+      semicolon: ';',
+      quote: "'",
+      bracketleft: '[',
+      bracketright: ']',
     };
 
     return keyMap[key.toLowerCase()] || key.toUpperCase();
@@ -184,4 +179,3 @@ export class TwShortcutDirective implements OnInit, OnDestroy {
     return eventKey === shortcut.key;
   }
 }
-
