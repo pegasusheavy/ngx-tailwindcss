@@ -286,9 +286,7 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     this.hoverPosition.set(null);
   }
 
-  private getPositionFromEvent(
-    event: MouseEvent
-  ): {
+  private getPositionFromEvent(event: MouseEvent): {
     x: number;
     y: number;
     note: NoteName;
