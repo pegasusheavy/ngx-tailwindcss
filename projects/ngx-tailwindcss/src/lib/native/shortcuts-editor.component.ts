@@ -1,11 +1,4 @@
-import {
-  Component,
-  input,
-  output,
-  signal,
-  computed,
-  HostListener,
-} from '@angular/core';
+import { Component, input, output, signal, computed, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -28,8 +21,18 @@ export interface ShortcutBinding {
       <!-- Header -->
       <div class="flex items-center gap-4 p-4 border-b border-slate-200 dark:border-slate-700">
         <div class="relative flex-1">
-          <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          <svg
+            class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            />
           </svg>
           <input
             type="text"
@@ -61,7 +64,9 @@ export interface ShortcutBinding {
               <div class="font-medium text-slate-900 dark:text-slate-100">
                 {{ shortcut.command }}
                 @if (shortcut.isCustom) {
-                  <span class="ml-2 px-1.5 py-0.5 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded">
+                  <span
+                    class="ml-2 px-1.5 py-0.5 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded"
+                  >
                     Modified
                   </span>
                 }
@@ -74,15 +79,19 @@ export interface ShortcutBinding {
             <div class="flex items-center gap-2">
               <!-- Current Binding -->
               @if (editingId() === shortcut.id) {
-                <div class="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border-2 border-blue-500">
+                <div
+                  class="flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg border-2 border-blue-500"
+                >
                   <span class="text-sm text-slate-500">Press keys...</span>
                   <span class="font-mono text-sm">{{ recordedKeys().join(' + ') || '...' }}</span>
-                  <button
-                    (click)="cancelEdit()"
-                    class="ml-2 text-slate-400 hover:text-slate-600"
-                  >
+                  <button (click)="cancelEdit()" class="ml-2 text-slate-400 hover:text-slate-600">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
                     </svg>
                   </button>
                 </div>
@@ -92,7 +101,9 @@ export interface ShortcutBinding {
                   class="flex items-center gap-1 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors"
                 >
                   @for (key of shortcut.keys; track key; let last = $last) {
-                    <kbd class="px-2 py-1 bg-white dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600 text-xs font-mono shadow-sm">
+                    <kbd
+                      class="px-2 py-1 bg-white dark:bg-slate-800 rounded border border-slate-300 dark:border-slate-600 text-xs font-mono shadow-sm"
+                    >
                       {{ formatKey(key) }}
                     </kbd>
                     @if (!last) {
@@ -113,7 +124,12 @@ export interface ShortcutBinding {
                   title="Reset to default"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
                   </svg>
                 </button>
               }
@@ -124,7 +140,12 @@ export interface ShortcutBinding {
         @if (filteredShortcuts().length === 0) {
           <div class="flex flex-col items-center justify-center py-12 text-slate-500">
             <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <p>No shortcuts found</p>
           </div>
@@ -133,10 +154,17 @@ export interface ShortcutBinding {
 
       <!-- Conflict Warning -->
       @if (conflictWarning()) {
-        <div class="px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800">
+        <div
+          class="px-4 py-3 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800"
+        >
           <div class="flex items-center gap-2 text-amber-700 dark:text-amber-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
             <span>{{ conflictWarning() }}</span>
           </div>
@@ -144,7 +172,9 @@ export interface ShortcutBinding {
       }
 
       <!-- Footer -->
-      <div class="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+      <div
+        class="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50"
+      >
         <button
           (click)="resetAllShortcuts.emit()"
           class="px-3 py-2 text-sm text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
@@ -308,4 +338,3 @@ export class TwShortcutsEditorComponent {
     );
   }
 }
-

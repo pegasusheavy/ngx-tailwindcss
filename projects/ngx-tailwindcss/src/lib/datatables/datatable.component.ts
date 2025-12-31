@@ -1,17 +1,6 @@
 import { CommonModule } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-} from '@angular/core';
-import {
-  TableColumn,
-  TableSize,
-  TableVariant,
-  TwTableComponent,
-} from '../table/table.component';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { TableColumn, TableSize, TableVariant, TwTableComponent } from '../table/table.component';
 
 @Component({
   selector: 'tw-datatables',
@@ -58,5 +47,3 @@ export class TwDatatablesComponent {
     return [this.baseToolbarClass, this.toolbarClass].filter(Boolean).join(' ');
   }
 }
-
-

@@ -116,7 +116,10 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
     const orientation = this.orientation();
     const variant = this.variant();
 
-    const configs: Record<FaderSize, { trackLength: number; trackWidth: number; capWidth: number; capHeight: number }> = {
+    const configs: Record<
+      FaderSize,
+      { trackLength: number; trackWidth: number; capWidth: number; capHeight: number }
+    > = {
       sm: { trackLength: 100, trackWidth: 8, capWidth: 24, capHeight: 12 },
       md: { trackLength: 150, trackWidth: 10, capWidth: 32, capHeight: 16 },
       lg: { trackLength: 200, trackWidth: 12, capWidth: 40, capHeight: 20 },
@@ -124,7 +127,10 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
     };
 
     // Channel variant uses taller/wider dimensions
-    const channelConfigs: Record<FaderSize, { trackLength: number; trackWidth: number; capWidth: number; capHeight: number }> = {
+    const channelConfigs: Record<
+      FaderSize,
+      { trackLength: number; trackWidth: number; capWidth: number; capHeight: number }
+    > = {
       sm: { trackLength: 120, trackWidth: 10, capWidth: 32, capHeight: 16 },
       md: { trackLength: 180, trackWidth: 12, capWidth: 40, capHeight: 20 },
       lg: { trackLength: 240, trackWidth: 14, capWidth: 48, capHeight: 24 },
@@ -174,17 +180,20 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
   protected readonly colors = computed(() => {
     const variant = this.variant();
 
-    const schemes: Record<FaderVariant, {
-      track: string;
-      fill: string;
-      cap: string;
-      capHighlight: string;
-      capLine: string;
-      text: string;
-      scale: string;
-      peakHold: string;
-      container: string;
-    }> = {
+    const schemes: Record<
+      FaderVariant,
+      {
+        track: string;
+        fill: string;
+        cap: string;
+        capHighlight: string;
+        capLine: string;
+        text: string;
+        scale: string;
+        peakHold: string;
+        container: string;
+      }
+    > = {
       default: {
         track: 'bg-slate-700',
         fill: 'bg-blue-500',
@@ -260,9 +269,10 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
 
     return {
       class: [base, this.colors().track].join(' '),
-      style: orientation === 'vertical'
-        ? { width: `${trackWidth}px`, height: `${trackLength}px` }
-        : { width: `${trackLength}px`, height: `${trackWidth}px` },
+      style:
+        orientation === 'vertical'
+          ? { width: `${trackWidth}px`, height: `${trackLength}px` }
+          : { width: `${trackLength}px`, height: `${trackWidth}px` },
     };
   });
 
@@ -299,7 +309,8 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
     const { capWidth, capHeight } = this.dimensions();
     const orientation = this.orientation();
     const base = 'absolute rounded-sm shadow-lg cursor-grab active:cursor-grabbing';
-    const transform = orientation === 'vertical' ? '-translate-x-1/2 left-1/2' : '-translate-y-1/2 top-1/2';
+    const transform =
+      orientation === 'vertical' ? '-translate-x-1/2 left-1/2' : '-translate-y-1/2 top-1/2';
 
     return {
       class: [base, transform, this.colors().cap].join(' '),
@@ -317,7 +328,7 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
 
     // Common dB marks
     const commonMarks = [12, 6, 0, -6, -12, -18, -24, -36, -48, -60];
-    const filteredMarks = commonMarks.filter((m) => m >= min && m <= max);
+    const filteredMarks = commonMarks.filter(m => m >= min && m <= max);
 
     for (const mark of filteredMarks) {
       const position = ((mark - min) / (max - min)) * 100;
@@ -452,7 +463,8 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
 
     // Announce to screen readers (only on significant changes)
     if (this.announceChanges() && Math.abs(clampedValue - previousValue) >= 1) {
-      const labelName = this.label() || (this.channelNumber() ? `Channel ${this.channelNumber()}` : 'Fader');
+      const labelName =
+        this.label() || (this.channelNumber() ? `Channel ${this.channelNumber()}` : 'Fader');
       this.a11y.announceValueChange(labelName, `${clampedValue.toFixed(1)}`, 'dB');
     }
   }
@@ -478,4 +490,3 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
     // Handled via input
   }
 }
-

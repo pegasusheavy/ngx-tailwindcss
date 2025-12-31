@@ -66,11 +66,19 @@ export interface PanelConfig {
               >
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   @if (direction() === 'horizontal') {
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      [attr.d]="panel1Collapsed() ? 'M13 5l7 7-7 7' : 'M11 19l-7-7 7-7'" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      [attr.d]="panel1Collapsed() ? 'M13 5l7 7-7 7' : 'M11 19l-7-7 7-7'"
+                    />
                   } @else {
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      [attr.d]="panel1Collapsed() ? 'M19 13l-7 7-7-7' : 'M5 11l7-7 7 7'" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      [attr.d]="panel1Collapsed() ? 'M19 13l-7 7-7-7' : 'M5 11l7-7 7 7'"
+                    />
                   }
                 </svg>
               </button>
@@ -83,11 +91,19 @@ export interface PanelConfig {
               >
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   @if (direction() === 'horizontal') {
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      [attr.d]="panel2Collapsed() ? 'M11 19l-7-7 7-7' : 'M13 5l7 7-7 7'" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      [attr.d]="panel2Collapsed() ? 'M11 19l-7-7 7-7' : 'M13 5l7 7-7 7'"
+                    />
                   } @else {
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      [attr.d]="panel2Collapsed() ? 'M5 11l7-7 7 7' : 'M19 13l-7 7-7-7'" />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      [attr.d]="panel2Collapsed() ? 'M5 11l7-7 7 7' : 'M19 13l-7 7-7-7'"
+                    />
                   }
                 </svg>
               </button>
@@ -167,8 +183,13 @@ export class TwResizablePanelsComponent {
 
   public readonly handleClasses = computed(() => {
     const dir = this.direction();
-    const baseClasses = 'flex-shrink-0 bg-slate-200 dark:bg-slate-700 hover:bg-blue-400 dark:hover:bg-blue-600 transition-colors relative group';
-    const cursor = this.isResizing() ? (dir === 'horizontal' ? 'cursor-col-resize' : 'cursor-row-resize') : '';
+    const baseClasses =
+      'flex-shrink-0 bg-slate-200 dark:bg-slate-700 hover:bg-blue-400 dark:hover:bg-blue-600 transition-colors relative group';
+    const cursor = this.isResizing()
+      ? dir === 'horizontal'
+        ? 'cursor-col-resize'
+        : 'cursor-row-resize'
+      : '';
     const size = dir === 'horizontal' ? `w-${this.handleSize()}` : `h-${this.handleSize()}`;
 
     return `${baseClasses} ${size} ${cursor} ${dir === 'horizontal' ? 'cursor-col-resize' : 'cursor-row-resize'}`;
@@ -255,4 +276,3 @@ export class TwResizablePanelsComponent {
     return isHorizontal ? event.clientX : event.clientY;
   }
 }
-

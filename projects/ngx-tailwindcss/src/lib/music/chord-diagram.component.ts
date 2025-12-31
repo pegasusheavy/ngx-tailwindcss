@@ -304,16 +304,11 @@ export class TwChordDiagramComponent {
   protected readonly stringLabels = computed(() => {
     const count = this.stringCount();
     if (count === 6) {
-      return this.leftHanded()
-        ? ['E', 'B', 'G', 'D', 'A', 'E']
-        : ['E', 'A', 'D', 'G', 'B', 'E'];
+      return this.leftHanded() ? ['E', 'B', 'G', 'D', 'A', 'E'] : ['E', 'A', 'D', 'G', 'B', 'E'];
     }
     if (count === 4) {
-      return this.leftHanded()
-        ? ['G', 'D', 'A', 'E']
-        : ['E', 'A', 'D', 'G'];
+      return this.leftHanded() ? ['G', 'D', 'A', 'E'] : ['E', 'A', 'D', 'G'];
     }
     return [];
   });
 }
-

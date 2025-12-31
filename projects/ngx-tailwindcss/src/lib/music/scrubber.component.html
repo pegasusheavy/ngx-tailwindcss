@@ -22,17 +22,11 @@
   >
     <!-- Buffered Range -->
     @if (showBuffered() && buffered() > 0) {
-      <div
-        [class]="bufferedClasses()"
-        [style.width.%]="(buffered() / duration()) * 100"
-      ></div>
+      <div [class]="bufferedClasses()" [style.width.%]="(buffered() / duration()) * 100"></div>
     }
 
     <!-- Progress Fill -->
-    <div
-      [class]="progressClasses()"
-      [style.width.%]="progressPercent()"
-    ></div>
+    <div [class]="progressClasses()" [style.width.%]="progressPercent()"></div>
 
     <!-- Chapter Markers -->
     @if (showMarkers()) {
@@ -53,10 +47,7 @@
       >
         <!-- Thumbnail Preview -->
         @if (showThumbnailPreview()) {
-          <div
-            [class]="thumbnailContainerClasses()"
-            [style.bottom.px]="thumbnailOffset()"
-          >
+          <div [class]="thumbnailContainerClasses()" [style.bottom.px]="thumbnailOffset()">
             <!-- Individual thumbnail image -->
             @if (currentThumbnail() && !thumbnailSprite()) {
               <img
@@ -77,8 +68,12 @@
                 [style.height.px]="thumbnailHeight()"
                 [style.borderRadius.px]="thumbnailBorderRadius()"
                 [style.backgroundImage]="'url(' + thumbnailSprite()!.url + ')'"
-                [style.backgroundPosition]="spritePosition()!.x + 'px ' + spritePosition()!.y + 'px'"
-                [style.backgroundSize]="(thumbnailSprite()!.frameWidth * thumbnailSprite()!.columns) + 'px auto'"
+                [style.backgroundPosition]="
+                  spritePosition()!.x + 'px ' + spritePosition()!.y + 'px'
+                "
+                [style.backgroundSize]="
+                  thumbnailSprite()!.frameWidth * thumbnailSprite()!.columns + 'px auto'
+                "
               ></div>
             }
 
@@ -98,10 +93,7 @@
 
     <!-- Thumb / Handle -->
     @if (showThumb()) {
-      <div
-        [class]="thumbClasses()"
-        [style.left.%]="progressPercent()"
-      ></div>
+      <div [class]="thumbClasses()" [style.left.%]="progressPercent()"></div>
     }
 
     <!-- Time Inside Track -->
@@ -124,7 +116,3 @@
     </span>
   }
 </div>
-
-
-
-

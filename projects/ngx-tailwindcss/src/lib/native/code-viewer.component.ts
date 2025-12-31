@@ -2,7 +2,15 @@ import { Component, input, output, signal, computed, effect } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-export type CodeLanguage = 'json' | 'javascript' | 'typescript' | 'html' | 'css' | 'xml' | 'markdown' | 'text';
+export type CodeLanguage =
+  | 'json'
+  | 'javascript'
+  | 'typescript'
+  | 'html'
+  | 'css'
+  | 'xml'
+  | 'markdown'
+  | 'text';
 
 @Component({
   selector: 'tw-code-viewer',
@@ -11,7 +19,9 @@ export type CodeLanguage = 'json' | 'javascript' | 'typescript' | 'html' | 'css'
   template: `
     <div class="h-full flex flex-col bg-slate-900 text-slate-100 font-mono text-sm">
       <!-- Toolbar -->
-      <div class="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700">
+      <div
+        class="flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700"
+      >
         <div class="flex items-center gap-4">
           @if (filename()) {
             <span class="text-slate-400">{{ filename() }}</span>
@@ -44,7 +54,12 @@ export type CodeLanguage = 'json' | 'javascript' | 'typescript' | 'html' | 'css'
               title="Previous match"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 15l7-7 7 7"
+                />
               </svg>
             </button>
             <button
@@ -53,7 +68,12 @@ export type CodeLanguage = 'json' | 'javascript' | 'typescript' | 'html' | 'css'
               title="Next match"
             >
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
           }
@@ -66,7 +86,12 @@ export type CodeLanguage = 'json' | 'javascript' | 'typescript' | 'html' | 'css'
             title="Toggle word wrap"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
             </svg>
           </button>
 
@@ -77,7 +102,12 @@ export type CodeLanguage = 'json' | 'javascript' | 'typescript' | 'html' | 'css'
             title="Copy code"
           >
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+              />
             </svg>
           </button>
         </div>
@@ -88,12 +118,11 @@ export type CodeLanguage = 'json' | 'javascript' | 'typescript' | 'html' | 'css'
         <div class="flex min-h-full">
           <!-- Line Numbers -->
           @if (showLineNumbers()) {
-            <div class="flex-shrink-0 px-3 py-4 text-right text-slate-500 bg-slate-800/50 select-none border-r border-slate-700">
+            <div
+              class="flex-shrink-0 px-3 py-4 text-right text-slate-500 bg-slate-800/50 select-none border-r border-slate-700"
+            >
               @for (line of lines(); track $index; let i = $index) {
-                <div
-                  [class.bg-blue-900/30]="highlightedLines().has(i + 1)"
-                  class="leading-6"
-                >
+                <div [class.bg-blue-900/30]="highlightedLines().has(i + 1)" class="leading-6">
                   {{ i + 1 }}
                 </div>
               }
@@ -115,7 +144,9 @@ export type CodeLanguage = 'json' | 'javascript' | 'typescript' | 'html' | 'css'
 
       <!-- Footer -->
       @if (showFooter()) {
-        <div class="flex items-center justify-between px-4 py-2 bg-slate-800 border-t border-slate-700 text-xs text-slate-400">
+        <div
+          class="flex items-center justify-between px-4 py-2 bg-slate-800 border-t border-slate-700 text-xs text-slate-400"
+        >
           <span>{{ lines().length }} lines</span>
           <span>{{ byteSize() }}</span>
         </div>
@@ -198,6 +229,4 @@ export class TwCodeViewerComponent {
     navigator.clipboard.writeText(this.code());
     this.copied.emit();
   }
-
 }
-

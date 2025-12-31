@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  signal,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface NativeBreadcrumbItem {
@@ -29,10 +23,7 @@ export interface NativeBreadcrumbItem {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <nav
-      class="flex items-center text-sm"
-      [attr.aria-label]="'Breadcrumb'"
-    >
+    <nav class="flex items-center text-sm" [attr.aria-label]="'Breadcrumb'">
       <ol class="flex items-center gap-1">
         <!-- Home/Root -->
         @if (showHome()) {
@@ -43,8 +34,14 @@ export interface NativeBreadcrumbItem {
               [attr.aria-label]="'Go to home'"
               (click)="onHomeClick()"
             >
-              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"/>
+              <svg
+                class="w-4 h-4 text-gray-500 dark:text-gray-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+                />
               </svg>
             </button>
             @if (items().length > 0) {
@@ -109,7 +106,12 @@ export interface NativeBreadcrumbItem {
           (click)="startEdit()"
         >
           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            />
           </svg>
         </button>
       }
@@ -123,18 +125,25 @@ export interface NativeBreadcrumbItem {
           (click)="copyPath()"
         >
           <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
+            />
           </svg>
         </button>
       }
     </nav>
   `,
-  styles: [`
-    :host {
-      display: block;
-      position: relative;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+        position: relative;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'tw-breadcrumbs-nav',
@@ -216,4 +225,3 @@ export class TwBreadcrumbsNavComponent {
       .join(this.separator());
   }
 }
-

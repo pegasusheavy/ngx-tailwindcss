@@ -1,8 +1,4 @@
-<div
-  [class]="containerClasses()"
-  role="application"
-  [attr.aria-label]="'Piano keyboard'"
->
+<div [class]="containerClasses()" role="application" [attr.aria-label]="'Piano keyboard'">
   <!-- MIDI Status Indicator -->
   @if (enableMidi()) {
     <div class="flex items-center gap-2 mb-2 px-2 text-xs">
@@ -46,7 +42,9 @@
 
         <!-- MIDI Source Indicator -->
         @if (isKeyActive(key) && getNoteSource(key) === 'midi') {
-          <div class="absolute top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          <div
+            class="absolute top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-green-500 animate-pulse"
+          ></div>
         }
 
         @if (showLabels()) {
@@ -82,7 +80,9 @@
 
         <!-- MIDI Source Indicator -->
         @if (isKeyActive(key) && getNoteSource(key) === 'midi') {
-          <div class="absolute top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"></div>
+          <div
+            class="absolute top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse"
+          ></div>
         }
 
         @if (showLabels()) {
@@ -112,4 +112,3 @@
     </div>
   }
 </div>
-

@@ -16,7 +16,14 @@ export interface WindowState {
 
 // Title Bar types
 export type TitleBarVariant = 'default' | 'transparent' | 'unified';
-export type TitleBarPlatform = 'macos' | 'windows' | 'linux' | 'web' | 'auto' | 'tauri' | 'electron';
+export type TitleBarPlatform =
+  | 'macos'
+  | 'windows'
+  | 'linux'
+  | 'web'
+  | 'auto'
+  | 'tauri'
+  | 'electron';
 
 // Window Controls types
 export type WindowControlsPosition = 'left' | 'right';
@@ -274,4 +281,3 @@ export interface IpcResponse<T = unknown> {
   data?: T;
   error?: string;
 }
-

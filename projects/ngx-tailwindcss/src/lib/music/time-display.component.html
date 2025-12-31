@@ -3,10 +3,7 @@
     <!-- LED Segment Display -->
     <div class="flex items-center font-mono tracking-wider">
       @for (char of displayChars(); track $index) {
-        <span
-          [class]="charClasses(char)"
-          [attr.data-char]="char"
-        >{{ char }}</span>
+        <span [class]="charClasses(char)" [attr.data-char]="char">{{ char }}</span>
       }
     </div>
   } @else if (variant() === 'digital') {
@@ -31,7 +28,9 @@
     <!-- Default / Minimal -->
     <div [class]="defaultClasses()">
       @if (showLabel() && label()) {
-        <span class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-2">{{ label() }}</span>
+        <span class="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wider mr-2">{{
+          label()
+        }}</span>
       }
       <span>{{ displayText() }}</span>
       @if (showTotal() && mode() === 'time') {
@@ -41,7 +40,3 @@
     </div>
   }
 </div>
-
-
-
-

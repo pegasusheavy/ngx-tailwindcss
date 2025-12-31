@@ -1,10 +1,4 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  input,
-  output,
-  HostListener,
-} from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -50,23 +44,24 @@ import { CommonModule } from '@angular/common';
               />
             } @else {
               <!-- Default app icon -->
-              <div class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg">
+              <div
+                class="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg"
+              >
                 <svg class="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z" clip-rule="evenodd"/>
+                  <path
+                    fill-rule="evenodd"
+                    d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 0v12h8V4H6z"
+                    clip-rule="evenodd"
+                  />
                 </svg>
               </div>
             }
 
-            <h2
-              id="about-title"
-              class="text-xl font-bold text-gray-900 dark:text-gray-100"
-            >
+            <h2 id="about-title" class="text-xl font-bold text-gray-900 dark:text-gray-100">
               {{ appName() }}
             </h2>
 
-            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              Version {{ version() }}
-            </p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Version {{ version() }}</p>
           </div>
 
           <!-- Description -->
@@ -181,4 +176,3 @@ export class TwAboutDialogComponent {
     this.openChange.emit(false);
   }
 }
-

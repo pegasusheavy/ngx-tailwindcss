@@ -4,7 +4,12 @@
     <div class="toolbar">
       <!-- File operations -->
       <div class="toolbar-group">
-        <button type="button" class="toolbar-btn" (click)="showExportDialog.set(true)" title="Export">
+        <button
+          type="button"
+          class="toolbar-btn"
+          (click)="showExportDialog.set(true)"
+          title="Export"
+        >
           <span class="icon">📥</span>
           <span class="label">Export</span>
         </button>
@@ -14,10 +19,22 @@
 
       <!-- Edit operations -->
       <div class="toolbar-group">
-        <button type="button" class="toolbar-btn" [disabled]="!canUndo()" (click)="undo()" title="Undo (Ctrl+Z)">
+        <button
+          type="button"
+          class="toolbar-btn"
+          [disabled]="!canUndo()"
+          (click)="undo()"
+          title="Undo (Ctrl+Z)"
+        >
           <span class="icon">↩</span>
         </button>
-        <button type="button" class="toolbar-btn" [disabled]="!canRedo()" (click)="redo()" title="Redo (Ctrl+Shift+Z)">
+        <button
+          type="button"
+          class="toolbar-btn"
+          [disabled]="!canRedo()"
+          (click)="redo()"
+          title="Redo (Ctrl+Shift+Z)"
+        >
           <span class="icon">↪</span>
         </button>
       </div>
@@ -49,21 +66,27 @@
           [class.active]="currentAccidental() === 'sharp'"
           (click)="currentAccidental.set(currentAccidental() === 'sharp' ? null : 'sharp')"
           title="Sharp"
-        >♯</button>
+        >
+          ♯
+        </button>
         <button
           type="button"
           class="toolbar-btn"
           [class.active]="currentAccidental() === 'flat'"
           (click)="currentAccidental.set(currentAccidental() === 'flat' ? null : 'flat')"
           title="Flat"
-        >♭</button>
+        >
+          ♭
+        </button>
         <button
           type="button"
           class="toolbar-btn"
           [class.active]="currentAccidental() === 'natural'"
           (click)="currentAccidental.set(currentAccidental() === 'natural' ? null : 'natural')"
           title="Natural"
-        >♮</button>
+        >
+          ♮
+        </button>
       </div>
 
       <div class="toolbar-divider"></div>
@@ -76,14 +99,18 @@
           [class.active]="isDotted()"
           (click)="toggleDotted()"
           title="Dotted"
-        >.</button>
+        >
+          .
+        </button>
         <button
           type="button"
           class="toolbar-btn"
           [class.active]="isRest()"
           (click)="toggleRest()"
           title="Rest"
-        >𝄽</button>
+        >
+          𝄽
+        </button>
       </div>
 
       <div class="toolbar-divider"></div>
@@ -98,7 +125,9 @@
             [style.--voice-color]="voiceColors[voice]"
             (click)="setVoice(voice)"
             title="Voice {{ voice }}"
-          >{{ voice }}</button>
+          >
+            {{ voice }}
+          </button>
         }
       </div>
 
@@ -106,7 +135,12 @@
 
       <!-- Transpose -->
       <div class="toolbar-group">
-        <button type="button" class="toolbar-btn" (click)="showTransposeDialog.set(true)" title="Transpose">
+        <button
+          type="button"
+          class="toolbar-btn"
+          (click)="showTransposeDialog.set(true)"
+          title="Transpose"
+        >
           <span class="icon">↕</span>
           <span class="label">Transpose</span>
         </button>
@@ -120,7 +154,14 @@
       <div class="part-panel">
         <div class="panel-header">
           <span>Parts</span>
-          <button type="button" class="add-part-btn" (click)="showPartDialog.set(true)" title="Add Part">+</button>
+          <button
+            type="button"
+            class="add-part-btn"
+            (click)="showPartDialog.set(true)"
+            title="Add Part"
+          >
+            +
+          </button>
         </div>
 
         <div class="part-list">
@@ -142,21 +183,27 @@
                   [class.active]="part.muted"
                   (click)="updatePart(part.id, { muted: !part.muted }); $event.stopPropagation()"
                   title="Mute"
-                >M</button>
+                >
+                  M
+                </button>
                 <button
                   type="button"
                   class="part-btn"
                   [class.active]="part.solo"
                   (click)="updatePart(part.id, { solo: !part.solo }); $event.stopPropagation()"
                   title="Solo"
-                >S</button>
+                >
+                  S
+                </button>
                 <button
                   type="button"
                   class="part-btn delete"
                   (click)="removePart(part.id); $event.stopPropagation()"
                   [disabled]="parts().length <= 1"
                   title="Remove"
-                >×</button>
+                >
+                  ×
+                </button>
               </div>
             </div>
           }
@@ -228,7 +275,11 @@
       <!-- Staves -->
       <div class="staves-container">
         @for (part of parts(); track part.id; let idx = $index) {
-          <div class="staff-row" [class.muted]="part.muted" [class.selected]="selectedPartId() === part.id">
+          <div
+            class="staff-row"
+            [class.muted]="part.muted"
+            [class.selected]="selectedPartId() === part.id"
+          >
             <!-- Part label -->
             <div class="staff-label" [style.color]="part.color">
               {{ part.abbreviation }}
@@ -259,7 +310,8 @@
                   <span
                     class="lyric-syllable"
                     [style.left.px]="130 + lyric.measure * 150 + lyric.beat * 30"
-                  >{{ lyric.text }}</span>
+                    >{{ lyric.text }}</span
+                  >
                 }
               </div>
             }
@@ -302,7 +354,9 @@
       <div class="dialog" (click)="$event.stopPropagation()">
         <div class="dialog-header">
           <h3>Transpose</h3>
-          <button type="button" class="close-btn" (click)="showTransposeDialog.set(false)">×</button>
+          <button type="button" class="close-btn" (click)="showTransposeDialog.set(false)">
+            ×
+          </button>
         </div>
         <div class="dialog-content">
           <div class="transpose-controls">
@@ -330,17 +384,23 @@
             </div>
           </div>
           <div class="dialog-actions">
-            <button type="button" class="btn-secondary" (click)="showTransposeDialog.set(false)">Cancel</button>
+            <button type="button" class="btn-secondary" (click)="showTransposeDialog.set(false)">
+              Cancel
+            </button>
             <button
               type="button"
               class="btn-primary"
               (click)="transposeSelectedPart(transposeAmount()); showTransposeDialog.set(false)"
-            >Transpose Selected</button>
+            >
+              Transpose Selected
+            </button>
             <button
               type="button"
               class="btn-primary"
               (click)="transposeAll(transposeAmount()); showTransposeDialog.set(false)"
-            >Transpose All</button>
+            >
+              Transpose All
+            </button>
           </div>
         </div>
       </div>
@@ -357,17 +417,29 @@
         </div>
         <div class="dialog-content">
           <div class="export-options">
-            <button type="button" class="export-btn" (click)="downloadExport('musicxml'); showExportDialog.set(false)">
+            <button
+              type="button"
+              class="export-btn"
+              (click)="downloadExport('musicxml'); showExportDialog.set(false)"
+            >
               <span class="export-icon">📄</span>
               <span class="export-label">MusicXML</span>
               <span class="export-desc">For notation software</span>
             </button>
-            <button type="button" class="export-btn" (click)="downloadExport('midi'); showExportDialog.set(false)">
+            <button
+              type="button"
+              class="export-btn"
+              (click)="downloadExport('midi'); showExportDialog.set(false)"
+            >
               <span class="export-icon">🎹</span>
               <span class="export-label">MIDI</span>
               <span class="export-desc">For audio playback</span>
             </button>
-            <button type="button" class="export-btn" (click)="downloadExport('abc'); showExportDialog.set(false)">
+            <button
+              type="button"
+              class="export-btn"
+              (click)="downloadExport('abc'); showExportDialog.set(false)"
+            >
               <span class="export-icon">📝</span>
               <span class="export-label">ABC Notation</span>
               <span class="export-desc">Text format</span>
@@ -394,4 +466,3 @@
     </div>
   }
 </div>
-

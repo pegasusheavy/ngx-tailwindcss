@@ -44,8 +44,9 @@ export class NativeAppPlatformService {
 
   public readonly isDarkMode = computed(() => {
     if (this._theme() === 'system') {
-      return typeof window !== 'undefined' &&
-        window.matchMedia?.('(prefers-color-scheme: dark)').matches;
+      return (
+        typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme: dark)').matches
+      );
     }
     return this._theme() === 'dark';
   });
@@ -72,8 +73,10 @@ export class NativeAppPlatformService {
   }
 
   private checkElectron(): boolean {
-    return typeof window !== 'undefined' &&
-      typeof (window as Window & { process?: { type?: string } }).process?.type === 'string';
+    return (
+      typeof window !== 'undefined' &&
+      typeof (window as Window & { process?: { type?: string } }).process?.type === 'string'
+    );
   }
 
   private initThemeListener(): void {

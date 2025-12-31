@@ -18,7 +18,10 @@ import { MusicAccessibilityService } from './accessibility.service';
 export type DialVariant = 'modern' | 'vintage' | 'minimal' | 'led' | 'light' | 'highContrast';
 export type DialSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-const DIAL_SIZES: Record<DialSize, { size: number; strokeWidth: number; tickLength: number; fontSize: string }> = {
+const DIAL_SIZES: Record<
+  DialSize,
+  { size: number; strokeWidth: number; tickLength: number; fontSize: string }
+> = {
   xs: { size: 32, strokeWidth: 3, tickLength: 3, fontSize: 'text-[8px]' },
   sm: { size: 48, strokeWidth: 4, tickLength: 4, fontSize: 'text-[10px]' },
   md: { size: 72, strokeWidth: 5, tickLength: 6, fontSize: 'text-xs' },
@@ -26,7 +29,10 @@ const DIAL_SIZES: Record<DialSize, { size: number; strokeWidth: number; tickLeng
   xl: { size: 128, strokeWidth: 8, tickLength: 10, fontSize: 'text-base' },
 };
 
-const DIAL_VARIANTS: Record<DialVariant, { track: string; fill: string; knob: string; indicator: string }> = {
+const DIAL_VARIANTS: Record<
+  DialVariant,
+  { track: string; fill: string; knob: string; indicator: string }
+> = {
   modern: {
     track: 'stroke-slate-200 dark:stroke-slate-700',
     fill: 'stroke-blue-500',
@@ -231,7 +237,14 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
   });
 
   protected readonly tickMarks = computed(() => {
-    const ticks: Array<{ angle: number; x1: number; y1: number; x2: number; y2: number; isMajor: boolean }> = [];
+    const ticks: Array<{
+      angle: number;
+      x1: number;
+      y1: number;
+      x2: number;
+      y2: number;
+      isMajor: boolean;
+    }> = [];
     const tickCount = 11;
     const majorEvery = 2;
 
@@ -241,7 +254,8 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
       const radians = (angle - 90) * (Math.PI / 180);
       const isMajor = i % majorEvery === 0;
       const outerRadius = this.radius() + this.sizeConfig().strokeWidth + 2;
-      const innerRadius = outerRadius - (isMajor ? this.sizeConfig().tickLength : this.sizeConfig().tickLength * 0.6);
+      const innerRadius =
+        outerRadius - (isMajor ? this.sizeConfig().tickLength : this.sizeConfig().tickLength * 0.6);
 
       ticks.push({
         angle,
@@ -277,7 +291,13 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
   });
 
   // SVG arc helper
-  private describeArc(x: number, y: number, radius: number, startAngle: number, endAngle: number): string {
+  private describeArc(
+    x: number,
+    y: number,
+    radius: number,
+    startAngle: number,
+    endAngle: number
+  ): string {
     const start = this.polarToCartesian(x, y, radius, endAngle);
     const end = this.polarToCartesian(x, y, radius, startAngle);
     const largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
@@ -285,7 +305,12 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
     return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArcFlag} 0 ${end.x} ${end.y}`;
   }
 
-  private polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number): { x: number; y: number } {
+  private polarToCartesian(
+    centerX: number,
+    centerY: number,
+    radius: number,
+    angleInDegrees: number
+  ): { x: number; y: number } {
     const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180;
     return {
       x: centerX + radius * Math.cos(angleInRadians),
@@ -441,11 +466,7 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
 
       // Announce to screen readers (debounced)
       if (this.announceChanges()) {
-        this.a11y.announceValueChange(
-          this.label() || 'Volume',
-          this.displayValue(),
-          this.unit()
-        );
+        this.a11y.announceValueChange(this.label() || 'Volume', this.displayValue(), this.unit());
       }
     }
   }

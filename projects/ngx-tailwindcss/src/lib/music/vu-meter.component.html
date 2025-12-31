@@ -13,7 +13,9 @@
           <div class="relative flex flex-col-reverse" [style.width.px]="barWidth()">
             <!-- Scale marks (left side of first channel) -->
             @if (showScale() && channel === 0) {
-              <div class="absolute -left-6 top-0 bottom-0 flex flex-col justify-between text-[9px] text-slate-500 dark:text-slate-400 font-mono">
+              <div
+                class="absolute -left-6 top-0 bottom-0 flex flex-col justify-between text-[9px] text-slate-500 dark:text-slate-400 font-mono"
+              >
                 @for (mark of scaleMarks(); track mark.value) {
                   <span class="-translate-y-1/2">{{ mark.label }}</span>
                 }
@@ -32,7 +34,10 @@
             <!-- Peak indicator -->
             @if (showPeak() && peakValues()[channel] > 0) {
               <div
-                [class]="'absolute left-0 right-0 h-1 transition-all duration-75 ' + peakClasses(peakValues()[channel])"
+                [class]="
+                  'absolute left-0 right-0 h-1 transition-all duration-75 ' +
+                  peakClasses(peakValues()[channel])
+                "
                 [style.bottom.%]="(peakValues()[channel] / max()) * 100"
               ></div>
             }
@@ -74,7 +79,10 @@
             <!-- Peak indicator -->
             @if (showPeak() && peakValues()[channel] > 0) {
               <div
-                [class]="'absolute top-0 bottom-0 w-1 transition-all duration-75 ' + peakClasses(peakValues()[channel])"
+                [class]="
+                  'absolute top-0 bottom-0 w-1 transition-all duration-75 ' +
+                  peakClasses(peakValues()[channel])
+                "
                 [style.left.%]="(peakValues()[channel] / max()) * 100"
               ></div>
             }
@@ -101,7 +109,9 @@
 
         <!-- Scale marks (bottom) -->
         @if (showScale()) {
-          <div class="flex justify-between text-[9px] text-slate-500 dark:text-slate-400 font-mono mt-1">
+          <div
+            class="flex justify-between text-[9px] text-slate-500 dark:text-slate-400 font-mono mt-1"
+          >
             @for (mark of horizontalScaleMarks(); track mark.value) {
               <span>{{ mark.label }}</span>
             }
@@ -129,9 +139,11 @@
     <div class="text-[9px] font-mono text-slate-500 dark:text-slate-400 mt-1 text-center">
       {{ meterModeLabel() }}
       @if (showRmsBar()) {
-        <span class="inline-block w-2 h-0.5 bg-cyan-400 ml-1 align-middle" title="RMS indicator"></span>
+        <span
+          class="inline-block w-2 h-0.5 bg-cyan-400 ml-1 align-middle"
+          title="RMS indicator"
+        ></span>
       }
     </div>
   }
 </div>
-

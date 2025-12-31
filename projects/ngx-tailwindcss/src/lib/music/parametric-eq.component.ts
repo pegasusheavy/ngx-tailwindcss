@@ -15,7 +15,14 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-export type EQFilterType = 'lowpass' | 'highpass' | 'bandpass' | 'lowshelf' | 'highshelf' | 'peaking' | 'notch';
+export type EQFilterType =
+  | 'lowpass'
+  | 'highpass'
+  | 'bandpass'
+  | 'lowshelf'
+  | 'highshelf'
+  | 'peaking'
+  | 'notch';
 export type EQVariant = 'default' | 'dark' | 'vintage' | 'neon' | 'light' | 'highContrast';
 
 export interface EQBand {
@@ -34,11 +41,51 @@ export interface EQBandChange {
 }
 
 const DEFAULT_BANDS: EQBand[] = [
-  { id: 'band1', frequency: 80, gain: 0, q: 0.7, type: 'lowshelf', enabled: true, color: '#EF4444' },
-  { id: 'band2', frequency: 250, gain: 0, q: 1.0, type: 'peaking', enabled: true, color: '#F97316' },
-  { id: 'band3', frequency: 1000, gain: 0, q: 1.0, type: 'peaking', enabled: true, color: '#EAB308' },
-  { id: 'band4', frequency: 4000, gain: 0, q: 1.0, type: 'peaking', enabled: true, color: '#22C55E' },
-  { id: 'band5', frequency: 12000, gain: 0, q: 0.7, type: 'highshelf', enabled: true, color: '#3B82F6' },
+  {
+    id: 'band1',
+    frequency: 80,
+    gain: 0,
+    q: 0.7,
+    type: 'lowshelf',
+    enabled: true,
+    color: '#EF4444',
+  },
+  {
+    id: 'band2',
+    frequency: 250,
+    gain: 0,
+    q: 1.0,
+    type: 'peaking',
+    enabled: true,
+    color: '#F97316',
+  },
+  {
+    id: 'band3',
+    frequency: 1000,
+    gain: 0,
+    q: 1.0,
+    type: 'peaking',
+    enabled: true,
+    color: '#EAB308',
+  },
+  {
+    id: 'band4',
+    frequency: 4000,
+    gain: 0,
+    q: 1.0,
+    type: 'peaking',
+    enabled: true,
+    color: '#22C55E',
+  },
+  {
+    id: 'band5',
+    frequency: 12000,
+    gain: 0,
+    q: 0.7,
+    type: 'highshelf',
+    enabled: true,
+    color: '#3B82F6',
+  },
 ];
 
 @Component({
@@ -207,9 +254,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
 
     if (band) {
       // Reset band to 0 gain on double-click
-      const updatedBands = this.bands().map((b) =>
-        b.id === band.id ? { ...b, gain: 0 } : b
-      );
+      const updatedBands = this.bands().map(b => (b.id === band.id ? { ...b, gain: 0 } : b));
       this.bandsChange.emit(updatedBands);
       this.bandChange.emit({ band: { ...band, gain: 0 }, property: 'gain' });
     }
@@ -220,7 +265,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
     if (!bandId) return;
 
     const currentBands = this.bands();
-    const bandIndex = currentBands.findIndex((b) => b.id === bandId);
+    const bandIndex = currentBands.findIndex(b => b.id === bandId);
     if (bandIndex === -1) return;
 
     const band = currentBands[bandIndex];
@@ -463,7 +508,10 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
         this.ctx.fillStyle = '#fff';
         this.ctx.font = '11px system-ui';
         this.ctx.textAlign = 'center';
-        const freqLabel = band.frequency >= 1000 ? `${(band.frequency / 1000).toFixed(1)}kHz` : `${Math.round(band.frequency)}Hz`;
+        const freqLabel =
+          band.frequency >= 1000
+            ? `${(band.frequency / 1000).toFixed(1)}kHz`
+            : `${Math.round(band.frequency)}Hz`;
         const gainLabel = `${band.gain > 0 ? '+' : ''}${band.gain.toFixed(1)}dB`;
         this.ctx.fillText(freqLabel, x, y - radius - 14);
         this.ctx.fillText(gainLabel, x, y - radius - 2);
@@ -481,7 +529,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
       case 'peaking':
       case 'bandpass': {
         const distance = Math.abs(logFreq - logBandFreq);
-        const response = Math.exp(-distance * distance / (bandwidth * bandwidth));
+        const response = Math.exp((-distance * distance) / (bandwidth * bandwidth));
         return band.gain * response;
       }
       case 'lowshelf': {
@@ -510,7 +558,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
       }
       case 'notch': {
         const distance = Math.abs(logFreq - logBandFreq);
-        const response = 1 - Math.exp(-distance * distance / (bandwidth * bandwidth * 0.1));
+        const response = 1 - Math.exp((-distance * distance) / (bandwidth * bandwidth * 0.1));
         return band.gain * (1 - response);
       }
       default:
@@ -573,7 +621,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
   }
 
   protected toggleBand(band: EQBand): void {
-    const updatedBands = this.bands().map((b) =>
+    const updatedBands = this.bands().map(b =>
       b.id === band.id ? { ...b, enabled: !b.enabled } : b
     );
     this.bandsChange.emit(updatedBands);
@@ -584,4 +632,3 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
     this.selectedBandId.set(band.id);
   }
 }
-

@@ -6,7 +6,9 @@
         class="absolute bottom-0 w-1 h-20 bg-amber-600 rounded-full origin-bottom transition-transform duration-200"
         [style.transform]="'rotate(' + pendulumAngle() + 'deg)'"
       >
-        <div class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-amber-500 shadow-lg"></div>
+        <div
+          class="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-amber-500 shadow-lg"
+        ></div>
       </div>
       <div class="absolute bottom-0 w-16 h-2 bg-amber-800/50 rounded-t"></div>
     </div>
@@ -67,7 +69,11 @@
             type="button"
             [class]="getAccentIndicatorClass(beat)"
             (click)="showAccentConfig() ? cycleAccent(beat) : null"
-            [title]="showAccentConfig() ? 'Click to cycle accent: ' + getAccentForBeat(beat) : 'Beat ' + beat"
+            [title]="
+              showAccentConfig()
+                ? 'Click to cycle accent: ' + getAccentForBeat(beat)
+                : 'Beat ' + beat
+            "
           ></button>
         }
       </div>
@@ -158,7 +164,9 @@
         <span>Stop</span>
       } @else {
         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"></path>
+          <path
+            d="M6.3 2.841A1.5 1.5 0 004 4.11v11.78a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"
+          ></path>
         </svg>
         <span>Start</span>
       }
@@ -182,4 +190,3 @@
     </div>
   }
 </div>
-

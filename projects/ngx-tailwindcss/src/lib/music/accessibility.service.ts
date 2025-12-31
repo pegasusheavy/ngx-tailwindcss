@@ -72,12 +72,14 @@ export class MusicAccessibilityService implements OnDestroy {
   readonly screenReaderHints = this._screenReaderHints.asReadonly();
 
   /** Combined preferences object */
-  readonly preferences = computed((): AccessibilityPreferences => ({
-    reducedMotion: this._reducedMotion(),
-    highContrast: this._highContrast(),
-    screenReaderEnabled: this._screenReaderHints(),
-    largeText: this.checkLargeText(),
-  }));
+  readonly preferences = computed(
+    (): AccessibilityPreferences => ({
+      reducedMotion: this._reducedMotion(),
+      highContrast: this._highContrast(),
+      screenReaderEnabled: this._screenReaderHints(),
+      largeText: this.checkLargeText(),
+    })
+  );
 
   constructor() {
     if (typeof window !== 'undefined') {
@@ -117,9 +119,7 @@ export class MusicAccessibilityService implements OnDestroy {
    * Announce a value change (debounced for rapid changes)
    */
   announceValueChange(label: string, value: string | number, unit?: string): void {
-    const message = unit
-      ? `${label}: ${value} ${unit}`
-      : `${label}: ${value}`;
+    const message = unit ? `${label}: ${value} ${unit}` : `${label}: ${value}`;
     this.announce(message, 'polite');
   }
 
@@ -177,9 +177,7 @@ export class MusicAccessibilityService implements OnDestroy {
     this.isProcessingQueue = true;
     const announcement = this.announcementQueue.shift()!;
 
-    const region = announcement.priority === 'assertive'
-      ? this.assertiveRegion
-      : this.politeRegion;
+    const region = announcement.priority === 'assertive' ? this.assertiveRegion : this.politeRegion;
 
     if (region) {
       // Clear first to ensure re-announcement of same message
@@ -190,9 +188,12 @@ export class MusicAccessibilityService implements OnDestroy {
         region.textContent = announcement.message;
 
         // Process next announcement after delay
-        setTimeout(() => {
-          this.processAnnouncementQueue();
-        }, announcement.priority === 'assertive' ? 500 : 1000);
+        setTimeout(
+          () => {
+            this.processAnnouncementQueue();
+          },
+          announcement.priority === 'assertive' ? 500 : 1000
+        );
       });
     }
   }
@@ -309,9 +310,7 @@ export class MusicAccessibilityService implements OnDestroy {
     if (typeof window === 'undefined') return false;
 
     // Check root font size (16px is default)
-    const rootFontSize = parseFloat(
-      getComputedStyle(document.documentElement).fontSize
-    );
+    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
     return rootFontSize > 16;
   }
 
@@ -434,4 +433,3 @@ export class MusicAccessibilityService implements OnDestroy {
     }
   }
 }
-

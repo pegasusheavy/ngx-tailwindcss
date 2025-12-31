@@ -107,7 +107,9 @@ export class NativeNotificationsService {
       }
     } else if ('setAppBadge' in navigator) {
       try {
-        await (navigator as Navigator & { setAppBadge: (count: number) => Promise<void> }).setAppBadge(count);
+        await (
+          navigator as Navigator & { setAppBadge: (count: number) => Promise<void> }
+        ).setAppBadge(count);
       } catch (error) {
         console.error('Failed to set web badge count:', error);
       }
@@ -136,7 +138,9 @@ export class NativeNotificationsService {
     }
   }
 
-  private async showElectronNotification(options: NativeNotificationOptions): Promise<string | null> {
+  private async showElectronNotification(
+    options: NativeNotificationOptions
+  ): Promise<string | null> {
     try {
       const { ipcRenderer } = await import('electron');
       const id = `notification-${Date.now()}`;

@@ -102,10 +102,7 @@ export class TwColumnsComponent {
   constructor(private readonly twClass: TwClassService) {}
 
   protected columnsClasses(): string {
-    const classes = [
-      COLUMNS_CLASSES[this.count.toString()],
-      GAP_CLASSES[this.gap],
-    ];
+    const classes = [COLUMNS_CLASSES[this.count.toString()], GAP_CLASSES[this.gap]];
 
     // Responsive columns
     if (this.countSm) {
@@ -153,4 +150,3 @@ export class TwColumnsComponent {
     };
   }
 }
-

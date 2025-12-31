@@ -146,7 +146,8 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
     } else if (this.frequencyData) {
       // Generate mock data for demo visualization
       for (let i = 0; i < this.frequencyData.length; i++) {
-        this.frequencyData[i] = Math.random() * 100 + Math.sin(Date.now() / 500 + i * 0.1) * 50 + 50;
+        this.frequencyData[i] =
+          Math.random() * 100 + Math.sin(Date.now() / 500 + i * 0.1) * 50 + 50;
       }
     }
 
@@ -248,8 +249,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
     }
 
     // Calculate average energy
-    const averageEnergy =
-      this.energyHistory.reduce((a, b) => a + b, 0) / this.energyHistory.length;
+    const averageEnergy = this.energyHistory.reduce((a, b) => a + b, 0) / this.energyHistory.length;
 
     // Calculate variance for dynamic threshold
     const variance =
@@ -274,7 +274,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
 
       // Keep only recent timestamps for BPM calculation
       const bpmWindow = 4000; // 4 seconds
-      this.beatTimestamps = this.beatTimestamps.filter((t) => now - t < bpmWindow);
+      this.beatTimestamps = this.beatTimestamps.filter(t => now - t < bpmWindow);
 
       // Update signals
       this.isBeatActive.set(true);
@@ -359,8 +359,14 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
         maxRadius * this.beatFlashIntensity
       );
 
-      gradient.addColorStop(0, this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity * 0.5));
-      gradient.addColorStop(0.5, this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity * 0.2));
+      gradient.addColorStop(
+        0,
+        this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity * 0.5)
+      );
+      gradient.addColorStop(
+        0.5,
+        this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity * 0.2)
+      );
       gradient.addColorStop(1, 'transparent');
 
       this.ctx.fillStyle = gradient;
@@ -491,10 +497,17 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
     }
 
     // Center circle
-    const avgValue = this.getAverageFrequency() / 255 * sensitivity;
+    const avgValue = (this.getAverageFrequency() / 255) * sensitivity;
     const centerRadius = radius * 0.5 + avgValue * 20;
 
-    const gradient = this.ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, centerRadius);
+    const gradient = this.ctx.createRadialGradient(
+      centerX,
+      centerY,
+      0,
+      centerX,
+      centerY,
+      centerRadius
+    );
     gradient.addColorStop(0, this.getColor(0.5, avgValue));
     gradient.addColorStop(1, 'transparent');
 
@@ -530,7 +543,12 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
       this.roundRect(x, y, barWidth, barHeight, 4);
 
       // Reflection
-      const reflectionGradient = this.ctx.createLinearGradient(x, height, x, height + barHeight * 0.3);
+      const reflectionGradient = this.ctx.createLinearGradient(
+        x,
+        height,
+        x,
+        height + barHeight * 0.3
+      );
       reflectionGradient.addColorStop(0, this.getColor(i / bars, 0.2));
       reflectionGradient.addColorStop(1, 'transparent');
       this.ctx.fillStyle = reflectionGradient;
@@ -727,4 +745,3 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
     this.ctx.fill();
   }
 }
-

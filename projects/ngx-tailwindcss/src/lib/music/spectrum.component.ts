@@ -16,7 +16,14 @@ import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
 export type SpectrumVariant = 'bars' | 'line' | 'gradient' | 'mirror';
-export type SpectrumColorScheme = 'classic' | 'fire' | 'ice' | 'neon' | 'mono' | 'light' | 'highContrast';
+export type SpectrumColorScheme =
+  | 'classic'
+  | 'fire'
+  | 'ice'
+  | 'neon'
+  | 'mono'
+  | 'light'
+  | 'highContrast';
 export type FrequencyScale = 'linear' | 'logarithmic';
 
 interface ColorStop {
@@ -117,7 +124,9 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   protected readonly effectiveWidth = computed(() => this.customWidth() ?? this.width());
   protected readonly effectiveHeight = computed(() => this.customHeight() ?? this.height());
   protected readonly effectiveBarGap = computed(() => this.customBarGap() ?? this.barGap());
-  protected readonly effectiveBarRadius = computed(() => this.customBarRadius() ?? this.barRadius());
+  protected readonly effectiveBarRadius = computed(
+    () => this.customBarRadius() ?? this.barRadius()
+  );
 
   // CSS variable style bindings for custom sizing
   protected readonly cssVarStyles = computed(() => {
@@ -125,7 +134,8 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     if (this.customWidth()) styles['--tw-music-spectrum-width'] = `${this.customWidth()}px`;
     if (this.customHeight()) styles['--tw-music-spectrum-height'] = `${this.customHeight()}px`;
     if (this.customBarGap()) styles['--tw-music-spectrum-bar-gap'] = `${this.customBarGap()}px`;
-    if (this.customBarRadius()) styles['--tw-music-spectrum-bar-radius'] = `${this.customBarRadius()}px`;
+    if (this.customBarRadius())
+      styles['--tw-music-spectrum-bar-radius'] = `${this.customBarRadius()}px`;
     return styles;
   });
 
@@ -151,11 +161,10 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
 
     if (scale === 'logarithmic') {
       // Logarithmic labels at common frequencies
-      return ['20', '50', '100', '200', '500', '1k', '2k', '5k', '10k', '20k']
-        .filter(label => {
-          const freq = this.labelToFreq(label);
-          return freq >= minFreq && freq <= maxFreq;
-        });
+      return ['20', '50', '100', '200', '500', '1k', '2k', '5k', '10k', '20k'].filter(label => {
+        const freq = this.labelToFreq(label);
+        return freq >= minFreq && freq <= maxFreq;
+      });
     } else {
       // Linear labels - evenly spaced
       const labels: string[] = [];
@@ -317,7 +326,9 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     this.ctx.fillRect(0, 0, w, h);
 
     // Get frequency data
-    const data = this.analyserNode() ? this.dataArray : new Uint8Array(this.frequencyData() as number[]);
+    const data = this.analyserNode()
+      ? this.dataArray
+      : new Uint8Array(this.frequencyData() as number[]);
     if (data.length === 0) return;
 
     switch (variant) {
@@ -602,4 +613,3 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     }
   }
 }
-

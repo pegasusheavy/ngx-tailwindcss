@@ -1,10 +1,5 @@
 <div [class]="containerClasses()" class="relative">
-  <canvas
-    #canvas
-    [attr.width]="width()"
-    [attr.height]="height()"
-    class="block"
-  ></canvas>
+  <canvas #canvas [attr.width]="width()" [attr.height]="height()" class="block"></canvas>
 
   <!-- Beat Indicator -->
   @if (enableBeatDetection() && showBeatIndicator()) {
@@ -28,7 +23,3 @@
     </div>
   }
 </div>
-
-
-
-

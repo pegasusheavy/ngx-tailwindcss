@@ -78,10 +78,11 @@ export class TwSwitchComponent implements ControlValueAccessor {
   private onTouchedFn: () => void = () => {};
 
   protected readonly containerClasses = computed(() => {
+    const isDisabled = this._disabled() || this.disabled();
     return this.twClass.merge(
       'inline-flex items-center gap-3 cursor-pointer',
       this.labelPosition() === 'left' ? 'flex-row-reverse' : '',
-      this._disabled() ? 'opacity-50 cursor-not-allowed' : '',
+      isDisabled ? 'opacity-50 cursor-not-allowed' : '',
       this.classOverride()
     );
   });
@@ -119,7 +120,7 @@ export class TwSwitchComponent implements ControlValueAccessor {
   });
 
   toggle(): void {
-    if (this._disabled()) return;
+    if (this._disabled() || this.disabled()) return;
 
     const newValue = !this.checked();
     this.checked.set(newValue);

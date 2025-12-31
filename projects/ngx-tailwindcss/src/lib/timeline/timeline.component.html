@@ -1,7 +1,7 @@
 <div [class]="containerClasses()">
   @for (
-    event of events;
-    track trackByFn(event);
+    event of events();
+    track trackByFn()(event);
     let first = $first;
     let last = $last;
     let i = $index

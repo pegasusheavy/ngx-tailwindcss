@@ -10,7 +10,15 @@ import { CommonModule } from '@angular/common';
 import { NoteDuration, NoteName } from './note.component';
 
 export type TablatureVariant = 'default' | 'minimal' | 'printed' | 'dark';
-export type TablatureTechnique = 'hammer' | 'pull' | 'slide' | 'bend' | 'vibrato' | 'tap' | 'harmonic' | 'mute';
+export type TablatureTechnique =
+  | 'hammer'
+  | 'pull'
+  | 'slide'
+  | 'bend'
+  | 'vibrato'
+  | 'tap'
+  | 'harmonic'
+  | 'mute';
 
 export interface TabNote {
   string: number; // 1-6 (1 = high E)
@@ -50,7 +58,20 @@ const BASS_TUNING: { note: NoteName; octave: number }[] = [
 
 // Note names in chromatic order
 const CHROMATIC_NOTES: NoteName[] = ['C', 'C', 'D', 'D', 'E', 'F', 'F', 'G', 'G', 'A', 'A', 'B'];
-const CHROMATIC_ACCIDENTALS: ('sharp' | null)[] = [null, 'sharp', null, 'sharp', null, null, 'sharp', null, 'sharp', null, 'sharp', null];
+const CHROMATIC_ACCIDENTALS: ('sharp' | null)[] = [
+  null,
+  'sharp',
+  null,
+  'sharp',
+  null,
+  null,
+  'sharp',
+  null,
+  'sharp',
+  null,
+  'sharp',
+  null,
+];
 
 // All notes for position calculation
 const NOTE_ORDER: NoteName[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -256,7 +277,10 @@ export class TwTablatureComponent {
   });
 
   // Calculate note from fret position
-  protected calculateNoteFromFret(stringNum: number, fret: number | string): { note: NoteName; octave: number; accidental: 'sharp' | null } | null {
+  protected calculateNoteFromFret(
+    stringNum: number,
+    fret: number | string
+  ): { note: NoteName; octave: number; accidental: 'sharp' | null } | null {
     if (typeof fret === 'string' || fret < 0) return null;
 
     const tuning = this.stringCount() === 4 ? BASS_TUNING : GUITAR_TUNING;
@@ -280,7 +304,13 @@ export class TwTablatureComponent {
 
   private getNoteIndex(note: NoteName): number {
     const indices: Record<NoteName, number> = {
-      'C': 0, 'D': 2, 'E': 4, 'F': 5, 'G': 7, 'A': 9, 'B': 11,
+      C: 0,
+      D: 2,
+      E: 4,
+      F: 5,
+      G: 7,
+      A: 9,
+      B: 11,
     };
     return indices[note];
   }
@@ -309,7 +339,7 @@ export class TwTablatureComponent {
 
     // Line 3 is at staffTop + spacing * 2
     // Each step moves half a spacing
-    return staffTop + spacing * 2 - (totalSteps * spacing / 2);
+    return staffTop + spacing * 2 - (totalSteps * spacing) / 2;
   }
 
   // Check if note needs ledger lines
@@ -361,7 +391,3 @@ export class TwTablatureComponent {
     return 0;
   }
 }
-
-
-
-

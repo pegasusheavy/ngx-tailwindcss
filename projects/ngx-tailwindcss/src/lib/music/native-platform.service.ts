@@ -239,7 +239,9 @@ export class NativePlatformService {
     // Check for Electron
     if (typeof window !== 'undefined' && 'electronAPI' in window) {
       this._platform.set('electron');
-      this.electronApi = (window as unknown as { electronAPI: Record<string, unknown> }).electronAPI;
+      this.electronApi = (
+        window as unknown as { electronAPI: Record<string, unknown> }
+      ).electronAPI;
       this._ready.set(true);
       return;
     }
@@ -309,7 +311,9 @@ export class NativePlatformService {
   }
 
   private async openFileElectron(options: OpenFileOptions): Promise<FileInfo | FileInfo[] | null> {
-    const showOpenDialog = this.electronApi!['showOpenDialog'] as (options: unknown) => Promise<{ canceled: boolean; filePaths: string[] }>;
+    const showOpenDialog = this.electronApi!['showOpenDialog'] as (
+      options: unknown
+    ) => Promise<{ canceled: boolean; filePaths: string[] }>;
 
     const result = await showOpenDialog({
       title: options.title,
@@ -331,7 +335,7 @@ export class NativePlatformService {
   }
 
   private openFileBrowser(options: OpenFileOptions): Promise<FileInfo | FileInfo[] | null> {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       const input = document.createElement('input');
       input.type = 'file';
       input.multiple = options.multiple ?? false;
@@ -384,7 +388,9 @@ export class NativePlatformService {
     }
 
     if (platform === 'electron' && this.electronApi) {
-      const showSaveDialog = this.electronApi['showSaveDialog'] as (options: unknown) => Promise<{ canceled: boolean; filePath?: string }>;
+      const showSaveDialog = this.electronApi['showSaveDialog'] as (
+        options: unknown
+      ) => Promise<{ canceled: boolean; filePath?: string }>;
 
       const result = await showSaveDialog({
         title: options.title,
@@ -451,7 +457,10 @@ export class NativePlatformService {
     }
 
     if (platform === 'electron' && this.electronApi) {
-      const writeFile = this.electronApi['writeFile'] as (path: string, contents: string) => Promise<void>;
+      const writeFile = this.electronApi['writeFile'] as (
+        path: string,
+        contents: string
+      ) => Promise<void>;
       return writeFile(path, contents);
     }
 
@@ -470,7 +479,10 @@ export class NativePlatformService {
     }
 
     if (platform === 'electron' && this.electronApi) {
-      const writeBinaryFile = this.electronApi['writeBinaryFile'] as (path: string, contents: ArrayBuffer | Uint8Array) => Promise<void>;
+      const writeBinaryFile = this.electronApi['writeBinaryFile'] as (
+        path: string,
+        contents: ArrayBuffer | Uint8Array
+      ) => Promise<void>;
       return writeBinaryFile(path, contents);
     }
 
@@ -642,7 +654,9 @@ export class NativePlatformService {
     }
 
     if (platform === 'electron' && this.electronApi) {
-      const writeClipboard = this.electronApi['writeClipboardText'] as (text: string) => Promise<void>;
+      const writeClipboard = this.electronApi['writeClipboardText'] as (
+        text: string
+      ) => Promise<void>;
       return writeClipboard(text);
     }
 
@@ -676,7 +690,9 @@ export class NativePlatformService {
     const platform = this._platform();
 
     if (platform === 'electron' && this.electronApi) {
-      const printToPdf = this.electronApi['printToPdf'] as (options: PrintOptions) => Promise<Uint8Array>;
+      const printToPdf = this.electronApi['printToPdf'] as (
+        options: PrintOptions
+      ) => Promise<Uint8Array>;
       return printToPdf(options);
     }
 
@@ -822,7 +838,9 @@ export class NativePlatformService {
     }
 
     if (platform === 'electron' && this.electronApi) {
-      const showConfirm = this.electronApi['showMessageBox'] as (options: unknown) => Promise<{ response: number }>;
+      const showConfirm = this.electronApi['showMessageBox'] as (
+        options: unknown
+      ) => Promise<{ response: number }>;
       const result = await showConfirm({
         message,
         title,
@@ -848,7 +866,10 @@ export class NativePlatformService {
     }
 
     if (platform === 'electron' && this.electronApi) {
-      const showError = this.electronApi['showErrorBox'] as (title: string, message: string) => Promise<void>;
+      const showError = this.electronApi['showErrorBox'] as (
+        title: string,
+        message: string
+      ) => Promise<void>;
       return showError(title, message);
     }
 
@@ -906,4 +927,3 @@ export class NativePlatformService {
     });
   }
 }
-

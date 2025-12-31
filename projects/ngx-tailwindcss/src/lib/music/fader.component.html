@@ -27,7 +27,7 @@
         class="absolute flex"
         [class]="{
           'flex-col-reverse h-full -left-7': orientation() === 'vertical',
-          'flex-row w-full -top-4': orientation() === 'horizontal'
+          'flex-row w-full -top-4': orientation() === 'horizontal',
         }"
       >
         @for (mark of scaleMarks(); track mark.value) {
@@ -37,7 +37,7 @@
             [style]="{
               bottom: orientation() === 'vertical' ? mark.position + '%' : 'auto',
               left: orientation() === 'horizontal' ? mark.position + '%' : 'auto',
-              transform: orientation() === 'vertical' ? 'translateY(50%)' : 'translateX(-50%)'
+              transform: orientation() === 'vertical' ? 'translateY(50%)' : 'translateX(-50%)',
             }"
           >
             <!-- Tick mark -->
@@ -45,7 +45,7 @@
               class="bg-current"
               [style]="{
                 width: orientation() === 'vertical' ? '4px' : '1px',
-                height: orientation() === 'vertical' ? '1px' : '4px'
+                height: orientation() === 'vertical' ? '1px' : '4px',
               }"
             ></div>
             <span
@@ -65,11 +65,11 @@
         class="absolute rounded-full overflow-hidden"
         [class]="{
           'w-1.5 -right-4': orientation() === 'vertical',
-          'h-1.5 -bottom-4': orientation() === 'horizontal'
+          'h-1.5 -bottom-4': orientation() === 'horizontal',
         }"
         [style]="{
           height: orientation() === 'vertical' ? dimensions().trackLength + 'px' : '6px',
-          width: orientation() === 'horizontal' ? dimensions().trackLength + 'px' : '6px'
+          width: orientation() === 'horizontal' ? dimensions().trackLength + 'px' : '6px',
         }"
       >
         <div class="absolute inset-0 bg-slate-900"></div>
@@ -77,12 +77,14 @@
         <!-- Peak meter fill -->
         <div
           class="absolute transition-all duration-75"
-          [style.background]="'linear-gradient(to top, rgb(34, 197, 94) 0%, rgb(34, 197, 94) 60%, rgb(234, 179, 8) 75%, rgb(239, 68, 68) 90%)'"
+          [style.background]="
+            'linear-gradient(to top, rgb(34, 197, 94) 0%, rgb(34, 197, 94) 60%, rgb(234, 179, 8) 75%, rgb(239, 68, 68) 90%)'
+          "
           [style]="{
             height: orientation() === 'vertical' ? peakLevel() + '%' : '100%',
             width: orientation() === 'horizontal' ? peakLevel() + '%' : '100%',
             bottom: orientation() === 'vertical' ? 0 : 'auto',
-            left: orientation() === 'horizontal' ? 0 : 'auto'
+            left: orientation() === 'horizontal' ? 0 : 'auto',
           }"
         ></div>
 
@@ -95,7 +97,7 @@
               height: orientation() === 'vertical' ? '2px' : '100%',
               width: orientation() === 'vertical' ? '100%' : '2px',
               bottom: orientation() === 'vertical' ? peakHoldPosition() + 'px' : 'auto',
-              left: orientation() === 'horizontal' ? peakHoldPosition() + 'px' : 'auto'
+              left: orientation() === 'horizontal' ? peakHoldPosition() + 'px' : 'auto',
             }"
           ></div>
         }
@@ -106,7 +108,7 @@
             class="absolute bg-red-600 animate-pulse"
             [class]="{
               'top-0 left-0 right-0 h-2': orientation() === 'vertical',
-              'top-0 bottom-0 right-0 w-2': orientation() === 'horizontal'
+              'top-0 bottom-0 right-0 w-2': orientation() === 'horizontal',
             }"
           ></div>
         }
@@ -114,11 +116,7 @@
     }
 
     <!-- Track -->
-    <div
-      #track
-      [class]="trackClasses().class"
-      [style]="trackClasses().style"
-    >
+    <div #track [class]="trackClasses().class" [style]="trackClasses().style">
       <!-- Fill -->
       <div
         class="absolute rounded-full transition-all"
@@ -128,7 +126,7 @@
           width: orientation() === 'vertical' ? '100%' : fillStyle().width,
           height: orientation() === 'vertical' ? fillStyle().height : '100%',
           bottom: orientation() === 'vertical' ? 0 : 'auto',
-          left: orientation() === 'horizontal' ? 0 : 'auto'
+          left: orientation() === 'horizontal' ? 0 : 'auto',
         }"
       ></div>
 
@@ -139,8 +137,10 @@
           [style]="{
             width: orientation() === 'vertical' ? '100%' : '2px',
             height: orientation() === 'vertical' ? '2px' : '100%',
-            bottom: orientation() === 'vertical' ? ((0 - min()) / (max() - min()) * 100) + '%' : 'auto',
-            left: orientation() === 'horizontal' ? ((0 - min()) / (max() - min()) * 100) + '%' : 'auto'
+            bottom:
+              orientation() === 'vertical' ? ((0 - min()) / (max() - min())) * 100 + '%' : 'auto',
+            left:
+              orientation() === 'horizontal' ? ((0 - min()) / (max() - min())) * 100 + '%' : 'auto',
           }"
         ></div>
       }
@@ -152,8 +152,12 @@
           [style]="{
             width: orientation() === 'vertical' ? '100%' : '1px',
             height: orientation() === 'vertical' ? '1px' : '100%',
-            bottom: orientation() === 'vertical' ? ((-10 - min()) / (max() - min()) * 100) + '%' : 'auto',
-            left: orientation() === 'horizontal' ? ((-10 - min()) / (max() - min()) * 100) + '%' : 'auto'
+            bottom:
+              orientation() === 'vertical' ? ((-10 - min()) / (max() - min())) * 100 + '%' : 'auto',
+            left:
+              orientation() === 'horizontal'
+                ? ((-10 - min()) / (max() - min())) * 100 + '%'
+                : 'auto',
           }"
         ></div>
       }
@@ -185,7 +189,7 @@
             height: orientation() === 'vertical' ? '2px' : '60%',
             top: '50%',
             left: '50%',
-            transform: 'translate(-50%, -50%)'
+            transform: 'translate(-50%, -50%)',
           }"
         ></div>
       }

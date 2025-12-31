@@ -22,11 +22,21 @@
         ></div>
         <span class="text-xs uppercase tracking-wider text-slate-500">
           @switch (state()) {
-            @case ('recording') { Recording }
-            @case ('playing') { Playing }
-            @case ('overdubbing') { Overdubbing }
-            @case ('stopped') { Stopped }
-            @default { Ready }
+            @case ('recording') {
+              Recording
+            }
+            @case ('playing') {
+              Playing
+            }
+            @case ('overdubbing') {
+              Overdubbing
+            }
+            @case ('stopped') {
+              Stopped
+            }
+            @default {
+              Ready
+            }
           }
         </span>
       </div>
@@ -130,7 +140,15 @@
         (click)="state() === 'overdubbing' ? stopRecording() : overdub()"
         [attr.aria-label]="state() === 'overdubbing' ? 'Stop Overdub' : 'Overdub'"
       >
-        <svg class="w-5 h-5" [class.text-white]="state() === 'overdubbing'" [class.text-amber-500]="state() !== 'overdubbing'" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+        <svg
+          class="w-5 h-5"
+          [class.text-white]="state() === 'overdubbing'"
+          [class.text-amber-500]="state() !== 'overdubbing'"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+        >
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
         </svg>
       </button>
@@ -145,8 +163,18 @@
         (click)="clear()"
         aria-label="Clear All"
       >
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+        <svg
+          class="w-5 h-5 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          ></path>
         </svg>
       </button>
     </div>
@@ -161,8 +189,18 @@
         [disabled]="disabled() || !canUndo()"
         (click)="undo()"
       >
-        <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path>
+        <svg
+          class="w-4 h-4 inline mr-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+          ></path>
         </svg>
         Undo
       </button>
@@ -173,8 +211,18 @@
         (click)="redo()"
       >
         Redo
-        <svg class="w-4 h-4 inline ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"></path>
+        <svg
+          class="w-4 h-4 inline ml-1"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          stroke-width="2"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M21 10H11a8 8 0 00-8 8v2m18-10l-6 6m6-6l-6-6"
+          ></path>
         </svg>
       </button>
     </div>
@@ -223,7 +271,13 @@
             class="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-500/20 transition-colors"
             (click)="deleteLayer(layer.id)"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              stroke-width="2"
+            >
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
@@ -245,7 +299,9 @@
         step="1"
         class="flex-1 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
       />
-      <span class="text-xs text-slate-400 w-8 text-right">{{ (masterVolume() * 100) | number:'1.0-0' }}%</span>
+      <span class="text-xs text-slate-400 w-8 text-right"
+        >{{ masterVolume() * 100 | number: '1.0-0' }}%</span
+      >
     </div>
   }
 
@@ -294,4 +350,3 @@
     </div>
   }
 </div>
-

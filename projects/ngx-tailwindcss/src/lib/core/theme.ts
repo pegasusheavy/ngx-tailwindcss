@@ -293,4 +293,3 @@ export const THEME_CSS_CLASSES = {
   borderLight: 'border-[var(--tw-color-border-light)]',
   borderFocus: 'border-[var(--tw-color-border-focus)]',
 } as const;
-

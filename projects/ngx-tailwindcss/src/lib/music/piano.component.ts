@@ -134,8 +134,10 @@ export class TwPianoComponent {
   // CSS variable style bindings for custom sizing
   protected readonly cssVarStyles = computed(() => {
     const styles: Record<string, string> = {};
-    if (this.customWhiteKeyWidth()) styles['--tw-music-piano-white-key-width'] = `${this.customWhiteKeyWidth()}px`;
-    if (this.customKeyHeight()) styles['--tw-music-piano-white-key-height'] = `${this.customKeyHeight()}px`;
+    if (this.customWhiteKeyWidth())
+      styles['--tw-music-piano-white-key-width'] = `${this.customWhiteKeyWidth()}px`;
+    if (this.customKeyHeight())
+      styles['--tw-music-piano-white-key-height'] = `${this.customKeyHeight()}px`;
     return styles;
   });
 
@@ -538,8 +540,18 @@ export class TwPianoComponent {
 
   private noteToMidi(note: string, octave: number): number {
     const noteMap: Record<string, number> = {
-      'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5,
-      'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11,
+      C: 0,
+      'C#': 1,
+      D: 2,
+      'D#': 3,
+      E: 4,
+      F: 5,
+      'F#': 6,
+      G: 7,
+      'G#': 8,
+      A: 9,
+      'A#': 10,
+      B: 11,
     };
     return (octave + 1) * 12 + noteMap[note];
   }
@@ -607,8 +619,20 @@ export class TwPianoComponent {
   }
 
   // Get all active notes with their velocities
-  getActiveNotes(): Array<{ note: string; octave: number; midi: number; velocity: number; source: string }> {
-    const result: Array<{ note: string; octave: number; midi: number; velocity: number; source: string }> = [];
+  getActiveNotes(): Array<{
+    note: string;
+    octave: number;
+    midi: number;
+    velocity: number;
+    source: string;
+  }> {
+    const result: Array<{
+      note: string;
+      octave: number;
+      midi: number;
+      velocity: number;
+      source: string;
+    }> = [];
     const allKeys = [...this.whiteKeys(), ...this.blackKeys()];
 
     for (const [keyId, activeNote] of this.activeKeys()) {
@@ -627,4 +651,3 @@ export class TwPianoComponent {
     return result;
   }
 }
-

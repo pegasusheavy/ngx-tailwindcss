@@ -149,7 +149,8 @@ export class TwAccordionComponent implements AfterContentInit {
     const variant = this._variant();
 
     const variantClasses: Record<string, string> = {
-      default: 'border border-slate-200 dark:border-slate-700 rounded-lg divide-y divide-slate-200 dark:divide-slate-700',
+      default:
+        'border border-slate-200 dark:border-slate-700 rounded-lg divide-y divide-slate-200 dark:divide-slate-700',
       bordered: '',
       separated: '',
     };

@@ -88,7 +88,9 @@ export class TwShortcutDisplayComponent {
   public readonly formattedKeys = computed(() => {
     let keysArray = this.keys();
     if (keysArray.length === 0 && this.shortcut()) {
-      keysArray = this.shortcut().split('+').map(k => k.trim());
+      keysArray = this.shortcut()
+        .split('+')
+        .map(k => k.trim());
     }
 
     const platform = this.detectedPlatform();

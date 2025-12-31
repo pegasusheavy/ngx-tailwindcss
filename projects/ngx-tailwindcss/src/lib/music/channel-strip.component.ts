@@ -140,7 +140,11 @@ export class TwChannelStripComponent implements ControlValueAccessor {
 
   protected readonly buttonSize = computed(() => {
     const size = this.size();
-    return size === 'sm' ? 'w-6 h-6 text-[10px]' : size === 'lg' ? 'w-10 h-10 text-sm' : 'w-8 h-8 text-xs';
+    return size === 'sm'
+      ? 'w-6 h-6 text-[10px]'
+      : size === 'lg'
+        ? 'w-10 h-10 text-sm'
+        : 'w-8 h-8 text-xs';
   });
 
   protected readonly dialSize = computed(() => {
@@ -257,4 +261,3 @@ export class TwChannelStripComponent implements ControlValueAccessor {
     // Disabled state is managed via input
   }
 }
-

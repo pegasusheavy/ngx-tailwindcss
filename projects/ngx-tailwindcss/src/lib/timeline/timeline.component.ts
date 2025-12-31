@@ -3,7 +3,7 @@ import {
   Component,
   computed,
   inject,
-  Input,
+  input,
   TemplateRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -51,22 +51,24 @@ export class TwTimelineComponent {
   private readonly twClass = inject(TwClassService);
 
   /** Events to display */
-  @Input() events: TimelineEvent[] = [];
+  readonly events = input<TimelineEvent[]>([]);
 
   /** Layout direction */
-  @Input() layout: TimelineLayout = 'vertical';
+  readonly layout = input<TimelineLayout>('vertical');
 
   /** Content alignment */
-  @Input() align: TimelineAlign = 'left';
+  readonly align = input<TimelineAlign>('left');
 
   /** Marker size */
-  @Input() markerSize: 'sm' | 'md' | 'lg' = 'md';
+  readonly markerSize = input<'sm' | 'md' | 'lg'>('md');
 
   /** Track by function for ngFor */
-  @Input() trackByFn: (event: TimelineEvent) => any = event => event.id ?? event;
+  readonly trackByFn = input<(event: TimelineEvent) => any>(
+    (event: TimelineEvent) => event.id ?? event
+  );
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   private readonly MARKER_SIZES = {
     sm: { dot: 'w-3 h-3', icon: 'w-8 h-8 text-sm' },
@@ -76,22 +78,22 @@ export class TwTimelineComponent {
 
   protected containerClasses = computed(() => {
     return this.twClass.merge(
-      this.layout === 'horizontal' ? 'flex' : 'flex flex-col',
-      this.classOverride
+      this.layout() === 'horizontal' ? 'flex' : 'flex flex-col',
+      this.classOverride()
     );
   });
 
   protected itemClasses(isFirst: boolean, isLast: boolean) {
     return this.twClass.merge(
       'relative flex gap-4',
-      this.layout === 'horizontal' ? 'flex-col flex-1' : '',
-      this.align === 'right' ? 'flex-row-reverse' : '',
+      this.layout() === 'horizontal' ? 'flex-col flex-1' : '',
+      this.align() === 'right' ? 'flex-row-reverse' : '',
       isLast ? '' : 'pb-8'
     );
   }
 
   protected connectorClasses() {
-    if (this.layout === 'horizontal') {
+    if (this.layout() === 'horizontal') {
       return this.twClass.merge(
         'absolute top-4 left-full w-full h-0.5 bg-slate-300',
         '-translate-x-1/2'
@@ -130,8 +132,8 @@ export class TwTimelineComponent {
 
     return this.twClass.merge(
       'absolute w-0.5 bg-slate-300 bottom-0',
-      topPosition[this.markerSize],
-      this.align === 'right' ? rightPosition[this.markerSize] : leftPosition[this.markerSize]
+      topPosition[this.markerSize()],
+      this.align() === 'right' ? rightPosition[this.markerSize()] : leftPosition[this.markerSize()]
     );
   }
 
@@ -140,7 +142,7 @@ export class TwTimelineComponent {
   }
 
   protected dotMarkerClasses(event: TimelineEvent) {
-    const size = this.MARKER_SIZES[this.markerSize].dot;
+    const size = this.MARKER_SIZES[this.markerSize()].dot;
     const color = event.color || 'primary';
     const colorClasses = TIMELINE_COLORS[color];
 
@@ -148,7 +150,7 @@ export class TwTimelineComponent {
   }
 
   protected iconMarkerClasses(event: TimelineEvent) {
-    const size = this.MARKER_SIZES[this.markerSize].icon;
+    const size = this.MARKER_SIZES[this.markerSize()].icon;
     const color = event.color || 'primary';
     const colorClasses = TIMELINE_COLORS[color];
 
@@ -160,7 +162,7 @@ export class TwTimelineComponent {
   }
 
   protected contentClasses() {
-    return this.twClass.merge('flex-1 min-w-0', this.align === 'right' ? 'text-right' : '');
+    return this.twClass.merge('flex-1 min-w-0', this.align() === 'right' ? 'text-right' : '');
   }
 
   protected dateClasses() {

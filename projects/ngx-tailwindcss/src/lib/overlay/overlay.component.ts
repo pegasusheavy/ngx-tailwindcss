@@ -1,10 +1,4 @@
-import {
-  Component,
-  EventEmitter,
-  HostListener,
-  Input,
-  Output,
-} from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -52,10 +46,7 @@ const OPACITY_CLASSES: Record<OverlayOpacity, string> = {
   imports: [CommonModule],
   template: `
     @if (visible) {
-      <div
-        [class]="overlayClasses()"
-        (click)="onOverlayClick($event)"
-        [@.disabled]="!animate">
+      <div [class]="overlayClasses()" (click)="onOverlayClick($event)" [@.disabled]="!animate">
         <div class="relative z-10" (click)="$event.stopPropagation()">
           <ng-content></ng-content>
         </div>
@@ -131,4 +122,3 @@ export class TwOverlayComponent {
     }
   }
 }
-

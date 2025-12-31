@@ -1,11 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
-import {
-  MidiService,
-  MidiMessage,
-  MidiCCMapping,
-  MIDI_CC,
-} from './midi.service';
+import { MidiService, MidiMessage, MidiCCMapping, MIDI_CC } from './midi.service';
 
 // Mock Web MIDI API
 const createMockMIDIAccess = () => {
@@ -153,7 +148,7 @@ describe('MidiService', () => {
       await service.requestAccess();
 
       const receivedMessages: MidiMessage[] = [];
-      service.onNoteOn((msg) => receivedMessages.push(msg));
+      service.onNoteOn(msg => receivedMessages.push(msg));
 
       // Note On: channel 0, note 60 (C4), velocity 100
       mockMidiAccess._mockInput.simulateMessage([0x90, 60, 100]);
@@ -169,7 +164,7 @@ describe('MidiService', () => {
       await service.requestAccess();
 
       const receivedMessages: MidiMessage[] = [];
-      service.onNoteOff((msg) => receivedMessages.push(msg));
+      service.onNoteOff(msg => receivedMessages.push(msg));
 
       // Note Off: channel 0, note 60, velocity 0
       mockMidiAccess._mockInput.simulateMessage([0x80, 60, 0]);
@@ -183,7 +178,7 @@ describe('MidiService', () => {
       await service.requestAccess();
 
       const noteOffMessages: MidiMessage[] = [];
-      service.onNoteOff((msg) => noteOffMessages.push(msg));
+      service.onNoteOff(msg => noteOffMessages.push(msg));
 
       // Note On with velocity 0 = Note Off
       mockMidiAccess._mockInput.simulateMessage([0x90, 60, 0]);
@@ -195,7 +190,7 @@ describe('MidiService', () => {
       await service.requestAccess();
 
       const receivedMessages: MidiMessage[] = [];
-      service.onMessage((msg) => {
+      service.onMessage(msg => {
         if (msg.type === 'controlChange') {
           receivedMessages.push(msg);
         }
@@ -280,7 +275,7 @@ describe('MidiService', () => {
       service.addCCMapping(testMapping);
 
       const ccEvents: { mappingId: string; scaledValue: number }[] = [];
-      service.onCCChange((event) => ccEvents.push(event));
+      service.onCCChange(event => ccEvents.push(event));
 
       // CC#7 = 64 (midpoint of 0-127)
       mockMidiAccess._mockInput.simulateMessage([0xb0, 7, 64]);
@@ -303,7 +298,7 @@ describe('MidiService', () => {
       service.addCCMapping(invertedMapping);
 
       const ccEvents: { scaledValue: number }[] = [];
-      service.onCCChange((event) => ccEvents.push(event));
+      service.onCCChange(event => ccEvents.push(event));
 
       // CC#7 = 0 (minimum) -> should map to maximum when inverted
       mockMidiAccess._mockInput.simulateMessage([0xb0, 7, 0]);
@@ -341,7 +336,7 @@ describe('MidiService', () => {
       await service.requestAccess();
 
       const learnCompleteEvents: MidiCCMapping[] = [];
-      service.onLearnComplete((mapping) => learnCompleteEvents.push(mapping));
+      service.onLearnComplete(mapping => learnCompleteEvents.push(mapping));
 
       service.startMidiLearn('test-control');
 
@@ -479,7 +474,7 @@ describe('MidiService', () => {
       await service.requestAccess();
 
       const messages: MidiMessage[] = [];
-      const unsubscribe = service.onNoteOn((msg) => messages.push(msg));
+      const unsubscribe = service.onNoteOn(msg => messages.push(msg));
 
       mockMidiAccess._mockInput.simulateMessage([0x90, 60, 100]);
       expect(messages.length).toBe(1);
@@ -503,7 +498,7 @@ describe('MidiService', () => {
       });
 
       const events: unknown[] = [];
-      const unsubscribe = service.onCCChange((event) => events.push(event));
+      const unsubscribe = service.onCCChange(event => events.push(event));
 
       mockMidiAccess._mockInput.simulateMessage([0xb0, 7, 100]);
       expect(events.length).toBe(1);
@@ -537,4 +532,3 @@ describe('MIDI_CC constants', () => {
     expect(MIDI_CC.ALL_NOTES_OFF).toBe(123);
   });
 });
-

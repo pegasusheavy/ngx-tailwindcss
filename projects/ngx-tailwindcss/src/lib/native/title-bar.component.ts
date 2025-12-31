@@ -81,11 +81,13 @@ import { TitleBarVariant, TitleBarPlatform } from './native.types';
       <ng-content></ng-content>
     </header>
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'tw-title-bar',
@@ -140,15 +142,13 @@ export class TwTitleBarComponent {
     const variantClasses: Record<TitleBarVariant, string> = {
       default: 'bg-gray-100 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700',
       transparent: 'bg-transparent',
-      unified: 'bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50',
+      unified:
+        'bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50',
     };
 
-    return [
-      base,
-      heightClass,
-      paddingClasses[platform] || 'px-2',
-      variantClasses[variant],
-    ].join(' ');
+    return [base, heightClass, paddingClasses[platform] || 'px-2', variantClasses[variant]].join(
+      ' '
+    );
   });
 
   protected onDoubleClick(): void {
@@ -156,4 +156,3 @@ export class TwTitleBarComponent {
     this.platformService.maximize();
   }
 }
-

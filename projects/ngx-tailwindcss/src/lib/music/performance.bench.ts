@@ -248,12 +248,7 @@ describe('Canvas Rendering Performance', () => {
         rms = Math.sqrt(rms / (endSample - startSample));
 
         const barHeight = rms * canvas.height;
-        ctx.fillRect(
-          i * (barWidth + barGap),
-          centerY - barHeight / 2,
-          barWidth,
-          barHeight
-        );
+        ctx.fillRect(i * (barWidth + barGap), centerY - barHeight / 2, barWidth, barHeight);
       }
     });
 
@@ -276,7 +271,11 @@ describe('Canvas Rendering Performance', () => {
       for (let x = 0; x < canvas.width; x++) {
         const startSample = x * samplesPerPixel;
         let max = 0;
-        for (let i = startSample; i < startSample + samplesPerPixel && i < waveformData.length; i++) {
+        for (
+          let i = startSample;
+          i < startSample + samplesPerPixel && i < waveformData.length;
+          i++
+        ) {
           if (Math.abs(waveformData[i]) > Math.abs(max)) max = waveformData[i];
         }
         ctx.lineTo(x, centerY - Math.abs(max) * (canvas.height / 2));
@@ -286,7 +285,11 @@ describe('Canvas Rendering Performance', () => {
       for (let x = canvas.width - 1; x >= 0; x--) {
         const startSample = x * samplesPerPixel;
         let max = 0;
-        for (let i = startSample; i < startSample + samplesPerPixel && i < waveformData.length; i++) {
+        for (
+          let i = startSample;
+          i < startSample + samplesPerPixel && i < waveformData.length;
+          i++
+        ) {
           if (Math.abs(waveformData[i]) > Math.abs(max)) max = waveformData[i];
         }
         ctx.lineTo(x, centerY + Math.abs(max) * (canvas.height / 2));
@@ -550,7 +553,11 @@ describe('Audio Data Processing Performance', () => {
       for (let i = 0; i < data.length; i++) {
         let sum = 0;
         let count = 0;
-        for (let j = Math.max(0, i - windowSize); j <= Math.min(data.length - 1, i + windowSize); j++) {
+        for (
+          let j = Math.max(0, i - windowSize);
+          j <= Math.min(data.length - 1, i + windowSize);
+          j++
+        ) {
           sum += data[j];
           count++;
         }
@@ -583,10 +590,7 @@ describe('Audio Data Processing Performance', () => {
       const peaks: Array<{ bin: number; magnitude: number }> = [];
 
       for (let i = 1; i < frequencyData.length - 1; i++) {
-        if (
-          frequencyData[i] > frequencyData[i - 1] &&
-          frequencyData[i] > frequencyData[i + 1]
-        ) {
+        if (frequencyData[i] > frequencyData[i - 1] && frequencyData[i] > frequencyData[i + 1]) {
           peaks.push({ bin: i, magnitude: frequencyData[i] });
         }
       }
@@ -627,7 +631,7 @@ describe('Audio Data Processing Performance', () => {
         { start: 200, end: 500 }, // Mids
       ];
 
-      const bandEnergies = bands.map((band) => {
+      const bandEnergies = bands.map(band => {
         let energy = 0;
         for (let i = band.start; i < band.end; i++) {
           energy += frequencyData[i] * frequencyData[i];
@@ -639,4 +643,3 @@ describe('Audio Data Processing Performance', () => {
     });
   });
 });
-

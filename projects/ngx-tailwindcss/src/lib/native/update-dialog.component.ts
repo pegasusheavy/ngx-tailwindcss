@@ -24,13 +24,27 @@ export interface UpdateDialogInfo {
         ></div>
 
         <!-- Dialog -->
-        <div class="relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl shadow-2xl overflow-hidden">
+        <div
+          class="relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-xl shadow-2xl overflow-hidden"
+        >
           <!-- Header -->
           <div class="px-6 pt-6 pb-4 text-center">
             <!-- Update Icon -->
-            <div class="mx-auto w-16 h-16 mb-4 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-              <svg class="w-8 h-8 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+            <div
+              class="mx-auto w-16 h-16 mb-4 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center"
+            >
+              <svg
+                class="w-8 h-8 text-blue-600 dark:text-blue-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"
+                />
               </svg>
             </div>
 
@@ -51,8 +65,18 @@ export interface UpdateDialogInfo {
                   v{{ updateInfo()?.currentVersion }}
                 </div>
               </div>
-              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              <svg
+                class="w-5 h-5 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7l5 5m0 0l-5 5m5-5H6"
+                />
               </svg>
               <div class="text-center">
                 <div class="text-slate-500">New</div>
@@ -72,8 +96,12 @@ export interface UpdateDialogInfo {
           <!-- Changelog -->
           @if (updateInfo()?.changelog) {
             <div class="px-6 py-4 max-h-48 overflow-y-auto">
-              <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-2">What's New</h3>
-              <div class="text-sm text-slate-600 dark:text-slate-400 prose dark:prose-invert prose-sm max-w-none">
+              <h3 class="text-sm font-medium text-slate-900 dark:text-slate-100 mb-2">
+                What's New
+              </h3>
+              <div
+                class="text-sm text-slate-600 dark:text-slate-400 prose dark:prose-invert prose-sm max-w-none"
+              >
                 {{ updateInfo()?.changelog }}
               </div>
             </div>
@@ -82,7 +110,9 @@ export interface UpdateDialogInfo {
           <!-- Download Progress -->
           @if (isDownloading()) {
             <div class="px-6 py-4">
-              <div class="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 mb-2">
+              <div
+                class="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400 mb-2"
+              >
                 <span>Downloading update...</span>
                 <span>{{ downloadProgress() }}%</span>
               </div>
@@ -99,7 +129,9 @@ export interface UpdateDialogInfo {
           @if (!isDownloading() && showAutoUpdate()) {
             <div class="px-6 py-3 border-t border-slate-200 dark:border-slate-700">
               <label class="flex items-center justify-between cursor-pointer">
-                <span class="text-sm text-slate-700 dark:text-slate-300">Automatically install updates</span>
+                <span class="text-sm text-slate-700 dark:text-slate-300"
+                  >Automatically install updates</span
+                >
                 <button
                   (click)="toggleAutoUpdate()"
                   [class.bg-blue-600]="autoUpdate()"
@@ -118,7 +150,9 @@ export interface UpdateDialogInfo {
           }
 
           <!-- Actions -->
-          <div class="flex justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700">
+          <div
+            class="flex justify-end gap-3 px-6 py-4 bg-slate-50 dark:bg-slate-900/50 border-t border-slate-200 dark:border-slate-700"
+          >
             @if (!isDownloading()) {
               @if (!updateInfo()?.mandatory) {
                 <button
@@ -217,4 +251,3 @@ export class TwUpdateDialogComponent {
     this.downloadProgress.set(Math.min(100, Math.max(0, progress)));
   }
 }
-

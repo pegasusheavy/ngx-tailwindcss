@@ -188,7 +188,7 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
     }
 
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach((track) => track.stop());
+      this.mediaStream.getTracks().forEach(track => track.stop());
       this.mediaStream = null;
     }
 
@@ -323,4 +323,3 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
     return this.referenceFrequency() * Math.pow(2, semitonesFromA4 / 12);
   }
 }
-

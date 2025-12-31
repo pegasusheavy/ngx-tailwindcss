@@ -34,9 +34,13 @@ import { TwClassService } from '../core/tw-class.service';
     >
       <!-- Header -->
       @if (showHeader()) {
-        <div class="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+        <div
+          class="flex items-center justify-between px-3 py-2 border-b border-gray-200 dark:border-gray-700"
+        >
           @if (!collapsed()) {
-            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{ headerTitle() }}</span>
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">{{
+              headerTitle()
+            }}</span>
           }
           @if (collapsible()) {
             <button
@@ -52,7 +56,12 @@ import { TwClassService } from '../core/tw-class.service';
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+                />
               </svg>
             </button>
           }
@@ -63,8 +72,13 @@ import { TwClassService } from '../core/tw-class.service';
       <nav class="flex-1 overflow-y-auto py-2">
         <ul class="space-y-0.5" role="tree">
           @for (item of items(); track item.id) {
-            <li role="treeitem" [attr.aria-expanded]="item.children?.length ? item.expanded : undefined">
-              <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: item, depth: 0 }"></ng-container>
+            <li
+              role="treeitem"
+              [attr.aria-expanded]="item.children?.length ? item.expanded : undefined"
+            >
+              <ng-container
+                *ngTemplateOutlet="itemTemplate; context: { $implicit: item, depth: 0 }"
+              ></ng-container>
             </li>
           }
         </ul>
@@ -124,7 +138,9 @@ import { TwClassService } from '../core/tw-class.service';
 
           <!-- Badge -->
           @if (item.badge && !collapsed()) {
-            <span class="px-1.5 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
+            <span
+              class="px-1.5 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
+            >
               {{ item.badge }}
             </span>
           }
@@ -138,7 +154,12 @@ import { TwClassService } from '../core/tw-class.service';
               stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
             </svg>
           }
         </button>
@@ -148,7 +169,9 @@ import { TwClassService } from '../core/tw-class.service';
           <ul class="mt-0.5" role="group">
             @for (child of item.children; track child.id) {
               <li role="treeitem">
-                <ng-container *ngTemplateOutlet="itemTemplate; context: { $implicit: child, depth: depth + 1 }"></ng-container>
+                <ng-container
+                  *ngTemplateOutlet="itemTemplate; context: { $implicit: child, depth: depth + 1 }"
+                ></ng-container>
               </li>
             }
           </ul>
@@ -156,11 +179,13 @@ import { TwClassService } from '../core/tw-class.service';
       </div>
     </ng-template>
   `,
-  styles: [`
-    :host {
-      display: block;
-    }
-  `],
+  styles: [
+    `
+      :host {
+        display: block;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'tw-sidebar-nav',
@@ -236,4 +261,3 @@ export class TwSidebarNavComponent {
     }
   }
 }
-
