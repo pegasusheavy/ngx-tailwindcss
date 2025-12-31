@@ -1,0 +1,61 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+.angular/
+.ng-cache/
+coverage/
+
+# IDE and editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Lock files (large and auto-generated)
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Test artifacts
+.vitest/
+__snapshots__/
+
+# Generated files
+*.tsbuildinfo
+*.ngfactory.ts
+*.ngsummary.json
+*.metadata.json
+
+# Documentation build
+docs/.angular/
+docs/dist/
+docs/node_modules/
+
+# Screenshots (for PR/debugging)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+.temp/
+

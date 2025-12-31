@@ -6,11 +6,11 @@
       <!-- Logo -->
       <a routerLink="/" class="flex items-center gap-2.5 text-slate-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
         <img src="/logo.svg" alt="ngx-tailwindcss logo" class="h-8 w-8" />
-              <span class="font-bold text-lg bg-gradient-to-r from-cyan-500 via-blue-500 to-violet-500 bg-clip-text text-transparent px-1 leading-none mr-3">ngx-tailwindcss</span>
+        <span class="font-bold text-lg bg-gradient-to-r from-cyan-500 via-blue-500 to-violet-500 bg-clip-text text-transparent px-1 leading-none mr-3">ngx-tailwindcss</span>
       </a>
 
       <!-- Desktop Navigation -->
-             <nav class="hidden md:flex items-center gap-2 md:gap-3 ml-4">
+      <nav class="hidden md:flex items-center gap-2 md:gap-3 ml-4">
         @for (item of mainNavItems; track item.path) {
           <a
             [routerLink]="item.path"
@@ -28,13 +28,13 @@
           <button twDropdownTrigger class="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
             <fa-icon [icon]="icons.chart" class="text-sm"></fa-icon>
             Examples
-            <fa-icon [icon]="icons.dropdown" class="text-xs ml-1"></fa-icon>
+            <fa-icon [icon]="icons.caretDown" class="text-xs"></fa-icon>
           </button>
           <tw-dropdown-menu>
             @for (example of exampleItems; track example.path) {
               <a twDropdownItem [routerLink]="example.path" class="flex items-center gap-3">
                 @if (example.icon) {
-                  <fa-icon [icon]="example.icon" class="text-slate-400 dark:text-slate-400 w-4"></fa-icon>
+                  <fa-icon [icon]="example.icon" class="text-sm text-slate-400"></fa-icon>
                 }
                 <span>{{ example.label }}</span>
               </a>
@@ -55,7 +55,7 @@
             'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700': themeService.theme() === 'system'
           }"
           [title]="'Click to switch theme'">
-          <fa-icon [icon]="getThemeIcon()" class="text-base"></fa-icon>
+          <fa-icon [icon]="getThemeIcon()"></fa-icon>
           <span class="hidden sm:inline">{{ getThemeLabel() }}</span>
         </button>
 
@@ -75,9 +75,9 @@
           class="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           (click)="toggleMobileMenu()">
           @if (!mobileMenuOpen()) {
-            <fa-icon [icon]="icons.menu" class="text-xl"></fa-icon>
+            <fa-icon [icon]="icons.bars" class="text-lg"></fa-icon>
           } @else {
-            <fa-icon [icon]="icons.close" class="text-xl"></fa-icon>
+            <fa-icon [icon]="icons.xmark" class="text-lg"></fa-icon>
           }
         </button>
       </div>
@@ -98,21 +98,21 @@
               (click)="themeService.setTheme('light')"
               class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
               [ngClass]="themeService.theme() === 'light' ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'">
-              <fa-icon [icon]="icons.sun"></fa-icon>
+              <fa-icon [icon]="icons.sun" class="text-sm"></fa-icon>
               Light
             </button>
             <button
               (click)="themeService.setTheme('dark')"
               class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
               [ngClass]="themeService.theme() === 'dark' ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'">
-              <fa-icon [icon]="icons.moon"></fa-icon>
+              <fa-icon [icon]="icons.moon" class="text-sm"></fa-icon>
               Dark
             </button>
             <button
               (click)="themeService.setTheme('system')"
               class="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all"
               [ngClass]="themeService.theme() === 'system' ? 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300' : 'text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800'">
-              <fa-icon [icon]="icons.system"></fa-icon>
+              <fa-icon [icon]="icons.system" class="text-sm"></fa-icon>
               Auto
             </button>
           </div>
@@ -233,7 +233,7 @@
                   routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-l-2 border-blue-600 dark:border-blue-400"
                   class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-l-2 border-transparent">
                   @if (item.icon) {
-                    <fa-icon [icon]="item.icon" class="text-xs w-4"></fa-icon>
+                    <fa-icon [icon]="item.icon" class="text-xs"></fa-icon>
                   }
                   {{ item.label }}
                 </a>
@@ -250,21 +250,21 @@
               routerLink="/directives"
               routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-l-2 border-blue-600 dark:border-blue-400"
               class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-l-2 border-transparent">
-              <fa-icon [icon]="icons.wand" class="text-xs w-4"></fa-icon>
+              <fa-icon [icon]="icons.wand" class="text-xs"></fa-icon>
               Directives
             </a>
             <a
               routerLink="/accessibility"
               routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-l-2 border-blue-600 dark:border-blue-400"
               class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-l-2 border-transparent">
-              <fa-icon [icon]="icons.accessibility" class="text-xs w-4"></fa-icon>
+              <fa-icon [icon]="icons.accessibility" class="text-xs"></fa-icon>
               Accessibility (ARIA)
             </a>
             <a
               routerLink="/i18n"
               routerLinkActive="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-l-2 border-blue-600 dark:border-blue-400"
               class="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-l-2 border-transparent">
-              <fa-icon [icon]="icons.globe" class="text-xs w-4"></fa-icon>
+              <fa-icon [icon]="icons.globe" class="text-xs"></fa-icon>
               Internationalization
             </a>
           </div>
@@ -296,7 +296,7 @@
             target="_blank"
             rel="noopener noreferrer"
             class="flex items-center gap-1 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">
-            <fa-icon [icon]="icons.github"></fa-icon>
+            <fa-icon [icon]="icons.github" class="text-sm"></fa-icon>
             GitHub
           </a>
         </div>

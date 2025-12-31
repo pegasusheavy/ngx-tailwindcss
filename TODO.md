@@ -1,424 +1,515 @@
-# Music Components TODO
+# Native App UI Components TODO
 
-A comprehensive roadmap for adding music and audio-related UI components to ngx-tailwindcss.
-
----
-
-## ✅ Completed Components
-
-### Phase 1 - Core Components (COMPLETE)
-
-| Component | Status | Variants | Notes |
-|-----------|--------|----------|-------|
-| Volume Dial | ✅ Done | modern, vintage, minimal, led | Sizes: sm, md, lg, xl. ControlValueAccessor support |
-| VU Meter | ✅ Done | led, gradient, solid, retro | Stereo support, peak hold, clip indicators |
-| Waveform Display | ✅ Done | bars, line, mirror, gradient | 5 color schemes, seekable, region selection |
-| Transport Controls | ✅ Done | modern, classic, minimal, compact | Play, pause, stop, record, skip, loop, shuffle |
-| Progress Scrubber | ✅ Done | default, thin, thick, youtube, spotify | Buffered indicator, hover preview, keyboard nav |
-
-### Phase 2 - Visualization (COMPLETE)
-
-| Component | Status | Variants | Notes |
-|-----------|--------|----------|-------|
-| Spectrum Analyzer | ✅ Done | bars, line, gradient, mirror | 5 color schemes, peak hold, Web Audio support |
-| Piano Keyboard | ✅ Done | classic, modern, minimal | Sizes: sm, md, lg. MIDI note events |
-| Time Display | ✅ Done | default, led, digital, flip | Time, BPM, bars, samples modes |
-| Parametric EQ | ✅ Done | default, dark, vintage, neon | Draggable nodes, multi-band, spectrum overlay |
-
-### Phase 3 - Advanced (COMPLETE)
-
-| Component | Status | Variants | Notes |
-|-----------|--------|----------|-------|
-| Channel Strip | ✅ Done | default, compact, minimal, vintage | Volume, pan, mute, solo, record arm |
-| Mixer Console | ✅ Done | default, compact, studio, vintage | Multi-channel, scrollable, master bus |
-| Audio Visualizer | ✅ Done | circular, bars, wave, particles, rings | 6 color schemes, reactive |
-| Metronome | ✅ Done | default, minimal, pendulum, digital | Tap tempo, time signatures, subdivisions |
-
-### Phase 4 - Music Notation (COMPLETE)
-
-| Component | Status | Variants | Notes |
-|-----------|--------|----------|-------|
-| Staff | ✅ Done | default, printed, handwritten, minimal | Grand staff, all clefs, key/time signatures |
-| Note | ✅ Done | - | All durations, accidentals, stems, ties |
-| Chord Diagram | ✅ Done | default, minimal, detailed, dark | Guitar/bass, finger numbers, barre chords |
-| Tablature | ✅ Done | default, minimal, printed, dark | Guitar/bass, techniques (bend, slide, etc.) |
-| Sheet Music Display | ✅ Done | default, printed, handwritten, minimal | Scroll, pages, single layouts; playback position |
-| Lead Sheet | ✅ Done | default, minimal, printed, dark | Nashville numbers, Roman numerals, sections |
-
-### Phase 5 - Utilities
-
-| Component | Status | Variants | Notes |
-|-----------|--------|----------|-------|
-| Tuner | ✅ Done | default, minimal, analog, strobe | Chromatic + instrument modes, pitch detection |
+A comprehensive roadmap for adding desktop/native app UI components to ngx-tailwindcss, optimized for Tauri, Electron, and native-feeling web apps.
 
 ---
 
-## 🎚️ Volume & Level Controls
+## 🎯 Overview
 
-### Volume Dial (Rotary Knob) ✅
-- [x] Basic rotary knob with drag-to-rotate interaction
-- [x] Configurable min/max values and step increments
-- [x] Visual indicators (tick marks, value labels)
-- [x] Multiple skin variants (modern, vintage, minimal, led)
-- [x] Keyboard accessibility (arrow keys, home/end)
-- [x] Touch support
-- [x] Optional center detent for 0dB/50%
-- [x] LED ring indicator option
-- [x] Disabled and readonly states
+This module focuses on UI components commonly needed in desktop applications built with Tauri, Electron, or as Progressive Web Apps (PWAs) that want a native feel.
 
-### Volume Slider (Vertical Fader) ✅
-- [x] Vertical slider with fader cap styling
-- [x] Channel strip appearance (mixer-style) - variant="channel"
-- [x] dB scale markings (-∞ to +12dB) - showScale input
-- [x] Peak hold indicator - via VU meter integration
-- [x] Configurable height and width - customWidth, customHeight inputs
-- [x] Touch-friendly grab handle - responsive cap sizing
-- [x] Snap-to-zero option - snapToZero, snapThreshold inputs
-
-### Volume Bars (VU Meter) ✅
-- [x] Vertical bar meter (single or stereo)
-- [x] Horizontal bar meter variant
-- [x] Segmented LED-style display
-- [x] Gradient coloring (green → yellow → red)
-- [x] Peak hold with decay
-- [x] Configurable segment count
-- [x] RMS and Peak modes (peak, rms, both)
-- [x] Clip indicator with reset
-- [x] Retro variant
+**Target Platforms:**
+- Tauri (Rust-based, lightweight)
+- Electron (Node.js-based)
+- Native-feeling web apps / PWAs
+- Cross-platform consistency with platform-specific variants
 
 ---
 
-## 🌊 Waveform & Visualization
+## 🪟 Phase 1 - Window & Chrome
 
-### Waveform Display ✅
-- [x] Static waveform visualization from audio buffer
-- [x] Real-time waveform (oscilloscope mode) - mode='realtime' with analyserNode
-- [x] Playback progress overlay
-- [x] Click-to-seek functionality
-- [x] Zoom and pan controls - zoomable, pinchZoom, mouse wheel zoom
-- [x] Region selection for looping
-- [x] Multiple color themes (blue, green, purple, orange, mono)
-- [x] Mirrored/centered waveform option
-- [x] Mini waveform variant for compact displays - size='mini'|'sm'|'md'|'lg'|'auto'
+### Title Bar
+- [ ] Custom draggable title bar (replaces native)
+- [ ] App icon and title display
+- [ ] Window control buttons (minimize, maximize, close)
+- [ ] Platform variants (macOS traffic lights, Windows, Linux)
+- [ ] Double-click to maximize
+- [ ] Integration with native window APIs
+- [ ] Transparent/blurred variants
+- [ ] Tab integration for tabbed windows
 
-### Spectrum Analyzer ✅
-- [x] FFT-based frequency spectrum display
-- [x] Bar graph style (classic equalizer look)
-- [x] Line/curve style (smooth spectrum)
-- [x] Configurable band count (8, 16, 32, 64, etc.)
-- [x] Linear and logarithmic frequency scaling - frequencyScale='linear'|'logarithmic'
-- [x] Peak hold indicators
-- [x] Gradient and solid color options
-- [x] Mirror variant
+### Window Controls
+- [ ] macOS traffic light buttons (close, minimize, zoom)
+- [ ] Windows-style buttons (minimize, maximize, close)
+- [ ] Linux/GTK style buttons
+- [ ] Hover states and animations
+- [ ] Disabled states when appropriate
+- [ ] Full-screen toggle button
 
-### Audio Visualizer ✅
-- [x] Circular visualizer (reactive to audio)
-- [x] Particle-based visualizations
-- [x] Bars visualizer variant
-- [x] Customizable color palettes (rainbow, fire, ocean, neon, mono)
-- [x] Beat detection highlights
-- [x] Multiple visualization presets (5 variants)
+### Menu Bar
+- [ ] Native-style menu bar
+- [ ] Dropdown menus with keyboard navigation
+- [ ] Keyboard shortcuts display
+- [ ] Menu item icons
+- [ ] Checkbox and radio menu items
+- [ ] Submenu support
+- [ ] Platform-specific styling (macOS in title bar, Windows below)
+- [ ] Hamburger menu fallback for mobile/web
 
----
-
-## 🎛️ Mixer & Channel Controls
-
-### Channel Strip ✅
-- [x] Complete channel strip component
-- [x] Volume dial with meter
-- [x] Pan knob
-- [x] Mute/Solo/Record buttons
-- [x] Aux send knobs - showAuxSends, auxSendCount, auxSendLabels inputs
-- [x] Channel label/rename
-- [x] Input gain control - showInputGain input (-20 to +20 dB)
-- [x] Signal present indicator - showSignalIndicator, signalThreshold inputs
-
-### Mixer Console ✅
-- [x] Multi-channel mixer layout
-- [x] Master bus section
-- [x] Horizontal scrolling for many channels
-- [x] Channel grouping/linking - groups input with linkVolume/linkMute/linkSolo options
-- [x] Responsive breakpoints - responsive input with xs/sm/md/lg/xl breakpoints
-- [x] Collapsible channel sections - sections input with toggleable collapse
-
-### Pan Control ✅
-- [x] Horizontal pan slider - tw-pan-control variant="slider"
-- [x] Pan knob (rotary) - tw-pan-control variant="knob"
-- [x] Center detent - centerDetent input with configurable detentRange
-- [x] L/R value display - showValue, showLabels inputs
-- [x] Stereo width variant - tw-pan-control variant="stereo-width" (0-100%)
+### Context Menu
+- [ ] Right-click context menus
+- [ ] Keyboard activation (Menu key, Shift+F10)
+- [ ] Nested submenus
+- [ ] Separators and section headers
+- [ ] Icons and keyboard shortcuts
+- [ ] Disabled items
+- [ ] Checkable items
+- [ ] Dynamic menu building
 
 ---
 
-## 🎹 Transport & Playback
+## 📁 Phase 2 - Navigation & File Management
 
-### Transport Controls ✅
-- [x] Play/Pause button with state
-- [x] Stop button
-- [x] Record button (with arm state)
-- [x] Rewind/Fast-forward buttons
-- [x] Skip previous/next buttons
-- [x] Loop toggle button
-- [x] Shuffle toggle button
-- [x] Configurable button arrangement
-- [x] Compact and expanded modes (4 variants)
+### Sidebar / Navigation Panel
+- [ ] Collapsible sidebar with smooth animation
+- [ ] Tree structure for hierarchical navigation
+- [ ] Icons with labels
+- [ ] Active/selected state indicators
+- [ ] Drag-to-resize width
+- [ ] Mini/collapsed mode (icons only)
+- [ ] Section headers and dividers
+- [ ] Badge indicators (counts, status)
+- [ ] Favorites/pinned items section
+- [ ] Recent items section
 
-### Progress Bar / Scrubber ✅
-- [x] Audio timeline with current position
-- [x] Buffered range indicator
-- [x] Hover preview time
-- [x] Chapter/cue markers support
-- [x] Thumbnail preview on hover
-- [x] Touch-friendly scrubbing
-- [x] Time display (current / total)
+### File Tree / Explorer
+- [ ] Hierarchical file/folder display
+- [ ] Expand/collapse folders
+- [ ] File type icons
+- [ ] Single and multi-selection
+- [ ] Drag and drop reordering
+- [ ] Drag and drop to move files
+- [ ] Rename inline
+- [ ] Context menu integration
+- [ ] Lazy loading for large directories
+- [ ] Search/filter within tree
+- [ ] File size and date columns (optional)
 
-### Time Display ✅
-- [x] Digital time counter (MM:SS, HH:MM:SS)
-- [x] Samples/Bars/Beats display mode
-- [x] BPM display
-- [x] Remaining time toggle
-- [x] LED segment display style
-- [x] Multiple variants (default, led, digital, flip)
+### Breadcrumb Navigation
+- [ ] Path-based breadcrumb trail
+- [ ] Click to navigate to parent
+- [ ] Dropdown for sibling navigation
+- [ ] Editable path mode
+- [ ] Copy path action
+- [ ] Home/root shortcut
+- [ ] Overflow handling with dropdown
 
----
-
-## 🎼 Musical Elements
-
-### Piano Roll / Keyboard ✅
-- [x] Interactive piano keyboard
-- [x] Configurable octave range
-- [x] Highlight active notes
-- [x] Velocity-sensitive display - velocitySensitive, velocityColorMode (brightness/hue/saturation)
-- [x] MIDI input visualization - enableMidi, midiChannel, auto-connects to MIDI devices
-- [x] Compact and full-size variants (3 sizes)
-- [x] Touch/click to play notes
-- [x] MIDI note events output
-
-### Metronome ✅
-- [x] Visual metronome with beat indicator
-- [x] BPM control (tap tempo)
-- [x] Time signature selector (7 signatures)
-- [x] Accent pattern configuration - 4 levels (none/soft/medium/strong), presets per time signature
-- [x] Subdivision options
-- [x] Multiple variants (default, minimal, pendulum, digital)
-
-### Chord Diagram ✅
-- [x] Guitar chord diagrams
-- [x] Piano chord diagrams - tw-piano-chord with 20+ preset chords
-- [x] Finger position indicators
-- [x] Chord name display
-- [x] Barre chord support
-- [x] Multiple variants (default, minimal, detailed, dark, colorful)
-
-### Note Display ✅
-- [x] Current note indicator
-- [x] Note name with octave
-- [x] Frequency display (Hz)
-- [x] Cent deviation (for tuners)
-- [x] Note history trail
+### Tab Bar
+- [ ] Document/file tabs
+- [ ] Closable tabs with confirm on unsaved
+- [ ] Drag to reorder tabs
+- [ ] Tab overflow handling (scroll or dropdown)
+- [ ] Tab preview on hover
+- [ ] Split tab groups
+- [ ] Pin tabs
+- [ ] Tab context menu (close others, close to right)
+- [ ] Unsaved indicator (dot)
+- [ ] Modified indicator
 
 ---
 
-## 🎵 Music Sheet & Notation
+## 🔍 Phase 3 - Search & Commands
 
-### Staff / Stave ✅
-- [x] Single staff (treble, bass, alto, tenor clefs)
-- [x] Grand staff (piano - treble + bass)
-- [x] Configurable number of measures
-- [x] Bar lines and double bar lines
-- [x] Time signature display
-- [x] Key signature display
-- [x] Ledger lines for notes outside staff
-- [x] Multiple variants (default, printed, handwritten, minimal)
+### Command Palette
+- [ ] Spotlight/VS Code style command palette (Cmd+K / Ctrl+K)
+- [ ] Fuzzy search for commands
+- [ ] Recent commands section
+- [ ] Command categories/groups
+- [ ] Keyboard shortcut display
+- [ ] File search mode
+- [ ] Symbol search mode
+- [ ] Settings search mode
+- [ ] Plugin/extension commands
+- [ ] Custom command registration API
 
-### Notes & Rests ✅
-- [x] Whole, half, quarter, eighth, sixteenth notes
-- [x] Dotted notes (single and double dot)
-- [x] Triplets and other tuplets
-- [x] Tied notes across beats/measures
-- [x] Corresponding rest symbols
-- [x] Note stem direction (auto or manual)
-- [x] Beaming for grouped notes
-- [x] Accidentals (sharp, flat, natural, double sharp/flat)
+### Search Bar
+- [ ] Global search input
+- [ ] Search suggestions/autocomplete
+- [ ] Search history
+- [ ] Search filters (type, date, etc.)
+- [ ] Clear search button
+- [ ] Loading state
+- [ ] No results state
+- [ ] Advanced search toggle
 
-### Note Input ✅
-- [x] Click-to-place notes on staff
-- [x] Drag notes to reposition
-- [x] Keyboard shortcuts for note entry
-- [x] MIDI input for real-time notation
-- [x] Voice/part separation (up to 4 voices)
-- [x] Copy/paste measures
-
-### Musical Symbols ✅
-- [x] Dynamics (pp, p, mp, mf, f, ff, sfz, etc.)
-- [x] Articulations (staccato, accent, tenuto, fermata)
-- [x] Slurs and phrase marks
-- [x] Crescendo/decrescendo hairpins
-- [x] Repeat signs (start, end, D.C., D.S., Coda)
-- [x] Tempo markings
-- [x] Ornaments (trill, mordent, turn, grace notes)
-- [x] Pedal markings (piano)
-
-### Tablature (TAB) ✅
-- [x] Guitar tablature (6-string default)
-- [x] Bass tablature (4, 5, 6 string)
-- [x] Configurable string count and tuning
-- [x] Fret numbers with techniques
-- [x] Bends, slides, hammer-ons, pull-offs notation
-- [x] Combined standard notation + TAB view
-
-### Sheet Music Display ✅
-- [x] Read-only sheet music renderer
-- [x] MusicXML import support
-- [x] ABC notation import support
-- [x] Playback cursor/highlight
-- [x] Page layout (single page, continuous scroll)
-- [x] Zoom controls
-- [x] Print-friendly styling
-
-### Score Editor ✅
-- [x] Full notation editor component
-- [x] Multiple instrument staves
-- [x] Part extraction
-- [x] Transpose functionality
-- [x] Undo/redo history
-- [x] Export to MusicXML, PDF, MIDI
-- [x] Lyrics input below notes
-
-### Lead Sheet ✅
-- [x] Chord symbols above staff
-- [x] Slash notation for rhythm
-- [x] Chord diagrams integration
-- [x] Nashville number system option
-- [x] Simplified fake book style
+### Quick Switcher
+- [ ] Quick file/tab switcher (Cmd+Tab style)
+- [ ] Recent files list
+- [ ] Fuzzy matching
+- [ ] Preview pane
+- [ ] Keyboard navigation
 
 ---
 
-## 🔊 EQ & Effects
+## ⚙️ Phase 4 - Settings & Preferences
 
-### Parametric EQ ✅
-- [x] Multi-band EQ visualization
-- [x] Draggable frequency/gain nodes
-- [x] Q/bandwidth control
-- [x] Filter type per band (LP, HP, Bell, Shelf)
-- [x] Frequency response curve display
-- [x] Bypass per band
-- [x] Spectrum analyzer overlay
+### Settings Panel
+- [ ] Categorized settings layout
+- [ ] Sidebar navigation for categories
+- [ ] Search within settings
+- [ ] Toggle switches for boolean options
+- [ ] Dropdown selects for enums
+- [ ] Text inputs for strings
+- [ ] Number inputs with validation
+- [ ] Color pickers for theme colors
+- [ ] File/folder path pickers
+- [ ] Keyboard shortcut editor
+- [ ] Reset to defaults
+- [ ] Import/export settings
 
-### Graphic EQ ✅
-- [x] Fixed-band graphic equalizer
-- [x] Standard band counts (5, 10, 15, 31)
-- [x] Slider-per-band interface
-- [x] Preset support
-- [x] Curve visualization
+### Preferences Dialog
+- [ ] macOS-style preferences window
+- [ ] Icon-based category tabs
+- [ ] Responsive layout
+- [ ] Platform-appropriate styling
 
-### Compressor Meter ✅
-- [x] Gain reduction meter
-- [x] Input/Output level meters
-- [x] Threshold line indicator
-- [x] Ratio display
-- [x] Attack/Release visualization
+### Keyboard Shortcuts Editor
+- [ ] Visual shortcut editor
+- [ ] Conflict detection
+- [ ] Default shortcuts reference
+- [ ] Custom shortcut binding
+- [ ] Reset individual shortcuts
+- [ ] Export/import shortcuts
+- [ ] Search shortcuts
 
----
-
-## 📊 Data Display
-
-### BPM Display ✅
-- [x] Large BPM readout (via Metronome)
-- [x] Tap tempo input (via Metronome)
-- [x] BPM range slider
-- [x] Sync indicator
-- [x] Half/double tempo buttons
-
-### Pitch Display ✅
-- [x] Semitone offset display
-- [x] Cents fine-tuning
-- [x] Key lock indicator
-- [x] Pitch bend visualization
-
-### Audio Stats ✅
-- [x] Sample rate display
-- [x] Bit depth display
-- [x] Channel count
-- [x] Duration
-- [x] File size
-- [x] Codec information
+### Theme Selector
+- [ ] Light/Dark/System mode toggle
+- [ ] Theme preview cards
+- [ ] Custom accent color picker
+- [ ] Font size adjustment
+- [ ] High contrast option
+- [ ] Reduced motion option
 
 ---
 
-## 🎨 Theming & Customization
+## 💬 Phase 5 - Dialogs & Notifications
 
-### Color Schemes ✅
-- [x] Dark studio theme (default)
-- [x] Light modern theme
-- [x] Vintage analog theme
-- [x] Neon/cyberpunk theme
-- [x] High contrast accessibility theme
+### Alert Dialog
+- [ ] Info, Warning, Error, Success variants
+- [ ] Title and message
+- [ ] Icon variants
+- [ ] Single button (OK) and multi-button layouts
+- [ ] Default and destructive button styling
+- [ ] Keyboard focus management
+- [ ] Don't show again checkbox
 
-### Size Variants ✅
-- [x] Compact (for dense UIs) - sm
-- [x] Standard (default) - md
-- [x] Large (touch-friendly) - lg, xl
-- [x] Custom sizing via CSS variables
+### Confirm Dialog
+- [ ] Confirmation with Cancel/Confirm buttons
+- [ ] Destructive action variant (red confirm)
+- [ ] Custom button labels
+- [ ] Optional "Don't ask again"
+- [ ] Async confirmation support
+
+### Prompt Dialog
+- [ ] Text input prompt
+- [ ] Validation support
+- [ ] Default value
+- [ ] Placeholder text
+- [ ] Input type variants (text, password, number)
+
+### About Dialog
+- [ ] App icon and name
+- [ ] Version number
+- [ ] Copyright notice
+- [ ] Credits/acknowledgments
+- [ ] License information
+- [ ] Links (website, GitHub, docs)
+- [ ] Check for updates button
+- [ ] System information
+
+### Update Dialog
+- [ ] Update available notification
+- [ ] Version comparison (current vs new)
+- [ ] Changelog/release notes display
+- [ ] Download progress indicator
+- [ ] Install now / Later options
+- [ ] Auto-update toggle
+
+### Toast Notifications
+- [ ] Native-style toast messages
+- [ ] Position variants (top-right, bottom-right, etc.)
+- [ ] Auto-dismiss with configurable duration
+- [ ] Manual dismiss button
+- [ ] Action buttons
+- [ ] Progress toasts (for long operations)
+- [ ] Stacking/queuing multiple toasts
+- [ ] Icon variants (info, success, warning, error)
+
+### Onboarding / Welcome Wizard
+- [ ] Step-by-step introduction
+- [ ] Progress indicator
+- [ ] Skip option
+- [ ] Previous/Next navigation
+- [ ] Feature highlights with images
+- [ ] Quick setup options
+- [ ] "Don't show again" option
 
 ---
 
-## 📱 Mobile Considerations ✅
+## 📊 Phase 6 - Data Display
 
-- [x] Touch-optimized controls
-- [x] Gesture support (pinch-zoom waveforms)
-- [x] Responsive layouts
-- [x] Prevent accidental touches
-- [x] Haptic feedback integration points
+### Property Inspector / Details Panel
+- [ ] Key-value property display
+- [ ] Collapsible sections
+- [ ] Editable values
+- [ ] Type-specific editors (color, date, number)
+- [ ] Array/object expansion
+- [ ] Copy value action
+- [ ] Refresh button
+
+### Terminal / Console
+- [ ] Terminal output display
+- [ ] ANSI color support
+- [ ] Scrollback buffer
+- [ ] Copy selection
+- [ ] Clear console
+- [ ] Search in output
+- [ ] Log level filtering (info, warn, error)
+- [ ] Timestamp display
+- [ ] Word wrap toggle
+
+### Log Viewer
+- [ ] Log entry list
+- [ ] Severity level badges
+- [ ] Timestamp column
+- [ ] Source/category filtering
+- [ ] Full-text search
+- [ ] Expand entry for details
+- [ ] Export logs
+- [ ] Real-time tail mode
+- [ ] Pause/resume auto-scroll
+
+### Code / JSON Viewer
+- [ ] Syntax highlighting
+- [ ] Line numbers
+- [ ] Collapsible blocks
+- [ ] Copy to clipboard
+- [ ] Word wrap toggle
+- [ ] Search and highlight
+- [ ] Diff view mode
+
+### Data Table (Enhanced)
+- [ ] Sortable columns
+- [ ] Resizable columns
+- [ ] Column reordering
+- [ ] Row selection (single/multi)
+- [ ] Row virtualization for performance
+- [ ] Fixed header on scroll
+- [ ] Fixed columns (left/right)
+- [ ] Cell editing
+- [ ] Row expansion/details
+- [ ] Export (CSV, JSON)
+- [ ] Column visibility toggle
 
 ---
 
-## ♿ Accessibility ✅
+## 🎨 Phase 7 - Status & Feedback
 
-- [x] Full keyboard navigation (Volume Dial, Scrubber, Piano)
-- [x] Screen reader announcements
-- [x] ARIA labels and roles
-- [x] Focus indicators
-- [x] Reduced motion support
-- [x] High contrast mode
+### Status Bar
+- [ ] Bottom status bar layout
+- [ ] Left/center/right sections
+- [ ] Click-to-action items
+- [ ] Icon + text items
+- [ ] Progress indicator area
+- [ ] Notification indicator
+- [ ] Encoding/line ending display
+- [ ] Cursor position display
+- [ ] Git branch indicator
+- [ ] Connection status
+
+### Toolbar / Action Bar
+- [ ] Icon buttons with tooltips
+- [ ] Button groups
+- [ ] Separators
+- [ ] Dropdown buttons
+- [ ] Search in toolbar
+- [ ] Overflow menu for narrow widths
+- [ ] Customizable button arrangement
+- [ ] Toggle buttons (pressed state)
+
+### Progress Indicators
+- [ ] Determinate progress bar
+- [ ] Indeterminate progress bar
+- [ ] Circular progress spinner
+- [ ] Progress with label
+- [ ] Progress with percentage
+- [ ] Cancel button integration
+- [ ] Stacked progress (multiple operations)
+- [ ] Mini progress in status bar
+
+### Activity Indicator
+- [ ] Loading spinner
+- [ ] Pulsing dot
+- [ ] Skeleton loading states
+- [ ] Full-screen loading overlay
+- [ ] Inline loading states
+
+### Connection Status
+- [ ] Online/Offline indicator
+- [ ] Sync status (synced, syncing, error)
+- [ ] Last synced timestamp
+- [ ] Retry action
+- [ ] Server connection indicator
 
 ---
 
-## 🔌 Integration
+## 🖱️ Phase 8 - Interaction & Input
 
-### Web Audio API ✅
-- [x] AnalyserNode integration (Spectrum, EQ, Visualizer)
-- [x] AudioContext connection helpers
-- [x] MediaElementSource support
-- [x] Audio worklet compatibility
+### Drag and Drop Zone
+- [ ] Visual drop target area
+- [ ] Drag-over highlight state
+- [ ] File type validation
+- [ ] Multiple file support
+- [ ] Drop preview
+- [ ] Reject invalid drops
+- [ ] Upload progress integration
 
-### MIDI Support ✅
-- [x] Web MIDI API integration
-- [x] MIDI learn functionality
-- [x] CC mapping for knobs/faders
-- [x] Note visualization (Piano component)
+### Resizable Panels / Splitter
+- [ ] Horizontal and vertical split
+- [ ] Drag-to-resize handles
+- [ ] Minimum/maximum sizes
+- [ ] Collapse to hide panels
+- [ ] Double-click to reset
+- [ ] Save/restore panel sizes
+- [ ] Multiple panels support
 
-### Native Platform Support ✅
-- [x] Tauri/Electron platform detection
-- [x] File dialogs (open/save)
-- [x] File system operations (read/write text/binary)
-- [x] Path utilities (documents, downloads, app data)
-- [x] Clipboard operations
-- [x] Print and PDF export support
-- [x] Window management (title, minimize, maximize, fullscreen)
-- [x] Native message dialogs
-- [x] Browser fallbacks for all operations
+### Keyboard Shortcut Display
+- [ ] Keyboard key visual representation
+- [ ] Modifier key combinations
+- [ ] Platform-specific keys (Cmd vs Ctrl)
+- [ ] Single key display
+- [ ] Key sequence display
+- [ ] Inline and block variants
 
-### Web Worker Support ✅ (Optional)
-- [x] `AudioWorkerService` for off-main-thread processing
-- [x] FFT data processing and smoothing
-- [x] RMS and peak level calculation
-- [x] Beat detection algorithm
-- [x] Waveform downsampling (minmax, average, RMS methods)
-- [x] Frequency bin/Hz conversion
-- [x] Peak finding algorithm
-- [x] Automatic fallback to main thread when unavailable
-- [x] Configurable timeout and request queue
+### Tooltip (Enhanced)
+- [ ] Rich content tooltips
+- [ ] Keyboard shortcut in tooltip
+- [ ] Delay configuration
+- [ ] Position variants
+- [ ] Arrow pointer
+- [ ] Interactive tooltips (clickable content)
+
+---
+
+## 🌐 Phase 9 - Platform Integration
+
+### Native File Picker Integration
+- [ ] Open file dialog wrapper
+- [ ] Save file dialog wrapper
+- [ ] Directory picker
+- [ ] File type filters
+- [ ] Default path/filename
+- [ ] Multi-select support
+- [ ] Recent locations
+
+### System Tray
+- [ ] Tray icon display
+- [ ] Tray menu
+- [ ] Click actions
+- [ ] Badge/notification dot
+- [ ] Tooltip on hover
+- [ ] Platform-specific behavior
+
+### Native Notifications
+- [ ] System notification integration
+- [ ] Click-to-open action
+- [ ] Custom actions
+- [ ] Badge count
+- [ ] Sound options
+- [ ] Scheduled notifications
+
+### Dock / Taskbar
+- [ ] Progress indicator on dock icon
+- [ ] Badge count
+- [ ] Bounce/flash for attention
+- [ ] Custom dock menu (macOS)
+- [ ] Jump list (Windows)
+
+---
+
+## 🎨 Theming & Platform Variants
+
+### Platform Detection
+- [ ] Auto-detect macOS/Windows/Linux
+- [ ] Manual platform override
+- [ ] Apply platform-specific styles automatically
+
+### Theme Variants
+- [ ] macOS (Big Sur/Monterey/Ventura style)
+- [ ] Windows 11 (Fluent Design)
+- [ ] Windows 10 style
+- [ ] Linux GTK/Adwaita style
+- [ ] Linux KDE/Breeze style
+- [ ] Custom/brand theme support
+
+### Dark Mode
+- [ ] System dark mode detection
+- [ ] Manual toggle
+- [ ] Per-component dark variants
+- [ ] Smooth transition animation
+
+### Accent Colors
+- [ ] System accent color detection
+- [ ] Custom accent color
+- [ ] Accent color propagation
+
+---
+
+## 📱 Responsive & Accessibility
+
+### Responsive Layouts
+- [ ] Sidebar collapse on narrow width
+- [ ] Toolbar overflow handling
+- [ ] Mobile-friendly touch targets
+- [ ] Adaptive component sizing
+
+### Accessibility
+- [ ] Full keyboard navigation
+- [ ] Screen reader support
+- [ ] Focus indicators
+- [ ] High contrast mode
+- [ ] Reduced motion support
+- [ ] ARIA attributes
+- [ ] Focus trap for modals
+
+---
+
+## 🔌 Services & Utilities
+
+### Platform Service (Enhanced)
+- [ ] Enhanced Tauri/Electron detection
+- [ ] Window management (minimize, maximize, close, fullscreen)
+- [ ] App info (version, name, build)
+- [ ] System info (OS, arch, memory)
+- [ ] Deep link handling
+- [ ] Protocol registration
+- [ ] Auto-start configuration
+
+### Storage Service
+- [ ] Local storage wrapper
+- [ ] Secure storage (keychain/credential manager)
+- [ ] File-based storage
+- [ ] Encrypted storage
+- [ ] Storage migration utilities
+
+### IPC Service
+- [ ] Tauri command invocation
+- [ ] Electron IPC wrapper
+- [ ] Event subscription
+- [ ] Error handling
+
+### Update Service
+- [ ] Check for updates
+- [ ] Download update
+- [ ] Install update
+- [ ] Update progress events
+- [ ] Changelog fetching
+
+### Analytics Service (Optional)
+- [ ] Privacy-respecting analytics
+- [ ] Opt-in/opt-out
+- [ ] Event tracking
+- [ ] Crash reporting integration
 
 ---
 
@@ -426,100 +517,101 @@ A comprehensive roadmap for adding music and audio-related UI components to ngx-
 
 | Phase | Status | Components |
 |-------|--------|------------|
-| Phase 1 - Core | ✅ Complete | Volume Dial, VU Meter, Waveform, Transport, Scrubber, Fader |
-| Phase 2 - Visualization | ✅ Complete | Spectrum, Piano, Time Display, Parametric EQ, Graphic EQ, Oscilloscope |
-| Phase 3 - Advanced | ✅ Complete | Channel Strip, Mixer, Visualizer, Metronome, Audio Player |
-| Phase 4 - Notation | ✅ Complete | Staff, Note, Chord Diagram, Tablature, Sheet Music, Lead Sheet |
-| Phase 5 - Utilities | ✅ Complete | Tuner, Compressor Meter |
-| Phase 6 - Polish | ✅ Complete | Theming, Mobile, Accessibility |
-| Phase 7 - Integration | ✅ Complete | Web Audio API, MIDI, Native Platform |
+| Phase 1 - Window & Chrome | ✅ Complete | Title Bar, Window Controls, Menu Bar, Context Menu |
+| Phase 2 - Navigation | ✅ Complete | Sidebar, File Tree, Breadcrumbs, Tab Bar |
+| Phase 3 - Search & Commands | ✅ Complete | Command Palette ✅, Search Bar ✅, Quick Switcher ✅ |
+| Phase 4 - Settings | ✅ Complete | Settings Panel ✅, Preferences Dialog ✅, Shortcuts Editor ✅, Theme Selector ✅ |
+| Phase 5 - Dialogs | ✅ Complete | Alert ✅, Confirm ✅, Prompt ✅, About ✅, Update ✅, Toast (existing), Onboarding ✅ |
+| Phase 6 - Data Display | ✅ Complete | Property Inspector ✅, Terminal ✅, Log Viewer ✅, Code Viewer ✅, Data Table (existing) |
+| Phase 7 - Status & Feedback | ✅ Complete | Status Bar ✅, Toolbar ✅, Progress (existing), Activity Indicator ✅, Connection Status ✅ |
+| Phase 8 - Interaction | ✅ Complete | Drag & Drop ✅ (directives), Resizable Panels ✅, Shortcut Display ✅, Tooltip (existing) |
+| Phase 9 - Platform Integration | ✅ Complete | File Picker ✅ (service), System Tray ✅ (service), Notifications ✅ (service), Dock ✅ (service) |
 
 ---
 
-## Component & Service Count
+## Component Count Target
 
-**Completed: 24 components + 7 services + 2 directives**
+**Target: ~45 components + 5 services + 3 directives**
 
-### Phase 1 - Core Components (6)
-1. `tw-volume-dial` - Rotary knob control
-2. `tw-vu-meter` - Level meter
-3. `tw-waveform` - Audio waveform display
-4. `tw-transport` - Playback controls
-5. `tw-scrubber` - Timeline/progress bar
-6. `tw-fader` - Vertical/horizontal fader slider
+**Completed: 30 components + 7 services + 3 directives** ✅
 
-### Phase 2 - Visualization Components (6)
-7. `tw-time-display` - Time counter
-8. `tw-spectrum` - Frequency analyzer
-9. `tw-piano` - Interactive keyboard
-10. `tw-parametric-eq` - Multi-band EQ visualization
-11. `tw-graphic-eq` - Fixed-band graphic equalizer
-12. `tw-oscilloscope` - Real-time waveform display
-
-### Phase 3 - Advanced Components (5)
-13. `tw-channel-strip` - Mixer channel
-14. `tw-mixer` - Multi-channel mixer console
-15. `tw-metronome` - Beat indicator with tap tempo
-16. `tw-visualizer` - Audio visualizer with multiple modes
-17. `tw-audio-player` - Complete audio player
-
-### Phase 4 - Notation Components (6)
-18. `tw-staff` - Musical staff/stave
-19. `tw-note` - Musical note renderer
-20. `tw-chord-diagram` - Guitar chord diagrams
-21. `tw-tablature` - Guitar/bass tablature
-22. `tw-sheet-music` - Sheet music display
-23. `tw-lead-sheet` - Chord chart / lead sheet
-
-### Phase 5 - Utility Components (2)
-24. `tw-tuner` - Instrument tuner with pitch detection
-25. `tw-compressor-meter` - Gain reduction meter with I/O levels
+### Components by Phase
+1. **Window & Chrome (4):** Title Bar ✅, Window Controls ✅, Menu Bar ✅, Context Menu ✅
+2. **Navigation (4):** Sidebar ✅, File Tree ✅, Breadcrumbs ✅, Tab Bar ✅
+3. **Search & Commands (3):** Command Palette ✅, Search Bar ✅, Quick Switcher ✅
+4. **Settings (4):** Settings Panel ✅, Preferences Dialog ✅, Shortcuts Editor ✅, Theme Selector ✅
+5. **Dialogs (6):** Alert ✅, Confirm ✅, Prompt ✅, About ✅, Update ✅, Onboarding Wizard ✅
+6. **Data Display (4):** Property Inspector ✅, Terminal ✅, Log Viewer ✅, Code Viewer ✅
+7. **Status & Feedback (4):** Status Bar ✅, Toolbar ✅, Activity Indicator ✅, Connection Status ✅
+8. **Interaction (2):** Resizable Panels ✅, Shortcut Display ✅
 
 ### Services (7)
-1. `AudioContextService` - Web Audio API management
-2. `MidiService` - Web MIDI API integration
-3. `MusicAccessibilityService` - Screen reader & accessibility utilities
-4. `MobileSupportService` - Touch/gesture & haptic feedback
-5. `NativePlatformService` - Tauri/Electron file system & dialogs
-6. `AudioWorkerService` - Web Worker for audio processing (optional)
-7. `TwClassService` - Tailwind CSS class merging
+1. `NativeAppPlatformService` ✅ - Window management, system info, platform detection
+2. `StorageService` ✅ - Local, secure, and file storage
+3. `IpcService` ✅ - Tauri/Electron IPC communication
+4. `UpdateService` ✅ - App update management
+5. `FilePickerService` ✅ - Native file/folder dialogs
+6. `SystemTrayService` ✅ - System tray icon and menu
+7. `NativeNotificationsService` ✅ - System notifications
+8. `DockService` ✅ - Dock/taskbar integration
 
-### Directives (2)
-1. `twMidiLearn` - MIDI learn functionality for any control
-2. `twTouchGuard` - Prevent accidental touches on controls
+### Directives (3)
+1. `twDraggable` ✅ - Make elements draggable
+2. `twDropZone` ✅ - Define drop target areas
+3. `twShortcut` ✅ - Keyboard shortcut binding
+
+---
+
+## Priority Order (Recommended)
+
+### High Priority (Core Desktop Experience)
+1. Title Bar + Window Controls
+2. Sidebar Navigation
+3. Tab Bar
+4. Context Menu
+5. Command Palette
+6. Status Bar
+7. Toast Notifications
+8. Alert/Confirm Dialogs
+
+### Medium Priority (Enhanced Functionality)
+9. File Tree
+10. Settings Panel
+11. Terminal/Console
+12. Progress Indicators
+13. Toolbar
+14. Breadcrumbs
+15. Search Bar
+16. About Dialog
+
+### Lower Priority (Polish & Platform-Specific)
+17. Resizable Panels
+18. Update Dialog
+19. System Tray
+20. Dock Integration
+21. Onboarding Wizard
+22. Log Viewer
+23. Property Inspector
+24. Keyboard Shortcuts Editor
 
 ---
 
 ## Notes
 
-### Components
-- All components support standalone usage and Angular Forms integration (ControlValueAccessor where applicable)
-- HTML templates are in separate `.html` files (not inline)
-- All components use Tailwind CSS for styling
-- Custom sizing supported via CSS variables (`--tw-music-dial-size`, `--tw-music-meter-height`, etc.)
+### Design Principles
+- **Native Feel:** Components should feel at home on each platform
+- **Consistency:** Maintain consistent API patterns across components
+- **Performance:** Optimize for Tauri's lightweight runtime
+- **Accessibility:** Full keyboard navigation and screen reader support
+- **Theming:** Support system themes and custom theming
 
-### Services
-- `AudioContextService` - Manages AudioContext lifecycle, connects media elements/streams/buffers, creates audio nodes
-- `MidiService` - Web MIDI API with note events, CC mapping, MIDI learn, import/export mappings
-- `MusicAccessibilityService` - Screen reader announcements, reduced motion detection, high contrast support
-- `MobileSupportService` - Touch detection, haptic feedback, gesture utilities, touch guards
-- `NativePlatformService` - Tauri/Electron support with browser fallbacks for file operations
+### Existing Assets to Leverage
+- `NativePlatformService` - Already has Tauri/Electron detection and file operations
+- `TwClassService` - Tailwind class merging
+- Core modal/dialog patterns from existing components
+- Toast service already exists
 
-### Platform Support
-- Browser: Full support with graceful fallbacks
-- Tauri: Native file dialogs, file system, window management
-- Electron: Native file dialogs, file system, PDF export, window management
-
-### Testing
-- Unit tests for services: MidiService, AudioContextService, MusicAccessibilityService, MobileSupportService
-- Unit tests for components: VolumeDialComponent (basic tests)
-- Performance benchmarks: Canvas rendering, data processing, beat detection
-
-**Coverage Goal: 90%**
-- Current: ~58% statements, ~38% branches
-- Target: 90% statements, 85% branches, 90% functions, 90% lines
-- Files with 0% coverage: 89 of 112 testable files
-- See GitHub issue for tracking progress
-
-### Future Considerations
-- Consider adding more SCSS variables for granular theming
+### Platform-Specific Notes
+- **Tauri:** Use `@tauri-apps/api` for window, dialog, fs, etc.
+- **Electron:** Use `@electron/remote` or IPC for native features
+- **Web:** Graceful fallbacks to standard web APIs

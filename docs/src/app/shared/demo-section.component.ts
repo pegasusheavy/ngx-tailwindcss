@@ -1,26 +1,17 @@
 import { Component, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faCode, faCopy, faCheck, faChevronDown, faChevronUp } from '@fortawesome/free-solid-svg-icons';
+import { IconComponent } from './icon.component';
 
 @Component({
   selector: 'app-demo-section',
   standalone: true,
-  imports: [CommonModule, FontAwesomeModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './demo-section.component.html',
 })
 export class DemoSectionComponent {
   @Input() title = '';
   @Input() description = '';
   @Input() code = '';
-
-  protected icons = {
-    code: faCode,
-    copy: faCopy,
-    check: faCheck,
-    chevronDown: faChevronDown,
-    chevronUp: faChevronUp,
-  };
 
   protected showCode = signal(false);
   protected copied = signal(false);
