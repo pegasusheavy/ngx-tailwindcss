@@ -1,21 +1,21 @@
 <div [class]="containerClasses()">
   <!-- Header row with label and/or value -->
-  @if (label || showValue) {
+  @if (label() || showValue()) {
     <div class="flex justify-between items-center mb-2">
-      @if (label) {
-        <label [class]="labelClasses()">{{ label }}</label>
+      @if (label()) {
+        <label [class]="labelClasses()">{{ label() }}</label>
       } @else {
         <span></span>
       }
-      @if (showValue) {
+      @if (showValue()) {
         <span class="text-sm font-semibold text-slate-900 tabular-nums">{{ displayValue() }}</span>
       }
     </div>
   }
 
   <div [class]="sliderContainerClasses()">
-    @if (showMinMax) {
-      <span class="text-xs text-slate-500 mr-3 tabular-nums min-w-6">{{ valueFormat(min) }}</span>
+    @if (showMinMax()) {
+      <span class="text-xs text-slate-500 mr-3 tabular-nums min-w-6">{{ valueFormat()(min()) }}</span>
     }
 
     <div class="relative flex-1">
@@ -33,7 +33,7 @@
         <div [class]="thumbClasses()"></div>
 
         <!-- Value tooltip bubble (shown while dragging or when showValueBubble is true) -->
-        @if (showValueBubble && isDragging()) {
+        @if (showValueBubble() && isDragging()) {
           <div
             class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-slate-800 text-white text-xs font-medium rounded shadow-lg whitespace-nowrap"
           >
@@ -49,11 +49,11 @@
       <input
         type="range"
         [class]="inputClasses()"
-        [min]="min"
-        [max]="max"
-        [step]="step"
+        [min]="min()"
+        [max]="max()"
+        [step]="step()"
         [value]="value()"
-        [disabled]="disabled"
+        [disabled]="isDisabled()"
         (input)="onSliderInput($event)"
         (change)="onSliderChange($event)"
         (mousedown)="onDragStart()"
@@ -61,18 +61,18 @@
         (touchstart)="onDragStart()"
         (touchend)="onDragEnd()"
         (focus)="onFocus.emit($event)"
-        (blur)="onInputBlur()"
+        (blur)="onInputBlur($event)"
       />
     </div>
 
-    @if (showMinMax) {
+    @if (showMinMax()) {
       <span class="text-xs text-slate-500 ml-3 tabular-nums min-w-6 text-right">{{
-        valueFormat(max)
+        valueFormat()(max())
       }}</span>
     }
   </div>
 
-  @if (showTicks && tickCount > 0) {
+  @if (showTicks() && tickCount() > 0) {
     <div class="flex justify-between px-1 mt-1">
       @for (tick of ticks(); track $index) {
         <span class="text-xs text-slate-400 tabular-nums">{{ tick }}</span>

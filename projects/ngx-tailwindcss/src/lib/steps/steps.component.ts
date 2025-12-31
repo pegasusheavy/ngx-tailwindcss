@@ -3,12 +3,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  EventEmitter,
   inject,
-  Input,
+  input,
   numberAttribute,
-  Output,
-  signal,
+  output,
   TemplateRef,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -54,47 +52,47 @@ export class TwStepsComponent {
   private readonly twClass = inject(TwClassService);
 
   /** Step definitions */
-  @Input() steps: StepItem[] = [];
+  readonly steps = input<StepItem[]>([]);
 
   /** Current active step index */
-  @Input({ transform: numberAttribute }) activeIndex = 0;
+  readonly activeIndex = input(0, { transform: numberAttribute });
 
   /** Orientation */
-  @Input() orientation: StepsOrientation = 'horizontal';
+  readonly orientation = input<StepsOrientation>('horizontal');
 
   /** Size variant */
-  @Input() size: StepsSize = 'md';
+  readonly size = input<StepsSize>('md');
 
   /** Whether to show labels */
-  @Input({ transform: booleanAttribute }) showLabels = true;
+  readonly showLabels = input(true, { transform: booleanAttribute });
 
   /** Whether steps are readonly (non-clickable) */
-  @Input({ transform: booleanAttribute }) readonly = false;
+  readonly readonlyMode = input(false, { transform: booleanAttribute, alias: 'readonly' });
 
   /** Whether to allow clicking future steps */
-  @Input({ transform: booleanAttribute }) linear = true;
+  readonly linear = input(true, { transform: booleanAttribute });
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /** Active index change event */
-  @Output() activeIndexChange = new EventEmitter<number>();
+  readonly activeIndexChange = output<number>();
 
   /** Step click event */
-  @Output() onStepClick$ = new EventEmitter<{ step: StepItem; index: number }>();
+  readonly onStepClick$ = output<{ step: StepItem; index: number }>();
 
   protected containerClasses = computed(() => {
-    return this.twClass.merge('w-full', this.classOverride);
+    return this.twClass.merge('w-full', this.classOverride());
   });
 
   protected listClasses = computed(() => {
     return this.twClass.merge(
-      this.orientation === 'horizontal' ? 'flex items-start' : 'flex flex-col'
+      this.orientation() === 'horizontal' ? 'flex items-start' : 'flex flex-col'
     );
   });
 
   protected itemClasses(isLast: boolean) {
-    if (this.orientation === 'horizontal') {
+    if (this.orientation() === 'horizontal') {
       // Use items-start so connector aligns at the top with the indicator
       return this.twClass.merge('relative flex items-start', isLast ? '' : 'flex-1');
     }
@@ -102,12 +100,12 @@ export class TwStepsComponent {
   }
 
   protected connectorClasses(index: number) {
-    const isComplete = index < this.activeIndex;
+    const isComplete = index < this.activeIndex();
     return this.twClass.merge('flex-1 h-0.5 mx-2', isComplete ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-700');
   }
 
   protected getHorizontalConnectorStyle(): Record<string, string> {
-    const { indicatorSize } = STEPS_SIZES[this.size];
+    const { indicatorSize } = STEPS_SIZES[this.size()];
     // Position connector at vertical center of indicator
     return {
       marginTop: `${indicatorSize / 2 - 1}px`,
@@ -115,37 +113,37 @@ export class TwStepsComponent {
   }
 
   protected verticalConnectorClasses(index: number) {
-    const isComplete = index < this.activeIndex;
-    const { indicatorSize } = STEPS_SIZES[this.size];
+    const isComplete = index < this.activeIndex();
+    const { indicatorSize } = STEPS_SIZES[this.size()];
 
     return this.twClass.merge('w-0.5 h-8', isComplete ? 'bg-blue-600' : 'bg-slate-200 dark:bg-slate-700');
   }
 
   protected getVerticalConnectorStyle(): Record<string, string> {
-    const { indicatorSize } = STEPS_SIZES[this.size];
+    const { indicatorSize } = STEPS_SIZES[this.size()];
     return {
       marginLeft: `${indicatorSize / 2 - 1}px`,
     };
   }
 
   protected stepContentClasses(index: number) {
-    const step = this.steps[index];
+    const step = this.steps()[index];
     const isClickable =
-      !this.readonly && !step.disabled && (!this.linear || index <= this.activeIndex);
+      !this.readonlyMode() && !step.disabled && (!this.linear() || index <= this.activeIndex());
 
     return this.twClass.merge(
       'flex items-center gap-3',
-      this.orientation === 'horizontal' ? 'flex-col' : '',
+      this.orientation() === 'horizontal' ? 'flex-col' : '',
       isClickable ? 'cursor-pointer group' : ''
     );
   }
 
   protected indicatorClasses(index: number) {
     const status = this.getStepStatus(index);
-    const sizeClasses = STEPS_SIZES[this.size].indicator;
-    const step = this.steps[index];
+    const sizeClasses = STEPS_SIZES[this.size()].indicator;
+    const step = this.steps()[index];
     const isClickable =
-      !this.readonly && !step.disabled && (!this.linear || index <= this.activeIndex);
+      !this.readonlyMode() && !step.disabled && (!this.linear() || index <= this.activeIndex());
 
     const statusClasses = {
       complete: 'bg-blue-600 text-white',
@@ -163,12 +161,12 @@ export class TwStepsComponent {
   }
 
   protected labelContainerClasses() {
-    return this.twClass.merge(this.orientation === 'horizontal' ? 'text-center mt-2' : '');
+    return this.twClass.merge(this.orientation() === 'horizontal' ? 'text-center mt-2' : '');
   }
 
   protected labelClasses(index: number) {
     const status = this.getStepStatus(index);
-    const sizeClasses = STEPS_SIZES[this.size].label;
+    const sizeClasses = STEPS_SIZES[this.size()].label;
 
     return this.twClass.merge(
       'font-medium block',
@@ -178,21 +176,21 @@ export class TwStepsComponent {
   }
 
   protected descriptionClasses() {
-    const sizeClasses = STEPS_SIZES[this.size].desc;
+    const sizeClasses = STEPS_SIZES[this.size()].desc;
     return this.twClass.merge('text-slate-500 block', sizeClasses);
   }
 
   getStepStatus(index: number): 'complete' | 'current' | 'upcoming' {
-    if (index < this.activeIndex) return 'complete';
-    if (index === this.activeIndex) return 'current';
+    if (index < this.activeIndex()) return 'complete';
+    if (index === this.activeIndex()) return 'current';
     return 'upcoming';
   }
 
   onStepClick(index: number): void {
-    const step = this.steps[index];
+    const step = this.steps()[index];
 
-    if (this.readonly || step.disabled) return;
-    if (this.linear && index > this.activeIndex) return;
+    if (this.readonlyMode() || step.disabled) return;
+    if (this.linear() && index > this.activeIndex()) return;
 
     this.activeIndexChange.emit(index);
     this.onStepClick$.emit({ step, index });
@@ -200,23 +198,23 @@ export class TwStepsComponent {
 
   /** Go to next step */
   next(): void {
-    if (this.activeIndex < this.steps.length - 1) {
-      const nextIndex = this.activeIndex + 1;
+    if (this.activeIndex() < this.steps().length - 1) {
+      const nextIndex = this.activeIndex() + 1;
       this.activeIndexChange.emit(nextIndex);
     }
   }
 
   /** Go to previous step */
   prev(): void {
-    if (this.activeIndex > 0) {
-      const prevIndex = this.activeIndex - 1;
+    if (this.activeIndex() > 0) {
+      const prevIndex = this.activeIndex() - 1;
       this.activeIndexChange.emit(prevIndex);
     }
   }
 
   /** Go to specific step */
   goTo(index: number): void {
-    if (index >= 0 && index < this.steps.length) {
+    if (index >= 0 && index < this.steps().length) {
       this.activeIndexChange.emit(index);
     }
   }

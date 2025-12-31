@@ -5,13 +5,12 @@ import {
   Component,
   computed,
   ElementRef,
-  EventEmitter,
   forwardRef,
   HostListener,
   inject,
-  Input,
+  input,
   OnDestroy,
-  Output,
+  output,
   PLATFORM_ID,
   signal,
   ViewChild,
@@ -75,70 +74,71 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   @ViewChild('triggerButton') triggerButton!: ElementRef<HTMLButtonElement>;
 
   /** Options to display (flat list) */
-  @Input() options: SelectOption[] = [];
+  readonly options = input<SelectOption[]>([]);
 
   /** Grouped options to display */
-  @Input() groups: SelectGroup[] = [];
+  readonly groups = input<SelectGroup[]>([]);
 
   /** Placeholder text */
-  @Input() placeholder = 'Select an option';
+  readonly placeholder = input('Select an option');
 
   /** Label text */
-  @Input() label = '';
+  readonly label = input('');
 
   /** Size of the select */
-  @Input() size: SelectSize = 'md';
+  readonly size = input<SelectSize>('md');
 
   /** Visual variant */
-  @Input() variant: SelectVariant = 'default';
+  readonly variant = input<SelectVariant>('default');
 
   /** Whether the select is disabled */
-  @Input({ transform: booleanAttribute }) disabled = false;
+  readonly disabled = input(false, { transform: booleanAttribute });
 
   /** Whether the select is required */
-  @Input({ transform: booleanAttribute }) required = false;
+  readonly required = input(false, { transform: booleanAttribute });
 
   /** Whether to show filter input */
-  @Input({ transform: booleanAttribute }) filter = false;
+  readonly filter = input(false, { transform: booleanAttribute });
 
   /** Filter placeholder text */
-  @Input() filterPlaceholder = 'Search...';
+  readonly filterPlaceholder = input('Search...');
 
   /** Empty message when no options match filter */
-  @Input() emptyMessage = 'No results found';
+  readonly emptyMessage = input('No results found');
 
   /** Whether to show checkmark for selected option */
-  @Input({ transform: booleanAttribute }) showCheckmark = true;
+  readonly showCheckmark = input(true, { transform: booleanAttribute });
 
   /** Hint text */
-  @Input() hint = '';
+  readonly hint = input('');
 
   /** Error message */
-  @Input() error = '';
+  readonly error = input('');
 
   /** Input ID */
-  @Input() inputId = `tw-select-${Math.random().toString(36).slice(2)}`;
+  readonly inputId = input(`tw-select-${Math.random().toString(36).slice(2)}`);
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /**
    * Where to append the dropdown
    * - 'body': Appends dropdown to document body (avoids overflow clipping)
    * - 'self': Keeps dropdown within the component (default)
    */
-  @Input() appendTo: SelectAppendTo = 'body';
+  readonly appendTo = input<SelectAppendTo>('body');
 
   /** Change event */
-  @Output() onChange = new EventEmitter<SelectOption | null>();
+  readonly onChange = output<SelectOption | null>();
 
   /** Open/Close event */
-  @Output() onToggle = new EventEmitter<boolean>();
+  readonly onToggle = output<boolean>();
 
   protected isOpen = signal(false);
   protected filterValue = signal('');
   protected selectedValue = signal<any>(null);
   protected dropdownPosition = signal<{ top: number; left: number; width: number } | null>(null);
+  private _disabled = signal(false);
 
   private onChangeFn: (value: any) => void = () => {};
   private onTouchedFn: () => void = () => {};
@@ -146,11 +146,13 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   private scrollListener: (() => void) | null = null;
   private resizeListener: (() => void) | null = null;
 
+  protected isDisabled = computed(() => this.disabled() || this._disabled());
+
   protected allOptions = computed(() => {
-    if (this.groups.length > 0) {
-      return this.groups.flatMap(g => g.options);
+    if (this.groups().length > 0) {
+      return this.groups().flatMap(g => g.options);
     }
-    return this.options;
+    return this.options();
   });
 
   protected selectedOption = computed(() => {
@@ -158,25 +160,25 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   });
 
   protected filteredOptions = computed(() => {
-    const filter = this.filterValue().toLowerCase();
-    if (!filter) return this.options;
-    return this.options.filter(opt => opt.label.toLowerCase().includes(filter));
+    const filterVal = this.filterValue().toLowerCase();
+    if (!filterVal) return this.options();
+    return this.options().filter(opt => opt.label.toLowerCase().includes(filterVal));
   });
 
   protected filteredGroups = computed(() => {
-    const filter = this.filterValue().toLowerCase();
-    if (!filter) return this.groups;
+    const filterVal = this.filterValue().toLowerCase();
+    if (!filterVal) return this.groups();
 
-    return this.groups
+    return this.groups()
       .map(group => ({
         ...group,
-        options: group.options.filter(opt => opt.label.toLowerCase().includes(filter)),
+        options: group.options.filter(opt => opt.label.toLowerCase().includes(filterVal)),
       }))
       .filter(group => group.options.length > 0);
   });
 
   protected containerClasses = computed(() => {
-    return this.twClass.merge('relative', this.classOverride);
+    return this.twClass.merge('relative', this.classOverride());
   });
 
   protected labelClasses = computed(() => {
@@ -184,8 +186,8 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   });
 
   protected triggerClasses = computed(() => {
-    const sizeClasses = SELECT_SIZES[this.size];
-    const hasError = !!this.error;
+    const sizeClasses = SELECT_SIZES[this.size()];
+    const hasError = !!this.error();
 
     return this.twClass.merge(
       'w-full flex items-center justify-between rounded-lg border bg-white dark:bg-slate-800 transition-all duration-200',
@@ -195,7 +197,7 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
       hasError
         ? 'border-rose-500 focus:ring-rose-500 focus:border-rose-500'
         : 'border-slate-300 dark:border-slate-600 focus:ring-blue-500 focus:border-blue-500 hover:border-slate-400 dark:hover:border-slate-500',
-      this.disabled ? 'opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900' : 'cursor-pointer',
+      this.isDisabled() ? 'opacity-50 cursor-not-allowed bg-slate-50 dark:bg-slate-900' : 'cursor-pointer',
       this.isOpen() ? 'ring-2 ring-blue-500 border-blue-500' : ''
     );
   });
