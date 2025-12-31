@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
 import { Observable, Subject } from 'rxjs';
+import { importElectron, importTauriUpdater, importTauriApp, importTauriProcess } from './dynamic-import';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';
@@ -139,29 +140,30 @@ export class UpdateService {
 
   private async setupElectronListeners(): Promise<void> {
     try {
-      const { ipcRenderer } = await import('electron');
+      const electron = await importElectron();
+      if (!electron?.ipcRenderer) return;
 
-      ipcRenderer.on('update-available', (_event: unknown, info: UpdateInfo) => {
+      electron.ipcRenderer.on('update-available', (_event: unknown, info: UpdateInfo) => {
         this.status.set('available');
         this.updateInfo.set(info);
         this.updateAvailable$.next(info);
       });
 
-      ipcRenderer.on('update-not-available', () => {
+      electron.ipcRenderer.on('update-not-available', () => {
         this.status.set('not-available');
       });
 
-      ipcRenderer.on('download-progress', (_event: unknown, progress: UpdateProgress) => {
+      electron.ipcRenderer.on('download-progress', (_event: unknown, progress: UpdateProgress) => {
         this.progress.set(progress);
         this.downloadProgress$.next(progress);
       });
 
-      ipcRenderer.on('update-downloaded', () => {
+      electron.ipcRenderer.on('update-downloaded', () => {
         this.status.set('downloaded');
         this.updateDownloaded$.next();
       });
 
-      ipcRenderer.on('update-error', (_event: unknown, error: string) => {
+      electron.ipcRenderer.on('update-error', (_event: unknown, error: string) => {
         this.status.set('error');
         this.error.set(error);
         this.updateError$.next(error);
@@ -172,8 +174,9 @@ export class UpdateService {
   }
 
   private async checkTauriUpdates(): Promise<UpdateInfo | null> {
-    const updater = await import('@tauri-apps/plugin-updater');
-    const app = await import('@tauri-apps/api/app');
+    const updater = await importTauriUpdater();
+    const app = await importTauriApp();
+    if (!updater || !app) return null;
 
     const currentVersion = await app.getVersion();
     const update = await updater.check();
@@ -196,8 +199,10 @@ export class UpdateService {
   }
 
   private async checkElectronUpdates(): Promise<UpdateInfo | null> {
-    const { ipcRenderer } = await import('electron');
-    const result = (await ipcRenderer.invoke('check-for-updates')) as {
+    const electron = await importElectron();
+    if (!electron?.ipcRenderer) return null;
+
+    const result = (await electron.ipcRenderer.invoke('check-for-updates')) as {
       updateAvailable?: boolean;
       currentVersion?: string;
       version?: string;
@@ -223,7 +228,8 @@ export class UpdateService {
   }
 
   private async downloadTauriUpdate(): Promise<void> {
-    const updater = await import('@tauri-apps/plugin-updater');
+    const updater = await importTauriUpdater();
+    if (!updater) return;
     const update = await updater.check();
 
     if (update?.available) {
@@ -253,17 +259,17 @@ export class UpdateService {
   }
 
   private async downloadElectronUpdate(): Promise<void> {
-    const { ipcRenderer } = await import('electron');
-    ipcRenderer.send('download-update');
+    const electron = await importElectron();
+    electron?.ipcRenderer?.send('download-update');
   }
 
   private async installTauriUpdate(): Promise<void> {
-    const process = await import('@tauri-apps/plugin-process');
-    await process.relaunch();
+    const process = await importTauriProcess();
+    await process?.relaunch();
   }
 
   private async installElectronUpdate(): Promise<void> {
-    const { ipcRenderer } = await import('electron');
-    ipcRenderer.send('quit-and-install');
+    const electron = await importElectron();
+    electron?.ipcRenderer?.send('quit-and-install');
   }
 }

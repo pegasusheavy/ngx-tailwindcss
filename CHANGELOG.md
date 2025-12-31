@@ -11,11 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Volume Dial**: Refactored to use Angular's `model()` input for proper two-way binding support, fixing `NG0303` warning about `value` not being a known property
 - **Pagination**: Fixed `NG0955` duplicate keys warning by using unique identifiers for left/right ellipsis in page number arrays
+- **Native Components**: Fixed bundler resolution errors for Tauri/Electron imports in web-only applications by implementing dynamic import utilities that prevent static analysis
 
 ### 🧹 Code Quality
 
 - Removed redundant `valueChange` output from volume dial (now handled automatically by `model()`)
 - Cleaned up unused imports in volume dial component
+- Added `dynamic-import.ts` utility for runtime-only imports of optional dependencies (Electron, Tauri)
+- Updated native services to use dynamic import utilities: FilePickerService, SystemTrayService, DockService, NativeNotificationsService, UpdateService
 
 ## [0.3.3] - 2025-12-31
 
