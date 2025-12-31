@@ -1,6 +1,6 @@
 {
   "name": "@pegasusheavy/ngx-tailwindcss",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
   "description": "A highly customizable Angular component library for Tailwind CSS 4+. Build beautiful, accessible UI components with full theming support, intelligent class merging, and zero bundled CSS. Features 30+ components including buttons, cards, modals, forms, tables, and more.",
   "license": "MIT",
