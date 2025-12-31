@@ -48,17 +48,18 @@ jobs:
           npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        continue-on-error: true  # Don't fail the job if npm publish fails (e.g., missing token)
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           body: |
             ## What's Changed
-
+            
             See the [CHANGELOG](https://github.com/pegasusheavy/ngx-tailwindcss/blob/main/CHANGELOG.md) for details.
-
+            
             ### Installation
-
+            
             ```bash
             npm install @pegasusheavy/ngx-tailwindcss@${{ github.ref_name }}
             ```
@@ -70,7 +71,8 @@ jobs:
   docs:
     name: Deploy Docs
     runs-on: ubuntu-latest
-    needs: release
+    # Run docs independently - don't wait for release job
+    # This ensures docs are deployed even if npm publish fails
 
     permissions:
       contents: read
