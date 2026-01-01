@@ -71,7 +71,7 @@
     "ng": "ng",
     "build": "ng build ngx-tailwindcss --configuration production",
     "build:watch": "ng build ngx-tailwindcss --watch",
-    "publish:dist": "pnpm run build && cd dist/ngx-tailwindcss && npm publish --access public",
+    "publish:dist": "pnpm run build && pnpm publish dist/ngx-tailwindcss --no-git-checks --access public",
     "postbuild": "cp README.md dist/ngx-tailwindcss/README.md",
     "dev": "concurrently -n lib,docs -c cyan,green \"pnpm run build:watch\" \"pnpm run docs:dev\"",
     "docs:dev": "cd docs && pnpm run dev",
