@@ -2,7 +2,12 @@ import { Injectable, inject, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
 import { Observable, Subject } from 'rxjs';
-import { importElectron, importTauriUpdater, importTauriApp, importTauriProcess } from './dynamic-import';
+import {
+  importElectron,
+  importTauriUpdater,
+  importTauriApp,
+  importTauriProcess,
+} from './dynamic-import';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';

@@ -102,9 +102,7 @@ import { TerminalLine, TerminalVariant } from './native.types';
 
       <!-- Input area -->
       @if (showInput()) {
-        <div
-          class="flex items-center gap-2 px-4 py-2 border-t border-gray-700 bg-gray-800"
-        >
+        <div class="flex items-center gap-2 px-4 py-2 border-t border-gray-700 bg-gray-800">
           <span class="text-green-400 font-mono">{{ prompt() }}</span>
           <input
             type="text"

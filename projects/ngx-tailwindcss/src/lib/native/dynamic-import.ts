@@ -13,7 +13,9 @@
  */
 function createDynamicImport() {
   // Use Function constructor to create import at runtime, preventing static analysis
-  return new Function('modulePath', 'return import(modulePath)') as (modulePath: string) => Promise<any>;
+  return new Function('modulePath', 'return import(modulePath)') as (
+    modulePath: string
+  ) => Promise<any>;
 }
 
 const dynamicImport = createDynamicImport();
@@ -37,7 +39,9 @@ export async function importElectron(): Promise<typeof import('electron') | null
  * This will only work at runtime when running in a Tauri context.
  * Returns null if Tauri dialog is not available.
  */
-export async function importTauriDialog(): Promise<typeof import('@tauri-apps/plugin-dialog') | null> {
+export async function importTauriDialog(): Promise<
+  typeof import('@tauri-apps/plugin-dialog') | null
+> {
   try {
     const dialog = await dynamicImport('@tauri-apps/plugin-dialog');
     return dialog;
@@ -51,7 +55,9 @@ export async function importTauriDialog(): Promise<typeof import('@tauri-apps/pl
  * This will only work at runtime when running in a Tauri context.
  * Returns null if Tauri notification is not available.
  */
-export async function importTauriNotification(): Promise<typeof import('@tauri-apps/plugin-notification') | null> {
+export async function importTauriNotification(): Promise<
+  typeof import('@tauri-apps/plugin-notification') | null
+> {
   try {
     const notification = await dynamicImport('@tauri-apps/plugin-notification');
     return notification;
@@ -65,7 +71,9 @@ export async function importTauriNotification(): Promise<typeof import('@tauri-a
  * This will only work at runtime when running in a Tauri context.
  * Returns null if Tauri process is not available.
  */
-export async function importTauriProcess(): Promise<typeof import('@tauri-apps/plugin-process') | null> {
+export async function importTauriProcess(): Promise<
+  typeof import('@tauri-apps/plugin-process') | null
+> {
   try {
     const process = await dynamicImport('@tauri-apps/plugin-process');
     return process;
@@ -79,7 +87,9 @@ export async function importTauriProcess(): Promise<typeof import('@tauri-apps/p
  * This will only work at runtime when running in a Tauri context.
  * Returns null if Tauri updater is not available.
  */
-export async function importTauriUpdater(): Promise<typeof import('@tauri-apps/plugin-updater') | null> {
+export async function importTauriUpdater(): Promise<
+  typeof import('@tauri-apps/plugin-updater') | null
+> {
   try {
     const updater = await dynamicImport('@tauri-apps/plugin-updater');
     return updater;
