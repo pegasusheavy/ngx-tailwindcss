@@ -1,6 +1,6 @@
 {
   "name": "@pegasusheavy/ngx-tailwindcss",
-  "version": "0.3.7",
+  "version": "0.4.0",
   "description": "A highly customizable Angular component library for Tailwind CSS 4+. Build beautiful, accessible UI components with full theming support, intelligent class merging, and zero bundled CSS. Features 30+ components including buttons, cards, modals, forms, tables, and more.",
   "license": "MIT",
   "exports": {
@@ -81,7 +81,33 @@
     "@angular/core": "^19.0.0 || ^20.0.0 || ^21.0.0",
     "@angular/cdk": "^19.0.0 || ^20.0.0 || ^21.0.0",
     "@angular/forms": "^19.0.0 || ^20.0.0 || ^21.0.0",
-    "@angular/animations": "^19.0.0 || ^20.0.0 || ^21.0.0"
+    "@angular/animations": "^19.0.0 || ^20.0.0 || ^21.0.0",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-dialog": "^2.0.0",
+    "@tauri-apps/plugin-notification": "^2.0.0",
+    "@tauri-apps/plugin-process": "^2.0.0",
+    "@tauri-apps/plugin-updater": "^2.0.0",
+    "electron": "^28.0.0 || ^29.0.0 || ^30.0.0 || ^31.0.0 || ^32.0.0 || ^33.0.0 || ^34.0.0 || ^35.0.0 || ^36.0.0 || ^37.0.0 || ^38.0.0 || ^39.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tauri-apps/api": {
+      "optional": true
+    },
+    "@tauri-apps/plugin-dialog": {
+      "optional": true
+    },
+    "@tauri-apps/plugin-notification": {
+      "optional": true
+    },
+    "@tauri-apps/plugin-process": {
+      "optional": true
+    },
+    "@tauri-apps/plugin-updater": {
+      "optional": true
+    },
+    "electron": {
+      "optional": true
+    }
   },
   "sideEffects": false
 }

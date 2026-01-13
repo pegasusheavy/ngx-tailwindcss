@@ -2,6 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
 import { Observable, Subject } from 'rxjs';
+import { dynamicImport } from './dynamic-import.util';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';
@@ -139,7 +140,7 @@ export class UpdateService {
 
   private async setupElectronListeners(): Promise<void> {
     try {
-      const { ipcRenderer } = await import('electron');
+      const { ipcRenderer } = await dynamicImport('electron');
 
       ipcRenderer.on('update-available', (_event: unknown, info: UpdateInfo) => {
         this.status.set('available');
@@ -172,8 +173,8 @@ export class UpdateService {
   }
 
   private async checkTauriUpdates(): Promise<UpdateInfo | null> {
-    const updater = await import('@tauri-apps/plugin-updater');
-    const app = await import('@tauri-apps/api/app');
+    const updater = await dynamicImport('@tauri-apps/plugin-updater');
+    const app = await dynamicImport('@tauri-apps/api/app');
 
     const currentVersion = await app.getVersion();
     const update = await updater.check();
@@ -196,7 +197,7 @@ export class UpdateService {
   }
 
   private async checkElectronUpdates(): Promise<UpdateInfo | null> {
-    const { ipcRenderer } = await import('electron');
+    const { ipcRenderer } = await dynamicImport('electron');
     const result = (await ipcRenderer.invoke('check-for-updates')) as {
       updateAvailable?: boolean;
       currentVersion?: string;
@@ -223,11 +224,11 @@ export class UpdateService {
   }
 
   private async downloadTauriUpdate(): Promise<void> {
-    const updater = await import('@tauri-apps/plugin-updater');
+    const updater = await dynamicImport('@tauri-apps/plugin-updater');
     const update = await updater.check();
 
     if (update?.available) {
-      await update.downloadAndInstall(event => {
+      await update.downloadAndInstall((event: { event: string; data?: { contentLength?: number; chunkLength?: number } }) => {
         if (event.event === 'Started') {
           const total = event.data?.contentLength || 0;
           this.progress.set({ percent: 0, bytesDownloaded: 0, bytesTotal: total });
@@ -253,17 +254,17 @@ export class UpdateService {
   }
 
   private async downloadElectronUpdate(): Promise<void> {
-    const { ipcRenderer } = await import('electron');
+    const { ipcRenderer } = await dynamicImport('electron');
     ipcRenderer.send('download-update');
   }
 
   private async installTauriUpdate(): Promise<void> {
-    const process = await import('@tauri-apps/plugin-process');
+    const process = await dynamicImport('@tauri-apps/plugin-process');
     await process.relaunch();
   }
 
   private async installElectronUpdate(): Promise<void> {
-    const { ipcRenderer } = await import('electron');
+    const { ipcRenderer } = await dynamicImport('electron');
     ipcRenderer.send('quit-and-install');
   }
 }
