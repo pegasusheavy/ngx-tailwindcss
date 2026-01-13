@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
+import { dynamicImport } from './dynamic-import.util';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';
@@ -75,7 +76,7 @@ export class FilePickerService {
 
   private async openFileTauri(options: NativeOpenFileOptions): Promise<FilePickerResult[] | null> {
     try {
-      const { open } = await import('@tauri-apps/plugin-dialog');
+      const { open } = await dynamicImport('@tauri-apps/plugin-dialog');
 
       const filters = options.filters?.map(f => ({
         name: f.name,
@@ -110,7 +111,7 @@ export class FilePickerService {
     options: NativeOpenFileOptions
   ): Promise<FilePickerResult[] | null> {
     try {
-      const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
 
       const result = await ipcRenderer.invoke('show-open-dialog', {
         title: options.title,
@@ -179,7 +180,7 @@ export class FilePickerService {
 
   private async saveFileTauri(options: NativeSaveFileOptions): Promise<string | null> {
     try {
-      const { save } = await import('@tauri-apps/plugin-dialog');
+      const { save } = await dynamicImport('@tauri-apps/plugin-dialog');
 
       const filters = options.filters?.map(f => ({
         name: f.name,
@@ -201,7 +202,7 @@ export class FilePickerService {
 
   private async saveFileElectron(options: NativeSaveFileOptions): Promise<string | null> {
     try {
-      const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
 
       const result = await ipcRenderer.invoke('show-save-dialog', {
         title: options.title,
@@ -228,7 +229,7 @@ export class FilePickerService {
 
   private async selectDirectoryTauri(options: NativeOpenFileOptions): Promise<string | null> {
     try {
-      const { open } = await import('@tauri-apps/plugin-dialog');
+      const { open } = await dynamicImport('@tauri-apps/plugin-dialog');
 
       const result = await open({
         title: options.title,
@@ -246,7 +247,7 @@ export class FilePickerService {
 
   private async selectDirectoryElectron(options: NativeOpenFileOptions): Promise<string | null> {
     try {
-      const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
 
       const result = await ipcRenderer.invoke('show-open-dialog', {
         title: options.title,

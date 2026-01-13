@@ -5,7 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.3.7] - 2026-01-13
+## [0.4.0] - 2026-01-13
+
+### 🎯 Breaking Changes
+
+- **Native App Support**: Tauri and Electron packages are now **optional** peer dependencies
+  - The library still works perfectly without them - all imports are dynamic
+  - Install `@tauri-apps/*` packages only if you need native app features
+  - Install `electron` only if you're building an Electron app
+  - Native components gracefully fall back to web equivalents when these packages aren't installed
 
 ### 🔒 Security
 
@@ -197,7 +205,7 @@ First public release of `@pegasus-heavy/ngx-tailwindcss` - A highly customizable
 - Zero bundled CSS - works with your Tailwind config
 - Signals-based reactive state management
 
-[0.3.7]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.7
+[0.4.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.4.0
 [0.1.2]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.2
 [0.1.1]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.1
 [0.1.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.0

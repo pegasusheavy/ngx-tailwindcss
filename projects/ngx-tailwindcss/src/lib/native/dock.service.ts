@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform, NativeMenuItem } from './native.types';
+import { dynamicImport } from './dynamic-import.util';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';
@@ -30,7 +31,7 @@ export class DockService {
 
     if (platform === PLATFORM_TAURI) {
       try {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window');
+        const { getCurrentWindow } = await dynamicImport('@tauri-apps/api/window');
         // Tauri doesn't have direct dock badge API, use window title instead
         const appWindow = getCurrentWindow();
         // Badge functionality varies by platform in Tauri
@@ -40,7 +41,7 @@ export class DockService {
       }
     } else if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('set-dock-badge', text);
       } catch (error) {
         console.error('Failed to set Electron dock badge:', error);
@@ -63,7 +64,7 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
         // Progress should be between 0 and 1, or -1 to clear
         const normalizedProgress = progress < 0 ? -1 : Math.min(1, Math.max(0, progress / 100));
         ipcRenderer.send('set-progress', normalizedProgress);
@@ -89,7 +90,7 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
         return await ipcRenderer.invoke('dock-bounce', type);
       } catch (error) {
         console.error('Failed to bounce Electron dock:', error);
@@ -108,7 +109,7 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('cancel-dock-bounce', id);
       } catch (error) {
         console.error('Failed to cancel Electron dock bounce:', error);
@@ -124,7 +125,7 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('set-dock-menu', this.convertMenuForElectron(items));
       } catch (error) {
         console.error('Failed to set Electron dock menu:', error);
@@ -140,7 +141,7 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('show-dock');
       } catch (error) {
         console.error('Failed to show Electron dock:', error);
@@ -156,7 +157,7 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('hide-dock');
       } catch (error) {
         console.error('Failed to hide Electron dock:', error);
@@ -172,7 +173,7 @@ export class DockService {
 
     if (platform === PLATFORM_TAURI) {
       try {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window');
+        const { getCurrentWindow } = await dynamicImport('@tauri-apps/api/window');
         const appWindow = getCurrentWindow();
         await appWindow.requestUserAttention(flash ? 2 : null); // 2 = Informational
       } catch (error) {
@@ -180,7 +181,7 @@ export class DockService {
       }
     } else if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
+        const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('flash-frame', flash);
       } catch (error) {
         console.error('Failed to flash Electron frame:', error);
