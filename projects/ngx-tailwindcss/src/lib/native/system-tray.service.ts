@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform, NativeMenuItem } from './native.types';
-import { importElectron, importTauriMenu, importTauriTray } from './dynamic-import';
+import { dynamicImport } from './dynamic-import.util';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';
@@ -53,8 +53,8 @@ export class SystemTrayService {
       const tray = this.trayInstance as { setIcon: (icon: string) => Promise<void> };
       await tray.setIcon(icon);
     } else if (platform === PLATFORM_ELECTRON) {
-      const electron = await importElectron();
-      electron?.ipcRenderer?.send('tray-set-icon', icon);
+      const { ipcRenderer } = await dynamicImport('electron');
+      ipcRenderer.send('tray-set-icon', icon);
     }
   }
 
@@ -65,8 +65,8 @@ export class SystemTrayService {
       const tray = this.trayInstance as { setTooltip: (tooltip: string) => Promise<void> };
       await tray.setTooltip(tooltip);
     } else if (platform === PLATFORM_ELECTRON) {
-      const electron = await importElectron();
-      electron?.ipcRenderer?.send('tray-set-tooltip', tooltip);
+      const { ipcRenderer } = await dynamicImport('electron');
+      ipcRenderer.send('tray-set-tooltip', tooltip);
     }
   }
 
@@ -76,8 +76,8 @@ export class SystemTrayService {
     if (platform === PLATFORM_TAURI) {
       await this.setTauriMenu(menu);
     } else if (platform === PLATFORM_ELECTRON) {
-      const electron = await importElectron();
-      electron?.ipcRenderer?.send('tray-set-menu', this.convertMenuForElectron(menu));
+      const { ipcRenderer } = await dynamicImport('electron');
+      ipcRenderer.send('tray-set-menu', this.convertMenuForElectron(menu));
     }
   }
 
@@ -87,8 +87,8 @@ export class SystemTrayService {
     if (platform === PLATFORM_TAURI && this.trayInstance) {
       this.trayInstance = null;
     } else if (platform === PLATFORM_ELECTRON) {
-      const electron = await importElectron();
-      electron?.ipcRenderer?.send('tray-destroy');
+      const { ipcRenderer } = await dynamicImport('electron');
+      ipcRenderer.send('tray-destroy');
     }
 
     this.isVisible.set(false);
@@ -96,8 +96,7 @@ export class SystemTrayService {
 
   private async createTauriTray(config: TrayConfig): Promise<boolean> {
     try {
-      const tauriTray = await importTauriTray();
-      if (!tauriTray) return false;
+      const tauriTray = await dynamicImport('@tauri-apps/api/tray');
 
       this.trayInstance = await tauriTray.TrayIcon.new({
         icon: config.icon,
@@ -119,10 +118,9 @@ export class SystemTrayService {
 
   private async createElectronTray(config: TrayConfig): Promise<boolean> {
     try {
-      const electron = await importElectron();
-      if (!electron?.ipcRenderer) return false;
+      const { ipcRenderer } = await dynamicImport('electron');
 
-      await electron.ipcRenderer.invoke('tray-create', {
+      await ipcRenderer.invoke('tray-create', {
         icon: config.icon,
         tooltip: config.tooltip,
         menu: config.menu ? this.convertMenuForElectron(config.menu) : undefined,
@@ -138,8 +136,7 @@ export class SystemTrayService {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private async buildTauriMenu(items: NativeMenuItem[]): Promise<any> {
-    const tauriMenu = await importTauriMenu();
-    if (!tauriMenu) return null;
+    const tauriMenu = await dynamicImport('@tauri-apps/api/menu');
     const { Menu, MenuItem, Submenu } = tauriMenu;
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

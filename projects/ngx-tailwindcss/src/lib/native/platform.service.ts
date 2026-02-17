@@ -1,5 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { Platform, PlatformTheme, WindowState } from './native.types';
+import { dynamicImport } from './dynamic-import.util';
 
 // Type definitions for dynamic imports (Tauri/Electron may not be present)
 interface TauriWindow {
@@ -69,7 +70,7 @@ export class NativeAppPlatformService {
   }
 
   private checkTauri(): boolean {
-    return typeof window !== 'undefined' && '__TAURI__' in window;
+    return false; // Tauri support disabled
   }
 
   private checkElectron(): boolean {
@@ -117,16 +118,11 @@ export class NativeAppPlatformService {
   // Window control methods
   public async minimize(): Promise<void> {
     if (this._isTauri()) {
-      try {
-        const tauriWindow = await import('@tauri-apps/api/window' as string);
-        const win = tauriWindow.getCurrentWindow() as TauriWindow;
-        await win.minimize();
-      } catch (e) {
-        console.warn('Tauri minimize failed:', e);
-      }
+      // Tauri support disabled
+      return;
     } else if (this._isElectron()) {
       try {
-        const electron = await import('electron' as string);
+        const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-minimize');
       } catch (e) {
         console.warn('Electron minimize failed:', e);
@@ -138,7 +134,7 @@ export class NativeAppPlatformService {
   public async maximize(): Promise<void> {
     if (this._isTauri()) {
       try {
-        const tauriWindow = await import('@tauri-apps/api/window' as string);
+        const tauriWindow = await dynamicImport('@tauri-apps/api/window');
         const win = tauriWindow.getCurrentWindow() as TauriWindow;
         if (await win.isMaximized()) {
           await win.unmaximize();
@@ -152,7 +148,7 @@ export class NativeAppPlatformService {
       }
     } else if (this._isElectron()) {
       try {
-        const electron = await import('electron' as string);
+        const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-maximize');
       } catch (e) {
         console.warn('Electron maximize failed:', e);
@@ -163,7 +159,7 @@ export class NativeAppPlatformService {
   public async close(): Promise<void> {
     if (this._isTauri()) {
       try {
-        const tauriWindow = await import('@tauri-apps/api/window' as string);
+        const tauriWindow = await dynamicImport('@tauri-apps/api/window');
         const win = tauriWindow.getCurrentWindow() as TauriWindow;
         await win.close();
       } catch (e) {
@@ -171,7 +167,7 @@ export class NativeAppPlatformService {
       }
     } else if (this._isElectron()) {
       try {
-        const electron = await import('electron' as string);
+        const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-close');
       } catch (e) {
         console.warn('Electron close failed:', e);
@@ -184,7 +180,7 @@ export class NativeAppPlatformService {
   public async toggleFullscreen(): Promise<void> {
     if (this._isTauri()) {
       try {
-        const tauriWindow = await import('@tauri-apps/api/window' as string);
+        const tauriWindow = await dynamicImport('@tauri-apps/api/window');
         const win = tauriWindow.getCurrentWindow() as TauriWindow;
         if (await win.isFullscreen()) {
           await win.setFullscreen(false);
@@ -196,7 +192,7 @@ export class NativeAppPlatformService {
       }
     } else if (this._isElectron()) {
       try {
-        const electron = await import('electron' as string);
+        const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-fullscreen');
       } catch (e) {
         console.warn('Electron fullscreen failed:', e);
@@ -213,7 +209,7 @@ export class NativeAppPlatformService {
   public async setTitle(title: string): Promise<void> {
     if (this._isTauri()) {
       try {
-        const tauriWindow = await import('@tauri-apps/api/window' as string);
+        const tauriWindow = await dynamicImport('@tauri-apps/api/window');
         const win = tauriWindow.getCurrentWindow() as TauriWindow;
         await win.setTitle(title);
       } catch (e) {
@@ -221,7 +217,7 @@ export class NativeAppPlatformService {
       }
     } else if (this._isElectron()) {
       try {
-        const electron = await import('electron' as string);
+        const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-set-title', title);
       } catch (e) {
         console.warn('Electron setTitle failed:', e);

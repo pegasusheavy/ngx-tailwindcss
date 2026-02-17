@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { dynamicImport } from '../native/dynamic-import.util';
 
 // ============================================================================
 // TYPES

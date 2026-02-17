@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-01-13
+
+### 🎯 Breaking Changes
+
+- **Native App Support**: Tauri and Electron packages are now **optional** peer dependencies
+  - The library still works perfectly without them - all imports are dynamic
+  - Install `@tauri-apps/*` packages only if you need native app features
+  - Install `electron` only if you're building an Electron app
+  - Native components gracefully fall back to web equivalents when these packages aren't installed
+
+### 🔒 Security
+
+- Added CodeQL security analysis workflow for automated vulnerability scanning
+
+### 🛠 CI/CD & Dependencies
+
+- Bumped GitHub Actions dependencies:
+  - `actions/checkout` from 4 to 6
+  - `actions/setup-node` from 4 to 6
+  - `actions/configure-pages` from 4 to 5
+  - `actions/upload-artifact` from 4 to 6
+  - `actions/upload-pages-artifact` from 3 to 4
+  - `orhun/git-cliff-action` from 3 to 4
+  - `github/codeql-action` from 3 to 4
+  - `amannn/action-semantic-pull-request` from 5 to 6
+- Bumped Angular dependencies in docs to 21.0.6:
+  - `@angular/core`
+  - `@angular/common`
+  - `@angular/compiler`
+  - `@angular/compiler-cli`
+  - `@angular/platform-browser`
+
 ## [0.3.4] - 2025-12-31
 
 ### 🐛 Bug Fixes
@@ -310,6 +342,7 @@ First public release of `@pegasus-heavy/ngx-tailwindcss` - A highly customizable
 - Zero bundled CSS - works with your Tailwind config
 - Signals-based reactive state management
 
+[0.4.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.4.0
 [0.3.4]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.4
 [0.3.3]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.3
 [0.3.2]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.2

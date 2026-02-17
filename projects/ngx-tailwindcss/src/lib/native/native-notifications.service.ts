@@ -1,7 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
-import { importElectron, importTauriNotification } from './dynamic-import';
+import { dynamicImport } from './dynamic-import.util';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';
@@ -51,8 +51,7 @@ export class NativeNotificationsService {
 
     if (platform === PLATFORM_TAURI) {
       try {
-        const notification = await importTauriNotification();
-        if (!notification) return false;
+        const notification = await dynamicImport('@tauri-apps/plugin-notification');
         let granted = await notification.isPermissionGranted();
         if (!granted) {
           const result = await notification.requestPermission();
@@ -102,8 +101,8 @@ export class NativeNotificationsService {
       console.warn('Badge count not directly supported in Tauri');
     } else if (platform === PLATFORM_ELECTRON) {
       try {
-        const electron = await importElectron();
-        electron?.ipcRenderer?.send('set-badge-count', count);
+        const { ipcRenderer } = await dynamicImport('electron');
+        ipcRenderer.send('set-badge-count', count);
       } catch (error) {
         console.error('Failed to set Electron badge count:', error);
       }
@@ -124,8 +123,7 @@ export class NativeNotificationsService {
 
   private async showTauriNotification(options: NativeNotificationOptions): Promise<string | null> {
     try {
-      const notification = await importTauriNotification();
-      if (!notification) return null;
+      const notification = await dynamicImport('@tauri-apps/plugin-notification');
       const id = `notification-${Date.now()}`;
 
       await notification.sendNotification({
@@ -145,11 +143,10 @@ export class NativeNotificationsService {
     options: NativeNotificationOptions
   ): Promise<string | null> {
     try {
-      const electron = await importElectron();
-      if (!electron?.ipcRenderer) return null;
+      const { ipcRenderer } = await dynamicImport('electron');
       const id = `notification-${Date.now()}`;
 
-      await electron.ipcRenderer.invoke('show-notification', {
+      await ipcRenderer.invoke('show-notification', {
         title: options.title,
         body: options.body,
         icon: options.icon,

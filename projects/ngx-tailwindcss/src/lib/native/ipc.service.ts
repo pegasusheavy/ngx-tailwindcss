@@ -1,6 +1,7 @@
 import { Injectable, inject, signal, NgZone } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { IpcResponse } from './native.types';
+import { dynamicImport } from './dynamic-import.util';
 
 type IpcCallback<T> = (data: T) => void;
 
@@ -53,7 +54,7 @@ export class NativeIpcService {
   public async invoke<T, R = unknown>(command: string, payload?: T): Promise<IpcResponse<R>> {
     if (this.platformService.isTauri()) {
       try {
-        const tauriCore = (await import('@tauri-apps/api/core' as string)) as TauriCoreModule;
+        const tauriCore = (await dynamicImport('@tauri-apps/api/core')) as TauriCoreModule;
         const data = await tauriCore.invoke<R>(command, payload as Record<string, unknown>);
         return { success: true, data };
       } catch (err) {
@@ -63,7 +64,7 @@ export class NativeIpcService {
 
     if (this.platformService.isElectron()) {
       try {
-        const electron = await import('electron' as string);
+        const electron = await dynamicImport('electron');
         const data = await electron.ipcRenderer.invoke(command, payload);
         return { success: true, data };
       } catch (err) {
@@ -80,7 +81,7 @@ export class NativeIpcService {
   public async send<T>(channel: string, payload?: T): Promise<void> {
     if (this.platformService.isTauri()) {
       try {
-        const tauriEvent = (await import('@tauri-apps/api/event' as string)) as TauriEventModule;
+        const tauriEvent = (await dynamicImport('@tauri-apps/api/event')) as TauriEventModule;
         await tauriEvent.emit(channel, payload);
       } catch (e) {
         console.warn('Tauri emit failed:', e);
@@ -90,7 +91,7 @@ export class NativeIpcService {
 
     if (this.platformService.isElectron()) {
       try {
-        const electron = await import('electron' as string);
+        const electron = await dynamicImport('electron');
         electron.ipcRenderer.send(channel, payload);
       } catch (e) {
         console.warn('Electron send failed:', e);
@@ -114,7 +115,7 @@ export class NativeIpcService {
     // Platform-specific setup
     if (this.platformService.isTauri()) {
       try {
-        const tauriEvent = (await import('@tauri-apps/api/event' as string)) as TauriEventModule;
+        const tauriEvent = (await dynamicImport('@tauri-apps/api/event')) as TauriEventModule;
         const unlisten = await tauriEvent.listen<T>(channel, (event: TauriEvent<T>) => {
           this.ngZone.run(() => {
             callback(event.payload);
@@ -129,7 +130,7 @@ export class NativeIpcService {
 
     if (this.platformService.isElectron()) {
       try {
-        const electron = await import('electron' as string);
+        const electron = await dynamicImport('electron');
         const handler = (_event: unknown, data: T) => {
           this.ngZone.run(() => {
             callback(data);
@@ -162,7 +163,7 @@ export class NativeIpcService {
   public async once<T>(channel: string, callback: IpcCallback<T>): Promise<void> {
     if (this.platformService.isTauri()) {
       try {
-        const tauriEvent = (await import('@tauri-apps/api/event' as string)) as TauriEventModule;
+        const tauriEvent = (await dynamicImport('@tauri-apps/api/event')) as TauriEventModule;
         await tauriEvent.once<T>(channel, (event: TauriEvent<T>) => {
           this.ngZone.run(() => {
             callback(event.payload);
@@ -176,7 +177,7 @@ export class NativeIpcService {
 
     if (this.platformService.isElectron()) {
       try {
-        const electron = await import('electron' as string);
+        const electron = await dynamicImport('electron');
         electron.ipcRenderer.once(channel, (_event: unknown, data: T) => {
           this.ngZone.run(() => {
             callback(data);

@@ -2,12 +2,7 @@ import { Injectable, inject, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
 import { Observable, Subject } from 'rxjs';
-import {
-  importElectron,
-  importTauriUpdater,
-  importTauriApp,
-  importTauriProcess,
-} from './dynamic-import';
+import { dynamicImport } from './dynamic-import.util';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';
@@ -145,30 +140,29 @@ export class UpdateService {
 
   private async setupElectronListeners(): Promise<void> {
     try {
-      const electron = await importElectron();
-      if (!electron?.ipcRenderer) return;
+      const { ipcRenderer } = await dynamicImport('electron');
 
-      electron.ipcRenderer.on('update-available', (_event: unknown, info: UpdateInfo) => {
+      ipcRenderer.on('update-available', (_event: unknown, info: UpdateInfo) => {
         this.status.set('available');
         this.updateInfo.set(info);
         this.updateAvailable$.next(info);
       });
 
-      electron.ipcRenderer.on('update-not-available', () => {
+      ipcRenderer.on('update-not-available', () => {
         this.status.set('not-available');
       });
 
-      electron.ipcRenderer.on('download-progress', (_event: unknown, progress: UpdateProgress) => {
+      ipcRenderer.on('download-progress', (_event: unknown, progress: UpdateProgress) => {
         this.progress.set(progress);
         this.downloadProgress$.next(progress);
       });
 
-      electron.ipcRenderer.on('update-downloaded', () => {
+      ipcRenderer.on('update-downloaded', () => {
         this.status.set('downloaded');
         this.updateDownloaded$.next();
       });
 
-      electron.ipcRenderer.on('update-error', (_event: unknown, error: string) => {
+      ipcRenderer.on('update-error', (_event: unknown, error: string) => {
         this.status.set('error');
         this.error.set(error);
         this.updateError$.next(error);
@@ -179,9 +173,8 @@ export class UpdateService {
   }
 
   private async checkTauriUpdates(): Promise<UpdateInfo | null> {
-    const updater = await importTauriUpdater();
-    const app = await importTauriApp();
-    if (!updater || !app) return null;
+    const updater = await dynamicImport('@tauri-apps/plugin-updater');
+    const app = await dynamicImport('@tauri-apps/api/app');
 
     const currentVersion = await app.getVersion();
     const update = await updater.check();
@@ -204,10 +197,8 @@ export class UpdateService {
   }
 
   private async checkElectronUpdates(): Promise<UpdateInfo | null> {
-    const electron = await importElectron();
-    if (!electron?.ipcRenderer) return null;
-
-    const result = (await electron.ipcRenderer.invoke('check-for-updates')) as {
+    const { ipcRenderer } = await dynamicImport('electron');
+    const result = (await ipcRenderer.invoke('check-for-updates')) as {
       updateAvailable?: boolean;
       currentVersion?: string;
       version?: string;
@@ -233,12 +224,11 @@ export class UpdateService {
   }
 
   private async downloadTauriUpdate(): Promise<void> {
-    const updater = await importTauriUpdater();
-    if (!updater) return;
+    const updater = await dynamicImport('@tauri-apps/plugin-updater');
     const update = await updater.check();
 
     if (update?.available) {
-      await update.downloadAndInstall(event => {
+      await update.downloadAndInstall((event: { event: string; data?: { contentLength?: number; chunkLength?: number } }) => {
         if (event.event === 'Started') {
           const total = event.data?.contentLength || 0;
           this.progress.set({ percent: 0, bytesDownloaded: 0, bytesTotal: total });
@@ -264,17 +254,17 @@ export class UpdateService {
   }
 
   private async downloadElectronUpdate(): Promise<void> {
-    const electron = await importElectron();
-    electron?.ipcRenderer?.send('download-update');
+    const { ipcRenderer } = await dynamicImport('electron');
+    ipcRenderer.send('download-update');
   }
 
   private async installTauriUpdate(): Promise<void> {
-    const process = await importTauriProcess();
-    await process?.relaunch();
+    const process = await dynamicImport('@tauri-apps/plugin-process');
+    await process.relaunch();
   }
 
   private async installElectronUpdate(): Promise<void> {
-    const electron = await importElectron();
-    electron?.ipcRenderer?.send('quit-and-install');
+    const { ipcRenderer } = await dynamicImport('electron');
+    ipcRenderer.send('quit-and-install');
   }
 }
