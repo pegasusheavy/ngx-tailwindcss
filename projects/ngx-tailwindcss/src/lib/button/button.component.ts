@@ -48,9 +48,9 @@ const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
     'bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white shadow-sm hover:shadow focus-visible:ring-rose-500',
   info: 'bg-cyan-600 hover:bg-cyan-700 active:bg-cyan-800 text-white shadow-sm hover:shadow focus-visible:ring-cyan-500',
   ghost:
-    'bg-transparent hover:bg-slate-100 active:bg-slate-200 text-slate-700 focus-visible:ring-slate-500',
+    'bg-transparent hover:bg-slate-100 dark:hover:bg-zinc-800 active:bg-slate-200 dark:active:bg-zinc-700 text-slate-700 dark:text-zinc-300 focus-visible:ring-slate-500',
   outline:
-    'bg-white border-2 border-slate-500 hover:border-slate-600 hover:bg-slate-100 active:bg-slate-200 text-slate-800 shadow-sm focus-visible:ring-slate-500',
+    'bg-white dark:bg-zinc-800 border-2 border-slate-500 dark:border-zinc-500 hover:border-slate-600 dark:hover:border-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-700 active:bg-slate-200 dark:active:bg-zinc-600 text-slate-800 dark:text-zinc-200 shadow-sm focus-visible:ring-slate-500',
   link: 'bg-transparent text-blue-600 hover:text-blue-700 hover:underline active:text-blue-800 focus-visible:ring-blue-500 p-0 shadow-none',
 };
 

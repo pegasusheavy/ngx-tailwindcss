@@ -1,0 +1,183 @@
+<div class="h-screen flex flex-col bg-zinc-100 dark:bg-slate-950 text-zinc-900 dark:text-white overflow-hidden">
+  <!-- Top Toolbar -->
+  <header class="flex items-center justify-between px-4 py-2 bg-white dark:bg-slate-900 border-b border-zinc-200 dark:border-slate-800">
+    <div class="flex items-center gap-4">
+      <a routerLink="/" class="flex items-center gap-2 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
+        <fa-icon [icon]="icons.arrowLeft" class="text-sm"></fa-icon>
+        <span class="text-sm">Back</span>
+      </a>
+      <div class="h-6 w-px bg-zinc-300 dark:bg-slate-700"></div>
+      <div class="flex items-center gap-1">
+        <button class="p-2 rounded hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" title="New"><fa-icon [icon]="icons.plus"></fa-icon></button>
+        <button class="p-2 rounded hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" title="Open"><fa-icon [icon]="icons.open"></fa-icon></button>
+        <button class="p-2 rounded hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" title="Save"><fa-icon [icon]="icons.save"></fa-icon></button>
+      </div>
+      <div class="h-6 w-px bg-zinc-300 dark:bg-slate-700"></div>
+      <div class="flex items-center gap-1">
+        <button class="p-2 rounded hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" title="Undo"><fa-icon [icon]="icons.undo"></fa-icon></button>
+        <button class="p-2 rounded hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" title="Redo"><fa-icon [icon]="icons.redo"></fa-icon></button>
+        <button class="p-2 rounded hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" title="Cut"><fa-icon [icon]="icons.cut"></fa-icon></button>
+        <button class="p-2 rounded hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" title="Copy"><fa-icon [icon]="icons.copy"></fa-icon></button>
+        <button class="p-2 rounded hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" title="Paste"><fa-icon [icon]="icons.paste"></fa-icon></button>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-lg font-semibold text-zinc-900 dark:text-white">Untitled Project</span>
+      <span class="text-xs text-zinc-500 dark:text-slate-500">{{ tempo() }} BPM • {{ timeSignature() }}</span>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-1">
+        <button class="p-2 rounded transition-colors" [class]="snapEnabled() ? 'bg-blue-600 text-white' : 'hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400'" (click)="snapEnabled.set(!snapEnabled())" title="Snap"><fa-icon [icon]="icons.snap"></fa-icon></button>
+        <button class="p-2 rounded transition-colors" [class]="showMixer() ? 'bg-blue-600 text-white' : 'hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400'" (click)="showMixer.set(!showMixer())" title="Mixer"><fa-icon [icon]="icons.mixer"></fa-icon></button>
+      </div>
+      <div class="flex items-center gap-2 bg-zinc-200 dark:bg-slate-800 rounded px-2 py-1">
+        <button class="text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" (click)="zoomOut()"><fa-icon [icon]="icons.compress" class="text-xs"></fa-icon></button>
+        <span class="text-xs text-zinc-700 dark:text-slate-300 w-12 text-center">{{ (zoom() * 100).toFixed(0) }}%</span>
+        <button class="text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" (click)="zoomIn()"><fa-icon [icon]="icons.expand" class="text-xs"></fa-icon></button>
+      </div>
+      <app-theme-toggle></app-theme-toggle>
+      <button class="p-2 rounded hover:bg-zinc-100 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-zinc-900 dark:hover:text-white" title="Settings"><fa-icon [icon]="icons.settings"></fa-icon></button>
+    </div>
+  </header>
+
+  <!-- Transport Bar -->
+  <div class="flex items-center justify-center gap-6 px-4 py-3 bg-zinc-50 dark:bg-slate-900/50 border-b border-zinc-200 dark:border-slate-800">
+    <div class="flex items-center gap-3 bg-zinc-200 dark:bg-slate-950 rounded-lg px-4 py-2 font-mono">
+      <span class="text-2xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">{{ timeDisplay() }}</span>
+      <span class="text-xs text-zinc-500 dark:text-slate-500">BAR.BEAT</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <button class="p-3 rounded-full hover:bg-zinc-200 dark:hover:bg-slate-800 text-zinc-600 dark:text-slate-300" (click)="skipBackward()"><fa-icon [icon]="icons.backward"></fa-icon></button>
+      <button class="p-3 rounded-full hover:bg-zinc-200 dark:hover:bg-slate-800 text-zinc-600 dark:text-slate-300" (click)="stop()"><fa-icon [icon]="icons.stop"></fa-icon></button>
+      <button class="p-4 rounded-full transition-all" [class]="isPlaying() ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-600/30' : 'bg-zinc-300 dark:bg-slate-700 hover:bg-zinc-400 dark:hover:bg-slate-600 text-zinc-700 dark:text-white'" (click)="togglePlay()">
+        <fa-icon [icon]="isPlaying() ? icons.pause : icons.play" class="text-xl"></fa-icon>
+      </button>
+      <button class="p-3 rounded-full transition-all" [class]="isRecording() ? 'bg-red-600 text-white animate-pulse' : 'hover:bg-zinc-200 dark:hover:bg-slate-800 text-zinc-600 dark:text-slate-300'" (click)="toggleRecord()"><fa-icon [icon]="icons.record"></fa-icon></button>
+      <button class="p-3 rounded-full hover:bg-zinc-200 dark:hover:bg-slate-800 text-zinc-600 dark:text-slate-300" (click)="skipForward()"><fa-icon [icon]="icons.forward"></fa-icon></button>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-2 bg-zinc-200 dark:bg-slate-800 rounded px-3 py-1.5">
+        <span class="text-xs text-zinc-500 dark:text-slate-400">BPM</span>
+        <input type="number" [ngModel]="tempo()" (ngModelChange)="tempo.set($event)" class="w-14 bg-transparent text-zinc-900 dark:text-white text-center font-mono focus:outline-none" min="20" max="300">
+      </div>
+      <div class="flex items-center gap-2 bg-zinc-200 dark:bg-slate-800 rounded px-3 py-1.5">
+        <span class="text-xs text-zinc-500 dark:text-slate-400">TIME</span>
+        <select [ngModel]="timeSignature()" (ngModelChange)="timeSignature.set($event)" class="bg-transparent text-zinc-900 dark:text-white focus:outline-none cursor-pointer">
+          <option value="4/4" class="bg-white dark:bg-slate-800">4/4</option>
+          <option value="3/4" class="bg-white dark:bg-slate-800">3/4</option>
+          <option value="6/8" class="bg-white dark:bg-slate-800">6/8</option>
+        </select>
+      </div>
+    </div>
+    <button class="px-3 py-1.5 rounded text-sm font-medium transition-colors" [class]="loopEnabled() ? 'bg-amber-600 text-white' : 'bg-zinc-200 dark:bg-slate-800 text-zinc-500 dark:text-slate-400'" (click)="loopEnabled.set(!loopEnabled())">LOOP</button>
+    <div class="flex items-center gap-2 w-32">
+      <fa-icon [icon]="getVolumeIcon(masterVolume())" class="text-zinc-500 dark:text-slate-400"></fa-icon>
+      <input type="range" [ngModel]="masterVolume()" (ngModelChange)="masterVolume.set($event)" min="0" max="100" class="flex-1 h-1 bg-zinc-300 dark:bg-slate-700 rounded-full appearance-none cursor-pointer accent-emerald-500">
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex flex-1 overflow-hidden">
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <!-- Timeline Ruler -->
+      <div class="flex bg-zinc-50 dark:bg-slate-900 border-b border-zinc-200 dark:border-slate-800">
+        <div class="w-64 flex-shrink-0 px-4 py-2 flex items-center justify-between border-r border-zinc-200 dark:border-slate-800">
+          <span class="text-xs text-zinc-500 dark:text-slate-400 uppercase tracking-wider">Tracks</span>
+          <button class="p-1 rounded hover:bg-zinc-200 dark:hover:bg-slate-800 text-zinc-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400" (click)="addTrack()" title="Add Track"><fa-icon [icon]="icons.plus" class="text-sm"></fa-icon></button>
+        </div>
+        <div class="flex-1 relative overflow-hidden">
+          <div class="flex h-8" [style.width.px]="16 * 4 * 30 * zoom() + 200">
+            @for (bar of [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]; track bar) {
+              <div class="flex-shrink-0 border-l border-zinc-300 dark:border-slate-700 text-xs text-zinc-500 dark:text-slate-500 px-2 py-1" [style.width.px]="4 * 30 * zoom()">{{ bar }}</div>
+            }
+          </div>
+          <div class="absolute top-0 bottom-0 w-0.5 bg-emerald-500 playhead z-10" [style.left.px]="playheadPosition()">
+            <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-3 h-3 bg-emerald-500 rotate-45"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tracks -->
+      <div class="flex-1 overflow-auto bg-white dark:bg-transparent">
+        @for (track of tracks(); track track.id) {
+          <div class="flex border-b border-zinc-200 dark:border-slate-800 transition-colors" [class]="selectedTrackId() === track.id ? 'bg-zinc-100 dark:bg-slate-800/50' : 'hover:bg-zinc-50 dark:hover:bg-slate-800/30'" (click)="selectTrack(track.id)">
+            <div class="w-64 flex-shrink-0 p-2 border-r border-zinc-200 dark:border-slate-800">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded flex items-center justify-center" [style.backgroundColor]="track.color + '30'">
+                  <fa-icon [icon]="track.icon" [style.color]="track.color" class="text-sm"></fa-icon>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="text-sm font-medium text-zinc-900 dark:text-white truncate">{{ track.name }}</div>
+                  <div class="text-xs text-zinc-500 dark:text-slate-500 uppercase">{{ track.type }}</div>
+                </div>
+                <div class="flex items-center gap-1">
+                  <button class="w-6 h-6 rounded text-xs font-bold transition-colors" [class]="track.muted ? 'bg-amber-600 text-white' : 'bg-zinc-200 dark:bg-slate-700 text-zinc-500 dark:text-slate-400'" (click)="toggleMute(track.id); $event.stopPropagation()">M</button>
+                  <button class="w-6 h-6 rounded text-xs font-bold transition-colors" [class]="track.solo ? 'bg-emerald-600 text-white' : 'bg-zinc-200 dark:bg-slate-700 text-zinc-500 dark:text-slate-400'" (click)="toggleSolo(track.id); $event.stopPropagation()">S</button>
+                  <button class="w-6 h-6 rounded text-xs font-bold transition-colors" [class]="track.armed ? 'bg-red-600 text-white animate-pulse' : 'bg-zinc-200 dark:bg-slate-700 text-zinc-500 dark:text-slate-400'" (click)="toggleArm(track.id); $event.stopPropagation()">R</button>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 mt-2">
+                <fa-icon [icon]="getVolumeIcon(track.volume)" class="text-xs text-zinc-500 dark:text-slate-500"></fa-icon>
+                <input type="range" [ngModel]="track.volume" (ngModelChange)="updateTrackVolume(track.id, $event)" min="0" max="100" class="flex-1 h-1 bg-zinc-300 dark:bg-slate-700 rounded-full appearance-none cursor-pointer accent-blue-500" (click)="$event.stopPropagation()">
+                <span class="text-xs text-zinc-500 dark:text-slate-500 w-8 text-right">{{ track.volume }}</span>
+              </div>
+            </div>
+            <div class="flex-1 relative h-20 overflow-hidden grid-lines bg-zinc-50/50 dark:bg-transparent">
+              @for (clip of track.clips; track clip.id) {
+                <div class="absolute top-2 bottom-2 rounded-md shadow-lg cursor-pointer group overflow-hidden" [style]="getClipStyle(clip, zoom())" [style.backgroundColor]="clip.color">
+                  <div class="relative px-2 py-1"><span class="text-xs font-medium text-white drop-shadow truncate block">{{ clip.name }}</span></div>
+                  <div class="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                </div>
+              }
+              <div class="absolute top-0 bottom-0 w-0.5 bg-emerald-500 playhead z-10 pointer-events-none" [style.left.px]="playheadPosition()"></div>
+            </div>
+          </div>
+        }
+        <div class="flex items-center justify-center h-20 border-b border-zinc-200 dark:border-slate-800 border-dashed">
+          <button class="flex items-center gap-2 text-zinc-500 dark:text-slate-500 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors" (click)="addTrack()">
+            <fa-icon [icon]="icons.plus"></fa-icon><span class="text-sm">Add Track</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mixer Panel -->
+    @if (showMixer()) {
+      <div class="w-80 bg-zinc-50 dark:bg-slate-900 border-l border-zinc-200 dark:border-slate-800 flex flex-col">
+        <div class="px-4 py-3 border-b border-zinc-200 dark:border-slate-800"><h3 class="text-sm font-semibold text-zinc-900 dark:text-white uppercase tracking-wider">Mixer</h3></div>
+        <div class="flex-1 overflow-x-auto overflow-y-hidden">
+          <div class="flex h-full p-4 gap-3">
+            @for (track of tracks(); track track.id) {
+              <div class="flex flex-col items-center gap-2 w-16 flex-shrink-0">
+                <div class="w-12 h-12 rounded-lg flex items-center justify-center" [style.backgroundColor]="track.color + '30'">
+                  <fa-icon [icon]="track.icon" [style.color]="track.color"></fa-icon>
+                </div>
+                <span class="text-xs text-zinc-500 dark:text-slate-400 truncate w-full text-center">{{ track.name }}</span>
+                <div class="relative w-8 h-40 bg-zinc-200 dark:bg-slate-800 rounded overflow-hidden">
+                  <div class="absolute bottom-0 left-0 right-0 fader-track" [style.height.%]="track.volume"></div>
+                  <input type="range" [ngModel]="track.volume" (ngModelChange)="updateTrackVolume(track.id, $event)" min="0" max="100" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" style="writing-mode: vertical-lr; direction: rtl;">
+                  <div class="absolute left-1/2 -translate-x-1/2 w-6 h-3 bg-zinc-500 dark:bg-slate-300 shadow-md" [style.bottom.%]="track.volume - 3"></div>
+                </div>
+                <div class="text-xs text-zinc-500 dark:text-slate-500">{{ formatPan(track.pan) }}</div>
+                <div class="flex gap-1">
+                  <button class="w-5 h-5 rounded text-[10px] font-bold transition-colors" [class]="track.muted ? 'bg-amber-600 text-white' : 'bg-zinc-200 dark:bg-slate-700 text-zinc-500 dark:text-slate-400'" (click)="toggleMute(track.id)">M</button>
+                  <button class="w-5 h-5 rounded text-[10px] font-bold transition-colors" [class]="track.solo ? 'bg-emerald-600 text-white' : 'bg-zinc-200 dark:bg-slate-700 text-zinc-500 dark:text-slate-400'" (click)="toggleSolo(track.id)">S</button>
+                </div>
+              </div>
+            }
+            <div class="flex flex-col items-center gap-2 w-16 flex-shrink-0 border-l border-zinc-300 dark:border-slate-700 pl-3">
+              <div class="w-12 h-12 rounded-lg bg-emerald-600/20 flex items-center justify-center"><fa-icon [icon]="icons.volumeHigh" class="text-emerald-600 dark:text-emerald-400"></fa-icon></div>
+              <span class="text-xs text-zinc-500 dark:text-slate-400">Master</span>
+              <div class="relative w-8 h-40 bg-zinc-200 dark:bg-slate-800 rounded overflow-hidden">
+                <div class="absolute bottom-0 left-0 right-0 fader-track" [style.height.%]="masterVolume()"></div>
+                <input type="range" [ngModel]="masterVolume()" (ngModelChange)="masterVolume.set($event)" min="0" max="100" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" style="writing-mode: vertical-lr; direction: rtl;">
+                <div class="absolute left-1/2 -translate-x-1/2 w-6 h-3 bg-emerald-500 dark:bg-emerald-400 shadow-md" [style.bottom.%]="masterVolume() - 3"></div>
+              </div>
+              <div class="text-xs text-emerald-600 dark:text-emerald-400 font-mono">{{ masterVolume() }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

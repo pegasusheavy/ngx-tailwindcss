@@ -1,0 +1,439 @@
+<!-- Simulated Desktop Background -->
+<div class="h-screen bg-gradient-to-br from-slate-800 via-slate-900 to-slate-950 dark:from-zinc-900 dark:via-zinc-950 dark:to-black p-4 flex items-center justify-center">
+
+  <!-- File Explorer Window -->
+  <div
+    class="bg-white dark:bg-zinc-900 rounded-lg shadow-2xl dark:shadow-black/50 overflow-hidden flex flex-col transition-all duration-200 dark:ring-1 dark:ring-zinc-700"
+    [class.w-full]="isWindowMaximized()"
+    [class.h-full]="isWindowMaximized()"
+    [class.rounded-none]="isWindowMaximized()"
+    [class.w-[95%]]="!isWindowMaximized()"
+    [class.h-[90%]]="!isWindowMaximized()"
+    [class.max-w-7xl]="!isWindowMaximized()">
+
+    <!-- Window Title Bar -->
+    <div class="h-10 bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-700 flex items-center px-3 gap-3 select-none">
+      <!-- Traffic lights (macOS style) -->
+      <div class="flex items-center gap-1.5">
+        <button
+          class="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition-colors flex items-center justify-center group"
+          routerLink="/">
+          <fa-icon [icon]="icons.close" class="text-[6px] text-red-900 opacity-0 group-hover:opacity-100"></fa-icon>
+        </button>
+        <button
+          class="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition-colors flex items-center justify-center group">
+          <fa-icon [icon]="icons.minimize" class="text-[6px] text-yellow-900 opacity-0 group-hover:opacity-100"></fa-icon>
+        </button>
+        <button
+          (click)="toggleMaximize()"
+          class="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition-colors flex items-center justify-center group">
+          <fa-icon [icon]="isWindowMaximized() ? icons.windowMin : icons.windowMax" class="text-[6px] text-green-900 opacity-0 group-hover:opacity-100"></fa-icon>
+        </button>
+      </div>
+
+      <!-- Back to Docs -->
+      <a
+        routerLink="/"
+        class="flex items-center gap-1.5 px-2 py-1 text-sm text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors">
+        <fa-icon [icon]="icons.arrowLeft" class="text-xs"></fa-icon>
+        <span>Docs</span>
+      </a>
+
+      <div class="w-px h-5 bg-zinc-300 dark:bg-zinc-600"></div>
+
+      <!-- Navigation buttons -->
+      <div class="flex items-center gap-1">
+        <button
+          (click)="goBack()"
+          class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 disabled:opacity-30"
+          [disabled]="breadcrumbs().length <= 1">
+          <fa-icon [icon]="icons.chevronLeft" class="text-sm"></fa-icon>
+        </button>
+        <button
+          class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400 disabled:opacity-30"
+          disabled>
+          <fa-icon [icon]="icons.chevronRight" class="text-sm"></fa-icon>
+        </button>
+        <button
+          (click)="goUp()"
+          class="p-1.5 rounded hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400"
+          [disabled]="breadcrumbs().length <= 1">
+          <fa-icon [icon]="icons.chevronUp" class="text-sm"></fa-icon>
+        </button>
+      </div>
+
+      <!-- Breadcrumb / Path -->
+      <div class="flex-1 flex items-center gap-1 px-2 py-1 bg-white dark:bg-zinc-900 rounded border border-zinc-200 dark:border-zinc-700 text-sm">
+        <fa-icon [icon]="icons.folder" class="text-yellow-500 text-xs"></fa-icon>
+        @for (crumb of breadcrumbs(); track crumb.path; let last = $last) {
+          <button
+            (click)="navigateTo(crumb.path)"
+            class="text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            {{ crumb.name }}
+          </button>
+          @if (!last) {
+            <fa-icon [icon]="icons.chevronRight" class="text-xs text-zinc-400"></fa-icon>
+          }
+        }
+      </div>
+
+      <!-- Search -->
+      <div class="relative">
+        <input
+          type="text"
+          placeholder="Search"
+          [ngModel]="searchQuery()"
+          (ngModelChange)="searchQuery.set($event)"
+          class="w-48 h-7 pl-8 pr-3 text-sm rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <fa-icon [icon]="icons.search" class="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 text-xs"></fa-icon>
+      </div>
+
+      <app-theme-toggle />
+    </div>
+
+    <!-- Toolbar -->
+    <div class="h-10 bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700 flex items-center px-3 gap-1">
+      <button
+        (click)="showNewFolderModal.set(true)"
+        class="flex items-center gap-1.5 px-2.5 py-1 text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors">
+        <fa-icon [icon]="icons.plus" class="text-xs"></fa-icon>
+        <span>New</span>
+      </button>
+
+      <div class="w-px h-5 bg-zinc-300 dark:bg-zinc-600 mx-1"></div>
+
+      <button
+        (click)="cutSelected()"
+        [disabled]="selectedCount() === 0"
+        class="p-1.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors disabled:opacity-30">
+        <fa-icon [icon]="icons.cut" class="text-sm"></fa-icon>
+      </button>
+      <button
+        (click)="copySelected()"
+        [disabled]="selectedCount() === 0"
+        class="p-1.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors disabled:opacity-30">
+        <fa-icon [icon]="icons.copy" class="text-sm"></fa-icon>
+      </button>
+      <button
+        (click)="paste()"
+        [disabled]="clipboardItems().length === 0"
+        class="p-1.5 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors disabled:opacity-30">
+        <fa-icon [icon]="icons.paste" class="text-sm"></fa-icon>
+      </button>
+
+      <div class="w-px h-5 bg-zinc-300 dark:bg-zinc-600 mx-1"></div>
+
+      <button
+        (click)="deleteSelected()"
+        [disabled]="selectedCount() === 0"
+        class="p-1.5 text-zinc-600 dark:text-zinc-400 hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 rounded transition-colors disabled:opacity-30">
+        <fa-icon [icon]="icons.trash" class="text-sm"></fa-icon>
+      </button>
+
+      <div class="flex-1"></div>
+
+      <!-- Sort dropdown -->
+      <tw-dropdown placement="bottom-end">
+        <button
+          twDropdownTrigger
+          class="flex items-center gap-1.5 px-2.5 py-1 text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-200 dark:hover:bg-zinc-700 rounded transition-colors">
+          <fa-icon [icon]="icons.sort" class="text-xs"></fa-icon>
+          <span>Sort</span>
+        </button>
+        <tw-dropdown-menu>
+          <button twDropdownItem (click)="setSortBy('name')">
+            <fa-icon [icon]="sortBy() === 'name' ? icons.check : icons.file" class="w-4"></fa-icon>
+            Name
+          </button>
+          <button twDropdownItem (click)="setSortBy('modified')">
+            <fa-icon [icon]="sortBy() === 'modified' ? icons.check : icons.file" class="w-4"></fa-icon>
+            Date Modified
+          </button>
+          <button twDropdownItem (click)="setSortBy('size')">
+            <fa-icon [icon]="sortBy() === 'size' ? icons.check : icons.file" class="w-4"></fa-icon>
+            Size
+          </button>
+          <button twDropdownItem (click)="setSortBy('type')">
+            <fa-icon [icon]="sortBy() === 'type' ? icons.check : icons.file" class="w-4"></fa-icon>
+            Type
+          </button>
+        </tw-dropdown-menu>
+      </tw-dropdown>
+
+      <div class="w-px h-5 bg-zinc-300 dark:bg-zinc-600 mx-1"></div>
+
+      <!-- View mode toggle -->
+      <div class="flex items-center rounded overflow-hidden border border-zinc-200 dark:border-zinc-700">
+        <button
+          (click)="viewMode.set('grid')"
+          class="p-1.5 transition-colors"
+          [class.bg-blue-500]="viewMode() === 'grid'"
+          [class.text-white]="viewMode() === 'grid'"
+          [class.text-zinc-600]="viewMode() !== 'grid'"
+          [class.dark:text-zinc-400]="viewMode() !== 'grid'">
+          <fa-icon [icon]="icons.grid" class="text-sm"></fa-icon>
+        </button>
+        <button
+          (click)="viewMode.set('list')"
+          class="p-1.5 transition-colors"
+          [class.bg-blue-500]="viewMode() === 'list'"
+          [class.text-white]="viewMode() === 'list'"
+          [class.text-zinc-600]="viewMode() !== 'list'"
+          [class.dark:text-zinc-400]="viewMode() !== 'list'">
+          <fa-icon [icon]="icons.list" class="text-sm"></fa-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main content area -->
+    <div class="flex-1 flex overflow-hidden">
+      <!-- Sidebar -->
+      <div
+        class="bg-zinc-50 dark:bg-zinc-800/30 border-r border-zinc-200 dark:border-zinc-700 flex flex-col transition-all duration-200 overflow-y-auto"
+        [class.w-48]="!sidebarCollapsed()"
+        [class.w-0]="sidebarCollapsed()">
+
+        <!-- Favorites -->
+        <div class="p-2">
+          <div class="text-xs font-semibold text-zinc-500 dark:text-zinc-500 uppercase tracking-wider px-2 mb-1">
+            Favorites
+          </div>
+          @for (item of sidebarItems; track item.path) {
+            <button
+              (click)="navigateTo(item.path)"
+              class="w-full flex items-center gap-2 px-2 py-1.5 rounded text-sm transition-colors"
+              [class.bg-blue-100]="currentPath() === item.path"
+              [class.dark:bg-blue-900/30]="currentPath() === item.path"
+              [class.text-blue-700]="currentPath() === item.path"
+              [class.dark:text-blue-400]="currentPath() === item.path"
+              [class.text-zinc-700]="currentPath() !== item.path"
+              [class.dark:text-zinc-300]="currentPath() !== item.path"
+              [class.hover:bg-zinc-200]="currentPath() !== item.path"
+              [class.dark:hover:bg-zinc-700]="currentPath() !== item.path">
+              <fa-icon [icon]="item.icon" [class]="item.color" class="text-sm"></fa-icon>
+              <span class="truncate">{{ item.name }}</span>
+            </button>
+          }
+        </div>
+
+        <div class="border-t border-zinc-200 dark:border-zinc-700 my-2"></div>
+
+        <!-- Storage -->
+        <div class="p-2">
+          <div class="text-xs font-semibold text-zinc-500 dark:text-zinc-500 uppercase tracking-wider px-2 mb-1">
+            Storage
+          </div>
+          @for (storage of storageItems; track storage.name) {
+            <div class="px-2 py-2">
+              <div class="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300 mb-1">
+                <fa-icon [icon]="storage.icon" [class]="storage.color" class="text-sm"></fa-icon>
+                <span class="truncate text-xs">{{ storage.name }}</span>
+              </div>
+              <div class="h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                <div
+                  class="h-full rounded-full transition-all"
+                  [class.bg-blue-500]="getStoragePercent(storage.used, storage.total) < 80"
+                  [class.bg-yellow-500]="getStoragePercent(storage.used, storage.total) >= 80 && getStoragePercent(storage.used, storage.total) < 95"
+                  [class.bg-red-500]="getStoragePercent(storage.used, storage.total) >= 95"
+                  [style.width.%]="getStoragePercent(storage.used, storage.total)">
+                </div>
+              </div>
+              <div class="text-[10px] text-zinc-500 mt-0.5">
+                {{ storage.used }} GB / {{ storage.total }} GB
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Files area -->
+      <div class="flex-1 overflow-auto p-4 bg-white dark:bg-zinc-900/50" (click)="deselectAll()">
+        @if (viewMode() === 'grid') {
+          <!-- Grid View -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-2">
+            @for (file of filteredFiles(); track file.id) {
+              <div
+                (click)="selectItem(file.id, $event); $event.stopPropagation()"
+                (dblclick)="openItem(file)"
+                class="file-item group flex flex-col items-center p-3 rounded-lg cursor-pointer transition-all"
+                [class.bg-blue-100]="selectedItems().includes(file.id)"
+                [class.dark:bg-blue-600/30]="selectedItems().includes(file.id)"
+                [class.dark:ring-1]="selectedItems().includes(file.id)"
+                [class.dark:ring-blue-500/50]="selectedItems().includes(file.id)"
+                [class.hover:bg-zinc-100]="!selectedItems().includes(file.id)"
+                [class.dark:hover:bg-zinc-700/50]="!selectedItems().includes(file.id)"
+                tabindex="0">
+                <div class="relative">
+                  <fa-icon
+                    [icon]="file.type === 'folder' ? icons.folder : file.icon"
+                    [class]="file.color"
+                    class="text-4xl mb-2 transition-transform group-hover:scale-110">
+                  </fa-icon>
+                  @if (file.starred) {
+                    <fa-icon [icon]="icons.star" class="absolute -top-1 -right-1 text-yellow-400 text-xs"></fa-icon>
+                  }
+                </div>
+                <span class="text-xs text-center text-zinc-700 dark:text-zinc-300 line-clamp-2 max-w-full break-all">
+                  {{ file.name }}
+                </span>
+              </div>
+            }
+          </div>
+        } @else {
+          <!-- List View -->
+          <div class="rounded-lg border border-zinc-200 dark:border-zinc-700/50 overflow-hidden dark:bg-zinc-800/20">
+            <!-- List Header -->
+            <div class="grid grid-cols-12 gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-800/70 text-xs font-medium text-zinc-500 dark:text-zinc-400 border-b border-zinc-200 dark:border-zinc-700">
+              <div class="col-span-5 flex items-center gap-1 cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200" (click)="setSortBy('name')">
+                Name
+                @if (sortBy() === 'name') {
+                  <fa-icon [icon]="sortDirection() === 'asc' ? icons.sortUp : icons.sortDown" class="text-[10px]"></fa-icon>
+                }
+              </div>
+              <div class="col-span-3 flex items-center gap-1 cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200" (click)="setSortBy('modified')">
+                Modified
+                @if (sortBy() === 'modified') {
+                  <fa-icon [icon]="sortDirection() === 'asc' ? icons.sortUp : icons.sortDown" class="text-[10px]"></fa-icon>
+                }
+              </div>
+              <div class="col-span-2 flex items-center gap-1 cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200" (click)="setSortBy('type')">
+                Type
+                @if (sortBy() === 'type') {
+                  <fa-icon [icon]="sortDirection() === 'asc' ? icons.sortUp : icons.sortDown" class="text-[10px]"></fa-icon>
+                }
+              </div>
+              <div class="col-span-2 flex items-center gap-1 cursor-pointer hover:text-zinc-700 dark:hover:text-zinc-200" (click)="setSortBy('size')">
+                Size
+                @if (sortBy() === 'size') {
+                  <fa-icon [icon]="sortDirection() === 'asc' ? icons.sortUp : icons.sortDown" class="text-[10px]"></fa-icon>
+                }
+              </div>
+            </div>
+
+            <!-- List Items -->
+            @for (file of filteredFiles(); track file.id) {
+              <div
+                (click)="selectItem(file.id, $event); $event.stopPropagation()"
+                (dblclick)="openItem(file)"
+                class="grid grid-cols-12 gap-2 px-3 py-2 text-sm cursor-pointer border-b border-zinc-100 dark:border-zinc-800/50 last:border-0 transition-colors"
+                [class.bg-blue-50]="selectedItems().includes(file.id)"
+                [class.dark:bg-blue-600/20]="selectedItems().includes(file.id)"
+                [class.hover:bg-zinc-50]="!selectedItems().includes(file.id)"
+                [class.dark:hover:bg-zinc-700/30]="!selectedItems().includes(file.id)">
+                <div class="col-span-5 flex items-center gap-2 min-w-0">
+                  <fa-icon [icon]="file.type === 'folder' ? icons.folder : file.icon" [class]="file.color" class="text-lg flex-shrink-0"></fa-icon>
+                  <span class="truncate text-zinc-800 dark:text-zinc-200">{{ file.name }}</span>
+                  @if (file.starred) {
+                    <fa-icon [icon]="icons.star" class="text-yellow-400 text-xs flex-shrink-0"></fa-icon>
+                  }
+                </div>
+                <div class="col-span-3 flex items-center text-zinc-500 dark:text-zinc-400 text-xs">
+                  {{ formatDate(file.modified) }}
+                </div>
+                <div class="col-span-2 flex items-center text-zinc-500 dark:text-zinc-400 text-xs uppercase">
+                  {{ file.type === 'folder' ? 'Folder' : file.extension }}
+                </div>
+                <div class="col-span-2 flex items-center text-zinc-500 dark:text-zinc-400 text-xs">
+                  {{ file.type === 'folder' ? '—' : formatSize(file.size) }}
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (filteredFiles().length === 0) {
+          <div class="flex flex-col items-center justify-center h-64 text-zinc-400">
+            <fa-icon [icon]="icons.folder" class="text-6xl mb-4 opacity-30"></fa-icon>
+            <p class="text-lg">This folder is empty</p>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div class="h-6 bg-zinc-100 dark:bg-zinc-800/70 border-t border-zinc-200 dark:border-zinc-700 flex items-center justify-between px-3 text-xs text-zinc-500 dark:text-zinc-400">
+      <div class="flex items-center gap-4">
+        <span>{{ filteredFiles().length }} items</span>
+        @if (selectedCount() > 0) {
+          <span>{{ selectedCount() }} selected</span>
+          @if (totalSize() > 0) {
+            <span>{{ formatSize(totalSize()) }}</span>
+          }
+        }
+      </div>
+      <div class="flex items-center gap-2">
+        <fa-icon [icon]="icons.hdd" class="text-[10px]"></fa-icon>
+        <span>234 GB free of 500 GB</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- New Folder Modal -->
+<tw-modal [(open)]="showNewFolderModal" size="sm">
+  <div class="p-4">
+    <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">Create New Folder</h3>
+    <input
+      type="text"
+      placeholder="Folder name"
+      [ngModel]="newFolderName()"
+      (ngModelChange)="newFolderName.set($event)"
+      (keydown.enter)="createNewFolder()"
+      class="w-full px-3 py-2 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <div class="flex justify-end gap-2 mt-4">
+      <button
+        (click)="showNewFolderModal.set(false)"
+        class="px-4 py-2 text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-md transition-colors">
+        Cancel
+      </button>
+      <button
+        (click)="createNewFolder()"
+        [disabled]="!newFolderName().trim()"
+        class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50">
+        Create
+      </button>
+    </div>
+  </div>
+</tw-modal>
+
+<!-- Properties Modal -->
+<tw-modal [(open)]="showPropertiesModal" size="sm">
+  @if (propertiesItem(); as item) {
+    <div class="p-4">
+      <div class="flex items-center gap-3 mb-4">
+        <fa-icon [icon]="item.type === 'folder' ? icons.folder : item.icon" [class]="item.color" class="text-4xl"></fa-icon>
+        <div>
+          <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{{ item.name }}</h3>
+          <p class="text-sm text-zinc-500">{{ item.type === 'folder' ? 'Folder' : item.extension?.toUpperCase() + ' File' }}</p>
+        </div>
+      </div>
+
+      <div class="space-y-2 text-sm">
+        <div class="flex justify-between py-2 border-b border-zinc-200 dark:border-zinc-700">
+          <span class="text-zinc-500">Type</span>
+          <span class="text-zinc-900 dark:text-zinc-100">{{ item.type === 'folder' ? 'Folder' : item.extension?.toUpperCase() }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-zinc-200 dark:border-zinc-700">
+          <span class="text-zinc-500">Size</span>
+          <span class="text-zinc-900 dark:text-zinc-100">{{ formatSize(item.size) }}</span>
+        </div>
+        <div class="flex justify-between py-2 border-b border-zinc-200 dark:border-zinc-700">
+          <span class="text-zinc-500">Modified</span>
+          <span class="text-zinc-900 dark:text-zinc-100">{{ formatDate(item.modified) }}</span>
+        </div>
+        <div class="flex justify-between py-2">
+          <span class="text-zinc-500">Location</span>
+          <span class="text-zinc-900 dark:text-zinc-100">{{ currentPath() }}</span>
+        </div>
+      </div>
+
+      <div class="flex justify-end mt-4">
+        <button
+          (click)="showPropertiesModal.set(false)"
+          class="px-4 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">
+          Close
+        </button>
+      </div>
+    </div>
+  }
+</tw-modal>

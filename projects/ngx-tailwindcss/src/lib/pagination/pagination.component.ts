@@ -81,18 +81,22 @@ export class TwPaginationComponent {
     const showLeftEllipsis = leftSiblingIndex > 2;
     const showRightEllipsis = rightSiblingIndex < total - 1;
 
+    // Use unique ellipsis identifiers to avoid duplicate keys in @for tracking
+    const LEFT_ELLIPSIS = '...left';
+    const RIGHT_ELLIPSIS = '...right';
+
     if (!showLeftEllipsis && showRightEllipsis) {
       const leftRange = range(1, 3 + siblings * 2);
-      return [...leftRange.map(String), '...', String(total)];
+      return [...leftRange.map(String), RIGHT_ELLIPSIS, String(total)];
     }
 
     if (showLeftEllipsis && !showRightEllipsis) {
       const rightRange = range(total - (3 + siblings * 2) + 1, total);
-      return ['1', '...', ...rightRange.map(String)];
+      return ['1', LEFT_ELLIPSIS, ...rightRange.map(String)];
     }
 
     const middleRange = range(leftSiblingIndex, rightSiblingIndex);
-    return ['1', '...', ...middleRange.map(String), '...', String(total)];
+    return ['1', LEFT_ELLIPSIS, ...middleRange.map(String), RIGHT_ELLIPSIS, String(total)];
   });
 
   protected goToPage(page: number): void {

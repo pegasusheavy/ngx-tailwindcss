@@ -1,6 +1,7 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform, NativeMenuItem } from './native.types';
+import { importElectron, importTauriWindow } from './dynamic-import';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';
@@ -30,18 +31,22 @@ export class DockService {
 
     if (platform === PLATFORM_TAURI) {
       try {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window');
-        // Tauri doesn't have direct dock badge API, use window title instead
-        const appWindow = getCurrentWindow();
-        // Badge functionality varies by platform in Tauri
-        console.warn('Dock badge not directly supported in Tauri, consider using notifications');
+        const tauriWindow = await importTauriWindow();
+        if (!tauriWindow) return;
+        const appWindow = tauriWindow.getCurrentWindow();
+        // Tauri doesn't have direct dock badge API, so we append badge to window title
+        const currentTitle = await appWindow.title();
+        // Remove any existing badge from title (e.g., "App (3)" -> "App")
+        const baseTitle = currentTitle.replace(/\s*\(\d+\)\s*$/, '');
+        const newTitle = text ? `${baseTitle} (${text})` : baseTitle;
+        await appWindow.setTitle(newTitle);
       } catch (error) {
         console.error('Failed to set Tauri dock badge:', error);
       }
     } else if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
-        ipcRenderer.send('set-dock-badge', text);
+        const electron = await importElectron();
+        electron?.ipcRenderer?.send('set-dock-badge', text);
       } catch (error) {
         console.error('Failed to set Electron dock badge:', error);
       }
@@ -63,10 +68,10 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
+        const electron = await importElectron();
         // Progress should be between 0 and 1, or -1 to clear
         const normalizedProgress = progress < 0 ? -1 : Math.min(1, Math.max(0, progress / 100));
-        ipcRenderer.send('set-progress', normalizedProgress);
+        electron?.ipcRenderer?.send('set-progress', normalizedProgress);
       } catch (error) {
         console.error('Failed to set Electron progress:', error);
       }
@@ -89,8 +94,9 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
-        return await ipcRenderer.invoke('dock-bounce', type);
+        const electron = await importElectron();
+        if (!electron?.ipcRenderer) return -1;
+        return await electron.ipcRenderer.invoke('dock-bounce', type);
       } catch (error) {
         console.error('Failed to bounce Electron dock:', error);
         return -1;
@@ -108,8 +114,8 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
-        ipcRenderer.send('cancel-dock-bounce', id);
+        const electron = await importElectron();
+        electron?.ipcRenderer?.send('cancel-dock-bounce', id);
       } catch (error) {
         console.error('Failed to cancel Electron dock bounce:', error);
       }
@@ -124,8 +130,8 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
-        ipcRenderer.send('set-dock-menu', this.convertMenuForElectron(items));
+        const electron = await importElectron();
+        electron?.ipcRenderer?.send('set-dock-menu', this.convertMenuForElectron(items));
       } catch (error) {
         console.error('Failed to set Electron dock menu:', error);
       }
@@ -140,8 +146,8 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
-        ipcRenderer.send('show-dock');
+        const electron = await importElectron();
+        electron?.ipcRenderer?.send('show-dock');
       } catch (error) {
         console.error('Failed to show Electron dock:', error);
       }
@@ -156,8 +162,8 @@ export class DockService {
 
     if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
-        ipcRenderer.send('hide-dock');
+        const electron = await importElectron();
+        electron?.ipcRenderer?.send('hide-dock');
       } catch (error) {
         console.error('Failed to hide Electron dock:', error);
       }
@@ -172,16 +178,17 @@ export class DockService {
 
     if (platform === PLATFORM_TAURI) {
       try {
-        const { getCurrentWindow } = await import('@tauri-apps/api/window');
-        const appWindow = getCurrentWindow();
+        const tauriWindow = await importTauriWindow();
+        if (!tauriWindow) return;
+        const appWindow = tauriWindow.getCurrentWindow();
         await appWindow.requestUserAttention(flash ? 2 : null); // 2 = Informational
       } catch (error) {
         console.error('Failed to flash Tauri window:', error);
       }
     } else if (platform === PLATFORM_ELECTRON) {
       try {
-        const { ipcRenderer } = await import('electron');
-        ipcRenderer.send('flash-frame', flash);
+        const electron = await importElectron();
+        electron?.ipcRenderer?.send('flash-frame', flash);
       } catch (error) {
         console.error('Failed to flash Electron frame:', error);
       }

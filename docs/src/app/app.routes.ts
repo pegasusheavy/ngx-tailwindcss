@@ -266,6 +266,14 @@ export const routes: Routes = [
         path: 'portfolio',
         loadComponent: () => import('./pages/examples/portfolio.component').then(m => m.PortfolioComponent),
       },
+      {
+        path: 'desktop-app',
+        loadComponent: () => import('./pages/examples/desktop-app.component').then(m => m.DesktopAppComponent),
+      },
+      {
+        path: 'daw',
+        loadComponent: () => import('./pages/examples/daw.component').then(m => m.DawComponent),
+      },
     ],
   },
   {

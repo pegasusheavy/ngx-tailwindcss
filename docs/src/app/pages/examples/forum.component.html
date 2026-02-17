@@ -1,23 +1,23 @@
-<div class="min-h-screen bg-gradient-to-b from-orange-50 via-rose-50/30 to-white">
+<div class="min-h-screen bg-gradient-to-b from-orange-50 via-rose-50/30 to-white dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-950">
   <!-- Header -->
-  <header class="bg-white/80 backdrop-blur-xl border-b border-orange-200/50 sticky top-0 z-40 shadow-sm">
+  <header class="bg-white/80 dark:bg-zinc-900/90 backdrop-blur-xl border-b border-orange-200/50 dark:border-zinc-700 sticky top-0 z-40 shadow-sm dark:shadow-black/20">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <!-- Back to Docs & Logo -->
         <div class="flex items-center gap-3">
-          <a routerLink="/" class="flex items-center gap-2 px-3 py-2 text-orange-700 hover:text-orange-900 hover:bg-orange-100 rounded-lg font-medium transition-colors">
+          <a routerLink="/" class="flex items-center gap-2 px-3 py-2 text-orange-700 dark:text-orange-400 hover:text-orange-900 dark:hover:text-orange-300 hover:bg-orange-100 dark:hover:bg-zinc-800 rounded-lg font-medium transition-colors">
             <fa-icon [icon]="icons.arrowLeft" class="w-5 h-5"></fa-icon>
             <span class="hidden sm:inline">Docs</span>
           </a>
 
-          <div class="h-6 w-px bg-orange-300"></div>
+          <div class="h-6 w-px bg-orange-300 dark:bg-zinc-600"></div>
 
           <div class="w-10 h-10 bg-gradient-to-br from-orange-500 to-rose-500 rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-orange-500/30">
             F
           </div>
           <div>
-            <h1 class="text-xl font-bold text-orange-900">ForumHub</h1>
-            <p class="text-xs text-orange-600">Community Discussion</p>
+            <h1 class="text-xl font-bold text-orange-900 dark:text-orange-400">ForumHub</h1>
+            <p class="text-xs text-orange-600 dark:text-orange-500">Community Discussion</p>
           </div>
         </div>
 
@@ -34,13 +34,13 @@
         <!-- User Menu -->
         <div class="flex items-center gap-3">
           <app-theme-toggle></app-theme-toggle>
-          <tw-button variant="ghost" size="sm">
+          <tw-button variant="ghost" size="sm" class="text-slate-600 dark:text-zinc-300">
             <fa-icon [icon]="icons.bell" class="w-5 h-5"></fa-icon>
           </tw-button>
           <tw-avatar [initials]="currentUser.avatar" size="md"></tw-avatar>
           <div class="hidden md:block">
-            <p class="text-sm font-semibold text-slate-900">{{ currentUser.username }}</p>
-            <p class="text-xs text-slate-500">{{ currentUser.reputation }} rep</p>
+            <p class="text-sm font-semibold text-slate-900 dark:text-zinc-100">{{ currentUser.username }}</p>
+            <p class="text-xs text-slate-500 dark:text-zinc-500">{{ currentUser.reputation }} rep</p>
           </div>
         </div>
       </div>
@@ -53,17 +53,17 @@
     <div class="flex items-center justify-between mb-6">
       <div class="flex items-center gap-2 text-sm">
         @if (currentView() === 'categories') {
-          <span class="text-slate-900 font-semibold">Categories</span>
+          <span class="text-slate-900 dark:text-zinc-100 font-semibold">Categories</span>
         } @else if (currentView() === 'threads') {
-          <button class="text-slate-600 hover:text-slate-900" (click)="backToCategories()">Categories</button>
-          <span class="text-slate-400">/</span>
-          <span class="text-slate-900 font-semibold">{{ getCategoryName(selectedCategory()!) }}</span>
+          <button class="text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100" (click)="backToCategories()">Categories</button>
+          <span class="text-slate-400 dark:text-zinc-600">/</span>
+          <span class="text-slate-900 dark:text-zinc-100 font-semibold">{{ getCategoryName(selectedCategory()!) }}</span>
         } @else {
-          <button class="text-slate-600 hover:text-slate-900" (click)="backToCategories()">Categories</button>
-          <span class="text-slate-400">/</span>
-          <button class="text-slate-600 hover:text-slate-900" (click)="backToThreads()">{{ getCategoryName(selectedThread()!.category) }}</button>
-          <span class="text-slate-400">/</span>
-          <span class="text-slate-900 font-semibold truncate max-w-md">{{ selectedThread()!.title }}</span>
+          <button class="text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100" (click)="backToCategories()">Categories</button>
+          <span class="text-slate-400 dark:text-zinc-600">/</span>
+          <button class="text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-zinc-100" (click)="backToThreads()">{{ getCategoryName(selectedThread()!.category) }}</button>
+          <span class="text-slate-400 dark:text-zinc-600">/</span>
+          <span class="text-slate-900 dark:text-zinc-100 font-semibold truncate max-w-md">{{ selectedThread()!.title }}</span>
         }
       </div>
 
@@ -80,8 +80,8 @@
       @for (stat of stats; track stat.label) {
         <tw-card [padded]="true">
           <div class="text-center">
-            <div class="text-2xl font-bold text-slate-900">{{ stat.value }}</div>
-            <div class="text-sm text-slate-600">{{ stat.label }}</div>
+            <div class="text-2xl font-bold text-slate-900 dark:text-zinc-100">{{ stat.value }}</div>
+            <div class="text-sm text-slate-600 dark:text-zinc-400">{{ stat.label }}</div>
           </div>
         </tw-card>
       }
@@ -90,10 +90,10 @@
     <!-- Categories View -->
     @if (currentView() === 'categories') {
       <div class="space-y-4">
-        <h2 class="text-2xl font-bold text-slate-900 mb-4">Forum Categories</h2>
+        <h2 class="text-2xl font-bold text-slate-900 dark:text-zinc-100 mb-4">Forum Categories</h2>
 
         @for (category of categories; track category.id) {
-          <tw-card class="hover:shadow-lg transition-shadow cursor-pointer" [padded]="true" (click)="selectCategory(category.id)">
+          <tw-card class="hover:shadow-lg dark:hover:shadow-black/30 transition-shadow cursor-pointer" [padded]="true" (click)="selectCategory(category.id)">
             <div class="flex items-start gap-4">
               <div class="w-16 h-16 rounded-xl bg-gradient-to-br {{ category.color }} flex items-center justify-center text-4xl flex-shrink-0">
                 {{ category.icon }}
@@ -101,11 +101,11 @@
 
               <div class="flex-1">
                 <div class="flex items-center justify-between mb-2">
-                  <h3 class="text-xl font-bold text-slate-900">{{ category.name }}</h3>
-                  <fa-icon [icon]="icons.chevronRight" class="w-6 h-6 text-slate-400"></fa-icon>
+                  <h3 class="text-xl font-bold text-slate-900 dark:text-zinc-100">{{ category.name }}</h3>
+                  <fa-icon [icon]="icons.chevronRight" class="w-6 h-6 text-slate-400 dark:text-zinc-500"></fa-icon>
                 </div>
-                <p class="text-slate-600 mb-3">{{ category.description }}</p>
-                <div class="flex gap-4 text-sm text-slate-500">
+                <p class="text-slate-600 dark:text-zinc-400 mb-3">{{ category.description }}</p>
+                <div class="flex gap-4 text-sm text-slate-500 dark:text-zinc-500">
                   <span>📝 {{ category.threads }} threads</span>
                   <span>💬 {{ category.posts }} posts</span>
                 </div>
@@ -128,13 +128,13 @@
               size="sm">
             </tw-select>
           </div>
-          <p class="text-sm text-slate-600">{{ filteredThreads().length }} threads</p>
+          <p class="text-sm text-slate-600 dark:text-zinc-400">{{ filteredThreads().length }} threads</p>
         </div>
 
         <!-- Thread List -->
         <div class="space-y-3">
           @for (thread of paginatedThreads(); track thread.id) {
-            <tw-card class="hover:shadow-lg transition-shadow cursor-pointer" [padded]="true" (click)="viewThread(thread)">
+            <tw-card class="hover:shadow-lg dark:hover:shadow-black/30 transition-shadow cursor-pointer" [padded]="true" (click)="viewThread(thread)">
               <div class="flex gap-4">
                 <tw-avatar [initials]="thread.author.avatar" size="lg"></tw-avatar>
 
@@ -152,16 +152,16 @@
                           <tw-badge variant="success" size="sm">✓ Solved</tw-badge>
                         }
                       </div>
-                      <h3 class="text-lg font-semibold text-slate-900 hover:text-indigo-600 transition-colors line-clamp-1">
+                      <h3 class="text-lg font-semibold text-slate-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors line-clamp-1">
                         {{ thread.title }}
                       </h3>
-                      <p class="text-sm text-slate-600 mt-1 line-clamp-2">{{ thread.content }}</p>
+                      <p class="text-sm text-slate-600 dark:text-zinc-400 mt-1 line-clamp-2">{{ thread.content }}</p>
                     </div>
                   </div>
 
-                  <div class="flex items-center gap-4 mt-3 text-sm text-slate-500">
+                  <div class="flex items-center gap-4 mt-3 text-sm text-slate-500 dark:text-zinc-500">
                     <div class="flex items-center gap-1">
-                      <span class="font-medium text-slate-700">{{ thread.author.username }}</span>
+                      <span class="font-medium text-slate-700 dark:text-zinc-300">{{ thread.author.username }}</span>
                       <tw-badge [variant]="getRoleBadgeVariant(thread.author.role)" size="sm">
                         {{ thread.author.role }}
                       </tw-badge>
@@ -207,11 +207,11 @@
             <!-- Author Sidebar -->
             <div class="w-32 flex-shrink-0 text-center">
               <tw-avatar [initials]="selectedThread()!.author.avatar" size="xl" class="mx-auto mb-3"></tw-avatar>
-              <p class="font-semibold text-slate-900">{{ selectedThread()!.author.username }}</p>
+              <p class="font-semibold text-slate-900 dark:text-zinc-100">{{ selectedThread()!.author.username }}</p>
               <tw-badge [variant]="getRoleBadgeVariant(selectedThread()!.author.role)" size="sm" class="mt-1">
                 {{ selectedThread()!.author.role }}
               </tw-badge>
-              <div class="mt-3 text-sm text-slate-600">
+              <div class="mt-3 text-sm text-slate-600 dark:text-zinc-400">
                 <p>⭐ {{ selectedThread()!.author.reputation }}</p>
                 <p>📝 {{ selectedThread()!.author.posts }} posts</p>
                 <p class="text-xs mt-2">Joined {{ selectedThread()!.author.joinDate }}</p>
@@ -229,7 +229,7 @@
             <div class="flex-1">
               <div class="flex items-start justify-between mb-4">
                 <div>
-                  <h1 class="text-2xl font-bold text-slate-900 mb-2">{{ selectedThread()!.title }}</h1>
+                  <h1 class="text-2xl font-bold text-slate-900 dark:text-zinc-100 mb-2">{{ selectedThread()!.title }}</h1>
                   <div class="flex flex-wrap gap-2">
                     @if (selectedThread()!.isPinned) {
                       <tw-badge variant="warning">📌 Pinned</tw-badge>
@@ -247,14 +247,14 @@
                 </div>
               </div>
 
-              <div class="prose max-w-none mb-6">
-                <p class="text-slate-700">{{ selectedThread()!.content }}</p>
+              <div class="prose dark:prose-invert max-w-none mb-6">
+                <p class="text-slate-700 dark:text-zinc-300">{{ selectedThread()!.content }}</p>
               </div>
 
               <tw-divider></tw-divider>
 
               <div class="flex items-center justify-between mt-4">
-                <div class="flex items-center gap-4 text-sm text-slate-500">
+                <div class="flex items-center gap-4 text-sm text-slate-500 dark:text-zinc-500">
                   <span>Posted {{ selectedThread()!.createdAt }}</span>
                   <span>👁️ {{ selectedThread()!.views }} views</span>
                 </div>
@@ -276,7 +276,7 @@
 
         <!-- Replies -->
         <div>
-          <h3 class="text-xl font-bold text-slate-900 mb-4">
+          <h3 class="text-xl font-bold text-slate-900 dark:text-zinc-100 mb-4">
             💬 {{ selectedThread()!.replies }} Replies
           </h3>
 
@@ -293,11 +293,11 @@
                   <!-- Author Sidebar -->
                   <div class="w-32 flex-shrink-0 text-center">
                     <tw-avatar [initials]="reply.author.avatar" size="lg" class="mx-auto mb-2"></tw-avatar>
-                    <p class="font-semibold text-slate-900 text-sm">{{ reply.author.username }}</p>
+                    <p class="font-semibold text-slate-900 dark:text-zinc-100 text-sm">{{ reply.author.username }}</p>
                     <tw-badge [variant]="getRoleBadgeVariant(reply.author.role)" size="sm" class="mt-1">
                       {{ reply.author.role }}
                     </tw-badge>
-                    <div class="mt-2 text-xs text-slate-600">
+                    <div class="mt-2 text-xs text-slate-600 dark:text-zinc-400">
                       <p>⭐ {{ reply.author.reputation }}</p>
                       <p>📝 {{ reply.author.posts }} posts</p>
                     </div>
@@ -307,18 +307,18 @@
 
                   <!-- Reply Content -->
                   <div class="flex-1">
-                    <div class="prose max-w-none mb-4">
-                      <p class="text-slate-700">{{ reply.content }}</p>
+                    <div class="prose dark:prose-invert max-w-none mb-4">
+                      <p class="text-slate-700 dark:text-zinc-300">{{ reply.content }}</p>
                     </div>
 
                     @if (reply.edited) {
-                      <p class="text-xs text-slate-500 mb-3 italic">Edited</p>
+                      <p class="text-xs text-slate-500 dark:text-zinc-500 mb-3 italic">Edited</p>
                     }
 
                     <tw-divider></tw-divider>
 
                     <div class="flex items-center justify-between mt-3">
-                      <span class="text-sm text-slate-500">{{ reply.createdAt }}</span>
+                      <span class="text-sm text-slate-500 dark:text-zinc-500">{{ reply.createdAt }}</span>
                       <div class="flex gap-2">
                         <tw-button variant="outline" size="sm" (click)="likeReply(reply)">
                           ❤️ {{ reply.likes }}
@@ -341,12 +341,12 @@
         <!-- Reply Form -->
         @if (!selectedThread()!.isLocked) {
           <tw-card [padded]="true">
-            <h4 class="text-lg font-semibold text-slate-900 mb-4">Post a Reply</h4>
+            <h4 class="text-lg font-semibold text-slate-900 dark:text-zinc-100 mb-4">Post a Reply</h4>
 
             <textarea
               [(ngModel)]="replyContent"
               rows="6"
-              class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
+              class="w-full px-4 py-3 border border-slate-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none bg-white dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500"
               placeholder="Write your reply..."></textarea>
 
             <div class="flex items-center justify-between mt-4">
@@ -383,10 +383,10 @@
     size="lg">
     <div class="space-y-4">
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-2">Category</label>
+        <label class="block text-sm font-medium text-slate-700 dark:text-zinc-300 mb-2">Category</label>
         <select
           [(ngModel)]="newThreadCategory"
-          class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+          class="w-full px-4 py-2 border border-slate-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-zinc-800 text-slate-900 dark:text-zinc-100">
           @for (category of categories; track category.id) {
             <option [value]="category.id">{{ category.icon }} {{ category.name }}</option>
           }
@@ -401,11 +401,11 @@
       </tw-input>
 
       <div>
-        <label class="block text-sm font-medium text-slate-700 mb-2">Content</label>
+        <label class="block text-sm font-medium text-slate-700 dark:text-zinc-300 mb-2">Content</label>
         <textarea
           [(ngModel)]="newThreadContent"
           rows="8"
-          class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+          class="w-full px-4 py-3 border border-slate-300 dark:border-zinc-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none bg-white dark:bg-zinc-800 text-slate-900 dark:text-zinc-100 placeholder-slate-400 dark:placeholder-zinc-500"
           placeholder="Describe your topic in detail..."></textarea>
       </div>
 

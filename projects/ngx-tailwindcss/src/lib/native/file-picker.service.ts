@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
+import { importTauriDialog, importElectron } from './dynamic-import';
 
 const PLATFORM_TAURI: Platform = 'tauri';
 const PLATFORM_ELECTRON: Platform = 'electron';
@@ -75,14 +76,15 @@ export class FilePickerService {
 
   private async openFileTauri(options: NativeOpenFileOptions): Promise<FilePickerResult[] | null> {
     try {
-      const { open } = await import('@tauri-apps/plugin-dialog');
+      const dialog = await importTauriDialog();
+      if (!dialog) return null;
 
       const filters = options.filters?.map(f => ({
         name: f.name,
         extensions: f.extensions,
       }));
 
-      const result = await open({
+      const result = await dialog.open({
         title: options.title,
         defaultPath: options.defaultPath,
         filters,
@@ -110,9 +112,10 @@ export class FilePickerService {
     options: NativeOpenFileOptions
   ): Promise<FilePickerResult[] | null> {
     try {
-      const { ipcRenderer } = await import('electron');
+      const electron = await importElectron();
+      if (!electron?.ipcRenderer) return null;
 
-      const result = await ipcRenderer.invoke('show-open-dialog', {
+      const result = await electron.ipcRenderer.invoke('show-open-dialog', {
         title: options.title,
         defaultPath: options.defaultPath,
         properties: [
@@ -179,14 +182,15 @@ export class FilePickerService {
 
   private async saveFileTauri(options: NativeSaveFileOptions): Promise<string | null> {
     try {
-      const { save } = await import('@tauri-apps/plugin-dialog');
+      const dialog = await importTauriDialog();
+      if (!dialog) return null;
 
       const filters = options.filters?.map(f => ({
         name: f.name,
         extensions: f.extensions,
       }));
 
-      const result = await save({
+      const result = await dialog.save({
         title: options.title,
         defaultPath: options.defaultPath,
         filters,
@@ -201,9 +205,10 @@ export class FilePickerService {
 
   private async saveFileElectron(options: NativeSaveFileOptions): Promise<string | null> {
     try {
-      const { ipcRenderer } = await import('electron');
+      const electron = await importElectron();
+      if (!electron?.ipcRenderer) return null;
 
-      const result = await ipcRenderer.invoke('show-save-dialog', {
+      const result = await electron.ipcRenderer.invoke('show-save-dialog', {
         title: options.title,
         defaultPath: options.defaultPath,
         filters: options.filters?.map(f => ({
@@ -228,9 +233,10 @@ export class FilePickerService {
 
   private async selectDirectoryTauri(options: NativeOpenFileOptions): Promise<string | null> {
     try {
-      const { open } = await import('@tauri-apps/plugin-dialog');
+      const dialog = await importTauriDialog();
+      if (!dialog) return null;
 
-      const result = await open({
+      const result = await dialog.open({
         title: options.title,
         defaultPath: options.defaultPath,
         directory: true,
@@ -246,9 +252,10 @@ export class FilePickerService {
 
   private async selectDirectoryElectron(options: NativeOpenFileOptions): Promise<string | null> {
     try {
-      const { ipcRenderer } = await import('electron');
+      const electron = await importElectron();
+      if (!electron?.ipcRenderer) return null;
 
-      const result = await ipcRenderer.invoke('show-open-dialog', {
+      const result = await electron.ipcRenderer.invoke('show-open-dialog', {
         title: options.title,
         defaultPath: options.defaultPath,
         properties: ['openDirectory'],

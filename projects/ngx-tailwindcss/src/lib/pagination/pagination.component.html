@@ -57,7 +57,7 @@
 
       <!-- Page numbers -->
       @for (page of visiblePages(); track page) {
-        @if (page === '...') {
+        @if (page.startsWith('...')) {
           <span [class]="ellipsisClasses()">...</span>
         } @else {
           <button
