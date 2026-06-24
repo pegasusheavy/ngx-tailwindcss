@@ -228,28 +228,30 @@ export class UpdateService {
     const update = await updater.check();
 
     if (update?.available) {
-      await update.downloadAndInstall((event: { event: string; data?: { contentLength?: number; chunkLength?: number } }) => {
-        if (event.event === 'Started') {
-          const total = event.data?.contentLength || 0;
-          this.progress.set({ percent: 0, bytesDownloaded: 0, bytesTotal: total });
-        } else if (event.event === 'Progress') {
-          const current = this.progress();
-          if (current) {
-            const downloaded = current.bytesDownloaded + (event.data?.chunkLength || 0);
-            const percent = current.bytesTotal > 0 ? (downloaded / current.bytesTotal) * 100 : 0;
-            const newProgress = {
-              percent,
-              bytesDownloaded: downloaded,
-              bytesTotal: current.bytesTotal,
-            };
-            this.progress.set(newProgress);
-            this.downloadProgress$.next(newProgress);
+      await update.downloadAndInstall(
+        (event: { event: string; data?: { contentLength?: number; chunkLength?: number } }) => {
+          if (event.event === 'Started') {
+            const total = event.data?.contentLength || 0;
+            this.progress.set({ percent: 0, bytesDownloaded: 0, bytesTotal: total });
+          } else if (event.event === 'Progress') {
+            const current = this.progress();
+            if (current) {
+              const downloaded = current.bytesDownloaded + (event.data?.chunkLength || 0);
+              const percent = current.bytesTotal > 0 ? (downloaded / current.bytesTotal) * 100 : 0;
+              const newProgress = {
+                percent,
+                bytesDownloaded: downloaded,
+                bytesTotal: current.bytesTotal,
+              };
+              this.progress.set(newProgress);
+              this.downloadProgress$.next(newProgress);
+            }
+          } else if (event.event === 'Finished') {
+            this.status.set('downloaded');
+            this.updateDownloaded$.next();
           }
-        } else if (event.event === 'Finished') {
-          this.status.set('downloaded');
-          this.updateDownloaded$.next();
         }
-      });
+      );
     }
   }
 

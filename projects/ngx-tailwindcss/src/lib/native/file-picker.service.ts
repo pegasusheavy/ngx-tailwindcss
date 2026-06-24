@@ -111,7 +111,7 @@ export class FilePickerService {
     options: NativeOpenFileOptions
   ): Promise<FilePickerResult[] | null> {
     try {
-        const { ipcRenderer } = await dynamicImport('electron');
+      const { ipcRenderer } = await dynamicImport('electron');
 
       const result = await ipcRenderer.invoke('show-open-dialog', {
         title: options.title,
@@ -202,7 +202,7 @@ export class FilePickerService {
 
   private async saveFileElectron(options: NativeSaveFileOptions): Promise<string | null> {
     try {
-        const { ipcRenderer } = await dynamicImport('electron');
+      const { ipcRenderer } = await dynamicImport('electron');
 
       const result = await ipcRenderer.invoke('show-save-dialog', {
         title: options.title,
@@ -247,7 +247,7 @@ export class FilePickerService {
 
   private async selectDirectoryElectron(options: NativeOpenFileOptions): Promise<string | null> {
     try {
-        const { ipcRenderer } = await dynamicImport('electron');
+      const { ipcRenderer } = await dynamicImport('electron');
 
       const result = await ipcRenderer.invoke('show-open-dialog', {
         title: options.title,
