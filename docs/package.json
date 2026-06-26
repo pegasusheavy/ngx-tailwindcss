@@ -43,7 +43,7 @@
     "@angular/cli": "^21.2.7",
     "@angular/compiler-cli": "^21.0.6",
     "@tailwindcss/postcss": "^4.1.18",
-    "@types/jasmine": "~5.1.13",
+    "@types/jasmine": "~6.0.0",
     "autoprefixer": "^10.4.23",
     "jasmine-core": "~6.2.0",
     "karma": "~6.4.4",
