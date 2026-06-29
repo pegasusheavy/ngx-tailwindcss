@@ -2,7 +2,7 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwPaginationComponent, PaginationSize, PaginationVariant } from './pagination.component';
+import { PaginationSize, PaginationVariant, TwPaginationComponent } from './pagination.component';
 
 @Component({
   template: `
@@ -68,7 +68,7 @@ describe('TwPaginationComponent', () => {
 
     it('should emit pageChange when page clicked', () => {
       const pageButtons = paginationEl.querySelectorAll('button');
-      const page2Button = Array.from(pageButtons).find(b => b.textContent?.trim() === '2');
+      const page2Button = [...pageButtons].find(b => b.textContent?.trim() === '2');
       page2Button?.click();
       expect(component.pageChangeValue).toBe(2);
     });
@@ -83,7 +83,7 @@ describe('TwPaginationComponent', () => {
       component.currentPage.set(10);
       fixture.detectChanges();
       const buttons = paginationEl.querySelectorAll('button');
-      const nextButton = buttons[buttons.length - 1];
+      const nextButton = [...buttons].at(-1);
       expect(nextButton.disabled || nextButton.className.includes('cursor-not-allowed')).toBe(true);
     });
   });
@@ -138,7 +138,7 @@ describe('TwPaginationComponent', () => {
     it('should apply default variant', () => {
       const buttons = paginationEl.querySelectorAll('button');
       // Non-active buttons should not have border in default variant
-      const nonActiveButton = Array.from(buttons).find(
+      const nonActiveButton = [...buttons].find(
         b => !b.className.includes('bg-blue-600') && !b.disabled
       );
       expect(nonActiveButton?.className).not.toContain('border-slate-300');
@@ -148,7 +148,7 @@ describe('TwPaginationComponent', () => {
       component.variant.set('outlined');
       fixture.detectChanges();
       const buttons = paginationEl.querySelectorAll('button');
-      const nonActiveButton = Array.from(buttons).find(
+      const nonActiveButton = [...buttons].find(
         b => !b.className.includes('bg-blue-600') && !b.disabled
       );
       expect(nonActiveButton?.className).toContain('border');

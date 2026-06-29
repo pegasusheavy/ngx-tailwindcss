@@ -1,14 +1,14 @@
 import {
-  Component,
   ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
   input,
   output,
   signal,
-  computed,
-  inject,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SidebarItem, NativeSidebarVariant, NativeSidebarPosition } from './native.types';
+import { NativeSidebarPosition, NativeSidebarVariant, SidebarItem } from './native.types';
 import { TwClassService } from '../core/tw-class.service';
 
 /**
@@ -74,6 +74,7 @@ import { TwClassService } from '../core/tw-class.service';
           @for (item of items(); track item.id) {
             <li
               role="treeitem"
+              [attr.aria-selected]="!!item.active"
               [attr.aria-expanded]="item.children?.length ? item.expanded : undefined"
             >
               <ng-container
@@ -168,7 +169,7 @@ import { TwClassService } from '../core/tw-class.service';
         @if (item.children?.length && item.expanded && !collapsed()) {
           <ul class="mt-0.5" role="group">
             @for (child of item.children; track child.id) {
-              <li role="treeitem">
+              <li role="treeitem" [attr.aria-selected]="!!child.active">
                 <ng-container
                   *ngTemplateOutlet="itemTemplate; context: { $implicit: child, depth: depth + 1 }"
                 ></ng-container>
@@ -234,7 +235,7 @@ export class TwSidebarNavComponent {
     return this.twClass.merge(
       base,
       variantClasses[variant],
-      variant !== 'floating' ? positionClasses[position] : ''
+      variant === 'floating' ? '' : positionClasses[position]
     );
   });
 

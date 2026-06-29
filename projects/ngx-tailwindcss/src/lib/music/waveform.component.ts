@@ -203,11 +203,9 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['audioBuffer'] || changes['peaks']) {
-      if (this.mode() === 'static') {
+    if ((changes['audioBuffer'] || changes['peaks']) && this.mode() === 'static') {
         this.processPeaks();
       }
-    }
     if (changes['width'] || changes['height'] || changes['variant'] || changes['colorScheme']) {
       this.draw();
     }
@@ -345,7 +343,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     try {
       const channelData = buffer.getChannelData(0);
-      const sampleRate = buffer.sampleRate;
+      const {sampleRate} = buffer;
       const samplesPerPixel = Math.floor(channelData.length / this.effectiveWidth());
 
       this.peakData = [];
@@ -384,7 +382,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     analyser.smoothingTimeConstant = this.smoothing();
 
     // Create data buffer
-    this.timeDomainData = new Uint8Array(analyser.fftSize) as Uint8Array<ArrayBuffer>;
+    this.timeDomainData = new Uint8Array(analyser.fftSize);
 
     // Start real-time loop
     this.isRealTimeRunning = true;
@@ -404,7 +402,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     const analyser = this.analyserNode();
     if (!analyser || !this.timeDomainData) {
-      this.animationFrame = requestAnimationFrame(() => this.drawRealTime());
+      this.animationFrame = requestAnimationFrame(() => { this.drawRealTime(); });
       return;
     }
 
@@ -413,22 +411,26 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     const variant = this.variant();
     switch (variant) {
-      case 'bars':
+      case 'bars': {
         this.drawRealTimeBars();
         break;
-      case 'line':
+      }
+      case 'line': {
         this.drawRealTimeLine();
         break;
-      case 'mirror':
+      }
+      case 'mirror': {
         this.drawRealTimeMirror();
         break;
-      case 'gradient':
+      }
+      case 'gradient': {
         this.drawRealTimeGradient();
         break;
+      }
     }
 
     // Continue animation loop
-    this.animationFrame = requestAnimationFrame(() => this.drawRealTime());
+    this.animationFrame = requestAnimationFrame(() => { this.drawRealTime(); });
   }
 
   private drawRealTimeLine(): void {
@@ -466,7 +468,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     for (let i = 0; i < bufferLength; i++) {
       // Convert byte (0-255) to normalized (-1 to 1)
-      const v = (this.timeDomainData[i] / 128.0 - 1) * gainValue;
+      const v = (this.timeDomainData[i] / 128 - 1) * gainValue;
       const y = (v * h) / 2 + h / 2;
 
       if (i === 0) {
@@ -508,7 +510,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
       for (let j = 0; j < samplesPerBar; j++) {
         const idx = i * samplesPerBar + j;
         if (idx < bufferLength) {
-          const v = Math.abs(this.timeDomainData[idx] / 128.0 - 1);
+          const v = Math.abs(this.timeDomainData[idx] / 128 - 1);
           if (v > maxAmp) maxAmp = v;
         }
       }
@@ -544,7 +546,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     // Top half
     let x = 0;
     for (let i = 0; i < bufferLength; i++) {
-      const v = Math.abs(this.timeDomainData[i] / 128.0 - 1) * gainValue;
+      const v = Math.abs(this.timeDomainData[i] / 128 - 1) * gainValue;
       const y = centerY - v * (h / 2 - 2);
 
       if (i === 0) {
@@ -557,7 +559,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     // Bottom half (mirror)
     for (let i = bufferLength - 1; i >= 0; i--) {
-      const v = Math.abs(this.timeDomainData[i] / 128.0 - 1) * gainValue;
+      const v = Math.abs(this.timeDomainData[i] / 128 - 1) * gainValue;
       const xPos = (i / bufferLength) * w;
       const y = centerY + v * (h / 2 - 2);
       this.ctx.lineTo(xPos, y);
@@ -596,7 +598,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     // Top path
     let x = 0;
     for (let i = 0; i < bufferLength; i++) {
-      const v = Math.abs(this.timeDomainData[i] / 128.0 - 1) * gainValue;
+      const v = Math.abs(this.timeDomainData[i] / 128 - 1) * gainValue;
       const y = centerY - v * (h / 2 - 2);
       this.ctx.lineTo(x, y);
       x += sliceWidth;
@@ -606,7 +608,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     // Bottom path (mirror)
     for (let i = bufferLength - 1; i >= 0; i--) {
-      const v = Math.abs(this.timeDomainData[i] / 128.0 - 1) * gainValue;
+      const v = Math.abs(this.timeDomainData[i] / 128 - 1) * gainValue;
       const xPos = (i / bufferLength) * w;
       const y = centerY + v * (h / 2 - 2);
       this.ctx.lineTo(xPos, y);
@@ -1122,7 +1124,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     // Only pan with middle mouse button or when holding shift
     const isMouseEvent = 'button' in event;
-    if (isMouseEvent && (event as MouseEvent).button !== 1 && !event.shiftKey) return;
+    if (isMouseEvent && (event).button !== 1 && !event.shiftKey) return;
 
     event.preventDefault();
     this.isPanning.set(true);
@@ -1198,7 +1200,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   private getPinchDistance(event: TouchEvent): number {
     const dx = event.touches[0].clientX - event.touches[1].clientX;
     const dy = event.touches[0].clientY - event.touches[1].clientY;
-    return Math.sqrt(dx * dx + dy * dy);
+    return Math.hypot(dx, dy);
   }
 
   // Scrollbar drag handler

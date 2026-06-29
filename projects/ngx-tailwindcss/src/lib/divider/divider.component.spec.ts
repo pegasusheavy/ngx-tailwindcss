@@ -3,10 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
-  TwDividerComponent,
+  DividerLabelPosition,
   DividerOrientation,
   DividerVariant,
-  DividerLabelPosition,
+  TwDividerComponent,
 } from './divider.component';
 
 @Component({
@@ -164,7 +164,7 @@ describe('TwDividerComponent', () => {
         component.labelPosition.set('right');
         fixture.detectChanges();
         const lines = dividerEl.querySelectorAll('[class*="border-t"]');
-        const lastLine = lines[lines.length - 1];
+        const lastLine = [...lines].at(-1);
         expect(lastLine?.className).toContain('w-8');
       });
     });

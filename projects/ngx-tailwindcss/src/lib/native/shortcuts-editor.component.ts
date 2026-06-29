@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, HostListener } from '@angular/core';
+import { Component, computed, HostListener, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -205,9 +205,9 @@ export class TwShortcutsEditorComponent {
 
   public readonly shortcutChanged = output<{ shortcut: ShortcutBinding; keys: string[] }>();
   public readonly shortcutReset = output<ShortcutBinding>();
-  public readonly resetAllShortcuts = output<void>();
-  public readonly exportShortcuts = output<void>();
-  public readonly importShortcuts = output<void>();
+  public readonly resetAllShortcuts = output();
+  public readonly exportShortcuts = output();
+  public readonly importShortcuts = output();
 
   public readonly searchQuery = signal('');
   public readonly selectedCategory = signal('');
@@ -220,7 +220,7 @@ export class TwShortcutsEditorComponent {
     this.shortcuts().forEach(s => {
       if (s.category) cats.add(s.category);
     });
-    return Array.from(cats).sort();
+    return [...cats].sort();
   });
 
   public readonly filteredShortcuts = computed(() => {
@@ -251,7 +251,9 @@ export class TwShortcutsEditorComponent {
     if (event.shiftKey) keys.push('Shift');
 
     // Add the actual key if it's not a modifier
-    if (!['Meta', 'Control', 'Alt', 'Shift'].includes(event.key)) {
+    if (['Meta', 'Control', 'Alt', 'Shift'].includes(event.key)) {
+      this.recordedKeys.set(keys);
+    } else {
       keys.push(event.key);
 
       // Check for conflicts
@@ -270,8 +272,6 @@ export class TwShortcutsEditorComponent {
           this.saveEdit();
         }
       }, 500);
-    } else {
-      this.recordedKeys.set(keys);
     }
   }
 

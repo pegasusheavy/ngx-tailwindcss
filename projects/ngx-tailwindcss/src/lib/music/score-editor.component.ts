@@ -7,7 +7,6 @@ import {
   inject,
   input,
   numberAttribute,
-  OnDestroy,
   output,
   signal,
   viewChild,
@@ -15,20 +14,20 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-import { TwStaffComponent, ClefType, KeySignature, StaffTimeSignature } from './staff.component';
+import { ClefType, KeySignature, StaffTimeSignature, TwStaffComponent } from './staff.component';
 import {
-  TwNoteComponent,
-  NoteDuration,
   NoteAccidental,
-  NoteName,
   NoteData,
+  NoteDuration,
+  NoteName,
+  TwNoteComponent,
 } from './note.component';
-import { TwNoteInputComponent, PlacedNote, ClipboardData } from './note-input.component';
+import { ClipboardData, PlacedNote, TwNoteInputComponent } from './note-input.component';
 import {
-  parseMusicXML,
-  parseABCNotation,
-  SheetMusicData,
   MeasureData,
+  parseABCNotation,
+  parseMusicXML,
+  SheetMusicData,
 } from './sheet-music.component';
 
 // ==================== TYPES ====================
@@ -104,7 +103,7 @@ export const INSTRUMENT_PRESETS: Record<string, Partial<InstrumentPart>> = {
 
 // Note names for transposition
 const NOTE_NAMES: NoteName[] = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-const CHROMATIC_TO_NOTE: { note: NoteName; accidental: NoteAccidental }[] = [
+const CHROMATIC_TO_NOTE: Array<{ note: NoteName; accidental: NoteAccidental }> = [
   { note: 'C', accidental: null },
   { note: 'C', accidental: 'sharp' },
   { note: 'D', accidental: null },
@@ -140,7 +139,7 @@ const NOTE_TO_CHROMATIC: Record<NoteName, number> = {
     class: 'block',
   },
 })
-export class TwScoreEditorComponent implements OnDestroy {
+export class TwScoreEditorComponent {
   private readonly elementRef = inject(ElementRef);
 
   // ==================== INPUTS ====================
@@ -248,10 +247,6 @@ export class TwScoreEditorComponent implements OnDestroy {
       // Add default piano part
       this.addPart('piano-treble');
     }
-  }
-
-  ngOnDestroy(): void {
-    // Cleanup if needed
   }
 
   // ==================== PART MANAGEMENT ====================
@@ -428,10 +423,25 @@ export class TwScoreEditorComponent implements OnDestroy {
     let chromaticPosition = NOTE_TO_CHROMATIC[note.name];
 
     // Add accidental offset
-    if (note.accidental === 'sharp') chromaticPosition += 1;
-    else if (note.accidental === 'doubleSharp') chromaticPosition += 2;
-    else if (note.accidental === 'flat') chromaticPosition -= 1;
-    else if (note.accidental === 'doubleFlat') chromaticPosition -= 2;
+    switch (note.accidental) {
+    case 'sharp': {
+    chromaticPosition += 1;
+    break;
+    }
+    case 'doubleSharp': {
+    chromaticPosition += 2;
+    break;
+    }
+    case 'flat': {
+    chromaticPosition -= 1;
+    break;
+    }
+    case 'doubleFlat': {
+    chromaticPosition -= 2;
+    // No default
+    break;
+    }
+    }
 
     // Add transposition
     let newChromaticPosition = chromaticPosition + semitones;
@@ -543,7 +553,7 @@ export class TwScoreEditorComponent implements OnDestroy {
     const stack = this.undoStack();
     if (stack.length === 0) return;
 
-    const entry = stack[stack.length - 1];
+    const entry = stack.at(-1)!;
     this.undoStack.update(s => s.slice(0, -1));
 
     // Save current state to redo stack
@@ -564,7 +574,7 @@ export class TwScoreEditorComponent implements OnDestroy {
     const stack = this.redoStack();
     if (stack.length === 0) return;
 
-    const entry = stack[stack.length - 1];
+    const entry = stack.at(-1)!;
     this.redoStack.update(s => s.slice(0, -1));
 
     // Save current state to undo stack
@@ -676,11 +686,11 @@ export class TwScoreEditorComponent implements OnDestroy {
 
   private escapeXml(str: string): string {
     return str
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&apos;');
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll('\'', '&apos;');
   }
 
   private keySignatureToXml(key: KeySignature): string {
@@ -731,10 +741,25 @@ export class TwScoreEditorComponent implements OnDestroy {
     // Pitch
     xml += '        <pitch>\n';
     xml += `          <step>${note.name}</step>\n`;
-    if (note.accidental === 'sharp') xml += '          <alter>1</alter>\n';
-    else if (note.accidental === 'flat') xml += '          <alter>-1</alter>\n';
-    else if (note.accidental === 'doubleSharp') xml += '          <alter>2</alter>\n';
-    else if (note.accidental === 'doubleFlat') xml += '          <alter>-2</alter>\n';
+    switch (note.accidental) {
+    case 'sharp': {
+    xml += '          <alter>1</alter>\n';
+    break;
+    }
+    case 'flat': {
+    xml += '          <alter>-1</alter>\n';
+    break;
+    }
+    case 'doubleSharp': {
+    xml += '          <alter>2</alter>\n';
+    break;
+    }
+    case 'doubleFlat': {
+    xml += '          <alter>-2</alter>\n';
+    // No default
+    break;
+    }
+    }
     xml += `          <octave>${note.octave}</octave>\n`;
     xml += '        </pitch>\n';
 
@@ -801,7 +826,7 @@ export class TwScoreEditorComponent implements OnDestroy {
     // Delta time 0
     events.push(0);
     // Tempo meta event
-    const microsPerQuarter = Math.round(60000000 / tempo);
+    const microsPerQuarter = Math.round(60_000_000 / tempo);
     events.push(0xff, 0x51, 0x03);
     events.push((microsPerQuarter >> 16) & 0xff);
     events.push((microsPerQuarter >> 8) & 0xff);
@@ -849,7 +874,6 @@ export class TwScoreEditorComponent implements OnDestroy {
       const deltaOn = tick - lastTick;
       events.push(...this.toVariableLength(Math.max(0, deltaOn)));
       events.push(0x90, midiNote, velocity);
-      lastTick = tick;
 
       // Note off
       events.push(...this.toVariableLength(durationTicks));
@@ -870,10 +894,25 @@ export class TwScoreEditorComponent implements OnDestroy {
     transposition: number
   ): number {
     let midi = NOTE_TO_CHROMATIC[name] + (octave + 1) * 12;
-    if (accidental === 'sharp') midi += 1;
-    else if (accidental === 'flat') midi -= 1;
-    else if (accidental === 'doubleSharp') midi += 2;
-    else if (accidental === 'doubleFlat') midi -= 2;
+    switch (accidental) {
+    case 'sharp': {
+    midi += 1;
+    break;
+    }
+    case 'flat': {
+    midi -= 1;
+    break;
+    }
+    case 'doubleSharp': {
+    midi += 2;
+    break;
+    }
+    case 'doubleFlat': {
+    midi -= 2;
+    // No default
+    break;
+    }
+    }
     return Math.max(0, Math.min(127, midi - transposition));
   }
 
@@ -897,12 +936,13 @@ export class TwScoreEditorComponent implements OnDestroy {
 
   private toVariableLength(value: number): number[] {
     if (value < 128) return [value];
+    let remaining = value;
     const bytes: number[] = [];
-    bytes.unshift(value & 0x7f);
-    value >>= 7;
-    while (value > 0) {
-      bytes.unshift((value & 0x7f) | 0x80);
-      value >>= 7;
+    bytes.unshift(remaining & 0x7f);
+    remaining >>= 7;
+    while (remaining > 0) {
+      bytes.unshift((remaining & 0x7f) | 0x80);
+      remaining >>= 7;
     }
     return bytes;
   }
@@ -990,7 +1030,7 @@ export class TwScoreEditorComponent implements OnDestroy {
         }
       }
 
-      abc += measureGroups.join('|') + '|]\n';
+      abc += `${measureGroups.join('|')  }|]\n`;
     }
 
     return abc;
@@ -1000,11 +1040,29 @@ export class TwScoreEditorComponent implements OnDestroy {
     let abc = '';
 
     // Accidental
-    if (note.accidental === 'sharp') abc += '^';
-    else if (note.accidental === 'flat') abc += '_';
-    else if (note.accidental === 'natural') abc += '=';
-    else if (note.accidental === 'doubleSharp') abc += '^^';
-    else if (note.accidental === 'doubleFlat') abc += '__';
+    switch (note.accidental) {
+    case 'sharp': {
+    abc += '^';
+    break;
+    }
+    case 'flat': {
+    abc += '_';
+    break;
+    }
+    case 'natural': {
+    abc += '=';
+    break;
+    }
+    case 'doubleSharp': {
+    abc += '^^';
+    break;
+    }
+    case 'doubleFlat': {
+    abc += '__';
+    // No default
+    break;
+    }
+    }
 
     // Note name (lowercase for octave 5+)
     const name = note.octave >= 5 ? note.name.toLowerCase() : note.name;
@@ -1061,12 +1119,14 @@ export class TwScoreEditorComponent implements OnDestroy {
     // Draw to canvas
     const img = new Image();
     await new Promise<void>((resolve, reject) => {
-      img.onload = () => {
+      img.addEventListener('load', () => {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         URL.revokeObjectURL(svgUrl);
         resolve();
-      };
-      img.onerror = reject;
+      });
+      img.addEventListener('error', () => {
+        reject(new Error('Failed to load SVG image for PDF export'));
+      });
       img.src = svgUrl;
     });
 
@@ -1083,55 +1143,64 @@ export class TwScoreEditorComponent implements OnDestroy {
     let data: string | Blob;
 
     switch (format) {
-      case 'musicxml':
+      case 'musicxml': {
         data = this.exportToMusicXML();
         break;
-      case 'midi':
+      }
+      case 'midi': {
         const midiData = this.exportToMidi();
         data = new Blob([midiData.buffer as ArrayBuffer], { type: 'audio/midi' });
         break;
-      case 'abc':
+      }
+      case 'abc': {
         data = this.exportToABC();
         break;
-      case 'pdf':
+      }
+      case 'pdf': {
         data = await this.exportToPDF();
         break;
-      default:
+      }
+      default: {
         return;
+      }
     }
 
     this.exportRequested.emit({ format, data });
   }
 
   downloadExport(format: ExportFormat): void {
-    this.export(format).then(() => {
+    void this.export(format).then(() => {
       // Trigger download
       const score = this.scoreData();
-      const filename = `${score.title.replace(/\s+/g, '_') || 'score'}`;
+      const filename = score.title.replaceAll(/\s+/g, '_') || 'score';
 
       let content: string | Blob;
       let mimeType: string;
       let extension: string;
 
       switch (format) {
-        case 'musicxml':
+        case 'musicxml': {
           content = this.exportToMusicXML();
           mimeType = 'application/vnd.recordare.musicxml+xml';
           extension = 'musicxml';
           break;
-        case 'midi':
+        }
+        case 'midi': {
           const midiBytes = this.exportToMidi();
           content = new Blob([midiBytes.buffer as ArrayBuffer], { type: 'audio/midi' });
           mimeType = 'audio/midi';
           extension = 'mid';
           break;
-        case 'abc':
+        }
+        case 'abc': {
           content = this.exportToABC();
           mimeType = 'text/plain';
           extension = 'abc';
           break;
-        default:
+        }
+        default: {
           return;
+        }
       }
 
       const blob = typeof content === 'string' ? new Blob([content], { type: mimeType }) : content;
@@ -1140,9 +1209,9 @@ export class TwScoreEditorComponent implements OnDestroy {
       const a = document.createElement('a');
       a.href = url;
       a.download = `${filename}.${extension}`;
-      document.body.appendChild(a);
+      document.body.append(a);
       a.click();
-      document.body.removeChild(a);
+      a.remove();
       URL.revokeObjectURL(url);
     });
   }
@@ -1258,7 +1327,7 @@ export class TwScoreEditorComponent implements OnDestroy {
     if ((event.ctrlKey || event.metaKey) && key === 's') {
       event.preventDefault();
       this.showExportDialog.set(true);
-      return;
+      
     }
   }
 

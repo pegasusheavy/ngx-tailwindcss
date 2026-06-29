@@ -16,15 +16,15 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { fromEvent, Subject, debounceTime } from 'rxjs';
+import { debounceTime, fromEvent, Subject } from 'rxjs';
 
-import { TwStaffComponent, ClefType, KeySignature, StaffTimeSignature } from './staff.component';
+import { ClefType, KeySignature, StaffTimeSignature, TwStaffComponent } from './staff.component';
 import {
-  TwNoteComponent,
-  NoteDuration,
   NoteAccidental,
-  NoteName,
   NoteData,
+  NoteDuration,
+  NoteName,
+  TwNoteComponent,
 } from './note.component';
 
 export type Voice = 1 | 2 | 3 | 4;
@@ -60,7 +60,7 @@ export interface ClipboardData {
 
 // MIDI note number to note name mapping
 const MIDI_NOTE_NAMES: NoteName[] = ['C', 'C', 'D', 'D', 'E', 'F', 'F', 'G', 'G', 'A', 'A', 'B'];
-const MIDI_NOTE_ACCIDENTALS: (NoteAccidental | null)[] = [
+const MIDI_NOTE_ACCIDENTALS: Array<NoteAccidental | null> = [
   null,
   'sharp',
   null,
@@ -241,7 +241,7 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
 
     // Setup MIDI if enabled
     if (this.enableMidiInput()) {
-      this.initMidi();
+      void this.initMidi();
     }
 
     // Focus element for keyboard input
@@ -590,17 +590,22 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     // Voice shortcuts (1-4 with shift)
     if (event.shiftKey && ['1', '2', '3', '4'].includes(key)) {
       event.preventDefault();
-      const voice = parseInt(key) as Voice;
+      const voice = parseInt(key, 10) as Voice;
       if (voice <= this.maxVoices()) {
         this.currentVoice.set(voice);
       }
-      return;
+      
     }
   }
 
   private placeNoteByName(name: NoteName): void {
     const hover = this.hoverPosition();
-    if (!hover) {
+    if (hover) {
+      this.placeNote({
+        ...hover,
+        note: name,
+      });
+    } else {
       // Place at first available position
       const x = this.contentStartX() + 20;
       this.placeNote({
@@ -609,11 +614,6 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
         octave: 4,
         measure: 0,
         beat: 0,
-      });
-    } else {
-      this.placeNote({
-        ...hover,
-        note: name,
       });
     }
   }
@@ -630,16 +630,16 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
       this.midiAccess = await navigator.requestMIDIAccess();
       this.midiConnected.set(true);
 
-      const inputs = this.midiAccess.inputs;
-      inputs.forEach(input => {
-        this.midiDeviceName.set(input.name ?? 'Unknown MIDI Device');
-        input.onmidimessage = event => this.handleMidiMessage(event as MIDIMessageEvent);
+      const {inputs} = this.midiAccess;
+      inputs.forEach(midiInput => {
+        this.midiDeviceName.set(midiInput.name ?? 'Unknown MIDI Device');
+        midiInput.onmidimessage = event => { this.handleMidiMessage(event); };
       });
 
       // Listen for device changes
-      this.midiAccess.onstatechange = () => {
+      this.midiAccess.addEventListener('statechange', () => {
         this.updateMidiDevices();
-      };
+      });
     } catch (error) {
       console.warn('MIDI not available:', error);
       this.midiConnected.set(false);
@@ -649,25 +649,25 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
   private updateMidiDevices(): void {
     if (!this.midiAccess) return;
 
-    const inputs = this.midiAccess.inputs;
+    const {inputs} = this.midiAccess;
     let hasInputs = false;
 
-    inputs.forEach(input => {
+    inputs.forEach(midiInput => {
       hasInputs = true;
-      this.midiDeviceName.set(input.name ?? 'Unknown MIDI Device');
-      input.onmidimessage = event => this.handleMidiMessage(event as MIDIMessageEvent);
+      this.midiDeviceName.set(midiInput.name ?? 'Unknown MIDI Device');
+      midiInput.onmidimessage = event => { this.handleMidiMessage(event); };
     });
 
-    if (!hasInputs) {
+    if (hasInputs) {
+      this.midiConnected.set(true);
+    } else {
       this.midiConnected.set(false);
       this.midiDeviceName.set(null);
-    } else {
-      this.midiConnected.set(true);
     }
   }
 
   private handleMidiMessage(event: MIDIMessageEvent): void {
-    const data = event.data;
+    const {data} = event;
     if (!data) return;
 
     const command = data[0] >> 4;
@@ -724,8 +724,8 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
 
   private disconnectMidi(): void {
     if (this.midiAccess) {
-      this.midiAccess.inputs.forEach(input => {
-        input.onmidimessage = null;
+      this.midiAccess.inputs.forEach(midiInput => {
+        midiInput.onmidimessage = null;
       });
       this.midiAccess = null;
     }
@@ -941,7 +941,7 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     const stack = this.undoStack();
     if (stack.length === 0) return;
 
-    const previousState = stack[stack.length - 1];
+    const previousState = stack.at(-1)!;
     this.undoStack.update(s => s.slice(0, -1));
     this.redoStack.update(s => [...s, [...this.notes()]]);
     this.notes.set(previousState);
@@ -952,7 +952,7 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     const stack = this.redoStack();
     if (stack.length === 0) return;
 
-    const nextState = stack[stack.length - 1];
+    const nextState = stack.at(-1)!;
     this.redoStack.update(s => s.slice(0, -1));
     this.undoStack.update(s => [...s, [...this.notes()]]);
     this.notes.set(nextState);

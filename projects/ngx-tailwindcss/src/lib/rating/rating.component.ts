@@ -82,7 +82,7 @@ export class TwRatingComponent implements ControlValueAccessor {
   /** Blur event */
   readonly blur = output<FocusEvent>();
 
-  private _disabled = signal(false);
+  private readonly _disabled = signal(false);
   protected isDisabled = computed(() => this.disabled() || this._disabled());
 
   private readonly twClass = inject(TwClassService);

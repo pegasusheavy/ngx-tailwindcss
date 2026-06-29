@@ -1,13 +1,13 @@
 import {
-  Component,
   ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  HostListener,
+  inject,
   input,
   output,
   signal,
-  computed,
-  inject,
-  ElementRef,
-  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NativeAppPlatformService } from './platform.service';
@@ -142,7 +142,7 @@ export class TwMenuBarComponent {
   // Outputs
   public readonly itemSelect = output<NativeMenuItem>();
   public readonly menuOpen = output<string>();
-  public readonly menuClose = output<void>();
+  public readonly menuClose = output();
 
   // State
   protected readonly openMenuId = signal<string | null>(null);

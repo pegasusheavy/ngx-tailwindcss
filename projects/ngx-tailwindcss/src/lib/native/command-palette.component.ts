@@ -1,15 +1,15 @@
 import {
-  Component,
   ChangeDetectionStrategy,
-  input,
-  output,
-  signal,
+  Component,
   computed,
-  inject,
   ElementRef,
   HostListener,
-  OnInit,
+  inject,
+  input,
   OnDestroy,
+  OnInit,
+  output,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -204,8 +204,8 @@ export class TwCommandPaletteComponent implements OnInit, OnDestroy {
 
   // Outputs
   public readonly commandSelect = output<CommandItem>();
-  public readonly opened = output<void>();
-  public readonly closed = output<void>();
+  public readonly opened = output();
+  public readonly closed = output();
 
   // State
   protected readonly isOpen = signal(false);
@@ -243,13 +243,13 @@ export class TwCommandPaletteComponent implements OnInit, OnDestroy {
       groups.get(category)!.push(cmd);
     }
 
-    return Array.from(groups.entries()).map(([category, commands]) => ({
+    return [...groups.entries()].map(([category, categoryCommands]) => ({
       category,
-      commands,
+      commands: categoryCommands,
     }));
   });
 
-  private keydownHandler = (e: KeyboardEvent) => this.handleGlobalKeydown(e);
+  private readonly keydownHandler = (e: KeyboardEvent) => { this.handleGlobalKeydown(e); };
 
   public ngOnInit(): void {
     document.addEventListener('keydown', this.keydownHandler);
@@ -281,21 +281,24 @@ export class TwCommandPaletteComponent implements OnInit, OnDestroy {
     const commands = this.filteredCommands();
 
     switch (event.key) {
-      case 'ArrowDown':
+      case 'ArrowDown': {
         event.preventDefault();
         this.selectedIndex.update(i => Math.min(i + 1, commands.length - 1));
         break;
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
         event.preventDefault();
         this.selectedIndex.update(i => Math.max(i - 1, 0));
         break;
-      case 'Enter':
+      }
+      case 'Enter': {
         event.preventDefault();
         const selected = commands[this.selectedIndex()];
         if (selected) {
           this.selectCommand(selected);
         }
         break;
+      }
     }
   }
 
@@ -311,7 +314,7 @@ export class TwCommandPaletteComponent implements OnInit, OnDestroy {
 
   protected selectCommand(command: CommandItem): void {
     this.commandSelect.emit(command);
-    command.action();
+    void command.action();
     this.close();
   }
 
@@ -355,8 +358,8 @@ export class TwCommandPaletteComponent implements OnInit, OnDestroy {
 
     // Focus input after render
     setTimeout(() => {
-      const input = document.querySelector('.tw-command-palette input') as HTMLInputElement;
-      input?.focus();
+      const inputEl = document.querySelector<HTMLElement>('.tw-command-palette input');
+      inputEl?.focus();
     }, 0);
   }
 

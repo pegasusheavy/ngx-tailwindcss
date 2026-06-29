@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { dynamicImport } from '../native/dynamic-import.util';
 
 // ============================================================================
@@ -221,7 +221,7 @@ export class NativePlatformService {
   readonly isElectron = computed(() => this._platform() === 'electron');
 
   constructor() {
-    this.detectPlatform();
+    void this.detectPlatform();
   }
 
   // =========================================================================
@@ -252,7 +252,7 @@ export class NativePlatformService {
     this._ready.set(true);
   }
 
-  private async initTauri(): Promise<void> {
+  private initTauri(): Promise<void> {
     try {
       // Dynamic import of Tauri APIs
       const tauri = (window as unknown as { __TAURI__: Record<string, unknown> }).__TAURI__;
@@ -268,6 +268,7 @@ export class NativePlatformService {
     } catch (error) {
       console.warn('Failed to initialize Tauri APIs:', error);
     }
+    return Promise.resolve();
   }
 
   // =========================================================================
@@ -346,13 +347,13 @@ export class NativePlatformService {
         input.accept = extensions.join(',');
       }
 
-      input.onchange = async () => {
+      input.addEventListener('change', () => {
         if (!input.files || input.files.length === 0) {
           resolve(null);
           return;
         }
 
-        const files = Array.from(input.files).map(file => ({
+        const files = [...input.files].map(file => ({
           path: file.name, // Browser doesn't expose full path
           name: file.name,
           extension: file.name.split('.').pop() || '',
@@ -362,13 +363,13 @@ export class NativePlatformService {
         }));
 
         if (options.multiple) {
-          resolve(files as FileInfo[]);
+          resolve(files);
         } else {
-          resolve(files[0] as FileInfo);
+          resolve(files[0]);
         }
-      };
+      });
 
-      input.oncancel = () => resolve(null);
+      input.addEventListener('cancel', () => { resolve(null); });
       input.click();
     });
   }
@@ -597,7 +598,7 @@ export class NativePlatformService {
     }
 
     // Simple path join for browser/electron
-    return paths.join('/').replace(/\/+/g, '/');
+    return paths.join('/').replaceAll(/\/+/g, '/');
   }
 
   /**
@@ -605,15 +606,15 @@ export class NativePlatformService {
    */
   async getFileInfo(path: string): Promise<FileInfo> {
     const platform = this._platform();
-    let name = path;
-    let extension = '';
+    let name: string;
+    let extension: string;
 
     if (platform === 'tauri' && this.tauriPath) {
       name = await this.tauriPath.basename(path);
       extension = await this.tauriPath.extname(path);
     } else {
       const parts = path.split(/[/\\]/);
-      name = parts[parts.length - 1];
+      name = parts.at(-1) ?? path;
       const extParts = name.split('.');
       extension = extParts.length > 1 ? extParts.pop()! : '';
     }
@@ -799,9 +800,9 @@ export class NativePlatformService {
 
     // Browser fallback
     if (document.fullscreenElement) {
-      document.exitFullscreen();
+      void document.exitFullscreen();
     } else {
-      document.documentElement.requestFullscreen();
+      void document.documentElement.requestFullscreen();
     }
   }
 
@@ -825,6 +826,7 @@ export class NativePlatformService {
     }
 
     // Browser fallback
+    // eslint-disable-next-line no-alert -- intentional user-facing fallback
     alert(message);
   }
 
@@ -853,6 +855,7 @@ export class NativePlatformService {
     }
 
     // Browser fallback
+    // eslint-disable-next-line no-alert -- intentional user-facing fallback
     return confirm(message);
   }
 
@@ -863,7 +866,7 @@ export class NativePlatformService {
     const platform = this._platform();
 
     if (platform === 'tauri' && this.tauriDialog) {
-      return this.tauriDialog.message(message, { title, type: 'error' } as unknown);
+      return this.tauriDialog.message(message, { title, type: 'error' });
     }
 
     if (platform === 'electron' && this.electronApi) {
@@ -875,6 +878,7 @@ export class NativePlatformService {
     }
 
     // Browser fallback
+    // eslint-disable-next-line no-alert -- intentional user-facing fallback
     alert(`${title}: ${message}`);
   }
 
@@ -898,9 +902,9 @@ export class NativePlatformService {
     const a = document.createElement('a');
     a.href = url;
     a.download = filename;
-    document.body.appendChild(a);
+    document.body.append(a);
     a.click();
-    document.body.removeChild(a);
+    a.remove();
     URL.revokeObjectURL(url);
   }
 
@@ -910,8 +914,10 @@ export class NativePlatformService {
   async readFileObject(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = () => reject(reader.error);
+      reader.addEventListener('load', () => { resolve(reader.result as string); });
+      reader.addEventListener('error', () => {
+        reject(reader.error ?? new Error('Failed to read file'));
+      });
       reader.readAsText(file);
     });
   }
@@ -922,8 +928,10 @@ export class NativePlatformService {
   async readFileObjectBinary(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as ArrayBuffer);
-      reader.onerror = () => reject(reader.error);
+      reader.addEventListener('load', () => { resolve(reader.result as ArrayBuffer); });
+      reader.addEventListener('error', () => {
+        reject(reader.error ?? new Error('Failed to read file'));
+      });
       reader.readAsArrayBuffer(file);
     });
   }

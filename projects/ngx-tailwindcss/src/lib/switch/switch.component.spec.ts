@@ -1,9 +1,9 @@
 import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { TwSwitchComponent, SwitchVariant, SwitchSize } from './switch.component';
+import { SwitchSize, SwitchVariant, TwSwitchComponent } from './switch.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
@@ -182,7 +182,7 @@ describe('TwSwitchComponent', () => {
 
   describe('switch interactions', () => {
     it('should toggle on click', () => {
-      const button = switchEl.querySelector('button') as HTMLButtonElement;
+      const button = switchEl.querySelector('button')!;
       button.click();
       fixture.detectChanges();
       expect(component.changeValue).toBe(true);

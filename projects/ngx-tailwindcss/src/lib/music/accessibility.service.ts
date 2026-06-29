@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, OnDestroy } from '@angular/core';
+import { computed, Injectable, OnDestroy, signal } from '@angular/core';
 
 /**
  * Screen reader announcement priority levels
@@ -49,7 +49,7 @@ export class MusicAccessibilityService implements OnDestroy {
   private assertiveRegion: HTMLElement | null = null;
   private announcementQueue: QueuedAnnouncement[] = [];
   private isProcessingQueue = false;
-  private cleanupTimer: ReturnType<typeof setTimeout> | null = null;
+  private readonly cleanupTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Media query listeners
   private reducedMotionQuery: MediaQueryList | null = null;
@@ -206,7 +206,7 @@ export class MusicAccessibilityService implements OnDestroy {
     this.politeRegion.setAttribute('aria-atomic', 'true');
     this.applyScreenReaderOnlyStyles(this.politeRegion);
     this.politeRegion.id = 'tw-music-live-polite';
-    document.body.appendChild(this.politeRegion);
+    document.body.append(this.politeRegion);
 
     // Create assertive live region
     this.assertiveRegion = document.createElement('div');
@@ -215,7 +215,7 @@ export class MusicAccessibilityService implements OnDestroy {
     this.assertiveRegion.setAttribute('aria-atomic', 'true');
     this.applyScreenReaderOnlyStyles(this.assertiveRegion);
     this.assertiveRegion.id = 'tw-music-live-assertive';
-    document.body.appendChild(this.assertiveRegion);
+    document.body.append(this.assertiveRegion);
   }
 
   private applyScreenReaderOnlyStyles(element: HTMLElement): void {
@@ -310,7 +310,7 @@ export class MusicAccessibilityService implements OnDestroy {
     if (typeof window === 'undefined') return false;
 
     // Check root font size (16px is default)
-    const rootFontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+    const rootFontSize = Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
     return rootFontSize > 16;
   }
 
@@ -334,14 +334,14 @@ export class MusicAccessibilityService implements OnDestroy {
    * Generate a unique ID for ARIA relationships
    */
   generateId(prefix: string = 'tw-music'): string {
-    return `${prefix}-${Math.random().toString(36).substring(2, 9)}`;
+    return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
   }
 
   /**
    * Format time for screen reader announcement
    */
   formatTime(seconds: number): string {
-    if (!isFinite(seconds) || seconds < 0) return '0 seconds';
+    if (!Number.isFinite(seconds) || seconds < 0) return '0 seconds';
 
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -414,10 +414,10 @@ export class MusicAccessibilityService implements OnDestroy {
   private cleanup(): void {
     // Remove live regions
     if (this.politeRegion?.parentNode) {
-      this.politeRegion.parentNode.removeChild(this.politeRegion);
+      this.politeRegion.remove();
     }
     if (this.assertiveRegion?.parentNode) {
-      this.assertiveRegion.parentNode.removeChild(this.assertiveRegion);
+      this.assertiveRegion.remove();
     }
 
     // Remove media query listeners

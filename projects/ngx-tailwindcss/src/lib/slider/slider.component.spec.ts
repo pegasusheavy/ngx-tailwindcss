@@ -1,9 +1,9 @@
 import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwSliderComponent, SliderVariant, SliderSize } from './slider.component';
+import { SliderSize, SliderVariant, TwSliderComponent } from './slider.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
@@ -103,19 +103,19 @@ describe('TwSliderComponent', () => {
 
   describe('min/max/step', () => {
     it('should set min attribute', () => {
-      const input = sliderEl.querySelector('input[type="range"]') as HTMLInputElement;
+      const input = sliderEl.querySelector('input[type="range"]')!;
       expect(input.min).toBe('0');
     });
 
     it('should set max attribute', () => {
-      const input = sliderEl.querySelector('input[type="range"]') as HTMLInputElement;
+      const input = sliderEl.querySelector('input[type="range"]')!;
       expect(input.max).toBe('100');
     });
 
     it('should set step attribute', () => {
       component.step.set(5);
       fixture.detectChanges();
-      const input = sliderEl.querySelector('input[type="range"]') as HTMLInputElement;
+      const input = sliderEl.querySelector('input[type="range"]')!;
       expect(input.step).toBe('5');
     });
 
@@ -123,7 +123,7 @@ describe('TwSliderComponent', () => {
       component.min.set(10);
       component.max.set(200);
       fixture.detectChanges();
-      const input = sliderEl.querySelector('input[type="range"]') as HTMLInputElement;
+      const input = sliderEl.querySelector('input[type="range"]')!;
       expect(input.min).toBe('10');
       expect(input.max).toBe('200');
     });
@@ -195,7 +195,7 @@ describe('TwSliderComponent', () => {
     it('should set disabled attribute', () => {
       component.disabled.set(true);
       fixture.detectChanges();
-      const input = sliderEl.querySelector('input[type="range"]') as HTMLInputElement;
+      const input = sliderEl.querySelector('input[type="range"]')!;
       expect(input.disabled).toBe(true);
     });
 
@@ -228,14 +228,14 @@ describe('TwSliderComponent', () => {
 
   describe('events', () => {
     it('should emit onInput during drag', () => {
-      const input = sliderEl.querySelector('input[type="range"]') as HTMLInputElement;
+      const input = sliderEl.querySelector('input[type="range"]')!;
       input.value = '50';
       input.dispatchEvent(new Event('input'));
       expect(component.inputValue).toBe(50);
     });
 
     it('should emit onChange on release', () => {
-      const input = sliderEl.querySelector('input[type="range"]') as HTMLInputElement;
+      const input = sliderEl.querySelector('input[type="range"]')!;
       input.value = '75';
       input.dispatchEvent(new Event('change'));
       expect(component.changeValue).toBe(75);

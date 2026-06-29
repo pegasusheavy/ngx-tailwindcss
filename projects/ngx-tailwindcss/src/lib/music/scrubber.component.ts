@@ -92,8 +92,8 @@ export class TwScrubberComponent {
 
   // Outputs
   readonly seek = output<number>();
-  readonly seekStart = output<void>();
-  readonly seekEnd = output<void>();
+  readonly seekStart = output();
+  readonly seekEnd = output();
 
   // Internal state
   protected readonly hoverPosition = signal<number | null>(null);
@@ -326,7 +326,7 @@ export class TwScrubberComponent {
 
     const dur = this.duration();
     const current = this.currentTime();
-    let newTime = current;
+    let newTime: number;
     const smallStep = dur * 0.01; // 1%
     const largeStep = dur * 0.1; // 10%
 
@@ -449,7 +449,7 @@ export class TwScrubberComponent {
       canvas.height = this.thumbnailHeight();
 
       // Save current time and seek
-      const currentTime = video.currentTime;
+      const {currentTime} = video;
 
       // Note: For live thumbnails, you'd need to handle this differently
       // as seeking causes video to pause/buffer

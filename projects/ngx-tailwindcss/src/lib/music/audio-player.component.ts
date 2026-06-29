@@ -50,7 +50,7 @@ export interface AudioTrack {
   },
 })
 export class TwAudioPlayerComponent implements AfterViewInit, OnDestroy {
-  @ViewChild('audioElement') private audioRef!: ElementRef<HTMLAudioElement>;
+  @ViewChild('audioElement') private readonly audioRef!: ElementRef<HTMLAudioElement>;
 
   readonly track = input<AudioTrack | null>(null);
   readonly src = input<string>(''); // Alternative to track
@@ -66,9 +66,9 @@ export class TwAudioPlayerComponent implements AfterViewInit, OnDestroy {
   readonly showTime = input(true);
   readonly classOverride = input('');
 
-  readonly play = output<void>();
-  readonly pause = output<void>();
-  readonly ended = output<void>();
+  readonly play = output();
+  readonly pause = output();
+  readonly ended = output();
   readonly timeUpdate = output<number>();
   readonly volumeChange = output<number>();
   readonly error = output<string>();
@@ -150,13 +150,13 @@ export class TwAudioPlayerComponent implements AfterViewInit, OnDestroy {
     this.isLooping.set(this.loop());
 
     if (this.showWaveform() && this.audioSrc()) {
-      this.loadAudioBuffer();
+      void this.loadAudioBuffer();
     }
   }
 
   ngOnDestroy(): void {
     if (this.audioContext) {
-      this.audioContext.close();
+      void this.audioContext.close();
     }
   }
 
@@ -171,8 +171,8 @@ export class TwAudioPlayerComponent implements AfterViewInit, OnDestroy {
       const arrayBuffer = await response.arrayBuffer();
       const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
       this.audioBuffer.set(audioBuffer);
-    } catch (err) {
-      console.error('Error loading audio buffer:', err);
+    } catch (error) {
+      console.error('Error loading audio buffer:', error);
     } finally {
       this.isLoading.set(false);
     }
@@ -181,7 +181,7 @@ export class TwAudioPlayerComponent implements AfterViewInit, OnDestroy {
   protected onPlay(): void {
     const audio = this.audioRef?.nativeElement;
     if (audio) {
-      audio.play();
+      void audio.play();
     }
   }
 
@@ -277,7 +277,7 @@ export class TwAudioPlayerComponent implements AfterViewInit, OnDestroy {
 
   protected onAudioDurationChange(): void {
     const audio = this.audioRef?.nativeElement;
-    if (audio && !isNaN(audio.duration)) {
+    if (audio && !Number.isNaN(audio.duration)) {
       this.duration.set(audio.duration);
     }
   }

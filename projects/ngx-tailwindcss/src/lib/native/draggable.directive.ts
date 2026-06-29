@@ -1,13 +1,12 @@
 import {
   Directive,
   ElementRef,
-  inject,
-  input,
-  output,
-  OnInit,
-  OnDestroy,
   HostBinding,
   HostListener,
+  inject,
+  input,
+  OnInit,
+  output,
 } from '@angular/core';
 import { DragData } from './native.types';
 
@@ -23,7 +22,7 @@ import { DragData } from './native.types';
   selector: '[twDraggable]',
   standalone: true,
 })
-export class TwDraggableDirective implements OnInit, OnDestroy {
+export class TwDraggableDirective implements OnInit {
   private readonly elementRef = inject(ElementRef<HTMLElement>);
 
   // Inputs
@@ -41,7 +40,7 @@ export class TwDraggableDirective implements OnInit, OnDestroy {
   @HostBinding('attr.draggable')
   protected get isDraggable(): boolean {
     const value = this.twDraggable();
-    return value === '' || value === true;
+    return value === '' || value;
   }
 
   @HostBinding('class.tw-draggable')
@@ -55,10 +54,6 @@ export class TwDraggableDirective implements OnInit, OnDestroy {
   public ngOnInit(): void {
     const el = this.elementRef.nativeElement;
     el.style.touchAction = 'none';
-  }
-
-  public ngOnDestroy(): void {
-    // Cleanup if needed
   }
 
   @HostListener('dragstart', ['$event'])

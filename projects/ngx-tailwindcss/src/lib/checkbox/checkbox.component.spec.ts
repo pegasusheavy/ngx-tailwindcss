@@ -1,9 +1,9 @@
 import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { TwCheckboxComponent, CheckboxVariant, CheckboxSize } from './checkbox.component';
+import { CheckboxSize, CheckboxVariant, TwCheckboxComponent } from './checkbox.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
@@ -171,7 +171,7 @@ describe('TwCheckboxComponent', () => {
     it('should set input as disabled', () => {
       component.disabled.set(true);
       fixture.detectChanges();
-      const input = checkboxEl.querySelector('input') as HTMLInputElement;
+      const input = checkboxEl.querySelector('input')!;
       expect(input.disabled).toBe(true);
     });
 
@@ -194,7 +194,7 @@ describe('TwCheckboxComponent', () => {
 
   describe('checkbox interactions', () => {
     it('should toggle on click', () => {
-      const input = checkboxEl.querySelector('input') as HTMLInputElement;
+      const input = checkboxEl.querySelector('input')!;
       input.click();
       fixture.detectChanges();
       expect(component.changeEvent).not.toBeNull();
@@ -202,7 +202,7 @@ describe('TwCheckboxComponent', () => {
     });
 
     it('should emit value on change', () => {
-      const input = checkboxEl.querySelector('input') as HTMLInputElement;
+      const input = checkboxEl.querySelector('input')!;
       input.click();
       fixture.detectChanges();
       expect(component.changeEvent.value).toBe('test-value');
@@ -217,7 +217,7 @@ describe('TwCheckboxComponent', () => {
 
   describe('focus/blur events', () => {
     it('should emit onBlur event', () => {
-      const input = checkboxEl.querySelector('input') as HTMLInputElement;
+      const input = checkboxEl.querySelector('input')!;
       input.dispatchEvent(new FocusEvent('blur'));
       fixture.detectChanges();
       expect(component.blurEvent).not.toBeNull();

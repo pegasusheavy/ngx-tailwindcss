@@ -1,4 +1,4 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { Platform, PlatformTheme, WindowState } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
 
@@ -120,12 +120,12 @@ export class NativeAppPlatformService {
     if (this._isTauri()) {
       // Tauri support disabled
       return;
-    } else if (this._isElectron()) {
+    } if (this._isElectron()) {
       try {
         const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-minimize');
-      } catch (e) {
-        console.warn('Electron minimize failed:', e);
+      } catch (error) {
+        console.warn('Electron minimize failed:', error);
       }
     }
     this._windowState.update(s => ({ ...s, isMinimized: true }));
@@ -143,15 +143,15 @@ export class NativeAppPlatformService {
           await win.maximize();
           this._windowState.update(s => ({ ...s, isMaximized: true }));
         }
-      } catch (e) {
-        console.warn('Tauri maximize failed:', e);
+      } catch (error) {
+        console.warn('Tauri maximize failed:', error);
       }
     } else if (this._isElectron()) {
       try {
         const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-maximize');
-      } catch (e) {
-        console.warn('Electron maximize failed:', e);
+      } catch (error) {
+        console.warn('Electron maximize failed:', error);
       }
     }
   }
@@ -162,15 +162,15 @@ export class NativeAppPlatformService {
         const tauriWindow = await dynamicImport('@tauri-apps/api/window');
         const win = tauriWindow.getCurrentWindow() as TauriWindow;
         await win.close();
-      } catch (e) {
-        console.warn('Tauri close failed:', e);
+      } catch (error) {
+        console.warn('Tauri close failed:', error);
       }
     } else if (this._isElectron()) {
       try {
         const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-close');
-      } catch (e) {
-        console.warn('Electron close failed:', e);
+      } catch (error) {
+        console.warn('Electron close failed:', error);
       }
     } else {
       window.close();
@@ -187,23 +187,21 @@ export class NativeAppPlatformService {
         } else {
           await win.setFullscreen(true);
         }
-      } catch (e) {
-        console.warn('Tauri fullscreen failed:', e);
+      } catch (error) {
+        console.warn('Tauri fullscreen failed:', error);
       }
     } else if (this._isElectron()) {
       try {
         const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-fullscreen');
-      } catch (e) {
-        console.warn('Electron fullscreen failed:', e);
+      } catch (error) {
+        console.warn('Electron fullscreen failed:', error);
       }
-    } else {
-      if (document.fullscreenElement) {
+    } else if (document.fullscreenElement) {
         await document.exitFullscreen();
       } else {
         await document.documentElement.requestFullscreen();
       }
-    }
   }
 
   public async setTitle(title: string): Promise<void> {
@@ -212,15 +210,15 @@ export class NativeAppPlatformService {
         const tauriWindow = await dynamicImport('@tauri-apps/api/window');
         const win = tauriWindow.getCurrentWindow() as TauriWindow;
         await win.setTitle(title);
-      } catch (e) {
-        console.warn('Tauri setTitle failed:', e);
+      } catch (error) {
+        console.warn('Tauri setTitle failed:', error);
       }
     } else if (this._isElectron()) {
       try {
         const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-set-title', title);
-      } catch (e) {
-        console.warn('Electron setTitle failed:', e);
+      } catch (error) {
+        console.warn('Electron setTitle failed:', error);
       }
     } else {
       document.title = title;
@@ -241,10 +239,10 @@ export class NativeAppPlatformService {
 
     if (platform === 'macos') {
       return shortcut
-        .replace(/Ctrl/gi, '⌘')
-        .replace(/Alt/gi, '⌥')
-        .replace(/Shift/gi, '⇧')
-        .replace(/\+/g, '');
+        .replaceAll(/Ctrl/gi, '⌘')
+        .replaceAll(/Alt/gi, '⌥')
+        .replaceAll(/Shift/gi, '⇧')
+        .replaceAll('+', '');
     }
 
     return shortcut;

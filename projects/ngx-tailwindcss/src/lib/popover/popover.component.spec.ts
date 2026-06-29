@@ -2,7 +2,7 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TwPopoverComponent, PopoverPosition, PopoverTrigger } from './popover.component';
+import { PopoverPosition, PopoverTrigger, TwPopoverComponent } from './popover.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
@@ -67,7 +67,7 @@ describe('TwPopoverComponent', () => {
 
   afterEach(() => {
     // Clean up any portals
-    document.querySelectorAll('[style*="position: fixed"]').forEach(el => el.remove());
+    document.querySelectorAll('[style*="position: fixed"]').forEach(el => { el.remove(); });
   });
 
   it('should create the popover', () => {
@@ -87,7 +87,7 @@ describe('TwPopoverComponent', () => {
       triggerContainer.click();
       fixture.detectChanges();
 
-      expect(component.popover['visible']()).toBe(true);
+      expect(component.popover.visible()).toBe(true);
       expect(component.showCount).toBe(1);
     });
 
@@ -98,7 +98,7 @@ describe('TwPopoverComponent', () => {
       triggerContainer.click();
       fixture.detectChanges();
 
-      expect(component.popover['visible']()).toBe(false);
+      expect(component.popover.visible()).toBe(false);
       expect(component.hideCount).toBe(1);
     });
   });
@@ -107,7 +107,7 @@ describe('TwPopoverComponent', () => {
     it('should show popover via show()', () => {
       component.popover.show();
       fixture.detectChanges();
-      expect(component.popover['visible']()).toBe(true);
+      expect(component.popover.visible()).toBe(true);
     });
 
     it('should hide popover via hide()', () => {
@@ -115,14 +115,14 @@ describe('TwPopoverComponent', () => {
       fixture.detectChanges();
       component.popover.hide();
       fixture.detectChanges();
-      expect(component.popover['visible']()).toBe(false);
+      expect(component.popover.visible()).toBe(false);
     });
 
     it('should toggle popover via toggle()', () => {
       component.popover.toggle();
-      expect(component.popover['visible']()).toBe(true);
+      expect(component.popover.visible()).toBe(true);
       component.popover.toggle();
-      expect(component.popover['visible']()).toBe(false);
+      expect(component.popover.visible()).toBe(false);
     });
   });
 
@@ -148,7 +148,7 @@ describe('TwPopoverComponent', () => {
       document.dispatchEvent(event);
       fixture.detectChanges();
 
-      expect(component.popover['visible']()).toBe(false);
+      expect(component.popover.visible()).toBe(false);
     });
   });
 
@@ -170,7 +170,7 @@ describe('TwPopoverComponent', () => {
       vi.advanceTimersByTime(10);
       fixture.detectChanges();
 
-      expect(component.popover['visible']()).toBe(true);
+      expect(component.popover.visible()).toBe(true);
     });
 
     it('should hide on mouseleave', () => {
@@ -183,31 +183,31 @@ describe('TwPopoverComponent', () => {
       vi.advanceTimersByTime(10);
       fixture.detectChanges();
 
-      expect(component.popover['visible']()).toBe(false);
+      expect(component.popover.visible()).toBe(false);
     });
   });
 
   describe('position', () => {
     it('should accept bottom position', () => {
-      expect(component.popover['position']).toBe('bottom');
+      expect(component.popover.position).toBe('bottom');
     });
 
     it('should accept top position', () => {
       component.position.set('top');
       fixture.detectChanges();
-      expect(component.popover['position']).toBe('top');
+      expect(component.popover.position).toBe('top');
     });
 
     it('should accept left position', () => {
       component.position.set('left');
       fixture.detectChanges();
-      expect(component.popover['position']).toBe('left');
+      expect(component.popover.position).toBe('left');
     });
 
     it('should accept right position', () => {
       component.position.set('right');
       fixture.detectChanges();
-      expect(component.popover['position']).toBe('right');
+      expect(component.popover.position).toBe('right');
     });
   });
 

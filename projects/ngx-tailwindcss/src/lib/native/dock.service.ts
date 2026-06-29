@@ -1,6 +1,6 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
-import { Platform, NativeMenuItem } from './native.types';
+import { NativeMenuItem, Platform } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
 
 const PLATFORM_TAURI: Platform = 'tauri';
@@ -18,7 +18,7 @@ export class DockService {
     this.checkSupport();
   }
 
-  private async checkSupport(): Promise<void> {
+  private checkSupport(): void {
     const platform = this.platformService.platform();
     this.isSupported.set(platform === PLATFORM_TAURI || platform === PLATFORM_ELECTRON);
   }

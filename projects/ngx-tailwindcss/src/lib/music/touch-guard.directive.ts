@@ -159,14 +159,10 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
       }
 
       // Check for valid tap
-      if (!this.isLongPressTriggered || !this.requireLongPress()) {
-        if (this.mobileSupport.validateTouchDuration(this.minDuration())) {
-          if (this.mobileSupport.shouldAllowAction(this.getConfig())) {
+      if ((!this.isLongPressTriggered || !this.requireLongPress()) && this.mobileSupport.validateTouchDuration(this.minDuration()) && this.mobileSupport.shouldAllowAction(this.getConfig())) {
             this.mobileSupport.triggerHaptic('selection');
             this.guardedClick.emit(e);
           }
-        }
-      }
     };
 
     // Mouse handlers (for non-touch devices)
@@ -207,11 +203,9 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
       }
 
       // Check for valid click
-      if (this.mobileSupport.validateTouchDuration(this.minDuration())) {
-        if (this.mobileSupport.shouldAllowAction(this.getConfig())) {
+      if (this.mobileSupport.validateTouchDuration(this.minDuration()) && this.mobileSupport.shouldAllowAction(this.getConfig())) {
           this.guardedClick.emit(e);
         }
-      }
     };
   }
 

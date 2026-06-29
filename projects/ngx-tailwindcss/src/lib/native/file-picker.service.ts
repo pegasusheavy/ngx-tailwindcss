@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
@@ -43,11 +43,11 @@ export class FilePickerService {
 
     if (platform === PLATFORM_TAURI) {
       return this.openFileTauri(options);
-    } else if (platform === PLATFORM_ELECTRON) {
+    } if (platform === PLATFORM_ELECTRON) {
       return this.openFileElectron(options);
-    } else {
+    } 
       return this.openFileWeb(options);
-    }
+    
   }
 
   public async saveFile(options: NativeSaveFileOptions = {}): Promise<string | null> {
@@ -55,11 +55,11 @@ export class FilePickerService {
 
     if (platform === PLATFORM_TAURI) {
       return this.saveFileTauri(options);
-    } else if (platform === PLATFORM_ELECTRON) {
+    } if (platform === PLATFORM_ELECTRON) {
       return this.saveFileElectron(options);
-    } else {
+    } 
       return this.saveFileWeb(options);
-    }
+    
   }
 
   public async selectDirectory(options: NativeOpenFileOptions = {}): Promise<string | null> {
@@ -67,11 +67,11 @@ export class FilePickerService {
 
     if (platform === PLATFORM_TAURI) {
       return this.selectDirectoryTauri(options);
-    } else if (platform === PLATFORM_ELECTRON) {
+    } if (platform === PLATFORM_ELECTRON) {
       return this.selectDirectoryElectron(options);
-    } else {
+    } 
       return this.selectDirectoryWeb();
-    }
+    
   }
 
   private async openFileTauri(options: NativeOpenFileOptions): Promise<FilePickerResult[] | null> {
@@ -126,7 +126,7 @@ export class FilePickerService {
         })),
       });
 
-      if (result.canceled || !result.filePaths.length) return null;
+      if (result.canceled || result.filePaths.length === 0) return null;
 
       return result.filePaths.map((path: string) => ({
         path,
@@ -153,16 +153,15 @@ export class FilePickerService {
         input.accept = accept;
       }
 
-      input.onchange = () => {
-        const files = input.files;
+      input.addEventListener('change', () => {
+        const {files} = input;
         if (!files || files.length === 0) {
           resolve(null);
           return;
         }
 
         const results: FilePickerResult[] = [];
-        for (let i = 0; i < files.length; i++) {
-          const file = files[i];
+        for (const file of files) {
           results.push({
             path: (file as File & { path?: string }).path || file.name,
             name: file.name,
@@ -171,9 +170,9 @@ export class FilePickerService {
           });
         }
         resolve(results);
-      };
+      });
 
-      input.oncancel = () => resolve(null);
+      input.addEventListener('cancel', () => { resolve(null); });
       input.click();
     });
   }
@@ -221,10 +220,10 @@ export class FilePickerService {
     }
   }
 
-  private async saveFileWeb(options: NativeSaveFileOptions): Promise<string | null> {
+  private saveFileWeb(options: NativeSaveFileOptions): Promise<string | null> {
     // Web doesn't have a native save dialog, return default name
     const defaultName = options.defaultPath?.split(/[/\\]/).pop() || 'untitled';
-    return defaultName;
+    return Promise.resolve(defaultName);
   }
 
   private async selectDirectoryTauri(options: NativeOpenFileOptions): Promise<string | null> {
@@ -255,7 +254,7 @@ export class FilePickerService {
         properties: ['openDirectory'],
       });
 
-      if (result.canceled || !result.filePaths.length) return null;
+      if (result.canceled || result.filePaths.length === 0) return null;
       return result.filePaths[0];
     } catch (error) {
       console.error('Electron directory picker error:', error);
@@ -271,7 +270,7 @@ export class FilePickerService {
           window as { showDirectoryPicker: () => Promise<FileSystemDirectoryHandle> }
         ).showDirectoryPicker();
         return handle.name;
-      } catch (error) {
+      } catch {
         // User cancelled or API not supported
         return null;
       }
@@ -283,8 +282,8 @@ export class FilePickerService {
       input.type = 'file';
       input.setAttribute('webkitdirectory', '');
 
-      input.onchange = () => {
-        const files = input.files;
+      input.addEventListener('change', () => {
+        const {files} = input;
         if (!files || files.length === 0) {
           resolve(null);
           return;
@@ -293,9 +292,9 @@ export class FilePickerService {
         const path = (files[0] as File & { webkitRelativePath?: string }).webkitRelativePath;
         const dirName = path?.split('/')[0] || null;
         resolve(dirName);
-      };
+      });
 
-      input.oncancel = () => resolve(null);
+      input.addEventListener('cancel', () => { resolve(null); });
       input.click();
     });
   }

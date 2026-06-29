@@ -180,7 +180,7 @@ export interface AboutDialogConfig {
   copyright?: string;
   description?: string;
   credits?: string[];
-  links?: { label: string; url: string }[];
+  links?: Array<{ label: string; url: string }>;
 }
 
 // Terminal types
@@ -204,7 +204,7 @@ export interface LogEntry {
 }
 
 export interface LogFilter {
-  levels?: LogEntry['level'][];
+  levels?: Array<LogEntry['level']>;
   source?: string;
   search?: string;
   startTime?: Date;

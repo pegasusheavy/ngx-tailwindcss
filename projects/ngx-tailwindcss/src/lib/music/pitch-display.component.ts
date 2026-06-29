@@ -201,7 +201,7 @@ export class TwPitchDisplayComponent implements OnInit {
   protected readonly frequencyRatio = computed(() => {
     const totalCents = this.totalCents();
     // Ratio = 2^(cents/1200)
-    return Math.pow(2, totalCents / 1200);
+    return 2**(totalCents / 1200);
   });
 
   protected readonly frequencyRatioDisplay = computed(() => {
@@ -236,7 +236,7 @@ export class TwPitchDisplayComponent implements OnInit {
     if (st > 12) {
       const octaves = Math.floor(st / 12);
       const remaining = st % 12;
-      return `${octaves} Oct + ${names[remaining] || remaining + ' st'}`;
+      return `${octaves} Oct + ${names[remaining] || `${remaining  } st`}`;
     }
     return names[st] || `${st} semitones`;
   });
@@ -292,7 +292,7 @@ export class TwPitchDisplayComponent implements OnInit {
     document.addEventListener('touchend', this.onPitchWheelDragEnd);
   }
 
-  private onPitchWheelDrag = (event: MouseEvent | TouchEvent): void => {
+  private readonly onPitchWheelDrag = (event: MouseEvent | TouchEvent): void => {
     const currentY = 'touches' in event ? event.touches[0].clientY : event.clientY;
     const delta = (this.dragStartY - currentY) / 100; // Normalize
     const newValue = Math.max(-1, Math.min(1, this.dragStartValue + delta));
@@ -300,7 +300,7 @@ export class TwPitchDisplayComponent implements OnInit {
     this.pitchBendChange.emit(newValue);
   };
 
-  private onPitchWheelDragEnd = (): void => {
+  private readonly onPitchWheelDragEnd = (): void => {
     this.isDragging.set(false);
     // Snap back to center if close
     if (Math.abs(this.internalPitchBend()) < 0.1) {

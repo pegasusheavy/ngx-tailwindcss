@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { StorageOptions } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
@@ -46,7 +46,7 @@ export class NativeStorageService {
     }
   }
 
-  public set<T>(key: string, value: T, options?: StorageOptions): void {
+  public set(key: string, value: unknown, options?: StorageOptions): void {
     try {
       const data: Record<string, unknown> = { _value: value };
 
@@ -59,8 +59,8 @@ export class NativeStorageService {
       }
 
       localStorage.setItem(key, JSON.stringify(data));
-    } catch (err) {
-      console.error('Storage set error:', err);
+    } catch (error) {
+      console.error('Storage set error:', error);
     }
   }
 
@@ -84,13 +84,13 @@ export class NativeStorageService {
   public async getSecure<T>(key: string): Promise<T | null> {
     if (this.platformService.isTauri()) {
       try {
-        const storeModule = (await import(
-          '@tauri-apps/plugin-store' as string
+        const storeModule = (await dynamicImport(
+          '@tauri-apps/plugin-store'
         )) as TauriStoreModule;
         const store = new storeModule.Store('.secure-store');
         return (await store.get(key)) as T | null;
-      } catch (err) {
-        console.error('Tauri secure storage error:', err);
+      } catch (error) {
+        console.error('Tauri secure storage error:', error);
         return null;
       }
     }
@@ -99,8 +99,8 @@ export class NativeStorageService {
       try {
         const electron = await dynamicImport('electron');
         return electron.ipcRenderer.invoke('secure-storage-get', key);
-      } catch (err) {
-        console.error('Electron secure storage error:', err);
+      } catch (error) {
+        console.error('Electron secure storage error:', error);
         return null;
       }
     }
@@ -110,17 +110,17 @@ export class NativeStorageService {
     return this.get<T>(key);
   }
 
-  public async setSecure<T>(key: string, value: T): Promise<void> {
+  public async setSecure(key: string, value: unknown): Promise<void> {
     if (this.platformService.isTauri()) {
       try {
-        const storeModule = (await import(
-          '@tauri-apps/plugin-store' as string
+        const storeModule = (await dynamicImport(
+          '@tauri-apps/plugin-store'
         )) as TauriStoreModule;
         const store = new storeModule.Store('.secure-store');
         await store.set(key, value);
         await store.save();
-      } catch (err) {
-        console.error('Tauri secure storage error:', err);
+      } catch (error) {
+        console.error('Tauri secure storage error:', error);
       }
       return;
     }
@@ -129,8 +129,8 @@ export class NativeStorageService {
       try {
         const electron = await dynamicImport('electron');
         await electron.ipcRenderer.invoke('secure-storage-set', key, value);
-      } catch (err) {
-        console.error('Electron secure storage error:', err);
+      } catch (error) {
+        console.error('Electron secure storage error:', error);
       }
       return;
     }
@@ -143,14 +143,14 @@ export class NativeStorageService {
   public async removeSecure(key: string): Promise<void> {
     if (this.platformService.isTauri()) {
       try {
-        const storeModule = (await import(
-          '@tauri-apps/plugin-store' as string
+        const storeModule = (await dynamicImport(
+          '@tauri-apps/plugin-store'
         )) as TauriStoreModule;
         const store = new storeModule.Store('.secure-store');
         await store.delete(key);
         await store.save();
-      } catch (err) {
-        console.error('Tauri secure storage error:', err);
+      } catch (error) {
+        console.error('Tauri secure storage error:', error);
       }
       return;
     }
@@ -159,8 +159,8 @@ export class NativeStorageService {
       try {
         const electron = await dynamicImport('electron');
         await electron.ipcRenderer.invoke('secure-storage-remove', key);
-      } catch (err) {
-        console.error('Electron secure storage error:', err);
+      } catch (error) {
+        console.error('Electron secure storage error:', error);
       }
       return;
     }
@@ -179,11 +179,11 @@ export class NativeStorageService {
     }
   }
 
-  public setSession<T>(key: string, value: T): void {
+  public setSession(key: string, value: unknown): void {
     try {
       sessionStorage.setItem(key, JSON.stringify(value));
-    } catch (err) {
-      console.error('Session storage error:', err);
+    } catch (error) {
+      console.error('Session storage error:', error);
     }
   }
 
@@ -204,8 +204,10 @@ export class NativeStorageService {
     this.dbPromise = new Promise((resolve, reject) => {
       const request = indexedDB.open('app-storage', 1);
 
-      request.onerror = () => reject(request.error);
-      request.onsuccess = () => resolve(request.result);
+      request.addEventListener('error', () => {
+        reject(request.error ?? new Error('IndexedDB open failed'));
+      });
+      request.onsuccess = () => { resolve(request.result); };
 
       request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
@@ -221,51 +223,57 @@ export class NativeStorageService {
   public async getIndexedDB<T>(key: string): Promise<T | null> {
     try {
       const db = await this.getDB();
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         const transaction = db.transaction('data', 'readonly');
         const store = transaction.objectStore('data');
         const request = store.get(key);
 
-        request.onerror = () => reject(request.error);
+        request.addEventListener('error', () => {
+          reject(request.error ?? new Error('IndexedDB get failed'));
+        });
         request.onsuccess = () => {
           resolve(request.result?.value ?? null);
         };
       });
-    } catch (err) {
-      console.error('IndexedDB get error:', err);
+    } catch (error) {
+      console.error('IndexedDB get error:', error);
       return null;
     }
   }
 
-  public async setIndexedDB<T>(key: string, value: T): Promise<void> {
+  public async setIndexedDB(key: string, value: unknown): Promise<void> {
     try {
       const db = await this.getDB();
-      return new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         const transaction = db.transaction('data', 'readwrite');
         const store = transaction.objectStore('data');
         const request = store.put({ key, value });
 
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve();
+        request.addEventListener('error', () => {
+          reject(request.error ?? new Error('IndexedDB set failed'));
+        });
+        request.onsuccess = () => { resolve(); };
       });
-    } catch (err) {
-      console.error('IndexedDB set error:', err);
+    } catch (error) {
+      console.error('IndexedDB set error:', error);
     }
   }
 
   public async removeIndexedDB(key: string): Promise<void> {
     try {
       const db = await this.getDB();
-      return new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         const transaction = db.transaction('data', 'readwrite');
         const store = transaction.objectStore('data');
         const request = store.delete(key);
 
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => resolve();
+        request.addEventListener('error', () => {
+          reject(request.error ?? new Error('IndexedDB remove failed'));
+        });
+        request.onsuccess = () => { resolve(); };
       });
-    } catch (err) {
-      console.error('IndexedDB remove error:', err);
+    } catch (error) {
+      console.error('IndexedDB remove error:', error);
     }
   }
 }

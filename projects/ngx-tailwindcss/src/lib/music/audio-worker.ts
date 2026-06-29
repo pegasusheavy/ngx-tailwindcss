@@ -78,8 +78,8 @@ function processFFT(options: FFTProcessOptions): FFTProcessResult {
     logarithmic = false,
     outputBins = 64,
     minFrequency = 20,
-    maxFrequency = 20000,
-    sampleRate = 44100,
+    maxFrequency = 20_000,
+    sampleRate = 44_100,
     fftSize = 2048,
   } = options;
 
@@ -88,7 +88,7 @@ function processFFT(options: FFTProcessOptions): FFTProcessResult {
 
   if (logarithmic) {
     // Logarithmic frequency scaling
-    processedData = new Array(outputBins);
+    processedData = Array.from<number>({ length: outputBins });
     const logMin = Math.log(minFrequency);
     const logMax = Math.log(maxFrequency);
     const logRange = logMax - logMin;
@@ -98,12 +98,12 @@ function processFFT(options: FFTProcessOptions): FFTProcessResult {
       const freq = Math.exp(logFreq);
       const bin = Math.round((freq * fftSize) / sampleRate);
       const clampedBin = Math.min(bin, inputLength - 1);
-      processedData[i] = frequencyData[clampedBin] as number;
+      processedData[i] = frequencyData[clampedBin];
     }
   } else {
     // Linear scaling with optional downsampling
     const step = Math.max(1, Math.floor(inputLength / outputBins));
-    processedData = new Array(outputBins);
+    processedData = Array.from<number>({ length: outputBins });
 
     for (let i = 0; i < outputBins; i++) {
       const startBin = i * step;
@@ -112,17 +112,17 @@ function processFFT(options: FFTProcessOptions): FFTProcessResult {
       // Average the bins
       let sum = 0;
       for (let j = startBin; j < endBin; j++) {
-        sum += frequencyData[j] as number;
+        sum += frequencyData[j];
       }
       processedData[i] = sum / (endBin - startBin);
     }
   }
 
   // Apply smoothing with previous frame
-  if (previousData && previousData.length === processedData.length) {
+  if (previousData?.length === processedData.length) {
     for (let i = 0; i < processedData.length; i++) {
       processedData[i] =
-        smoothingFactor * (previousData[i] as number) + (1 - smoothingFactor) * processedData[i];
+        smoothingFactor * (previousData[i]) + (1 - smoothingFactor) * processedData[i];
     }
   }
 
@@ -140,17 +140,17 @@ function processFFT(options: FFTProcessOptions): FFTProcessResult {
 
   // Calculate average level
   let totalLevel = 0;
-  for (let i = 0; i < processedData.length; i++) {
-    totalLevel += processedData[i];
+  for (const processedDatum of processedData) {
+    totalLevel += processedDatum;
   }
   const averageLevel = totalLevel / processedData.length;
 
   // Find dominant frequency bin
   let maxValue = 0;
   let dominantBin = 0;
-  for (let i = 0; i < processedData.length; i++) {
-    if (processedData[i] > maxValue) {
-      maxValue = processedData[i];
+  for (const [i, processedDatum] of processedData.entries()) {
+    if (processedDatum > maxValue) {
+      maxValue = processedDatum;
       dominantBin = i;
     }
   }
@@ -196,7 +196,7 @@ function processTimeDomain(options: TimeDomainOptions): TimeDomainResult {
   if (outputSamples && outputSamples < inputLength) {
     // Downsample
     const step = inputLength / outputSamples;
-    processedData = new Array(outputSamples);
+    processedData = Array.from<number>({ length: outputSamples });
 
     for (let i = 0; i < outputSamples; i++) {
       const startIdx = Math.floor(i * step);
@@ -205,7 +205,7 @@ function processTimeDomain(options: TimeDomainOptions): TimeDomainResult {
       let min = 255;
       let max = 0;
       for (let j = startIdx; j < endIdx; j++) {
-        const val = timeDomainData[j] as number;
+        const val = timeDomainData[j];
         if (val < min) min = val;
         if (val > max) max = val;
       }
@@ -213,7 +213,7 @@ function processTimeDomain(options: TimeDomainOptions): TimeDomainResult {
       processedData[i] = (min + max) / 2;
     }
   } else {
-    processedData = Array.from(timeDomainData);
+    processedData = [...timeDomainData];
   }
 
   // Calculate RMS
@@ -222,8 +222,8 @@ function processTimeDomain(options: TimeDomainOptions): TimeDomainResult {
   let zeroCrossings = 0;
   let lastSign = 0;
 
-  for (let i = 0; i < timeDomainData.length; i++) {
-    const sample = ((timeDomainData[i] as number) - 128) / 128; // Normalize to -1 to 1
+  for (const timeDomainDatum of timeDomainData) {
+    const sample = ((timeDomainDatum) - 128) / 128; // Normalize to -1 to 1
     sumSquares += sample * sample;
 
     const absSample = Math.abs(sample);
@@ -268,14 +268,14 @@ export interface LevelResult {
 function calculateLevels(options: LevelOptions): LevelResult {
   const { data, isFloatData = false } = options;
 
-  let rms = 0;
+  let rms: number;
   let peak = 0;
 
   if (isFloatData) {
     // Float data is already in dB (for frequency data) or normalized (-1 to 1)
     let sumSquares = 0;
-    for (let i = 0; i < data.length; i++) {
-      const sample = Math.abs(data[i] as number);
+    for (const datum of data) {
+      const sample = Math.abs(datum);
       sumSquares += sample * sample;
       if (sample > peak) peak = sample;
     }
@@ -283,8 +283,8 @@ function calculateLevels(options: LevelOptions): LevelResult {
   } else {
     // Uint8Array data (0-255, centered at 128)
     let sumSquares = 0;
-    for (let i = 0; i < data.length; i++) {
-      const sample = Math.abs((data[i] as number) - 128) / 128;
+    for (const datum of data) {
+      const sample = Math.abs((datum) - 128) / 128;
       sumSquares += sample * sample;
       if (sample > peak) peak = sample;
     }
@@ -331,15 +331,15 @@ function detectBeat(options: BeatDetectionOptions): BeatDetectionResult {
   const binCount = Math.min(endBin, frequencyData.length) - startBin;
 
   for (let i = startBin; i < Math.min(endBin, frequencyData.length); i++) {
-    const val = frequencyData[i] as number;
+    const val = frequencyData[i];
     energy += val * val;
   }
   energy = Math.sqrt(energy / binCount);
 
   // Calculate average from history
   let averageEnergy = 0;
-  for (let i = 0; i < energyHistory.length; i++) {
-    averageEnergy += energyHistory[i];
+  for (const element of energyHistory) {
+    averageEnergy += element;
   }
   averageEnergy = energyHistory.length > 0 ? averageEnergy / energyHistory.length : energy;
 
@@ -381,13 +381,13 @@ function downsampleWaveform(options: WaveformDownsampleOptions): WaveformDownsam
   const inputLength = samples.length;
   const samplesPerPixel = inputLength / outputLength;
 
-  const data: number[] = new Array(outputLength);
+  const data: number[] = Array.from<number>({ length: outputLength });
   let minValues: number[] | undefined;
   let maxValues: number[] | undefined;
 
   if (method === 'minmax') {
-    minValues = new Array(outputLength);
-    maxValues = new Array(outputLength);
+    minValues = Array.from<number>({ length: outputLength });
+    maxValues = Array.from<number>({ length: outputLength });
 
     for (let i = 0; i < outputLength; i++) {
       const startSample = Math.floor(i * samplesPerPixel);
@@ -397,7 +397,7 @@ function downsampleWaveform(options: WaveformDownsampleOptions): WaveformDownsam
       let max = -Infinity;
 
       for (let j = startSample; j < endSample; j++) {
-        const val = samples[j] as number;
+        const val = samples[j];
         if (val < min) min = val;
         if (val > max) max = val;
       }
@@ -413,7 +413,7 @@ function downsampleWaveform(options: WaveformDownsampleOptions): WaveformDownsam
 
       let sum = 0;
       for (let j = startSample; j < endSample; j++) {
-        sum += samples[j] as number;
+        sum += samples[j];
       }
       data[i] = sum / (endSample - startSample);
     }
@@ -425,7 +425,7 @@ function downsampleWaveform(options: WaveformDownsampleOptions): WaveformDownsam
 
       let sumSquares = 0;
       for (let j = startSample; j < endSample; j++) {
-        const val = samples[j] as number;
+        const val = samples[j];
         sumSquares += val * val;
       }
       data[i] = Math.sqrt(sumSquares / (endSample - startSample));
@@ -454,12 +454,12 @@ export interface SmoothDataResult {
 function smoothData(options: SmoothDataOptions): SmoothDataResult {
   const { data, method = 'exponential', alpha = 0.3, windowSize = 5, previousData } = options;
 
-  const result = new Array(data.length);
+  const result = Array.from<number>({ length: data.length });
 
   if (method === 'exponential') {
-    if (previousData && previousData.length === data.length) {
-      for (let i = 0; i < data.length; i++) {
-        result[i] = alpha * data[i] + (1 - alpha) * previousData[i];
+    if (previousData?.length === data.length) {
+      for (const [i, datum] of data.entries()) {
+        result[i] = alpha * datum + (1 - alpha) * previousData[i];
       }
     } else {
       result[0] = data[0];
@@ -511,9 +511,9 @@ function findPeaks(options: FindPeaksOptions): FindPeaksResult {
   for (let i = 1; i < data.length - 1; i++) {
     if (data[i] > data[i - 1] && data[i] > data[i + 1] && data[i] > threshold) {
       // Check minimum distance from previous peak
-      if (allPeaks.length === 0 || i - allPeaks[allPeaks.length - 1].index >= minDistance) {
+      if (allPeaks.length === 0 || i - allPeaks.at(-1)!.index >= minDistance) {
         allPeaks.push({ index: i, value: data[i] });
-      } else if (data[i] > allPeaks[allPeaks.length - 1].value) {
+      } else if (data[i] > allPeaks.at(-1)!.value) {
         // Replace previous peak if this one is higher
         allPeaks[allPeaks.length - 1] = { index: i, value: data[i] };
       }
@@ -547,9 +547,9 @@ function convertFrequencies(options: FrequencyConversionOptions): FrequencyConve
   const frequencies = bins.map(val => {
     if (toHz) {
       return (val * sampleRate) / fftSize;
-    } else {
+    } 
       return Math.round((val * fftSize) / sampleRate);
-    }
+    
   });
 
   return { frequencies };
@@ -569,40 +569,49 @@ function handleMessage(event: MessageEvent<WorkerMessage>): WorkerResponse {
     let result: unknown;
 
     switch (type) {
-      case 'processFFT':
+      case 'processFFT': {
         result = processFFT(data as FFTProcessOptions);
         break;
+      }
 
-      case 'processTimeDomain':
+      case 'processTimeDomain': {
         result = processTimeDomain(data as TimeDomainOptions);
         break;
+      }
 
-      case 'calculateLevels':
+      case 'calculateLevels': {
         result = calculateLevels(data as LevelOptions);
         break;
+      }
 
-      case 'detectBeat':
+      case 'detectBeat': {
         result = detectBeat(data as BeatDetectionOptions);
         break;
+      }
 
-      case 'downsampleWaveform':
+      case 'downsampleWaveform': {
         result = downsampleWaveform(data as WaveformDownsampleOptions);
         break;
+      }
 
-      case 'smoothData':
+      case 'smoothData': {
         result = smoothData(data as SmoothDataOptions);
         break;
+      }
 
-      case 'findPeaks':
+      case 'findPeaks': {
         result = findPeaks(data as FindPeaksOptions);
         break;
+      }
 
-      case 'convertFrequencies':
+      case 'convertFrequencies': {
         result = convertFrequencies(data as FrequencyConversionOptions);
         break;
+      }
 
-      default:
-        return { id, type, result: null, error: `Unknown message type: ${type}` };
+      default: {
+        return { id, type, result: null, error: `Unknown message type: ${String(type)}` };
+      }
     }
 
     return { id, type, result };

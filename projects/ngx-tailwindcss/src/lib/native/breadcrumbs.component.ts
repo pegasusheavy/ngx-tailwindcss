@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface NativeBreadcrumbItem {
@@ -159,7 +159,7 @@ export class TwBreadcrumbsNavComponent {
 
   // Outputs
   public readonly itemSelect = output<NativeBreadcrumbItem>();
-  public readonly homeSelect = output<void>();
+  public readonly homeSelect = output();
   public readonly pathChange = output<string>();
   public readonly pathCopy = output<string>();
 
@@ -184,9 +184,9 @@ export class TwBreadcrumbsNavComponent {
 
     // Focus input after render
     setTimeout(() => {
-      const input = document.querySelector('.tw-breadcrumbs-nav input') as HTMLInputElement;
-      input?.focus();
-      input?.select();
+      const inputEl = document.querySelector<HTMLInputElement>('.tw-breadcrumbs-nav input');
+      inputEl?.focus();
+      inputEl?.select();
     }, 0);
   }
 
@@ -196,8 +196,8 @@ export class TwBreadcrumbsNavComponent {
   }
 
   protected onPathInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.editPath.set(input.value);
+    const inputEl = event.target as HTMLInputElement;
+    this.editPath.set(inputEl.value);
   }
 
   protected submitPath(): void {
@@ -213,8 +213,8 @@ export class TwBreadcrumbsNavComponent {
     try {
       await navigator.clipboard.writeText(path);
       this.pathCopy.emit(path);
-    } catch (err) {
-      console.error('Failed to copy path:', err);
+    } catch (error) {
+      console.error('Failed to copy path:', error);
     }
   }
 

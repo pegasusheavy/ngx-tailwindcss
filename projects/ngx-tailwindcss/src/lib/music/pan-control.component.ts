@@ -52,7 +52,7 @@ export class TwPanControlComponent implements ControlValueAccessor {
   // Expose Math for template
   protected readonly Math = Math;
 
-  @ViewChild('track') private trackRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('track') private readonly trackRef!: ElementRef<HTMLDivElement>;
 
   public readonly variant = input<PanControlVariant>('slider');
   public readonly size = input<PanControlSize>('md');
@@ -140,12 +140,12 @@ export class TwPanControlComponent implements ControlValueAccessor {
         left: `${position}%`,
         width: `${center - position}%`,
       };
-    } else {
+    } 
       return {
         left: '50%',
         width: `${position - center}%`,
       };
-    }
+    
   });
 
   // Knob rotation (-135 to 135 degrees)
@@ -211,13 +211,13 @@ export class TwPanControlComponent implements ControlValueAccessor {
     this.setValue(0);
   }
 
-  private onMouseMove = (event: MouseEvent): void => {
+  private readonly onMouseMove = (event: MouseEvent): void => {
     if (this.isDragging()) {
       this.updateValueFromMouseEvent(event);
     }
   };
 
-  private onMouseUp = (): void => {
+  private readonly onMouseUp = (): void => {
     if (this.isDragging()) {
       this.isDragging.set(false);
       document.removeEventListener('mousemove', this.onMouseMove);
@@ -275,8 +275,8 @@ export class TwPanControlComponent implements ControlValueAccessor {
   }
 
   protected onWidthSliderChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = parseFloat(input.value);
+    const inputElement = event.target as HTMLInputElement;
+    const value = Number.parseFloat(inputElement.value);
     this.internalValue.set(value);
     this.onChange(value);
     this.valueChange.emit(value);

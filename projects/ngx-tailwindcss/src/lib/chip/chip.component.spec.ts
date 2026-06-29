@@ -3,11 +3,11 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
+  ChipSize,
+  ChipStyle,
+  ChipVariant,
   TwChipComponent,
   TwChipsComponent,
-  ChipVariant,
-  ChipStyle,
-  ChipSize,
 } from './chip.component';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -236,7 +236,7 @@ describe('TwChipComponent', () => {
     it('should emit onRemove when remove button clicked', () => {
       component.removable.set(true);
       fixture.detectChanges();
-      const removeBtn = chipEl.querySelector('button') as HTMLButtonElement;
+      const removeBtn = chipEl.querySelector('button')!;
       removeBtn.click();
       expect(component.removeCount).toBe(1);
     });

@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
@@ -34,7 +34,7 @@ export class NativeNotificationsService {
     this.checkSupport();
   }
 
-  private async checkSupport(): Promise<void> {
+  private checkSupport(): void {
     const platform = this.platformService.platform();
 
     if (platform === PLATFORM_TAURI || platform === PLATFORM_ELECTRON) {
@@ -86,11 +86,11 @@ export class NativeNotificationsService {
 
     if (platform === PLATFORM_TAURI) {
       return this.showTauriNotification(options);
-    } else if (platform === PLATFORM_ELECTRON) {
+    } if (platform === PLATFORM_ELECTRON) {
       return this.showElectronNotification(options);
-    } else {
+    } 
       return this.showWebNotification(options);
-    }
+    
   }
 
   public async setBadgeCount(count: number): Promise<void> {
@@ -161,7 +161,7 @@ export class NativeNotificationsService {
     }
   }
 
-  private async showWebNotification(options: NativeNotificationOptions): Promise<string | null> {
+  private showWebNotification(options: NativeNotificationOptions): Promise<string | null> {
     try {
       const id = `notification-${Date.now()}`;
 
@@ -173,13 +173,13 @@ export class NativeNotificationsService {
       });
 
       if (options.timeout) {
-        setTimeout(() => notification.close(), options.timeout);
+        setTimeout(() => { notification.close(); }, options.timeout);
       }
 
-      return id;
+      return Promise.resolve(id);
     } catch (error) {
       console.error('Failed to show web notification:', error);
-      return null;
+      return Promise.resolve(null);
     }
   }
 }

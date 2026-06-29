@@ -240,14 +240,18 @@ export class TwNoteComponent {
   protected readonly flagCount = computed(() => {
     const duration = this.duration();
     switch (duration) {
-      case 'eighth':
+      case 'eighth': {
         return 1;
-      case 'sixteenth':
+      }
+      case 'sixteenth': {
         return 2;
-      case 'thirtysecond':
+      }
+      case 'thirtysecond': {
         return 3;
-      default:
+      }
+      default: {
         return 0;
+      }
     }
   });
 
@@ -280,7 +284,7 @@ export class TwNoteComponent {
     }
     if (this.doubleDotted()) {
       dots.push(x + size * 0.7);
-      dots.push(x + size * 1.0);
+      dots.push(x + size);
     }
     return dots;
   });
@@ -325,9 +329,9 @@ export class TwNoteComponent {
 
     if (direction === 'up') {
       return Math.min(stemY2, y) - size * 1.2;
-    } else {
+    } 
       return Math.max(stemY2, y) + size * 1.2;
-    }
+    
   });
 
   // Beam computed values
@@ -357,14 +361,18 @@ export class TwNoteComponent {
   private getBeamLevels(): number {
     const duration = this.duration();
     switch (duration) {
-      case 'eighth':
+      case 'eighth': {
         return 1;
-      case 'sixteenth':
+      }
+      case 'sixteenth': {
         return 2;
-      case 'thirtysecond':
+      }
+      case 'thirtysecond': {
         return 3;
-      default:
+      }
+      default: {
         return 0;
+      }
     }
   }
 
@@ -378,13 +386,13 @@ export class TwNoteComponent {
     const config = this.effectiveBeamConfig();
     if (!config || !this.beamed()) return [];
 
-    const paths: { d: string; level: number }[] = [];
+    const paths: Array<{ d: string; level: number }> = [];
     const x = this.stemX();
     const beamY = this.beamY();
     const size = this.size();
     const levels = this.beamLevels();
     const direction = this.computedStemDirection();
-    const position = config.position;
+    const {position} = config;
 
     // Beam thickness and spacing
     const beamThickness = size * 0.25;
@@ -400,23 +408,27 @@ export class TwNoteComponent {
       const beamLength = size * 1.5; // Length to next note
 
       switch (position) {
-        case 'start':
+        case 'start': {
           // Beam extends to the right
           beamPath = `M ${x} ${y} h ${beamLength} v ${beamThickness} h -${beamLength} Z`;
           break;
-        case 'middle':
+        }
+        case 'middle': {
           // Beam extends both directions (connects to neighbors)
           beamPath = `M ${x - beamLength / 2} ${y} h ${beamLength} v ${beamThickness} h -${beamLength} Z`;
           break;
-        case 'end':
+        }
+        case 'end': {
           // Beam extends to the left
           beamPath = `M ${x - beamLength} ${y} h ${beamLength} v ${beamThickness} h -${beamLength} Z`;
           break;
-        case 'single':
+        }
+        case 'single': {
           // Partial beam (for single note in mixed group)
           const partialLength = size * 0.8;
           beamPath = `M ${x} ${y} h ${partialLength} v ${beamThickness} h -${partialLength} Z`;
           break;
+        }
       }
 
       if (beamPath) {

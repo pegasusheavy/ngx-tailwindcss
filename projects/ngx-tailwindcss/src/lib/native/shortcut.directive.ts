@@ -1,4 +1,4 @@
-import { Directive, inject, input, output, OnInit, OnDestroy, NgZone } from '@angular/core';
+import { Directive, inject, input, NgZone, OnDestroy, OnInit, output } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { KeyboardShortcut } from './native.types';
 
@@ -28,7 +28,7 @@ export class TwShortcutDirective implements OnInit, OnDestroy {
   // Outputs
   public readonly shortcutTriggered = output<KeyboardEvent>();
 
-  private keydownHandler = (event: KeyboardEvent) => this.handleKeydown(event);
+  private readonly keydownHandler = (event: KeyboardEvent) => { this.handleKeydown(event); };
 
   public ngOnInit(): void {
     if (this.shortcutGlobal()) {
@@ -83,25 +83,29 @@ export class TwShortcutDirective implements OnInit, OnDestroy {
     for (const part of parts) {
       switch (part) {
         case 'ctrl':
-        case 'control':
+        case 'control': {
           shortcut.ctrl = true;
           break;
+        }
         case 'alt':
-        case 'option':
+        case 'option': {
           shortcut.alt = true;
           break;
-        case 'shift':
+        }
+        case 'shift': {
           shortcut.shift = true;
           break;
+        }
         case 'meta':
         case 'cmd':
         case 'command':
         case 'win':
-        case 'windows':
+        case 'windows': {
           shortcut.meta = true;
           break;
+        }
         case 'cmdorctrl':
-        case 'commandorcontrol':
+        case 'commandorcontrol': {
           // Use Cmd on macOS, Ctrl elsewhere
           if (this.platformService.platform() === 'macos') {
             shortcut.meta = true;
@@ -109,9 +113,11 @@ export class TwShortcutDirective implements OnInit, OnDestroy {
             shortcut.ctrl = true;
           }
           break;
-        default:
+        }
+        default: {
           // This is the key
           shortcut.key = this.normalizeKey(part);
+        }
       }
     }
 

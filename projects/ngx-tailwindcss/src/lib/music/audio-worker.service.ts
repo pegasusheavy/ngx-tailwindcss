@@ -1,25 +1,25 @@
-import { Injectable, signal, computed, OnDestroy } from '@angular/core';
+import { computed, Injectable, OnDestroy, signal } from '@angular/core';
 import {
-  getWorkerScript,
-  WorkerMessage,
-  WorkerResponse,
-  WorkerMessageType,
-  FFTProcessOptions,
-  FFTProcessResult,
-  TimeDomainOptions,
-  TimeDomainResult,
-  LevelOptions,
-  LevelResult,
   BeatDetectionOptions,
   BeatDetectionResult,
-  WaveformDownsampleOptions,
-  WaveformDownsampleResult,
-  SmoothDataOptions,
-  SmoothDataResult,
+  FFTProcessOptions,
+  FFTProcessResult,
   FindPeaksOptions,
   FindPeaksResult,
   FrequencyConversionOptions,
   FrequencyConversionResult,
+  getWorkerScript,
+  LevelOptions,
+  LevelResult,
+  SmoothDataOptions,
+  SmoothDataResult,
+  TimeDomainOptions,
+  TimeDomainResult,
+  WaveformDownsampleOptions,
+  WaveformDownsampleResult,
+  WorkerMessage,
+  WorkerMessageType,
+  WorkerResponse,
 } from './audio-worker';
 
 /**
@@ -77,7 +77,7 @@ interface PendingRequest {
 export class AudioWorkerService implements OnDestroy {
   private worker: Worker | null = null;
   private workerUrl: string | null = null;
-  private pendingRequests = new Map<string, PendingRequest>();
+  private readonly pendingRequests = new Map<string, PendingRequest>();
   private requestCounter = 0;
   private config: Required<AudioWorkerConfig> = {
     enabled: true,
@@ -165,15 +165,15 @@ export class AudioWorkerService implements OnDestroy {
       this.worker = new Worker(this.workerUrl);
 
       // Set up message handler
-      this.worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+      this.worker.addEventListener('message', (event: MessageEvent<WorkerResponse>) => {
         this.handleResponse(event.data);
-      };
+      });
 
-      this.worker.onerror = error => {
+      this.worker.addEventListener('error', error => {
         this._errorCount.update(n => n + 1);
         this._lastError.set(error.message || 'Worker error');
         console.error('Audio worker error:', error);
-      };
+      });
 
       this._isInitialized.set(true);
       return true;
@@ -342,7 +342,7 @@ export class AudioWorkerService implements OnDestroy {
     // Check pending request limit
     if (this.pendingRequests.size >= this.config.maxPendingRequests) {
       // Drop oldest request
-      const oldest = Array.from(this.pendingRequests.entries()).sort(
+      const oldest = [...this.pendingRequests.entries()].sort(
         (a, b) => a[1].timestamp - b[1].timestamp
       )[0];
       if (oldest) {
@@ -423,21 +423,6 @@ export class AudioWorkerService implements OnDestroy {
 }
 
 // Re-export types for convenience
-export type {
-  FFTProcessOptions,
-  FFTProcessResult,
-  TimeDomainOptions,
-  TimeDomainResult,
-  LevelOptions,
-  LevelResult,
-  BeatDetectionOptions,
-  BeatDetectionResult,
-  WaveformDownsampleOptions,
-  WaveformDownsampleResult,
-  SmoothDataOptions,
-  SmoothDataResult,
-  FindPeaksOptions,
-  FindPeaksResult,
-  FrequencyConversionOptions,
-  FrequencyConversionResult,
-};
+
+
+export {type FFTProcessOptions, type FFTProcessResult, type TimeDomainOptions, type TimeDomainResult, type LevelOptions, type LevelResult, type BeatDetectionOptions, type BeatDetectionResult, type WaveformDownsampleOptions, type WaveformDownsampleResult, type SmoothDataOptions, type SmoothDataResult, type FindPeaksOptions, type FindPeaksResult, type FrequencyConversionOptions, type FrequencyConversionResult} from './audio-worker';

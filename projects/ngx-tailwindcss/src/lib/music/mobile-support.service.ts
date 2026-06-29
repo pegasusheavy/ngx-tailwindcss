@@ -254,7 +254,7 @@ export class MobileSupportService {
    * Validate drag distance
    */
   validateDragDistance(event: TouchEvent | MouseEvent, minDistance: number = 10): boolean {
-    let currentX: number, currentY: number;
+    let currentX: number; let currentY: number;
 
     if ('touches' in event) {
       currentX = event.touches[0].clientX;
@@ -266,7 +266,7 @@ export class MobileSupportService {
 
     const dx = currentX - this.touchStartX;
     const dy = currentY - this.touchStartY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const distance = Math.hypot(dx, dy);
 
     return distance >= minDistance;
   }
@@ -278,7 +278,7 @@ export class MobileSupportService {
     event: TouchEvent | MouseEvent,
     axisLock: 'x' | 'y' | 'none' = 'none'
   ): { dx: number; dy: number } {
-    let currentX: number, currentY: number;
+    let currentX: number; let currentY: number;
 
     if ('touches' in event) {
       currentX = event.touches[0].clientX;
@@ -315,7 +315,7 @@ export class MobileSupportService {
 
     const dx = touch2.clientX - touch1.clientX;
     const dy = touch2.clientY - touch1.clientY;
-    const currentDistance = Math.sqrt(dx * dx + dy * dy);
+    const currentDistance = Math.hypot(dx, dy);
 
     return {
       scale: 1,
@@ -337,7 +337,7 @@ export class MobileSupportService {
 
     const dx = touch2.clientX - touch1.clientX;
     const dy = touch2.clientY - touch1.clientY;
-    const currentDistance = Math.sqrt(dx * dx + dy * dy);
+    const currentDistance = Math.hypot(dx, dy);
 
     return {
       ...initialState,
@@ -359,7 +359,7 @@ export class MobileSupportService {
     const duration = Date.now() - this.touchStartTime;
     if (duration > maxDuration) return null;
 
-    let endX: number, endY: number;
+    let endX: number; let endY: number;
     if ('changedTouches' in event) {
       endX = event.changedTouches[0].clientX;
       endY = event.changedTouches[0].clientY;
@@ -370,7 +370,7 @@ export class MobileSupportService {
 
     const dx = endX - this.touchStartX;
     const dy = endY - this.touchStartY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    const distance = Math.hypot(dx, dy);
 
     if (distance < minDistance) return null;
 

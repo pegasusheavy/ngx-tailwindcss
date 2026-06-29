@@ -136,7 +136,7 @@ export class TwBpmDisplayComponent implements OnInit {
 
     this.beatInterval = setInterval(() => {
       this.beatActive.set(true);
-      setTimeout(() => this.beatActive.set(false), 100);
+      setTimeout(() => { this.beatActive.set(false); }, 100);
     }, intervalMs);
   }
 
@@ -202,7 +202,7 @@ export class TwBpmDisplayComponent implements OnInit {
     const taps = this.tapTimes();
 
     // Reset if last tap was more than 2 seconds ago
-    if (taps.length > 0 && now - taps[taps.length - 1] > 2000) {
+    if (taps.length > 0 && now - taps.at(-1)! > 2000) {
       this.tapTimes.set([now]);
       return;
     }
@@ -218,7 +218,7 @@ export class TwBpmDisplayComponent implements OnInit {
         intervals.push(newTaps[i] - newTaps[i - 1]);
       }
       const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-      const calculatedBpm = Math.round(60000 / avgInterval);
+      const calculatedBpm = Math.round(60_000 / avgInterval);
       const clampedBpm = Math.max(this.minBpm(), Math.min(this.maxBpm(), calculatedBpm));
 
       this.setBpm(clampedBpm);
@@ -240,8 +240,8 @@ export class TwBpmDisplayComponent implements OnInit {
   }
 
   protected finishEditing(): void {
-    const value = parseInt(this.editValue(), 10);
-    if (!isNaN(value)) {
+    const value = Number.parseInt(this.editValue(), 10);
+    if (!Number.isNaN(value)) {
       this.setBpm(value);
     }
     this.isEditing.set(false);
@@ -301,7 +301,7 @@ export class TwBpmDisplayComponent implements OnInit {
 
   // Milliseconds per beat
   protected readonly msPerBeat = computed(() => {
-    return Math.round(60000 / this.internalBpm());
+    return Math.round(60_000 / this.internalBpm());
   });
 
   // Beats per second
@@ -321,7 +321,7 @@ export class TwBpmDisplayComponent implements OnInit {
   protected readonly sliderMarks = computed(() => {
     const min = this.minBpm();
     const max = this.maxBpm();
-    const marks: { value: number; label: string; percent: number }[] = [];
+    const marks: Array<{ value: number; label: string; percent: number }> = [];
 
     // Add standard tempo points that are within range
     const standardPoints = [60, 80, 100, 120, 140, 160, 180, 200];

@@ -89,11 +89,11 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
   private animationFrameId: number | null = null;
   private frequencyData: Uint8Array | null = null;
   private timeDomainData: Uint8Array | null = null;
-  private particles: (Particle | BeatParticle)[] = [];
+  private particles: Array<Particle | BeatParticle> = [];
   private rotation = 0;
 
   // Beat detection state
-  private energyHistory: number[] = [];
+  private readonly energyHistory: number[] = [];
   private beatTimestamps: number[] = [];
   private lastBeatTime = 0;
   private beatFlashIntensity = 0;
@@ -171,21 +171,26 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
 
     // Draw based on variant
     switch (this.variant()) {
-      case 'circular':
+      case 'circular': {
         this.drawCircular();
         break;
-      case 'bars':
+      }
+      case 'bars': {
         this.drawBars();
         break;
-      case 'wave':
+      }
+      case 'wave': {
         this.drawWave();
         break;
-      case 'particles':
+      }
+      case 'particles': {
         this.drawParticles();
         break;
-      case 'rings':
+      }
+      case 'rings': {
         this.drawRings();
         break;
+      }
     }
 
     // Draw beat overlay effects (foreground layer)
@@ -204,7 +209,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
-    this.animationFrameId = requestAnimationFrame(() => this.draw());
+    this.animationFrameId = requestAnimationFrame(() => { this.draw(); });
   }
 
   private detectBeat(): void {
@@ -216,7 +221,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
     // Calculate energy for different frequency bands
     const lowEnergy = this.getFrequencyBandEnergy(0, 0.1); // Bass (0-10%)
     const midEnergy = this.getFrequencyBandEnergy(0.1, 0.5); // Mids (10-50%)
-    const highEnergy = this.getFrequencyBandEnergy(0.5, 1.0); // Highs (50-100%)
+    const highEnergy = this.getFrequencyBandEnergy(0.5, 1); // Highs (50-100%)
 
     // Use selected bands
     let currentEnergy = 0;
@@ -253,7 +258,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
 
     // Calculate variance for dynamic threshold
     const variance =
-      this.energyHistory.reduce((sum, e) => sum + Math.pow(e - averageEnergy, 2), 0) /
+      this.energyHistory.reduce((sum, e) => sum + (e - averageEnergy)**2, 0) /
       this.energyHistory.length;
     const stdDev = Math.sqrt(variance);
 
@@ -287,7 +292,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
           intervals.push(this.beatTimestamps[i] - this.beatTimestamps[i - 1]);
         }
         const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-        const bpm = Math.round(60000 / avgInterval);
+        const bpm = Math.round(60_000 / avgInterval);
         if (bpm > 40 && bpm < 240) {
           this.currentBpm.set(bpm);
         }
@@ -320,7 +325,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
       });
 
       // Reset beat active after short delay
-      setTimeout(() => this.isBeatActive.set(false), 100);
+      setTimeout(() => { this.isBeatActive.set(false); }, 100);
     }
   }
 
@@ -400,15 +405,13 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
       this.ctx.fillRect(0, 0, width, height);
     }
 
-    if (mode === 'pulse') {
-      // Already handled by scaling in individual draw methods
+    // Already handled by scaling in individual draw methods
       // Add border pulse effect
-      if (this.beatFlashIntensity > 0.01) {
+      if (mode === 'pulse' && this.beatFlashIntensity > 0.01) {
         this.ctx.strokeStyle = this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity);
         this.ctx.lineWidth = 4 + this.beatFlashIntensity * 8;
         this.ctx.strokeRect(2, 2, width - 4, height - 4);
       }
-    }
 
     // Draw beat particles
     this.drawBeatParticles();
@@ -435,7 +438,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
         maxLife: 1,
         color: this.beatFlashColor(),
         isBeatParticle: true,
-      } as BeatParticle);
+      });
     }
   }
 
@@ -462,7 +465,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
   private hexToRgba(hex: string, alpha: number): string {
     const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
     if (!result) return `rgba(255, 255, 255, ${alpha})`;
-    return `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${alpha})`;
+    return `rgba(${Number.parseInt(result[1], 16)}, ${Number.parseInt(result[2], 16)}, ${Number.parseInt(result[3], 16)}, ${alpha})`;
   }
 
   private drawCircular(): void {
@@ -719,16 +722,17 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
         const index = Math.floor(position * (custom.length - 1));
         return custom[Math.min(index, custom.length - 1)];
       }
-      default:
+      default: {
         return '#ffffff';
+      }
     }
   }
 
   private getAverageFrequency(): number {
     if (!this.frequencyData) return 0;
     let sum = 0;
-    for (let i = 0; i < this.frequencyData.length; i++) {
-      sum += this.frequencyData[i];
+    for (const value of this.frequencyData) {
+      sum += value;
     }
     return sum / this.frequencyData.length;
   }

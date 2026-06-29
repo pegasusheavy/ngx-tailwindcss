@@ -47,7 +47,7 @@ class TestHostComponent {
   standalone: true,
   imports: [TwRatingComponent, ReactiveFormsModule],
 })
-class TestHostComponentWithFormControl {
+class TestHostWithFormControlComponent {
   ratingControl = new FormControl(3);
 }
 
@@ -255,17 +255,17 @@ describe('TwRatingComponent', () => {
 });
 
 describe('TwRatingComponent with FormControl', () => {
-  let fixture: ComponentFixture<TestHostComponentWithFormControl>;
-  let component: TestHostComponentWithFormControl;
+  let fixture: ComponentFixture<TestHostWithFormControlComponent>;
+  let component: TestHostWithFormControlComponent;
   let ratingEl: DebugElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TestHostComponentWithFormControl],
+      imports: [TestHostWithFormControlComponent],
       providers: [TwClassService],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TestHostComponentWithFormControl);
+    fixture = TestBed.createComponent(TestHostWithFormControlComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     ratingEl = fixture.debugElement.query(By.directive(TwRatingComponent));

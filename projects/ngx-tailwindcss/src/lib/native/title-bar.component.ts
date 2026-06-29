@@ -1,16 +1,16 @@
 import {
-  Component,
   ChangeDetectionStrategy,
-  input,
-  output,
-  inject,
+  Component,
   computed,
   HostListener,
+  inject,
+  input,
+  output,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NativeAppPlatformService } from './platform.service';
 import { TwWindowControlsComponent } from './window-controls.component';
-import { TitleBarVariant, TitleBarPlatform } from './native.types';
+import { TitleBarPlatform, TitleBarVariant } from './native.types';
 
 /**
  * Custom window title bar component
@@ -109,7 +109,7 @@ export class TwTitleBarComponent {
   public readonly showFullscreen = input(false);
 
   // Outputs
-  public readonly doubleClick = output<void>();
+  public readonly doubleClick = output();
 
   // Computed
   protected readonly effectivePlatform = computed(() => {
@@ -153,6 +153,6 @@ export class TwTitleBarComponent {
 
   protected onDoubleClick(): void {
     this.doubleClick.emit();
-    this.platformService.maximize();
+    void this.platformService.maximize();
   }
 }

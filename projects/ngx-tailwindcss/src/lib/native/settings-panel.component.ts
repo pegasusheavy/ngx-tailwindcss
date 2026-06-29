@@ -1,12 +1,12 @@
 import {
   Component,
+  computed,
+  contentChildren,
+  Directive,
   input,
   output,
   signal,
-  computed,
   TemplateRef,
-  contentChildren,
-  Directive,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -25,7 +25,7 @@ export interface SettingItem {
   description?: string;
   type: 'toggle' | 'select' | 'text' | 'number' | 'color' | 'path' | 'shortcut';
   value: unknown;
-  options?: { label: string; value: unknown }[];
+  options?: Array<{ label: string; value: unknown }>;
   min?: number;
   max?: number;
   step?: number;
@@ -283,9 +283,9 @@ export class TwSettingsPanelComponent {
   public readonly settings = input<SettingItem[]>([]);
 
   public readonly settingChanged = output<{ setting: SettingItem; value: unknown }>();
-  public readonly resetToDefaults = output<void>();
-  public readonly exportSettings = output<void>();
-  public readonly importSettings = output<void>();
+  public readonly resetToDefaults = output();
+  public readonly exportSettings = output();
+  public readonly importSettings = output();
   public readonly browsePath = output<SettingItem>();
   public readonly editShortcut = output<SettingItem>();
 

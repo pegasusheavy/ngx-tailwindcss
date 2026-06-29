@@ -1,11 +1,11 @@
 import {
   Directive,
   ElementRef,
+  HostBinding,
+  HostListener,
   inject,
   input,
   output,
-  HostBinding,
-  HostListener,
   signal,
 } from '@angular/core';
 import { DragData, DropEvent } from './native.types';
@@ -52,7 +52,7 @@ export class TwDropZoneDirective {
 
   protected get isEnabled(): boolean {
     const value = this.twDropZone();
-    return value === '' || value === true;
+    return value === '' || value;
   }
 
   @HostListener('dragenter', ['$event'])
@@ -124,7 +124,7 @@ export class TwDropZoneDirective {
     if (event.dataTransfer.files.length > 0) {
       data = {
         type: 'files',
-        data: Array.from(event.dataTransfer.files),
+        data: [...event.dataTransfer.files],
       };
     }
 

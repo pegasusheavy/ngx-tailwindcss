@@ -5,7 +5,7 @@
  * to statically analyze the import. This is intentional for optional dependencies like Electron and Tauri.
  */
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 
 /**
  * Creates a dynamic import function that bundlers cannot statically analyze.
@@ -13,6 +13,7 @@
  */
 function createDynamicImport() {
   // Use Function constructor to create import at runtime, preventing static analysis
+  // eslint-disable-next-line no-new-func, @typescript-eslint/no-implied-eval -- deliberate native dynamic import that must escape bundler static analysis
   return new Function('modulePath', 'return import(modulePath)') as (
     modulePath: string
   ) => Promise<any>;

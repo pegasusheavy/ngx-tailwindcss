@@ -1,4 +1,4 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type ActivityIndicatorVariant = 'spinner' | 'dots' | 'pulse' | 'bars' | 'ring';

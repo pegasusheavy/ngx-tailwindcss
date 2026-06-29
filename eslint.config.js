@@ -487,7 +487,11 @@ export default tseslint.config(
       '@angular-eslint/template/mouse-events-have-key-events': 'warn',
       '@angular-eslint/template/no-autofocus': 'warn',
       '@angular-eslint/template/no-distracting-elements': 'error',
-      '@angular-eslint/template/no-duplicate-attributes': 'error',
+      // Components intentionally pair a static `class` (base styles) with a
+      // bound `[class]` (dynamic styles); Angular composes the two into one
+      // class list. The rule cannot distinguish that valid idiom from a true
+      // duplicate, so keep it as a warning rather than failing the build.
+      '@angular-eslint/template/no-duplicate-attributes': 'warn',
       '@angular-eslint/template/no-negated-async': 'error',
       '@angular-eslint/template/no-positive-tabindex': 'error',
       '@angular-eslint/template/role-has-required-aria': 'error',

@@ -58,7 +58,7 @@ describe('MobileSupportService', () => {
       } as unknown as TouchEvent;
 
       // Should not throw
-      expect(() => service.startTouchTracking(touchEvent)).not.toThrow();
+      expect(() => { service.startTouchTracking(touchEvent); }).not.toThrow();
     });
 
     it('should start touch tracking with mouse event', () => {
@@ -68,7 +68,7 @@ describe('MobileSupportService', () => {
       });
 
       // Should not throw
-      expect(() => service.startTouchTracking(mouseEvent)).not.toThrow();
+      expect(() => { service.startTouchTracking(mouseEvent); }).not.toThrow();
     });
 
     it('should validate touch duration', () => {
@@ -124,7 +124,7 @@ describe('MobileSupportService', () => {
       expect(service.touchGuardEnabled()).toBe(false);
 
       // Should still allow action when disabled
-      const result = service.shouldAllowAction({ cooldownMs: 10000 });
+      const result = service.shouldAllowAction({ cooldownMs: 10_000 });
       expect(result).toBe(true);
     });
 

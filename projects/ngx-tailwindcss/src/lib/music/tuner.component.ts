@@ -82,16 +82,21 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
   protected readonly tuningStrings = computed(() => {
     const mode = this.mode();
     switch (mode) {
-      case 'guitar':
+      case 'guitar': {
         return GUITAR_TUNING;
-      case 'bass':
+      }
+      case 'bass': {
         return BASS_TUNING;
-      case 'ukulele':
+      }
+      case 'ukulele': {
         return UKULELE_TUNING;
-      case 'violin':
+      }
+      case 'violin': {
         return VIOLIN_TUNING;
-      default:
+      }
+      default: {
         return [];
+      }
     }
   });
 
@@ -150,7 +155,7 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit(): void {
     if (this.autoStart()) {
-      this.startListening();
+      void this.startListening();
     }
   }
 
@@ -170,7 +175,7 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
       const source = this.audioContext.createMediaStreamSource(this.mediaStream);
       source.connect(this.analyser);
 
-      this.dataArray = new Float32Array(this.analyser.fftSize) as Float32Array<ArrayBuffer>;
+      this.dataArray = new Float32Array(this.analyser.fftSize);
       this.isListening.set(true);
 
       this.detectPitch();
@@ -188,12 +193,12 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
     }
 
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach(track => track.stop());
+      this.mediaStream.getTracks().forEach(track => { track.stop(); });
       this.mediaStream = null;
     }
 
     if (this.audioContext) {
-      this.audioContext.close();
+      void this.audioContext.close();
       this.audioContext = null;
     }
 
@@ -205,7 +210,7 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
     if (this.isListening()) {
       this.stopListening();
     } else {
-      this.startListening();
+      void this.startListening();
     }
   }
 
@@ -235,13 +240,13 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
       this.inTune.emit(tuningData.inTune);
     }
 
-    this.animationFrameId = requestAnimationFrame(() => this.detectPitch());
+    this.animationFrameId = requestAnimationFrame(() => { this.detectPitch(); });
   }
 
   private autoCorrelate(buffer: Float32Array, sampleRate: number): number {
     // Simple autocorrelation-based pitch detection
     const size = buffer.length;
-    let maxSamples = Math.floor(size / 2);
+    const maxSamples = Math.floor(size / 2);
     let bestOffset = -1;
     let bestCorrelation = 0;
     let foundGoodCorrelation = false;
@@ -309,7 +314,7 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
 
   protected getExpectedFrequency(noteName: string): number {
     // Parse note name like "E2" into note and octave
-    const match = noteName.match(/([A-G]#?)(\d)/);
+    const match = /([A-G]#?)(\d)/.exec(noteName);
     if (!match) return 0;
 
     const note = match[1];
@@ -320,6 +325,6 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
 
     // Calculate semitones from A4
     const semitonesFromA4 = (octave - 4) * 12 + (noteIndex - 9);
-    return this.referenceFrequency() * Math.pow(2, semitonesFromA4 / 12);
+    return this.referenceFrequency() * 2**(semitonesFromA4 / 12);
   }
 }

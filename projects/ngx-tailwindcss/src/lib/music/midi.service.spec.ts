@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
-import { MidiService, MidiMessage, MidiCCMapping, MIDI_CC } from './midi.service';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { MIDI_CC, MidiCCMapping, MidiMessage, MidiService } from './midi.service';
 
 // Mock Web MIDI API
 const createMockMIDIAccess = () => {
@@ -18,11 +18,11 @@ const createMockMIDIAccess = () => {
     // Helper to simulate receiving a message
     simulateMessage(data: number[]): void {
       if (this.onmidimessage) {
-        const event = {
+        const event: Pick<MIDIMessageEvent, 'data' | 'timeStamp'> = {
           data: new Uint8Array(data),
           timeStamp: performance.now(),
-        } as MIDIMessageEvent;
-        this.onmidimessage(event);
+        };
+        this.onmidimessage(event as MIDIMessageEvent);
       }
     }
   }
@@ -274,7 +274,7 @@ describe('MidiService', () => {
       await service.requestAccess();
       service.addCCMapping(testMapping);
 
-      const ccEvents: { mappingId: string; scaledValue: number }[] = [];
+      const ccEvents: Array<{ mappingId: string; scaledValue: number }> = [];
       service.onCCChange(event => ccEvents.push(event));
 
       // CC#7 = 64 (midpoint of 0-127)
@@ -297,7 +297,7 @@ describe('MidiService', () => {
       };
       service.addCCMapping(invertedMapping);
 
-      const ccEvents: { scaledValue: number }[] = [];
+      const ccEvents: Array<{ scaledValue: number }> = [];
       service.onCCChange(event => ccEvents.push(event));
 
       // CC#7 = 0 (minimum) -> should map to maximum when inverted
@@ -348,7 +348,7 @@ describe('MidiService', () => {
       expect(learnCompleteEvents[0].ccNumber).toBe(74);
     });
 
-    it('should timeout MIDI Learn', async () => {
+    it('should timeout MIDI Learn', () => {
       vi.useFakeTimers();
 
       service.startMidiLearn('test-control', 1000);

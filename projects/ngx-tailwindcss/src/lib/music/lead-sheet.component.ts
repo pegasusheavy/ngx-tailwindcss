@@ -9,8 +9,8 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { TwStaffComponent, ClefType, KeySignature, StaffTimeSignature } from './staff.component';
-import { TwChordDiagramComponent, ChordDefinition, COMMON_CHORDS } from './chord-diagram.component';
+import { ClefType, KeySignature, StaffTimeSignature, TwStaffComponent } from './staff.component';
+import { ChordDefinition, COMMON_CHORDS, TwChordDiagramComponent } from './chord-diagram.component';
 
 export type LeadSheetVariant = 'default' | 'minimal' | 'printed' | 'dark' | 'fakebook';
 export type LeadSheetStyle = 'standard' | 'nashville' | 'roman';
@@ -363,7 +363,7 @@ export class TwLeadSheetComponent {
   protected getBaseChord(chord: string): string {
     // Handle slash chords
     const slashIndex = chord.indexOf('/');
-    const mainChord = slashIndex > 0 ? chord.substring(0, slashIndex) : chord;
+    const mainChord = slashIndex > 0 ? chord.slice(0, Math.max(0, slashIndex)) : chord;
 
     // Remove extensions (7, 9, 11, 13, maj7, sus, etc.)
     return mainChord.replace(/[0-9majsusadd]+$/, '');

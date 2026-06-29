@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, OnDestroy } from '@angular/core';
+import { computed, Injectable, OnDestroy, signal } from '@angular/core';
 
 /**
  * Audio context state
@@ -90,7 +90,7 @@ const DEFAULT_ANALYSER_CONFIG: AudioNodeConfig = {
 export class AudioContextService implements OnDestroy {
   private _audioContext: AudioContext | null = null;
   private readonly _state = signal<AudioContextState>('suspended');
-  private readonly _sampleRate = signal(44100);
+  private readonly _sampleRate = signal(44_100);
   private readonly _sources = signal<Map<string, ConnectedSource>>(new Map());
   private readonly _workletModules = signal<Map<string, AudioWorkletModuleInfo>>(new Map());
   private sourceIdCounter = 0;
@@ -102,7 +102,7 @@ export class AudioContextService implements OnDestroy {
   readonly sampleRate = this._sampleRate.asReadonly();
 
   /** Currently connected sources */
-  readonly sources = computed(() => Array.from(this._sources().values()));
+  readonly sources = computed(() => [...this._sources().values()]);
 
   /** Number of connected sources */
   readonly sourceCount = computed(() => this._sources().size);
@@ -116,7 +116,7 @@ export class AudioContextService implements OnDestroy {
   });
 
   /** Loaded worklet modules */
-  readonly workletModules = computed(() => Array.from(this._workletModules().values()));
+  readonly workletModules = computed(() => [...this._workletModules().values()]);
 
   ngOnDestroy(): void {
     this.dispose();
@@ -153,7 +153,7 @@ export class AudioContextService implements OnDestroy {
    * Suspend the audio context
    */
   async suspend(): Promise<void> {
-    if (this._audioContext && this._audioContext.state === 'running') {
+    if (this._audioContext?.state === 'running') {
       await this._audioContext.suspend();
     }
   }
@@ -181,11 +181,11 @@ export class AudioContextService implements OnDestroy {
   private setupStateListener(): void {
     if (!this._audioContext) return;
 
-    this._audioContext.onstatechange = () => {
+    this._audioContext.addEventListener('statechange', () => {
       if (this._audioContext) {
         this._state.set(this._audioContext.state as AudioContextState);
       }
-    };
+    });
     this._state.set(this._audioContext.state as AudioContextState);
   }
 
@@ -340,8 +340,8 @@ export class AudioContextService implements OnDestroy {
         node: source,
         analyser,
         gain,
-        start: (when?: number) => source.start(when),
-        stop: () => source.stop(),
+        start: (when?: number) => { source.start(when); },
+        stop: () => { source.stop(); },
       };
 
     this._sources.update(sources => {
@@ -351,9 +351,9 @@ export class AudioContextService implements OnDestroy {
     });
 
     // Clean up when playback ends
-    source.onended = () => {
+    source.addEventListener('ended', () => {
       this.disconnectSource(id);
-    };
+    });
 
     return connectedSource;
   }
@@ -408,7 +408,7 @@ export class AudioContextService implements OnDestroy {
       node: oscillator,
       analyser,
       gain,
-      start: () => oscillator.start(),
+      start: () => { oscillator.start(); },
       stop: () => {
         oscillator.stop();
         this.disconnectSource(id);
@@ -486,7 +486,7 @@ export class AudioContextService implements OnDestroy {
     options?: AudioWorkletNodeOptions
   ): AudioWorkletNode | null {
     const source = this._sources().get(sourceId);
-    if (!source || !source.analyser || !source.gain) {
+    if (!source?.analyser || !source.gain) {
       console.warn(`Source ${sourceId} not found or missing analyser/gain`);
       return null;
     }
@@ -621,7 +621,7 @@ export class AudioContextService implements OnDestroy {
     currentNode.connect(dest);
 
     // Find analyser in chain
-    const analyser = nodes.find(n => n instanceof AnalyserNode) as AnalyserNode | undefined;
+    const analyser = nodes.find(n => n instanceof AnalyserNode);
 
     return {
       source,
@@ -678,7 +678,7 @@ export class AudioContextService implements OnDestroy {
    * Disconnect all sources
    */
   disconnectAll(): void {
-    const sourceIds = Array.from(this._sources().keys());
+    const sourceIds = [...this._sources().keys()];
     for (const id of sourceIds) {
       this.disconnectSource(id);
     }
@@ -753,7 +753,7 @@ export class AudioContextService implements OnDestroy {
   private dispose(): void {
     this.disconnectAll();
     if (this._audioContext && this._audioContext.state !== 'closed') {
-      this._audioContext.close();
+      void this._audioContext.close();
     }
   }
 }

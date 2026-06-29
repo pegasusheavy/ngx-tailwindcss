@@ -1,5 +1,5 @@
 import { Component, DebugElement, signal, ViewChild } from '@angular/core';
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ImageBorderRadius, ImageFit, TwImageComponent } from './image.component';
@@ -228,16 +228,16 @@ describe('TwImageComponent', () => {
     });
 
     it('should zoom in', () => {
-      const initialZoom = component.image['zoomLevel']();
+      const initialZoom = component.image.zoomLevel();
       component.image.zoomIn();
-      expect(component.image['zoomLevel']()).toBeGreaterThan(initialZoom);
+      expect(component.image.zoomLevel()).toBeGreaterThan(initialZoom);
     });
 
     it('should zoom out', () => {
       component.image.zoomIn();
-      const afterZoomIn = component.image['zoomLevel']();
+      const afterZoomIn = component.image.zoomLevel();
       component.image.zoomOut();
-      expect(component.image['zoomLevel']()).toBeLessThan(afterZoomIn);
+      expect(component.image.zoomLevel()).toBeLessThan(afterZoomIn);
     });
 
     it('should not zoom in beyond max', () => {
@@ -245,7 +245,7 @@ describe('TwImageComponent', () => {
       for (let i = 0; i < 20; i++) {
         component.image.zoomIn();
       }
-      expect(component.image['zoomLevel']()).toBeLessThanOrEqual(3);
+      expect(component.image.zoomLevel()).toBeLessThanOrEqual(3);
     });
 
     it('should not zoom out beyond min', () => {
@@ -253,7 +253,7 @@ describe('TwImageComponent', () => {
       for (let i = 0; i < 20; i++) {
         component.image.zoomOut();
       }
-      expect(component.image['zoomLevel']()).toBeGreaterThanOrEqual(0.5);
+      expect(component.image.zoomLevel()).toBeGreaterThanOrEqual(0.5);
     });
   });
 
@@ -267,18 +267,18 @@ describe('TwImageComponent', () => {
 
     it('should rotate left', () => {
       component.image.rotateLeft();
-      expect(component.image['rotation']()).toBe(-90);
+      expect(component.image.rotation()).toBe(-90);
     });
 
     it('should rotate right', () => {
       component.image.rotateRight();
-      expect(component.image['rotation']()).toBe(90);
+      expect(component.image.rotation()).toBe(90);
     });
 
     it('should accumulate rotation', () => {
       component.image.rotateRight();
       component.image.rotateRight();
-      expect(component.image['rotation']()).toBe(180);
+      expect(component.image.rotation()).toBe(180);
     });
   });
 });

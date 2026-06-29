@@ -2,7 +2,7 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwSpacerComponent, TwWrapComponent, SpacerSize } from './spacer.component';
+import { SpacerSize, TwSpacerComponent, TwWrapComponent } from './spacer.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({

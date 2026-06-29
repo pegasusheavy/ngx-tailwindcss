@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface OnboardingStep {
@@ -157,8 +157,8 @@ export class TwOnboardingWizardComponent {
 
   public readonly stepChanged = output<{ step: OnboardingStep; index: number }>();
   public readonly completed = output<{ dontShowAgain: boolean }>();
-  public readonly skipped = output<void>();
-  public readonly closed = output<void>();
+  public readonly skipped = output();
+  public readonly closed = output();
 
   public readonly isOpen = signal(false);
   public readonly currentIndex = signal(0);

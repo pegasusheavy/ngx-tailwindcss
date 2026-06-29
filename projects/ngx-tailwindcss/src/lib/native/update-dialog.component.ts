@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface UpdateDialogInfo {
@@ -195,12 +195,12 @@ export class TwUpdateDialogComponent {
   public readonly updateInfo = input<UpdateDialogInfo | null>(null);
   public readonly showAutoUpdate = input(true);
 
-  public readonly downloadStarted = output<void>();
-  public readonly downloadCancelled = output<void>();
-  public readonly installClicked = output<void>();
-  public readonly remindLaterClicked = output<void>();
+  public readonly downloadStarted = output();
+  public readonly downloadCancelled = output();
+  public readonly installClicked = output();
+  public readonly remindLaterClicked = output();
   public readonly autoUpdateChanged = output<boolean>();
-  public readonly closed = output<void>();
+  public readonly closed = output();
 
   public readonly isOpen = signal(false);
   public readonly isDownloading = signal(false);

@@ -1,4 +1,4 @@
-import { Injectable, inject, signal, NgZone } from '@angular/core';
+import { inject, Injectable, NgZone, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { IpcResponse } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
@@ -29,7 +29,7 @@ export class NativeIpcService {
   private readonly platformService = inject(NativeAppPlatformService);
   private readonly ngZone = inject(NgZone);
 
-  private listeners = new Map<string, Set<IpcCallback<unknown>>>();
+  private readonly listeners = new Map<string, Set<IpcCallback<unknown>>>();
   private unlistenFns: Array<() => void> = [];
 
   // Connection state
@@ -40,7 +40,7 @@ export class NativeIpcService {
     this.init();
   }
 
-  private async init(): Promise<void> {
+  private init(): void {
     if (this.platformService.isTauri()) {
       this._isConnected.set(true);
     } else if (this.platformService.isElectron()) {
@@ -51,14 +51,14 @@ export class NativeIpcService {
   /**
    * Invoke a command in the main process and get a response
    */
-  public async invoke<T, R = unknown>(command: string, payload?: T): Promise<IpcResponse<R>> {
+  public async invoke<R = unknown>(command: string, payload?: unknown): Promise<IpcResponse<R>> {
     if (this.platformService.isTauri()) {
       try {
         const tauriCore = (await dynamicImport('@tauri-apps/api/core')) as TauriCoreModule;
         const data = await tauriCore.invoke<R>(command, payload as Record<string, unknown>);
         return { success: true, data };
-      } catch (err) {
-        return { success: false, error: String(err) };
+      } catch (error) {
+        return { success: false, error: String(error) };
       }
     }
 
@@ -67,8 +67,8 @@ export class NativeIpcService {
         const electron = await dynamicImport('electron');
         const data = await electron.ipcRenderer.invoke(command, payload);
         return { success: true, data };
-      } catch (err) {
-        return { success: false, error: String(err) };
+      } catch (error) {
+        return { success: false, error: String(error) };
       }
     }
 
@@ -78,13 +78,13 @@ export class NativeIpcService {
   /**
    * Send a message to the main process (fire and forget)
    */
-  public async send<T>(channel: string, payload?: T): Promise<void> {
+  public async send(channel: string, payload?: unknown): Promise<void> {
     if (this.platformService.isTauri()) {
       try {
         const tauriEvent = (await dynamicImport('@tauri-apps/api/event')) as TauriEventModule;
         await tauriEvent.emit(channel, payload);
-      } catch (e) {
-        console.warn('Tauri emit failed:', e);
+      } catch (error) {
+        console.warn('Tauri emit failed:', error);
       }
       return;
     }
@@ -93,8 +93,8 @@ export class NativeIpcService {
       try {
         const electron = await dynamicImport('electron');
         electron.ipcRenderer.send(channel, payload);
-      } catch (e) {
-        console.warn('Electron send failed:', e);
+      } catch (error) {
+        console.warn('Electron send failed:', error);
       }
       return;
     }
@@ -123,8 +123,8 @@ export class NativeIpcService {
         });
         this.unlistenFns.push(unlisten);
         return unlisten;
-      } catch (e) {
-        console.warn('Tauri listen failed:', e);
+      } catch (error) {
+        console.warn('Tauri listen failed:', error);
       }
     }
 
@@ -140,8 +140,8 @@ export class NativeIpcService {
         const unlisten = () => electron.ipcRenderer.removeListener(channel, handler);
         this.unlistenFns.push(unlisten);
         return unlisten;
-      } catch (e) {
-        console.warn('Electron on failed:', e);
+      } catch (error) {
+        console.warn('Electron on failed:', error);
       }
     }
 
@@ -152,7 +152,7 @@ export class NativeIpcService {
       });
     };
     window.addEventListener(channel, handler);
-    const unlisten = () => window.removeEventListener(channel, handler);
+    const unlisten = () => { window.removeEventListener(channel, handler); };
     this.unlistenFns.push(unlisten);
     return unlisten;
   }
@@ -169,8 +169,8 @@ export class NativeIpcService {
             callback(event.payload);
           });
         });
-      } catch (e) {
-        console.warn('Tauri once failed:', e);
+      } catch (error) {
+        console.warn('Tauri once failed:', error);
       }
       return;
     }
@@ -183,8 +183,8 @@ export class NativeIpcService {
             callback(data);
           });
         });
-      } catch (e) {
-        console.warn('Electron once failed:', e);
+      } catch (error) {
+        console.warn('Electron once failed:', error);
       }
       return;
     }
@@ -215,7 +215,7 @@ export class NativeIpcService {
   /**
    * Emit a custom event (works in all environments)
    */
-  public emit<T>(channel: string, payload?: T): void {
+  public emit(channel: string, payload?: unknown): void {
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent(channel, { detail: payload }));
     }
@@ -225,7 +225,7 @@ export class NativeIpcService {
    * Clean up all listeners
    */
   public destroy(): void {
-    this.unlistenFns.forEach(fn => fn());
+    this.unlistenFns.forEach(fn => { fn(); });
     this.unlistenFns = [];
     this.listeners.clear();
   }

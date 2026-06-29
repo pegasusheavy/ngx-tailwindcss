@@ -9,13 +9,13 @@ import {
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwStaffComponent, ClefType, KeySignature, StaffTimeSignature } from './staff.component';
+import { ClefType, KeySignature, StaffTimeSignature, TwStaffComponent } from './staff.component';
 import {
-  TwNoteComponent,
-  NoteData,
-  NoteName,
-  NoteDuration,
   NoteAccidental,
+  NoteData,
+  NoteDuration,
+  NoteName,
+  TwNoteComponent,
 } from './note.component';
 
 export type SheetMusicVariant = 'default' | 'printed' | 'handwritten' | 'minimal';
@@ -159,10 +159,25 @@ export function parseMusicXML(xmlString: string): SheetMusicData | null {
 
         // Accidental
         let accidental: NoteAccidental = null;
-        if (alter === 1) accidental = 'sharp';
-        else if (alter === -1) accidental = 'flat';
-        else if (alter === 2) accidental = 'doubleSharp';
-        else if (alter === -2) accidental = 'doubleFlat';
+        switch (alter) {
+        case 1: {
+        accidental = 'sharp';
+        break;
+        }
+        case -1: {
+        accidental = 'flat';
+        break;
+        }
+        case 2: {
+        accidental = 'doubleSharp';
+        break;
+        }
+        case -2: {
+        accidental = 'doubleFlat';
+        // No default
+        break;
+        }
+        }
 
         // Check for explicit accidental
         const accidentalEl = noteEl.querySelector('accidental');
@@ -221,14 +236,14 @@ function fifthsToKeySignature(fifths: number, mode: string): KeySignature {
     [-3]: 'Eb',
     [-2]: 'Bb',
     [-1]: 'F',
-    [0]: 'C',
-    [1]: 'G',
-    [2]: 'D',
-    [3]: 'A',
-    [4]: 'E',
-    [5]: 'B',
-    [6]: 'F#',
-    [7]: 'C#',
+    0: 'C',
+    1: 'G',
+    2: 'D',
+    3: 'A',
+    4: 'E',
+    5: 'B',
+    6: 'F#',
+    7: 'C#',
   };
   // Minor keys - map to relative major's key signature
   const minorToMajor: Record<number, KeySignature> = {
@@ -239,14 +254,14 @@ function fifthsToKeySignature(fifths: number, mode: string): KeySignature {
     [-3]: 'Eb',
     [-2]: 'Bb',
     [-1]: 'F',
-    [0]: 'C',
-    [1]: 'G',
-    [2]: 'D',
-    [3]: 'A',
-    [4]: 'E',
-    [5]: 'B',
-    [6]: 'F#',
-    [7]: 'C#',
+    0: 'C',
+    1: 'G',
+    2: 'D',
+    3: 'A',
+    4: 'E',
+    5: 'B',
+    6: 'F#',
+    7: 'C#',
   };
 
   // For minor keys, we use the same key signature as the relative major
@@ -282,30 +297,45 @@ export function parseABCNotation(abcString: string): SheetMusicData | null {
     // Parse header fields
     for (const line of lines) {
       if (line.startsWith('T:')) {
-        title = line.substring(2).trim();
+        title = line.slice(2).trim();
       } else if (line.startsWith('C:')) {
-        composer = line.substring(2).trim();
+        composer = line.slice(2).trim();
       } else if (line.startsWith('Q:')) {
         // Tempo: Q:1/4=120 or Q:120
-        const tempoMatch = line.match(/(\d+)$/);
+        const tempoMatch = /(\d+)$/.exec(line);
         if (tempoMatch) tempo = parseInt(tempoMatch[1], 10);
       } else if (line.startsWith('M:')) {
         // Meter/time signature: M:4/4, M:C, M:C|
-        const meter = line.substring(2).trim();
+        const meter = line.slice(2).trim();
         if (meter === 'C') timeSignature = 'C';
         else if (meter === 'C|') timeSignature = 'C|';
         else timeSignature = meter as StaffTimeSignature;
       } else if (line.startsWith('K:')) {
         // Key: K:C, K:G, K:Dm, K:F#m
-        const key = line.substring(2).trim();
+        const key = line.slice(2).trim();
         keySignature = abcKeyToKeySignature(key);
       } else if (line.startsWith('L:')) {
         // Default note length: L:1/8, L:1/4
-        const length = line.substring(2).trim();
-        if (length === '1/4') defaultNoteLength = 'quarter';
-        else if (length === '1/8') defaultNoteLength = 'eighth';
-        else if (length === '1/16') defaultNoteLength = 'sixteenth';
-        else if (length === '1/2') defaultNoteLength = 'half';
+        const length = line.slice(2).trim();
+        switch (length) {
+        case '1/4': {
+        defaultNoteLength = 'quarter';
+        break;
+        }
+        case '1/8': {
+        defaultNoteLength = 'eighth';
+        break;
+        }
+        case '1/16': {
+        defaultNoteLength = 'sixteenth';
+        break;
+        }
+        case '1/2': {
+        defaultNoteLength = 'half';
+        // No default
+        break;
+        }
+        }
       }
     }
 
@@ -318,7 +348,7 @@ export function parseABCNotation(abcString: string): SheetMusicData | null {
         continue;
       }
       if (inBody && !line.startsWith('%') && line.length > 0) {
-        musicBody += line + ' ';
+        musicBody += `${line  } `;
       }
     }
 
@@ -358,7 +388,7 @@ export function parseABCNotation(abcString: string): SheetMusicData | null {
 
 function abcKeyToKeySignature(key: string): KeySignature {
   // Remove mode suffixes and extract key
-  const keyMatch = key.match(/^([A-G][#b]?)/i);
+  const keyMatch = /^([A-G][#b]?)/i.exec(key);
   if (!keyMatch) return 'C';
 
   let keyLetter = keyMatch[1];
@@ -433,7 +463,7 @@ function tokenizeABC(str: string): string[] {
       }
 
       // Duration modifier (number or fraction)
-      while (i < str.length && /[\d\/]/.test(str[i])) {
+      while (i < str.length && /[\d/]/.test(str[i])) {
         token += str[i];
         i++;
       }
@@ -456,7 +486,7 @@ function tokenizeABC(str: string): string[] {
           token += str[i];
           i++;
         }
-        while (i < str.length && /[\d\/]/.test(str[i])) {
+        while (i < str.length && /[\d/]/.test(str[i])) {
           token += str[i];
           i++;
         }
@@ -475,30 +505,41 @@ function parseABCNote(token: string, defaultDuration: NoteDuration): NoteData | 
   if (token.includes('z') || token.includes('Z')) return null;
 
   let accidental: NoteAccidental = null;
-  let noteLetter = '';
+  let noteLetter: string;
   let octaveModifier = 0;
   let durationMod = '';
 
   let i = 0;
 
   // Parse accidentals
-  if (token[i] === '^') {
+  switch (token[i]) {
+  case '^': {
     accidental = 'sharp';
     i++;
     if (token[i] === '^') {
       accidental = 'doubleSharp';
       i++;
     }
-  } else if (token[i] === '_') {
+  
+  break;
+  }
+  case '_': {
     accidental = 'flat';
     i++;
     if (token[i] === '_') {
       accidental = 'doubleFlat';
       i++;
     }
-  } else if (token[i] === '=') {
+  
+  break;
+  }
+  case '=': {
     accidental = 'natural';
     i++;
+  
+  break;
+  }
+  // No default
   }
 
   // Parse note letter
@@ -523,7 +564,7 @@ function parseABCNote(token: string, defaultDuration: NoteDuration): NoteData | 
   }
 
   // Parse duration
-  while (i < token.length && /[\d\/]/.test(token[i])) {
+  while (i < token.length && /[\d/]/.test(token[i])) {
     durationMod += token[i];
     i++;
   }
@@ -564,11 +605,11 @@ function abcDurationToDuration(mod: string, defaultDuration: NoteDuration): Note
 
   if (mod === '2') {
     return durationOrder[Math.min(defaultIndex + 1, durationOrder.length - 1)];
-  } else if (mod === '4') {
+  } if (mod === '4') {
     return durationOrder[Math.min(defaultIndex + 2, durationOrder.length - 1)];
-  } else if (mod === '/2' || mod === '/') {
+  } if (mod === '/2' || mod === '/') {
     return durationOrder[Math.max(defaultIndex - 1, 0)];
-  } else if (mod === '/4') {
+  } if (mod === '/4') {
     return durationOrder[Math.max(defaultIndex - 2, 0)];
   }
 
@@ -637,7 +678,7 @@ export class TwSheetMusicComponent {
   readonly showMeasureNumbers = input(true);
   readonly interactive = input(false);
   readonly playbackPosition = input<number | null>(null); // Current playback measure.beat (e.g., 2.5 = measure 2, beat 3)
-  readonly highlightedNotes = input<{ measure: number; noteIndex: number }[]>([]);
+  readonly highlightedNotes = input<Array<{ measure: number; noteIndex: number }>>([]);
   readonly classOverride = input('');
 
   // Import inputs - MusicXML or ABC string
@@ -801,14 +842,18 @@ export class TwSheetMusicComponent {
   protected readonly staffVariant = computed(() => {
     const variant = this.variant();
     switch (variant) {
-      case 'printed':
+      case 'printed': {
         return 'printed';
-      case 'handwritten':
+      }
+      case 'handwritten': {
         return 'handwritten';
-      case 'minimal':
+      }
+      case 'minimal': {
         return 'minimal';
-      default:
+      }
+      default: {
         return 'default';
+      }
     }
   });
 

@@ -151,30 +151,34 @@ export class TwStaffComponent {
   protected readonly colors = computed(() => {
     const variant = this.variant();
     switch (variant) {
-      case 'printed':
+      case 'printed': {
         return {
           line: '#000000',
           symbol: '#000000',
           background: '#FFFFF8',
         };
-      case 'handwritten':
+      }
+      case 'handwritten': {
         return {
           line: '#2C3E50',
           symbol: '#1A252F',
           background: '#FDF6E3',
         };
-      case 'minimal':
+      }
+      case 'minimal': {
         return {
           line: '#CBD5E1',
           symbol: '#64748B',
           background: 'transparent',
         };
-      default:
+      }
+      default: {
         return {
           line: '#334155',
           symbol: '#1E293B',
           background: '#FFFFFF',
         };
+      }
     }
   });
 
@@ -197,12 +201,15 @@ export class TwStaffComponent {
   protected readonly clefViewBox = computed(() => {
     const clef = this.clef();
     switch (clef) {
-      case 'treble':
+      case 'treble': {
         return '0 0 50 100';
-      case 'bass':
+      }
+      case 'bass': {
         return '0 0 50 60';
-      default:
+      }
+      default: {
         return '0 0 40 80';
+      }
     }
   });
 
@@ -210,12 +217,15 @@ export class TwStaffComponent {
     const clef = this.clef();
     const spacing = this.lineSpacing();
     switch (clef) {
-      case 'treble':
+      case 'treble': {
         return { width: 35, height: spacing * 7, y: this.staffTop() - spacing * 1.5 };
-      case 'bass':
+      }
+      case 'bass': {
         return { width: 30, height: spacing * 3.5, y: this.staffTop() - spacing * 0.25 };
-      default:
+      }
+      default: {
         return { width: 25, height: spacing * 4, y: this.staffTop() };
+      }
     }
   });
 
@@ -224,7 +234,7 @@ export class TwStaffComponent {
     const info = KEY_SIGNATURES[key];
     const isSharp = info.sharps > 0;
     const count = info.sharps || info.flats;
-    const positions = info.positions;
+    const {positions} = info;
     const startX = this.showClef() ? 55 : 15;
     const spacing = this.lineSpacing();
     const top = this.staffTop();

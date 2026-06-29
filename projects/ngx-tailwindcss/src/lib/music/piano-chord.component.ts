@@ -339,7 +339,7 @@ export class TwPianoChordComponent {
   protected readonly colors = computed(() => {
     const variant = this.variant();
     switch (variant) {
-      case 'dark':
+      case 'dark': {
         return {
           background: '#1E293B',
           whiteKey: '#F8FAFC',
@@ -353,7 +353,8 @@ export class TwPianoChordComponent {
           text: '#F8FAFC',
           noteLabel: '#64748B',
         };
-      case 'minimal':
+      }
+      case 'minimal': {
         return {
           background: 'transparent',
           whiteKey: '#FFFFFF',
@@ -367,7 +368,8 @@ export class TwPianoChordComponent {
           text: '#334155',
           noteLabel: '#94A3B8',
         };
-      case 'colorful':
+      }
+      case 'colorful': {
         return {
           background: '#FEFCE8',
           whiteKey: '#FFFBEB',
@@ -381,7 +383,8 @@ export class TwPianoChordComponent {
           text: '#1F2937',
           noteLabel: '#78716C',
         };
-      default:
+      }
+      default: {
         return {
           background: '#FFFFFF',
           whiteKey: '#FFFFFF',
@@ -395,6 +398,7 @@ export class TwPianoChordComponent {
           text: '#1F2937',
           noteLabel: '#6B7280',
         };
+      }
     }
   });
 

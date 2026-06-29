@@ -113,7 +113,7 @@ export class TwSliderComponent implements ControlValueAccessor {
 
   protected value = signal(0);
   protected isDragging = signal(false);
-  private _disabled = signal(false);
+  private readonly _disabled = signal(false);
 
   private onChangeFn: (value: number) => void = () => {};
   private onTouchedFn: () => void = () => {};
@@ -191,15 +191,15 @@ export class TwSliderComponent implements ControlValueAccessor {
   });
 
   onSliderInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const newValue = Number.parseFloat(input.value);
+    const inputEl = event.target as HTMLInputElement;
+    const newValue = Number.parseFloat(inputEl.value);
     this.value.set(newValue);
     this.onInput.emit(newValue);
   }
 
   onSliderChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const newValue = Number.parseFloat(input.value);
+    const inputEl = event.target as HTMLInputElement;
+    const newValue = Number.parseFloat(inputEl.value);
     this.value.set(newValue);
     this.onChangeFn(newValue);
     this.onChange.emit(newValue);

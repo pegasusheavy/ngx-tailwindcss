@@ -1,6 +1,6 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
-import { Platform, NativeMenuItem } from './native.types';
+import { NativeMenuItem, Platform } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
 
 const PLATFORM_TAURI: Platform = 'tauri';
@@ -28,7 +28,7 @@ export class SystemTrayService {
     this.checkSupport();
   }
 
-  private async checkSupport(): Promise<void> {
+  private checkSupport(): void {
     const platform = this.platformService.platform();
     this.isSupported.set(platform === PLATFORM_TAURI || platform === PLATFORM_ELECTRON);
   }
@@ -38,7 +38,7 @@ export class SystemTrayService {
 
     if (platform === PLATFORM_TAURI) {
       return this.createTauriTray(config);
-    } else if (platform === PLATFORM_ELECTRON) {
+    } if (platform === PLATFORM_ELECTRON) {
       return this.createElectronTray(config);
     }
 
@@ -134,12 +134,12 @@ export class SystemTrayService {
     }
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   private async buildTauriMenu(items: NativeMenuItem[]): Promise<any> {
     const tauriMenu = await dynamicImport('@tauri-apps/api/menu');
     const { Menu, MenuItem, Submenu } = tauriMenu;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+     
     const menuItems: any[] = [];
 
     for (const item of items) {

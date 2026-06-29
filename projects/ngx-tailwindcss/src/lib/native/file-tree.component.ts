@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FileTreeNode, FileTreeEvent } from './native.types';
+import { FileTreeEvent, FileTreeNode } from './native.types';
 
 /**
  * File tree / explorer component
@@ -186,9 +186,9 @@ export class TwFileTreeComponent {
   }
 
   protected formatSize(bytes: number): string {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-    return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+    if (bytes < 1024) return `${bytes  } B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)  } KB`;
+    if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)  } MB`;
+    return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)  } GB`;
   }
 }

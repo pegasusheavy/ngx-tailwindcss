@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, effect } from '@angular/core';
+import { Component, computed, effect, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -163,7 +163,7 @@ export class TwCodeViewerComponent {
   public readonly showFooter = input(true);
   public readonly highlightLines = input<number[]>([]);
 
-  public readonly copied = output<void>();
+  public readonly copied = output();
 
   public readonly wordWrap = signal(false);
   public readonly searchQuery = signal('');
@@ -226,7 +226,7 @@ export class TwCodeViewerComponent {
   }
 
   public copyCode(): void {
-    navigator.clipboard.writeText(this.code());
+    void navigator.clipboard.writeText(this.code());
     this.copied.emit();
   }
 }

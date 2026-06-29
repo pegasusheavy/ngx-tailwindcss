@@ -138,7 +138,7 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   protected filterValue = signal('');
   protected selectedValue = signal<any>(null);
   protected dropdownPosition = signal<{ top: number; left: number; width: number } | null>(null);
-  private _disabled = signal(false);
+  private readonly _disabled = signal(false);
 
   private onChangeFn: (value: any) => void = () => {};
   private onTouchedFn: () => void = () => {};
@@ -300,8 +300,8 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   }
 
   onFilterInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.filterValue.set(input.value);
+    const inputEl = event.target as HTMLInputElement;
+    this.filterValue.set(inputEl.value);
   }
 
   onKeydown(event: KeyboardEvent): void {

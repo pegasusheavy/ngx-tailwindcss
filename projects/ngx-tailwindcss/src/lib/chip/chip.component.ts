@@ -105,7 +105,7 @@ export class TwChipComponent {
   readonly classOverride = input('');
 
   /** Remove event */
-  readonly onRemove = output<void>();
+  readonly onRemove = output();
 
   protected chipClasses = computed(() => {
     const variantClasses = CHIP_VARIANTS[this.variant()][this.chipStyle()];
@@ -223,20 +223,20 @@ export class TwChipsComponent {
 
   onAddChip(event: Event): void {
     event.preventDefault();
-    const input = event.target as HTMLInputElement;
-    const value = input.value.trim();
+    const inputEl = event.target as HTMLInputElement;
+    const value = inputEl.value.trim();
 
     if (value) {
       const newValues = [...this.values(), value];
       this.valuesChange.emit(newValues);
       this.onAdd.emit(value);
-      input.value = '';
+      inputEl.value = '';
     }
   }
 
   onBackspace(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.value === '' && this.values().length > 0) {
+    const inputEl = event.target as HTMLInputElement;
+    if (inputEl.value === '' && this.values().length > 0) {
       this.removeValue(this.values().length - 1);
     }
   }

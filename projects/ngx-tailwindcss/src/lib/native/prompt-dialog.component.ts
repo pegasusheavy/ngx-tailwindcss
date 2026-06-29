@@ -1,4 +1,4 @@
-import { Component, input, output, signal, effect, ElementRef, viewChild } from '@angular/core';
+import { Component, effect, ElementRef, input, output, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -85,7 +85,7 @@ export class TwPromptDialogComponent {
   public readonly customValidator = input<((value: string) => string | null) | null>(null);
 
   public readonly confirmed = output<string>();
-  public readonly cancelled = output<void>();
+  public readonly cancelled = output();
 
   public readonly inputElement = viewChild<ElementRef<HTMLInputElement>>('inputElement');
 
@@ -112,10 +112,10 @@ export class TwPromptDialogComponent {
   }
 
   public open(defaultValue?: string): void {
-    if (defaultValue !== undefined) {
-      this.inputValue.set(defaultValue);
-    } else {
+    if (defaultValue === undefined) {
       this.inputValue.set(this.defaultValue());
+    } else {
+      this.inputValue.set(defaultValue);
     }
     this.validationError.set(null);
     this.isOpen.set(true);

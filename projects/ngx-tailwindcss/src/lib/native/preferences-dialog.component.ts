@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface PreferencesTab {
@@ -93,7 +93,7 @@ export class TwPreferencesDialogComponent {
   public readonly defaultTabId = input<string | null>(null);
 
   public readonly tabChanged = output<string>();
-  public readonly closed = output<void>();
+  public readonly closed = output();
 
   public readonly isOpen = signal(false);
   public readonly selectedTabId = signal<string | null>(null);

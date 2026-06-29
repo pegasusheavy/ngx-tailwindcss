@@ -40,7 +40,7 @@ export class TwTimeDisplayComponent {
   readonly bpm = input(120);
   readonly bar = input(1);
   readonly beat = input(1);
-  readonly sampleRate = input(44100);
+  readonly sampleRate = input(44_100);
 
   // Display options
   readonly variant = input<TimeDisplayVariant>('default');
@@ -98,7 +98,7 @@ export class TwTimeDisplayComponent {
   protected readonly ghostText = computed(() => {
     // Create a "ghost" text for LCD effect (all 8s and colons)
     const text = this.displayText();
-    return text.replace(/\d/g, '8').replace(/[^\d:.-]/g, ' ');
+    return text.replaceAll(/\d/g, '8').replaceAll(/[^\d:.-]/g, ' ');
   });
 
   protected readonly flipSegments = computed((): FlipSegment[] => {
@@ -190,7 +190,7 @@ export class TwTimeDisplayComponent {
     const secs = Math.floor(seconds % 60);
     const ms = Math.floor((seconds % 1) * 1000);
 
-    let result = '';
+    let result: string;
     const showHrs = this.showHours() === 'always' || (this.showHours() === 'auto' && hrs > 0);
 
     if (showHrs) {

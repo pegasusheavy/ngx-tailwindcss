@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, signal, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LogEntry, LogFilter } from './native.types';
@@ -192,7 +192,7 @@ export class TwLogViewerComponent {
 
   // Outputs
   public readonly entrySelect = output<LogEntry>();
-  public readonly clearLogs = output<void>();
+  public readonly clearLogs = output();
   public readonly exportClick = output<LogEntry[]>();
 
   // State

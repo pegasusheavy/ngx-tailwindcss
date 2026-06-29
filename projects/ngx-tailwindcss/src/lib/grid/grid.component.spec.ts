@@ -2,7 +2,7 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwGridComponent, TwSimpleGridComponent, GridCols, GridGap } from './grid.component';
+import { GridCols, GridGap, TwGridComponent, TwSimpleGridComponent } from './grid.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({

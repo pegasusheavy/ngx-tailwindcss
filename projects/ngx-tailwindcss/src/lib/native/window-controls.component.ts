@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, inject, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NativeAppPlatformService } from './platform.service';
 import { TitleBarPlatform, WindowControlButton } from './native.types';
@@ -276,10 +276,10 @@ export class TwWindowControlsComponent {
   public readonly disabled = input(false);
 
   // Outputs
-  public readonly closeClick = output<void>();
-  public readonly minimizeClick = output<void>();
-  public readonly maximizeClick = output<void>();
-  public readonly fullscreenClick = output<void>();
+  public readonly closeClick = output();
+  public readonly minimizeClick = output();
+  public readonly maximizeClick = output();
+  public readonly fullscreenClick = output();
 
   // State
   protected hovered = false;
@@ -298,7 +298,7 @@ export class TwWindowControlsComponent {
 
     if (platform === 'macos') {
       return 'flex items-center';
-    } else if (platform === 'windows') {
+    } if (platform === 'windows') {
       return 'flex items-center -mr-1';
     }
     return 'flex items-center';
@@ -307,21 +307,21 @@ export class TwWindowControlsComponent {
   // Event handlers
   protected onClose(): void {
     this.closeClick.emit();
-    this.platformService.close();
+    void this.platformService.close();
   }
 
   protected onMinimize(): void {
     this.minimizeClick.emit();
-    this.platformService.minimize();
+    void this.platformService.minimize();
   }
 
   protected onMaximize(): void {
     if (this.showFullscreen()) {
       this.fullscreenClick.emit();
-      this.platformService.toggleFullscreen();
+      void this.platformService.toggleFullscreen();
     } else {
       this.maximizeClick.emit();
-      this.platformService.maximize();
+      void this.platformService.maximize();
     }
   }
 }

@@ -317,15 +317,15 @@ export class TwPianoComponent {
       // Brighter = higher velocity
       const brightness = 0.5 + normalizedVelocity * 0.5;
       return { filter: `brightness(${brightness})` };
-    } else if (mode === 'hue') {
+    } if (mode === 'hue') {
       // Blue (soft) to Red (hard)
       const hue = (1 - normalizedVelocity) * 240; // 240=blue, 0=red
       return { filter: `hue-rotate(${hue - 200}deg)` };
-    } else {
+    } 
       // Saturation mode
       const saturation = 0.3 + normalizedVelocity * 0.7;
       return { filter: `saturate(${saturation})` };
-    }
+    
   }
 
   protected getVelocityIndicatorWidth(key: PianoKey): number {
@@ -412,7 +412,7 @@ export class TwPianoComponent {
         this.updateMidiDevices();
       });
     } catch (error) {
-      this.midiError.emit(`MIDI access denied: ${error}`);
+      this.midiError.emit(`MIDI access denied: ${String(error)}`);
     }
   }
 
@@ -422,27 +422,27 @@ export class TwPianoComponent {
     const devices: MidiDevice[] = [];
 
     // Disconnect old inputs
-    for (const input of this.midiInputs) {
-      input.onmidimessage = null;
+    for (const midiInput of this.midiInputs) {
+      midiInput.onmidimessage = null;
     }
     this.midiInputs = [];
 
     // Connect to all inputs
-    this.midiAccess.inputs.forEach((input: MIDIInput) => {
+    this.midiAccess.inputs.forEach((midiInput: MIDIInput) => {
       devices.push({
-        id: input.id,
-        name: input.name ?? 'Unknown Device',
-        manufacturer: input.manufacturer ?? 'Unknown',
+        id: midiInput.id,
+        name: midiInput.name ?? 'Unknown Device',
+        manufacturer: midiInput.manufacturer ?? 'Unknown',
       });
 
-      input.onmidimessage = (event: MIDIMessageEvent) => this.handleMidiMessage(event);
-      this.midiInputs.push(input);
+      midiInput.onmidimessage = (event: MIDIMessageEvent) => { this.handleMidiMessage(event); };
+      this.midiInputs.push(midiInput);
 
-      if (input.state === 'connected') {
+      if (midiInput.state === 'connected') {
         this.connectedMidiDevice.set({
-          id: input.id,
-          name: input.name ?? 'Unknown Device',
-          manufacturer: input.manufacturer ?? 'Unknown',
+          id: midiInput.id,
+          name: midiInput.name ?? 'Unknown Device',
+          manufacturer: midiInput.manufacturer ?? 'Unknown',
         });
         this.midiConnected.emit(this.connectedMidiDevice()!);
       }
@@ -452,7 +452,7 @@ export class TwPianoComponent {
   }
 
   private handleMidiMessage(event: MIDIMessageEvent): void {
-    const data = event.data;
+    const {data} = event;
     if (!data || data.length < 3) return;
 
     const status = data[0];
@@ -519,8 +519,8 @@ export class TwPianoComponent {
   }
 
   disconnectMidi(): void {
-    for (const input of this.midiInputs) {
-      input.onmidimessage = null;
+    for (const midiInput of this.midiInputs) {
+      midiInput.onmidimessage = null;
     }
     this.midiInputs = [];
     this.midiAccess = null;

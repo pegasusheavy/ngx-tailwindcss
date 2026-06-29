@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, computed, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -211,7 +211,7 @@ export class TwPropertyInspectorComponent {
   public readonly properties = input<PropertyItem[]>([]);
 
   public readonly propertyChanged = output<{ property: PropertyItem; value: unknown }>();
-  public readonly refresh = output<void>();
+  public readonly refresh = output();
   public readonly objectExpanded = output<PropertyItem>();
   public readonly valueCopied = output<PropertyItem>();
 
@@ -220,7 +220,7 @@ export class TwPropertyInspectorComponent {
   public readonly categories = computed(() => {
     const cats = new Set<string>();
     this.properties().forEach(p => cats.add(p.category || ''));
-    return Array.from(cats).sort();
+    return [...cats].sort();
   });
 
   public getPropertiesByCategory(category: string): PropertyItem[] {
@@ -242,7 +242,7 @@ export class TwPropertyInspectorComponent {
   }
 
   public copyValue(property: PropertyItem): void {
-    navigator.clipboard.writeText(String(property.value));
+    void navigator.clipboard.writeText(String(property.value));
     this.valueCopied.emit(property);
   }
 

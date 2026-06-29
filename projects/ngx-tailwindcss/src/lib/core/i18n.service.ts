@@ -584,7 +584,7 @@ export class TwI18nService {
 
     return this.deepMerge(
       TW_DEFAULT_TRANSLATIONS as unknown as Record<string, unknown>,
-      custom as unknown as Record<string, unknown>
+      custom
     ) as unknown as TwTranslations;
   });
 

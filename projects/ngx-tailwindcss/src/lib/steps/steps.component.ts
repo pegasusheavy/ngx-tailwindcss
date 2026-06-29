@@ -67,6 +67,7 @@ export class TwStepsComponent {
   readonly showLabels = input(true, { transform: booleanAttribute });
 
   /** Whether steps are readonly (non-clickable) */
+  // eslint-disable-next-line @angular-eslint/no-input-rename -- public API alias kept for backward compatibility
   readonly readonlyMode = input(false, { transform: booleanAttribute, alias: 'readonly' });
 
   /** Whether to allow clicking future steps */

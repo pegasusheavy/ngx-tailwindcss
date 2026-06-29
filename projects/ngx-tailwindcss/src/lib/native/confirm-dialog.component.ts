@@ -1,10 +1,10 @@
 import {
-  Component,
   ChangeDetectionStrategy,
-  input,
-  output,
+  Component,
   computed,
   HostListener,
+  input,
+  output,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AlertDialogType } from './native.types';
@@ -113,8 +113,8 @@ export class TwNativeConfirmDialogComponent {
   public readonly destructive = input(false);
 
   // Outputs
-  public readonly confirm = output<void>();
-  public readonly cancel = output<void>();
+  public readonly confirm = output();
+  public readonly cancel = output();
   public readonly openChange = output<boolean>();
 
   @HostListener('document:keydown.escape')

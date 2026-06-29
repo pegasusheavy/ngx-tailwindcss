@@ -168,7 +168,7 @@ describe('Canvas Rendering Performance', () => {
   });
 
   describe('Waveform Rendering', () => {
-    const waveformData = generateWaveformData(44100); // 1 second at 44.1kHz
+    const waveformData = generateWaveformData(44_100); // 1 second at 44.1kHz
 
     bench('render line waveform (full)', () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -311,8 +311,8 @@ describe('Canvas Rendering Performance', () => {
 
       const sliceWidth = canvas.width / timeDomainData.length;
 
-      for (let i = 0; i < timeDomainData.length; i++) {
-        const value = timeDomainData[i] / 128.0;
+      for (const [i, timeDomainDatum] of timeDomainData.entries()) {
+        const value = timeDomainDatum / 128;
         const y = (value * canvas.height) / 2;
 
         if (i === 0) {
@@ -338,8 +338,8 @@ describe('Canvas Rendering Performance', () => {
 
       const sliceWidth = canvas.width / timeDomainData.length;
 
-      for (let i = 0; i < timeDomainData.length; i++) {
-        const value = timeDomainData[i] / 128.0;
+      for (const [i, timeDomainDatum] of timeDomainData.entries()) {
+        const value = timeDomainDatum / 128;
         const y = (value * canvas.height) / 2;
 
         if (i === 0) {
@@ -471,7 +471,7 @@ describe('Canvas Rendering Performance', () => {
 
 describe('Audio Data Processing Performance', () => {
   describe('FFT Bin to Frequency Conversion', () => {
-    const sampleRate = 44100;
+    const sampleRate = 44_100;
     const fftSize = 2048;
 
     bench('convert 1024 bins to frequencies', () => {
@@ -485,7 +485,7 @@ describe('Audio Data Processing Performance', () => {
       const binCount = fftSize / 2;
       const outputBins = 64;
       const minFreq = 20;
-      const maxFreq = 20000;
+      const maxFreq = 20_000;
 
       const logMin = Math.log(minFreq);
       const logMax = Math.log(maxFreq);
@@ -507,8 +507,8 @@ describe('Audio Data Processing Performance', () => {
 
     bench('calculate RMS level', () => {
       let sum = 0;
-      for (let i = 0; i < samples.length; i++) {
-        sum += samples[i] * samples[i];
+      for (const sample of samples) {
+        sum += sample * sample;
       }
       const rms = Math.sqrt(sum / samples.length);
       return rms;
@@ -516,8 +516,8 @@ describe('Audio Data Processing Performance', () => {
 
     bench('calculate peak level', () => {
       let peak = 0;
-      for (let i = 0; i < samples.length; i++) {
-        const abs = Math.abs(samples[i]);
+      for (const sample of samples) {
+        const abs = Math.abs(sample);
         if (abs > peak) peak = abs;
       }
       return peak;
@@ -530,8 +530,8 @@ describe('Audio Data Processing Performance', () => {
       }
 
       const dbValues = new Float32Array(linearValues.length);
-      for (let i = 0; i < linearValues.length; i++) {
-        dbValues[i] = 20 * Math.log10(Math.max(linearValues[i], 0.0001));
+      for (const [i, linearValue] of linearValues.entries()) {
+        dbValues[i] = 20 * Math.log10(Math.max(linearValue, 0.0001));
       }
     });
   });
@@ -612,8 +612,8 @@ describe('Audio Data Processing Performance', () => {
 
       // Calculate average energy
       let avgEnergy = 0;
-      for (let i = 0; i < energyHistory.length; i++) {
-        avgEnergy += energyHistory[i];
+      for (const element of energyHistory) {
+        avgEnergy += element;
       }
       avgEnergy /= energyHistory.length;
 

@@ -1,17 +1,17 @@
 import {
-  Component,
   ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  HostListener,
+  inject,
   input,
   output,
   signal,
-  computed,
-  ElementRef,
-  inject,
-  HostListener,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { SearchSuggestion, SearchFilter } from './native.types';
+import { SearchFilter, SearchSuggestion } from './native.types';
 
 /**
  * Search bar component with suggestions and filters
@@ -300,8 +300,8 @@ export class TwSearchBarComponent {
   }
 
   public focus(): void {
-    const input = this.elementRef.nativeElement.querySelector('input');
-    input?.focus();
+    const inputEl = this.elementRef.nativeElement.querySelector('input');
+    inputEl?.focus();
   }
 
   public clear(): void {

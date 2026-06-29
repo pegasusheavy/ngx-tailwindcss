@@ -58,7 +58,7 @@ class TestHostComponent {
   standalone: true,
   imports: [TwSelectComponent, ReactiveFormsModule],
 })
-class TestHostComponentWithFormControl {
+class TestHostWithFormControlComponent {
   selectControl = new FormControl('2');
   options: SelectOption[] = [
     { label: 'Option 1', value: '1' },
@@ -284,17 +284,17 @@ describe('TwSelectComponent', () => {
 });
 
 describe('TwSelectComponent with FormControl', () => {
-  let fixture: ComponentFixture<TestHostComponentWithFormControl>;
-  let component: TestHostComponentWithFormControl;
+  let fixture: ComponentFixture<TestHostWithFormControlComponent>;
+  let component: TestHostWithFormControlComponent;
   let selectEl: DebugElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TestHostComponentWithFormControl],
+      imports: [TestHostWithFormControlComponent],
       providers: [TwClassService],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TestHostComponentWithFormControl);
+    fixture = TestBed.createComponent(TestHostWithFormControlComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     selectEl = fixture.debugElement.query(By.directive(TwSelectComponent));

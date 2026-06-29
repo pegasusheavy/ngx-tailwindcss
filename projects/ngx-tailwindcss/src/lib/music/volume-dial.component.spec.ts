@@ -2,7 +2,7 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwVolumeDialComponent, DialVariant, DialSize } from './volume-dial.component';
+import { DialSize, DialVariant, TwVolumeDialComponent } from './volume-dial.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({

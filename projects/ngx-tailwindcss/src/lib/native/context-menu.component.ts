@@ -1,19 +1,19 @@
 import {
-  Component,
   ChangeDetectionStrategy,
-  input,
-  output,
-  signal,
+  Component,
   computed,
-  inject,
   ElementRef,
   HostListener,
-  OnInit,
+  inject,
+  input,
   OnDestroy,
+  OnInit,
+  output,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NativeAppPlatformService } from './platform.service';
-import { NativeMenuItem, NativeContextMenuPosition, NativeContextMenuEvent } from './native.types';
+import { NativeContextMenuEvent, NativeContextMenuPosition, NativeMenuItem } from './native.types';
 
 /**
  * Context menu component (right-click menu)
@@ -148,14 +148,14 @@ export class TwNativeContextMenuComponent implements OnInit, OnDestroy {
   // Outputs
   public readonly itemSelect = output<NativeContextMenuEvent>();
   public readonly opened = output<NativeContextMenuPosition>();
-  public readonly closed = output<void>();
+  public readonly closed = output();
 
   // State
   protected readonly isOpen = signal(false);
   protected readonly position = signal<NativeContextMenuPosition>({ x: 0, y: 0 });
   protected readonly hoveredItemId = signal<string | null>(null);
 
-  private contextMenuHandler = (e: MouseEvent) => this.onContextMenu(e);
+  private readonly contextMenuHandler = (e: MouseEvent) => { this.onContextMenu(e); };
 
   public ngOnInit(): void {
     // Attach to trigger element
@@ -206,7 +206,7 @@ export class TwNativeContextMenuComponent implements OnInit, OnDestroy {
 
     // Adjust position after a tick to ensure menu is rendered
     setTimeout(() => {
-      const menuEl = document.querySelector('.tw-context-menu > div') as HTMLElement;
+      const menuEl = document.querySelector('.tw-context-menu > div')!;
       if (menuEl) {
         const rect = menuEl.getBoundingClientRect();
 

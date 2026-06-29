@@ -27,7 +27,7 @@ export type OscilloscopeTriggerMode = 'auto' | 'normal' | 'single';
   },
 })
 export class TwOscilloscopeComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @ViewChild('canvas', { static: true }) private canvasRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('canvas', { static: true }) private readonly canvasRef!: ElementRef<HTMLCanvasElement>;
 
   readonly analyserNode = input<AnalyserNode | undefined>(undefined);
   readonly width = input(400, { transform: numberAttribute });
@@ -118,7 +118,7 @@ export class TwOscilloscopeComponent implements AfterViewInit, OnChanges, OnDest
     const analyser = this.analyserNode();
     if (analyser) {
       analyser.fftSize = 2048;
-      this.dataArray = new Uint8Array(analyser.fftSize) as Uint8Array<ArrayBuffer>;
+      this.dataArray = new Uint8Array(analyser.fftSize);
     }
   }
 
@@ -164,7 +164,7 @@ export class TwOscilloscopeComponent implements AfterViewInit, OnChanges, OnDest
       this.drawLabels();
     }
 
-    this.animationFrameId = requestAnimationFrame(() => this.draw());
+    this.animationFrameId = requestAnimationFrame(() => { this.draw(); });
   }
 
   private drawGrid(): void {
@@ -235,7 +235,7 @@ export class TwOscilloscopeComponent implements AfterViewInit, OnChanges, OnDest
     }
 
     for (let i = triggerIndex; i < bufferLength && x < canvas.width; i++) {
-      const v = (this.dataArray[i] / 128.0 - 1) * gain;
+      const v = (this.dataArray[i] / 128 - 1) * gain;
       const y = (v * canvas.height) / 2 + canvas.height / 2;
 
       if (i === triggerIndex) {
@@ -259,7 +259,7 @@ export class TwOscilloscopeComponent implements AfterViewInit, OnChanges, OnDest
     const canvas = this.canvasRef.nativeElement;
     const colors = this.colors();
 
-    this.ctx.strokeStyle = colors.line + '40'; // Faded
+    this.ctx.strokeStyle = `${colors.line  }40`; // Faded
     this.ctx.lineWidth = this.lineWidth();
     this.ctx.beginPath();
     this.ctx.moveTo(0, canvas.height / 2);
@@ -267,7 +267,7 @@ export class TwOscilloscopeComponent implements AfterViewInit, OnChanges, OnDest
     this.ctx.stroke();
 
     // "No signal" text
-    this.ctx.fillStyle = colors.line + '80';
+    this.ctx.fillStyle = `${colors.line  }80`;
     this.ctx.font = '12px monospace';
     this.ctx.textAlign = 'center';
     this.ctx.fillText('No Signal', canvas.width / 2, canvas.height / 2 - 20);
@@ -286,7 +286,7 @@ export class TwOscilloscopeComponent implements AfterViewInit, OnChanges, OnDest
     // Time labels
     this.ctx.fillText('0ms', 4, canvas.height - 4);
     this.ctx.textAlign = 'right';
-    const timeMs = (1024 / 44100) * 1000 * this.timeScale();
+    const timeMs = (1024 / 44_100) * 1000 * this.timeScale();
     this.ctx.fillText(`${timeMs.toFixed(1)}ms`, canvas.width - 4, canvas.height - 4);
 
     // Amplitude labels

@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject, input, output, signal } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -253,7 +253,7 @@ export class TwThemeSelectorComponent {
   public readonly highContrast = signal(false);
   public readonly reducedMotion = signal(false);
 
-  public readonly modes: { value: ThemeMode; label: string }[] = [
+  public readonly modes: Array<{ value: ThemeMode; label: string }> = [
     { value: 'light', label: 'Light' },
     { value: 'dark', label: 'Dark' },
     { value: 'system', label: 'System' },

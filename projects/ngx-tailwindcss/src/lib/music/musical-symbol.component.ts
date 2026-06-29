@@ -298,10 +298,10 @@ export class TwMusicalSymbolComponent {
     if (type === 'crescendo') {
       // Opens to the right: < shape
       return `M ${x} ${y} L ${x + w} ${y - h / 2} M ${x} ${y} L ${x + w} ${y + h / 2}`;
-    } else {
+    } 
       // Diminuendo/decrescendo: opens to the left > shape
       return `M ${x} ${y - h / 2} L ${x + w} ${y} M ${x} ${y + h / 2} L ${x + w} ${y}`;
-    }
+    
   });
 
   protected readonly slurPath = computed(() => {

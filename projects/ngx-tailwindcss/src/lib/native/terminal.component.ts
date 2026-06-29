@@ -1,13 +1,13 @@
 import {
-  Component,
+  AfterViewChecked,
   ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
   input,
   output,
   signal,
-  computed,
-  ElementRef,
   ViewChild,
-  AfterViewChecked,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -132,7 +132,7 @@ import { TerminalLine, TerminalVariant } from './native.types';
   },
 })
 export class TwTerminalComponent implements AfterViewChecked {
-  @ViewChild('outputArea') private outputArea!: ElementRef<HTMLDivElement>;
+  @ViewChild('outputArea') private readonly outputArea!: ElementRef<HTMLDivElement>;
 
   // Inputs
   public readonly lines = input<TerminalLine[]>([]);
@@ -151,7 +151,7 @@ export class TwTerminalComponent implements AfterViewChecked {
 
   // Outputs
   public readonly command = output<string>();
-  public readonly clear = output<void>();
+  public readonly clear = output();
   public readonly copy = output<string>();
 
   // State
@@ -209,7 +209,7 @@ export class TwTerminalComponent implements AfterViewChecked {
   protected stripAnsi(text: string): string {
     // Strip ANSI color codes from text
     // eslint-disable-next-line no-control-regex
-    return text.replace(/\x1b\[[0-9;]*m/g, '');
+    return text.replaceAll(/\x1B\[[0-9;]*m/g, '');
   }
 
   protected submitCommand(): void {
@@ -252,8 +252,8 @@ export class TwTerminalComponent implements AfterViewChecked {
     try {
       await navigator.clipboard.writeText(text);
       this.copy.emit(text);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+    } catch (error) {
+      console.error('Failed to copy:', error);
     }
   }
 

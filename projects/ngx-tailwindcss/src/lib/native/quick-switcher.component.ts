@@ -1,13 +1,13 @@
 import {
   Component,
-  input,
-  output,
-  signal,
   computed,
   effect,
   ElementRef,
-  viewChild,
   HostListener,
+  input,
+  output,
+  signal,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -282,7 +282,7 @@ export class TwQuickSwitcherComponent {
   public readonly maxResults = input(10);
 
   public readonly itemSelected = output<QuickSwitcherItem>();
-  public readonly closed = output<void>();
+  public readonly closed = output();
 
   public readonly searchInput = viewChild<ElementRef<HTMLInputElement>>('searchInput');
 
@@ -334,25 +334,29 @@ export class TwQuickSwitcherComponent {
     if (!this.isOpen()) return;
 
     switch (event.key) {
-      case 'Escape':
+      case 'Escape': {
         this.close();
         event.preventDefault();
         break;
-      case 'ArrowDown':
+      }
+      case 'ArrowDown': {
         this.selectedIndex.update(i => Math.min(i + 1, this.filteredItems().length - 1));
         event.preventDefault();
         break;
-      case 'ArrowUp':
+      }
+      case 'ArrowUp': {
         this.selectedIndex.update(i => Math.max(i - 1, 0));
         event.preventDefault();
         break;
-      case 'Enter':
+      }
+      case 'Enter': {
         const item = this.filteredItems()[this.selectedIndex()];
         if (item) {
           this.selectItem(item);
         }
         event.preventDefault();
         break;
+      }
     }
   }
 

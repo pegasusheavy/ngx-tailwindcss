@@ -54,7 +54,7 @@ const DEFAULT_BANDS: EQBand[] = [
     id: 'band2',
     frequency: 250,
     gain: 0,
-    q: 1.0,
+    q: 1,
     type: 'peaking',
     enabled: true,
     color: '#F97316',
@@ -63,7 +63,7 @@ const DEFAULT_BANDS: EQBand[] = [
     id: 'band3',
     frequency: 1000,
     gain: 0,
-    q: 1.0,
+    q: 1,
     type: 'peaking',
     enabled: true,
     color: '#EAB308',
@@ -72,14 +72,14 @@ const DEFAULT_BANDS: EQBand[] = [
     id: 'band4',
     frequency: 4000,
     gain: 0,
-    q: 1.0,
+    q: 1,
     type: 'peaking',
     enabled: true,
     color: '#22C55E',
   },
   {
     id: 'band5',
-    frequency: 12000,
+    frequency: 12_000,
     gain: 0,
     q: 0.7,
     type: 'highshelf',
@@ -105,7 +105,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
   readonly width = input(600, { transform: numberAttribute });
   readonly height = input(200, { transform: numberAttribute });
   readonly minFreq = input(20, { transform: numberAttribute });
-  readonly maxFreq = input(20000, { transform: numberAttribute });
+  readonly maxFreq = input(20_000, { transform: numberAttribute });
   readonly minGain = input(-24, { transform: numberAttribute });
   readonly maxGain = input(24, { transform: numberAttribute });
   readonly variant = input<EQVariant>('default');
@@ -131,7 +131,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
   protected readonly colors = computed(() => {
     const variant = this.variant();
     switch (variant) {
-      case 'dark':
+      case 'dark': {
         return {
           background: '#0F172A',
           grid: '#334155',
@@ -140,7 +140,8 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
           curveFill: 'rgba(59, 130, 246, 0.2)',
           spectrum: 'rgba(59, 130, 246, 0.3)',
         };
-      case 'vintage':
+      }
+      case 'vintage': {
         return {
           background: '#1C1917',
           grid: '#44403C',
@@ -149,7 +150,8 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
           curveFill: 'rgba(245, 158, 11, 0.2)',
           spectrum: 'rgba(245, 158, 11, 0.3)',
         };
-      case 'neon':
+      }
+      case 'neon': {
         return {
           background: '#000000',
           grid: '#1E1E1E',
@@ -158,7 +160,8 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
           curveFill: 'rgba(0, 255, 255, 0.15)',
           spectrum: 'rgba(255, 0, 255, 0.3)',
         };
-      case 'light':
+      }
+      case 'light': {
         return {
           background: '#FFFFFF',
           grid: '#E2E8F0',
@@ -167,7 +170,8 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
           curveFill: 'rgba(37, 99, 235, 0.15)',
           spectrum: 'rgba(37, 99, 235, 0.2)',
         };
-      case 'highContrast':
+      }
+      case 'highContrast': {
         return {
           background: '#000000',
           grid: '#FFFFFF',
@@ -176,7 +180,8 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
           curveFill: 'rgba(255, 255, 0, 0.3)',
           spectrum: 'rgba(0, 255, 0, 0.4)',
         };
-      default:
+      }
+      default: {
         return {
           background: '#1E293B',
           grid: '#475569',
@@ -185,6 +190,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
           curveFill: 'rgba(16, 185, 129, 0.2)',
           spectrum: 'rgba(16, 185, 129, 0.3)',
         };
+      }
     }
   });
 
@@ -338,7 +344,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
-    this.animationFrameId = requestAnimationFrame(() => this.draw());
+    this.animationFrameId = requestAnimationFrame(() => { this.draw(); });
   }
 
   private drawGrid(gridColor: string, textColor: string): void {
@@ -351,7 +357,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
     this.ctx.lineWidth = 0.5;
 
     // Frequency lines (logarithmic scale)
-    const freqLines = [50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000];
+    const freqLines = [50, 100, 200, 500, 1000, 2000, 5000, 10_000, 20_000];
     for (const freq of freqLines) {
       if (freq < this.minFreq() || freq > this.maxFreq()) continue;
       const x = this.frequencyToX(freq);
@@ -428,7 +434,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
     const bands = this.bands();
 
     // Calculate combined frequency response
-    const points: { x: number; y: number }[] = [];
+    const points: Array<{ x: number; y: number }> = [];
     const numPoints = 200;
 
     for (let i = 0; i <= numPoints; i++) {
@@ -544,14 +550,14 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
       }
       case 'lowpass': {
         if (freq > band.frequency) {
-          const rolloff = Math.pow(band.frequency / freq, band.q * 2);
+          const rolloff = (band.frequency / freq)**(band.q * 2);
           return -24 * (1 - rolloff);
         }
         return 0;
       }
       case 'highpass': {
         if (freq < band.frequency) {
-          const rolloff = Math.pow(freq / band.frequency, band.q * 2);
+          const rolloff = (freq / band.frequency)**(band.q * 2);
           return -24 * (1 - rolloff);
         }
         return 0;
@@ -561,8 +567,9 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
         const response = 1 - Math.exp((-distance * distance) / (bandwidth * bandwidth * 0.1));
         return band.gain * (1 - response);
       }
-      default:
+      default: {
         return 0;
+      }
     }
   }
 
@@ -577,7 +584,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
     const minLog = Math.log10(this.minFreq());
     const maxLog = Math.log10(this.maxFreq());
     const ratio = x / this.width();
-    return Math.pow(10, minLog + ratio * (maxLog - minLog));
+    return 10**(minLog + ratio * (maxLog - minLog));
   }
 
   private gainToY(gain: number): number {
@@ -610,7 +617,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
 
       const bandX = this.frequencyToX(band.frequency);
       const bandY = this.gainToY(band.gain);
-      const distance = Math.sqrt((x - bandX) ** 2 + (y - bandY) ** 2);
+      const distance = Math.hypot((x - bandX), (y - bandY));
 
       if (distance <= hitRadius) {
         return band;

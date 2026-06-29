@@ -8,7 +8,7 @@ import {
   OnInit,
   output,
 } from '@angular/core';
-import { MidiService, MidiCCMapping, CCValueChangeEvent } from './midi.service';
+import { CCValueChangeEvent, MidiCCMapping, MidiService } from './midi.service';
 
 /**
  * Directive for MIDI Learn functionality
@@ -79,13 +79,13 @@ export class TwMidiLearnDirective implements OnInit, OnDestroy {
   readonly midiValueChange = output<CCValueChangeEvent>();
 
   /** Emitted when MIDI Learn mode starts for this control */
-  readonly midiLearnStart = output<void>();
+  readonly midiLearnStart = output();
 
   /** Emitted when MIDI Learn is complete */
   readonly midiLearnComplete = output<MidiCCMapping>();
 
   /** Emitted when MIDI Learn is cancelled */
-  readonly midiLearnCancel = output<void>();
+  readonly midiLearnCancel = output();
 
   private ccUnsubscribe: (() => void) | null = null;
   private learnUnsubscribe: (() => void) | null = null;

@@ -141,14 +141,18 @@ export class TwVuMeterComponent implements OnInit {
   protected readonly meterModeLabel = computed(() => {
     const mode = this.meterMode();
     switch (mode) {
-      case 'peak':
+      case 'peak': {
         return 'PEAK';
-      case 'rms':
+      }
+      case 'rms': {
         return 'RMS';
-      case 'both':
+      }
+      case 'both': {
         return 'P/R';
-      default:
+      }
+      default: {
         return '';
+      }
     }
   });
 
@@ -379,16 +383,16 @@ export class TwVuMeterComponent implements OnInit {
 
     // Calculate peak from samples
     let peak = 0;
-    for (let i = 0; i < samples.length; i++) {
-      const abs = Math.abs(samples[i]);
+    for (const sample of samples) {
+      const abs = Math.abs(sample);
       if (abs > peak) peak = abs;
     }
     const peakValue = peak * this.max();
 
     // Calculate RMS from samples
     let sumSquares = 0;
-    for (let i = 0; i < samples.length; i++) {
-      sumSquares += samples[i] * samples[i];
+    for (const sample of samples) {
+      sumSquares += sample * sample;
     }
     const rms = Math.sqrt(sumSquares / samples.length);
     const rmsValue = rms * this.max();
@@ -467,8 +471,8 @@ export class TwVuMeterComponent implements OnInit {
     if (!buffer) return 0;
 
     let sumSquares = 0;
-    for (let i = 0; i < buffer.length; i++) {
-      sumSquares += buffer[i] * buffer[i];
+    for (const element of buffer) {
+      sumSquares += element * element;
     }
     return Math.sqrt(sumSquares / buffer.length);
   }

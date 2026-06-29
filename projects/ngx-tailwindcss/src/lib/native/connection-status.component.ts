@@ -1,4 +1,4 @@
-import { Component, input, output, computed } from '@angular/core';
+import { Component, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type ConnectionState =
@@ -61,8 +61,8 @@ export class TwConnectionStatusComponent {
   public readonly compact = input(false);
   public readonly customLabels = input<Partial<Record<ConnectionState, string>>>({});
 
-  public readonly statusClicked = output<void>();
-  public readonly retryClicked = output<void>();
+  public readonly statusClicked = output();
+  public readonly retryClicked = output();
 
   private readonly defaultLabels: Record<ConnectionState, string> = {
     connected: 'Connected',

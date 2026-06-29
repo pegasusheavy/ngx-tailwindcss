@@ -59,14 +59,14 @@ export class TwTransportComponent {
   readonly classOverride = input('');
 
   // Outputs
-  readonly play = output<void>();
-  readonly pause = output<void>();
-  readonly stop = output<void>();
-  readonly record = output<void>();
-  readonly rewind = output<void>();
-  readonly fastForward = output<void>();
-  readonly skipPrevious = output<void>();
-  readonly skipNext = output<void>();
+  readonly play = output();
+  readonly pause = output();
+  readonly stop = output();
+  readonly record = output();
+  readonly rewind = output();
+  readonly fastForward = output();
+  readonly skipPrevious = output();
+  readonly skipNext = output();
   readonly loopToggle = output<boolean>();
   readonly shuffleToggle = output<boolean>();
 
@@ -123,7 +123,8 @@ export class TwTransportComponent {
 
     let variantClasses = '';
 
-    if (variant === 'modern') {
+    switch (variant) {
+    case 'modern': {
       if (isPrimary) {
         variantClasses =
           'bg-blue-500 hover:bg-blue-600 text-white shadow-md hover:shadow-lg focus:ring-blue-400';
@@ -138,7 +139,10 @@ export class TwTransportComponent {
         variantClasses =
           'bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-300 focus:ring-slate-400';
       }
-    } else if (variant === 'minimal') {
+    
+    break;
+    }
+    case 'minimal': {
       if (isPrimary) {
         variantClasses =
           'bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 focus:ring-slate-400';
@@ -150,7 +154,10 @@ export class TwTransportComponent {
         variantClasses =
           'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 focus:ring-slate-400';
       }
-    } else if (variant === 'classic') {
+    
+    break;
+    }
+    case 'classic': {
       if (isPrimary) {
         variantClasses =
           'bg-gradient-to-b from-green-400 to-green-600 hover:from-green-500 hover:to-green-700 text-white shadow-md border border-green-700 focus:ring-green-400';
@@ -165,7 +172,10 @@ export class TwTransportComponent {
         variantClasses =
           'bg-gradient-to-b from-slate-300 to-slate-400 dark:from-slate-600 dark:to-slate-700 hover:from-slate-400 hover:to-slate-500 text-slate-700 dark:text-slate-300 border border-slate-400 dark:border-slate-500 focus:ring-slate-400';
       }
-    } else if (variant === 'compact') {
+    
+    break;
+    }
+    case 'compact': {
       if (isPrimary) {
         variantClasses = 'bg-emerald-500 hover:bg-emerald-400 text-white focus:ring-emerald-400';
       } else if (type === 'record') {
@@ -178,6 +188,10 @@ export class TwTransportComponent {
         variantClasses =
           'bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-slate-200 focus:ring-slate-400';
       }
+    
+    break;
+    }
+    // No default
     }
 
     return this.twClass.merge(baseClasses, buttonSize, variantClasses);
@@ -187,14 +201,28 @@ export class TwTransportComponent {
     const size = this.sizeConfig();
     let colorClass = '';
 
-    if (type === 'primary') {
+    switch (type) {
+    case 'primary': {
       colorClass = '';
-    } else if (type === 'record') {
+    
+    break;
+    }
+    case 'record': {
       colorClass = 'text-slate-500 dark:text-slate-400';
-    } else if (type === 'record-active') {
+    
+    break;
+    }
+    case 'record-active': {
       colorClass = 'text-red-500 animate-pulse';
-    } else if (type === 'active') {
+    
+    break;
+    }
+    case 'active': {
       colorClass = '';
+    
+    break;
+    }
+    // No default
     }
 
     return this.twClass.merge(size.icon, colorClass);

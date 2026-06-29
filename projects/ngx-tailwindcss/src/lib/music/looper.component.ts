@@ -170,11 +170,11 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     }
 
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach(track => track.stop());
+      this.mediaStream.getTracks().forEach(track => { track.stop(); });
     }
 
     if (this.audioContext) {
-      this.audioContext.close();
+      void this.audioContext.close();
       this.audioContext = null;
     }
   }
@@ -211,8 +211,8 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     this.startWaveformAnimation();
   }
 
-  async stopRecording(): Promise<void> {
-    if (this.state() !== 'recording' && this.state() !== 'overdubbing') return;
+  stopRecording(): Promise<void> {
+    if (this.state() !== 'recording' && this.state() !== 'overdubbing') return Promise.resolve();
 
     const wasOverdubbing = this.state() === 'overdubbing';
 
@@ -226,6 +226,8 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     if (this.autoPlay() && !wasOverdubbing && this.layers().length > 0) {
       this.play();
     }
+
+    return Promise.resolve();
   }
 
   play(): void {
@@ -291,7 +293,7 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     const currentLayers = this.layers();
     if (currentLayers.length === 0) return;
 
-    const lastLayer = currentLayers[currentLayers.length - 1];
+    const lastLayer = currentLayers.at(-1)!;
     if (lastLayer.audioBuffer) {
       this.redoStack.push(lastLayer.audioBuffer);
     }
@@ -427,7 +429,9 @@ export class TwLooperComponent implements OnInit, OnDestroy {
   }
 
   private sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise(resolve => {
+      setTimeout(resolve, ms);
+    });
   }
 
   private async processRecording(): Promise<void> {
@@ -461,8 +465,8 @@ export class TwLooperComponent implements OnInit, OnDestroy {
         this.redoStack = []; // Clear redo stack on new recording
         this.drawWaveform();
       }
-    } catch (err) {
-      console.error('Error decoding audio:', err);
+    } catch (error) {
+      console.error('Error decoding audio:', error);
     }
   }
 
@@ -539,7 +543,7 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     }
 
     this.drawWaveform();
-    this.animationFrame = requestAnimationFrame(() => this.drawWaveformFrame());
+    this.animationFrame = requestAnimationFrame(() => { this.drawWaveformFrame(); });
   }
 
   private drawWaveform(): void {
@@ -549,8 +553,8 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = canvas.width;
-    const height = canvas.height;
+    const {width} = canvas;
+    const {height} = canvas;
 
     // Clear canvas
     ctx.fillStyle = 'rgb(30, 41, 59)'; // slate-800
@@ -571,8 +575,8 @@ export class TwLooperComponent implements OnInit, OnDestroy {
       const step = Math.ceil(data.length / width);
 
       for (let i = 0; i < width; i++) {
-        let min = 1.0;
-        let max = -1.0;
+        let min = 1;
+        let max = -1;
 
         for (let j = 0; j < step; j++) {
           const datum = data[i * step + j];

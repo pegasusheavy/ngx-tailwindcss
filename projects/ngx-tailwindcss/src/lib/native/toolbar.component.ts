@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, input, output, computed } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ToolbarItem, ToolbarVariant, ToolbarPosition } from './native.types';
+import { ToolbarItem, ToolbarPosition, ToolbarVariant } from './native.types';
 
 /**
  * Toolbar / Action bar component

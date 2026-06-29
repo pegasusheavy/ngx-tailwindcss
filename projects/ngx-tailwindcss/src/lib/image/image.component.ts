@@ -68,16 +68,16 @@ export class TwImageComponent {
   readonly classOverride = input('');
 
   /** Preview show event */
-  readonly onShow = output<void>();
+  readonly onShow = output();
 
   /** Preview hide event */
-  readonly onHide = output<void>();
+  readonly onHide = output();
 
   /** Image load event */
-  readonly onLoad = output<void>();
+  readonly onLoad = output();
 
   /** Image error event */
-  readonly onError = output<void>();
+  readonly onError = output();
 
   protected loading = signal(true);
   protected previewVisible = signal(false);

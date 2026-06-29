@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, input, output, HostListener } from '@angular/core';
+import { ChangeDetectionStrategy, Component, HostListener, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 /**
@@ -154,15 +154,15 @@ export class TwAboutDialogComponent {
   public readonly description = input<string | undefined>(undefined);
   public readonly copyright = input<string | undefined>(undefined);
   public readonly credits = input<string[]>([]);
-  public readonly links = input<{ label: string; url: string }[]>([]);
+  public readonly links = input<Array<{ label: string; url: string }>>([]);
   public readonly showUpdateButton = input(true);
   public readonly showLicenseButton = input(false);
 
   // Outputs
-  public readonly close = output<void>();
+  public readonly close = output();
   public readonly openChange = output<boolean>();
-  public readonly checkForUpdates = output<void>();
-  public readonly viewLicense = output<void>();
+  public readonly checkForUpdates = output();
+  public readonly viewLicense = output();
 
   @HostListener('document:keydown.escape')
   protected onEscape(): void {

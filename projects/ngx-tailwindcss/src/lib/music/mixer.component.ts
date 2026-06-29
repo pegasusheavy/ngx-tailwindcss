@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TwChannelStripComponent, ChannelStripState } from './channel-strip.component';
+import { ChannelStripState, TwChannelStripComponent } from './channel-strip.component';
 import { TwVolumeDialComponent } from './volume-dial.component';
 import { TwVuMeterComponent } from './vu-meter.component';
 
@@ -261,14 +261,18 @@ export class TwMixerComponent {
   protected readonly channelStripVariant = computed(() => {
     const variant = this.variant();
     switch (variant) {
-      case 'vintage':
+      case 'vintage': {
         return 'vintage';
-      case 'compact':
+      }
+      case 'compact': {
         return 'compact';
-      case 'studio':
+      }
+      case 'studio': {
         return 'default';
-      default:
+      }
+      default: {
         return 'default';
+      }
     }
   });
 

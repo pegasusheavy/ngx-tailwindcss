@@ -3,10 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
+  ToastVariant,
   TwToastComponent,
   TwToastContainerComponent,
   TwToastService,
-  ToastVariant,
 } from './toast.component';
 
 @Component({
@@ -78,7 +78,7 @@ describe('TwToastService', () => {
       expect(service.toasts()[0].duration).toBe(5000);
     });
 
-    it('should auto-dismiss after duration', async () => {
+    it('should auto-dismiss after duration', () => {
       vi.useFakeTimers();
       service.show({ message: 'Test toast', duration: 1000 });
       expect(service.toasts().length).toBe(1);
@@ -87,10 +87,10 @@ describe('TwToastService', () => {
       vi.useRealTimers();
     });
 
-    it('should not auto-dismiss when duration is 0', async () => {
+    it('should not auto-dismiss when duration is 0', () => {
       vi.useFakeTimers();
       service.show({ message: 'Test toast', duration: 0 });
-      vi.advanceTimersByTime(10000);
+      vi.advanceTimersByTime(10_000);
       expect(service.toasts().length).toBe(1);
       vi.useRealTimers();
     });
@@ -230,7 +230,7 @@ describe('TwToastComponent', () => {
     });
 
     it('should call dismiss on button click', () => {
-      const dismissBtn = toastEl.querySelector('button') as HTMLButtonElement;
+      const dismissBtn = toastEl.querySelector('button')!;
       dismissBtn.click();
       expect(component.dismissCount).toBe(1);
     });
@@ -240,7 +240,7 @@ describe('TwToastComponent', () => {
       fixture.detectChanges();
       const buttons = toastEl.querySelectorAll('button');
       // Check if there's no standalone dismiss button (action button might exist)
-      const dismissBtns = Array.from(buttons).filter(
+      const dismissBtns = [...buttons].filter(
         b => !b.className.includes('action') && b.textContent?.trim() === ''
       );
       expect(dismissBtns.length).toBe(0);
@@ -259,7 +259,7 @@ describe('TwToastComponent', () => {
       const actionFn = vi.fn();
       component.action.set({ label: 'Undo', onClick: actionFn });
       fixture.detectChanges();
-      const actionBtn = Array.from(toastEl.querySelectorAll('button')).find(b =>
+      const actionBtn = [...toastEl.querySelectorAll('button')].find(b =>
         b.textContent?.includes('Undo')
       );
       actionBtn?.click();

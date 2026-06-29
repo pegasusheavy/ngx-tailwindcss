@@ -213,7 +213,7 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
   protected readonly intervalMs = computed(() => {
     const bpm = this.currentBpm();
     const subs = this.subdivisions();
-    return 60000 / bpm / subs;
+    return 60_000 / bpm / subs;
   });
 
   protected readonly containerClasses = computed(() => {
@@ -281,7 +281,7 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.stop();
-    this.audioContext?.close();
+    void this.audioContext?.close();
   }
 
   protected start(): void {
@@ -353,8 +353,8 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
   }
 
   protected onBpmInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const value = parseInt(input.value, 10);
+    const inputElement = event.target as HTMLInputElement;
+    const value = parseInt(inputElement.value, 10);
     if (value >= 20 && value <= 300) {
       this.currentBpm.set(value);
       this.bpmChange.emit(value);
@@ -392,7 +392,7 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
         intervals.push(recentTaps[i] - recentTaps[i - 1]);
       }
       const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-      const bpm = Math.round(60000 / avgInterval);
+      const bpm = Math.round(60_000 / avgInterval);
 
       if (bpm >= 20 && bpm <= 300) {
         this.currentBpm.set(bpm);

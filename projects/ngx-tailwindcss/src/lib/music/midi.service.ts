@@ -1,4 +1,4 @@
-import { Injectable, signal, computed, OnDestroy } from '@angular/core';
+import { computed, Injectable, OnDestroy, signal } from '@angular/core';
 
 // ============================================================================
 // TYPES
@@ -211,11 +211,11 @@ export class MidiService implements OnDestroy {
   });
 
   // Event listeners
-  private noteOnListeners: Array<(msg: MidiMessage) => void> = [];
-  private noteOffListeners: Array<(msg: MidiMessage) => void> = [];
-  private ccListeners: Array<(event: CCValueChangeEvent) => void> = [];
-  private messageListeners: Array<(msg: MidiMessage) => void> = [];
-  private learnCompleteListeners: Array<(mapping: MidiCCMapping) => void> = [];
+  private readonly noteOnListeners: Array<(msg: MidiMessage) => void> = [];
+  private readonly noteOffListeners: Array<(msg: MidiMessage) => void> = [];
+  private readonly ccListeners: Array<(event: CCValueChangeEvent) => void> = [];
+  private readonly messageListeners: Array<(msg: MidiMessage) => void> = [];
+  private readonly learnCompleteListeners: Array<(mapping: MidiCCMapping) => void> = [];
 
   // MIDI input references
   private connectedInputs: MIDIInput[] = [];
@@ -231,16 +231,16 @@ export class MidiService implements OnDestroy {
   readonly connected = this._connected.asReadonly();
 
   /** Available MIDI input devices */
-  readonly inputs = computed(() => Array.from(this._inputs().values()));
+  readonly inputs = computed(() => [...this._inputs().values()]);
 
   /** Available MIDI output devices */
-  readonly outputs = computed(() => Array.from(this._outputs().values()));
+  readonly outputs = computed(() => [...this._outputs().values()]);
 
   /** Currently active (held) notes */
-  readonly activeNotes = computed(() => Array.from(this._activeNotes().values()));
+  readonly activeNotes = computed(() => [...this._activeNotes().values()]);
 
   /** Current CC mappings */
-  readonly ccMappings = computed(() => Array.from(this._ccMappings().values()));
+  readonly ccMappings = computed(() => [...this._ccMappings().values()]);
 
   /** MIDI Learn state */
   readonly learnState = this._learnState.asReadonly();
@@ -281,7 +281,9 @@ export class MidiService implements OnDestroy {
       this._midiAccess = await navigator.requestMIDIAccess({ sysex });
       this._connected.set(true);
 
-      // Set up device listeners
+      // Set up device listeners. Web MIDI uses the onstatechange handler idiom
+      // (mirrors input.onmidimessage below); keep it consistent across the file.
+      // eslint-disable-next-line unicorn/prefer-add-event-listener -- Web MIDI API onstatechange handler idiom
       this._midiAccess.onstatechange = this.handleStateChange.bind(this);
 
       // Initialize device lists
@@ -331,13 +333,11 @@ export class MidiService implements OnDestroy {
     this.updateDeviceLists();
 
     const midiEvent = event as MIDIConnectionEvent;
-    const port = midiEvent.port;
+    const {port} = midiEvent;
 
-    if (port && port.type === 'input') {
-      if (port.state === 'connected') {
+    if (port?.type === 'input' && port.state === 'connected') {
         this.connectInput(port as MIDIInput);
       }
-    }
   }
 
   private updateDeviceLists(): void {
@@ -392,7 +392,7 @@ export class MidiService implements OnDestroy {
   // =========================================================================
 
   private handleMidiMessage(event: MIDIMessageEvent): void {
-    const data = event.data;
+    const {data} = event;
     if (!data || data.length === 0) return;
 
     const message = this.parseMidiMessage(data, event.timeStamp);
@@ -451,41 +451,58 @@ export class MidiService implements OnDestroy {
     const type = status & 0xf0;
 
     switch (type) {
-      case 0x80:
+      case 0x80: {
         return 'noteOff';
-      case 0x90:
+      }
+      case 0x90: {
         return 'noteOn';
-      case 0xa0:
+      }
+      case 0xa0: {
         return 'aftertouch';
-      case 0xb0:
+      }
+      case 0xb0: {
         return 'controlChange';
-      case 0xc0:
+      }
+      case 0xc0: {
         return 'programChange';
-      case 0xd0:
+      }
+      case 0xd0: {
         return 'channelPressure';
-      case 0xe0:
+      }
+      case 0xe0: {
         return 'pitchBend';
-      case 0xf0:
+      }
+      case 0xf0: {
         switch (status) {
-          case 0xf0:
+          case 0xf0: {
             return 'sysex';
-          case 0xf8:
+          }
+          case 0xf8: {
             return 'clock';
-          case 0xfa:
+          }
+          case 0xfa: {
             return 'start';
-          case 0xfb:
+          }
+          case 0xfb: {
             return 'continue';
-          case 0xfc:
+          }
+          case 0xfc: {
             return 'stop';
-          case 0xfe:
+          }
+          case 0xfe: {
             return 'activeSensing';
-          case 0xff:
+          }
+          case 0xff: {
             return 'reset';
-          default:
+          }
+          default: {
             return 'unknown';
+          }
         }
-      default:
+      }
+      default: {
         return 'unknown';
+      }
     }
   }
 
@@ -497,7 +514,7 @@ export class MidiService implements OnDestroy {
 
     // Type-specific listeners
     switch (message.type) {
-      case 'noteOn':
+      case 'noteOn': {
         if (message.data2 > 0) {
           for (const listener of this.noteOnListeners) {
             listener(message);
@@ -509,16 +526,19 @@ export class MidiService implements OnDestroy {
           }
         }
         break;
+      }
 
-      case 'noteOff':
+      case 'noteOff': {
         for (const listener of this.noteOffListeners) {
           listener(message);
         }
         break;
+      }
 
-      case 'controlChange':
+      case 'controlChange': {
         this.handleCCMessage(message);
         break;
+      }
     }
   }
 
@@ -608,12 +628,14 @@ export class MidiService implements OnDestroy {
 
     // Apply curve
     switch (mapping.curve) {
-      case 'logarithmic':
+      case 'logarithmic': {
         normalized = Math.log(1 + normalized * 9) / Math.log(10);
         break;
-      case 'exponential':
-        normalized = (Math.pow(10, normalized) - 1) / 9;
+      }
+      case 'exponential': {
+        normalized = (10**normalized - 1) / 9;
         break;
+      }
       // 'linear' - no change
     }
 
@@ -635,7 +657,7 @@ export class MidiService implements OnDestroy {
    * @param targetId The ID of the control to learn
    * @param timeoutMs Timeout in milliseconds (0 = no timeout)
    */
-  startMidiLearn(targetId: string, timeoutMs: number = 10000): void {
+  startMidiLearn(targetId: string, timeoutMs: number = 10_000): void {
     // Clear any existing timeout
     const currentState = this._learnState();
     if (currentState.timeout) {
@@ -856,7 +878,7 @@ export class MidiService implements OnDestroy {
   getNoteInfo(noteNumber: number): MidiNoteInfo {
     const name = NOTE_NAMES[noteNumber % 12];
     const octave = Math.floor(noteNumber / 12) - 1;
-    const frequency = 440 * Math.pow(2, (noteNumber - 69) / 12);
+    const frequency = 440 * 2**((noteNumber - 69) / 12);
 
     return { number: noteNumber, name, octave, frequency };
   }
@@ -895,7 +917,7 @@ export class MidiService implements OnDestroy {
    * Export CC mappings to JSON
    */
   exportMappings(): string {
-    const mappings = Array.from(this._ccMappings().values());
+    const mappings = [...this._ccMappings().values()];
     return JSON.stringify(mappings, null, 2);
   }
 

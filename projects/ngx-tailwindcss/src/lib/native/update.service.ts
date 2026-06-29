@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { Platform } from './native.types';
 import { Observable, Subject } from 'rxjs';
@@ -49,10 +49,10 @@ export class UpdateService {
 
   constructor() {
     this.checkSupport();
-    this.setupListeners();
+    void this.setupListeners();
   }
 
-  private async checkSupport(): Promise<void> {
+  private checkSupport(): void {
     const platform = this.platformService.platform();
     this.isSupported.set(platform === PLATFORM_TAURI || platform === PLATFORM_ELECTRON);
   }
@@ -89,11 +89,11 @@ export class UpdateService {
     try {
       if (platform === PLATFORM_TAURI) {
         return await this.checkTauriUpdates();
-      } else if (platform === PLATFORM_ELECTRON) {
+      } if (platform === PLATFORM_ELECTRON) {
         return await this.checkElectronUpdates();
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to check for updates';
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to check for updates';
       this.status.set('error');
       this.error.set(errorMessage);
       this.updateError$.next(errorMessage);
@@ -113,8 +113,8 @@ export class UpdateService {
       } else if (platform === PLATFORM_ELECTRON) {
         await this.downloadElectronUpdate();
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to download update';
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to download update';
       this.status.set('error');
       this.error.set(errorMessage);
       this.updateError$.next(errorMessage);
@@ -130,8 +130,8 @@ export class UpdateService {
       } else if (platform === PLATFORM_ELECTRON) {
         await this.installElectronUpdate();
       }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to install update';
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to install update';
       this.status.set('error');
       this.error.set(errorMessage);
       this.updateError$.next(errorMessage);
@@ -229,10 +229,14 @@ export class UpdateService {
 
     if (update?.available) {
       await update.downloadAndInstall((event: { event: string; data?: { contentLength?: number; chunkLength?: number } }) => {
-        if (event.event === 'Started') {
+        switch (event.event) {
+        case 'Started': {
           const total = event.data?.contentLength || 0;
           this.progress.set({ percent: 0, bytesDownloaded: 0, bytesTotal: total });
-        } else if (event.event === 'Progress') {
+        
+        break;
+        }
+        case 'Progress': {
           const current = this.progress();
           if (current) {
             const downloaded = current.bytesDownloaded + (event.data?.chunkLength || 0);
@@ -245,9 +249,16 @@ export class UpdateService {
             this.progress.set(newProgress);
             this.downloadProgress$.next(newProgress);
           }
-        } else if (event.event === 'Finished') {
+        
+        break;
+        }
+        case 'Finished': {
           this.status.set('downloaded');
           this.updateDownloaded$.next();
+        
+        break;
+        }
+        // No default
         }
       });
     }

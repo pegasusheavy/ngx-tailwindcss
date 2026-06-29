@@ -32,12 +32,12 @@ export type EQPresetCategory = 'flat' | 'music' | 'voice' | 'instrument' | 'corr
 
 // Standard frequency bands
 const BAND_FREQUENCIES: Record<GraphicEQBandCount, number[]> = {
-  5: [60, 250, 1000, 4000, 16000],
-  10: [31, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000],
-  15: [25, 40, 63, 100, 160, 250, 400, 630, 1000, 1600, 2500, 4000, 6300, 10000, 16000],
+  5: [60, 250, 1000, 4000, 16_000],
+  10: [31, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16_000],
+  15: [25, 40, 63, 100, 160, 250, 400, 630, 1000, 1600, 2500, 4000, 6300, 10_000, 16_000],
   31: [
     20, 25, 31, 40, 50, 63, 80, 100, 125, 160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600,
-    2000, 2500, 3150, 4000, 5000, 6300, 8000, 10000, 12500, 16000, 20000,
+    2000, 2500, 3150, 4000, 5000, 6300, 8000, 10_000, 12_500, 16_000, 20_000,
   ],
 };
 
@@ -58,42 +58,42 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Rock',
     description: 'Punchy midrange, enhanced bass and presence',
     category: 'music',
-    values: { 31: 4, 63: 3, 125: 2, 250: 0, 500: -1, 1000: 1, 2000: 3, 4000: 4, 8000: 3, 16000: 2 },
+    values: { 31: 4, 63: 3, 125: 2, 250: 0, 500: -1, 1000: 1, 2000: 3, 4000: 4, 8000: 3, 16_000: 2 },
   },
   {
     id: 'pop',
     name: 'Pop',
     description: 'Bright and punchy with clear vocals',
     category: 'music',
-    values: { 31: 2, 63: 3, 125: 2, 250: 1, 500: 2, 1000: 3, 2000: 2, 4000: 3, 8000: 4, 16000: 3 },
+    values: { 31: 2, 63: 3, 125: 2, 250: 1, 500: 2, 1000: 3, 2000: 2, 4000: 3, 8000: 4, 16_000: 3 },
   },
   {
     id: 'jazz',
     name: 'Jazz',
     description: 'Warm and natural with smooth highs',
     category: 'music',
-    values: { 31: 2, 63: 3, 125: 2, 250: 1, 500: 0, 1000: -1, 2000: 0, 4000: 1, 8000: 2, 16000: 2 },
+    values: { 31: 2, 63: 3, 125: 2, 250: 1, 500: 0, 1000: -1, 2000: 0, 4000: 1, 8000: 2, 16_000: 2 },
   },
   {
     id: 'classical',
     name: 'Classical',
     description: 'Wide dynamic range, natural balance',
     category: 'music',
-    values: { 31: 0, 63: 0, 125: 0, 250: 0, 500: 0, 1000: 0, 2000: 1, 4000: 1, 8000: 2, 16000: 1 },
+    values: { 31: 0, 63: 0, 125: 0, 250: 0, 500: 0, 1000: 0, 2000: 1, 4000: 1, 8000: 2, 16_000: 1 },
   },
   {
     id: 'electronic',
     name: 'Electronic',
     description: 'Deep bass, crisp highs',
     category: 'music',
-    values: { 31: 5, 63: 4, 125: 3, 250: 1, 500: 0, 1000: 1, 2000: 2, 4000: 3, 8000: 4, 16000: 4 },
+    values: { 31: 5, 63: 4, 125: 3, 250: 1, 500: 0, 1000: 1, 2000: 2, 4000: 3, 8000: 4, 16_000: 4 },
   },
   {
     id: 'hiphop',
     name: 'Hip-Hop',
     description: 'Heavy bass, clear mids for vocals',
     category: 'music',
-    values: { 31: 6, 63: 5, 125: 4, 250: 2, 500: 1, 1000: 2, 2000: 1, 4000: 2, 8000: 3, 16000: 2 },
+    values: { 31: 6, 63: 5, 125: 4, 250: 2, 500: 1, 1000: 2, 2000: 1, 4000: 2, 8000: 3, 16_000: 2 },
   },
   {
     id: 'metal',
@@ -110,7 +110,7 @@ export const EQ_PRESETS: EQPreset[] = [
       2000: 0,
       4000: 3,
       8000: 4,
-      16000: 3,
+      16_000: 3,
     },
   },
   {
@@ -118,21 +118,21 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Acoustic',
     description: 'Natural warmth, detailed highs',
     category: 'music',
-    values: { 31: 1, 63: 2, 125: 2, 250: 2, 500: 1, 1000: 0, 2000: 1, 4000: 2, 8000: 3, 16000: 2 },
+    values: { 31: 1, 63: 2, 125: 2, 250: 2, 500: 1, 1000: 0, 2000: 1, 4000: 2, 8000: 3, 16_000: 2 },
   },
   {
     id: 'rnb',
     name: 'R&B',
     description: 'Smooth bass, warm mids, silky highs',
     category: 'music',
-    values: { 31: 4, 63: 4, 125: 3, 250: 2, 500: 1, 1000: 2, 2000: 2, 4000: 2, 8000: 3, 16000: 2 },
+    values: { 31: 4, 63: 4, 125: 3, 250: 2, 500: 1, 1000: 2, 2000: 2, 4000: 2, 8000: 3, 16_000: 2 },
   },
   {
     id: 'country',
     name: 'Country',
     description: 'Twangy highs, full low-mids',
     category: 'music',
-    values: { 31: 2, 63: 2, 125: 2, 250: 3, 500: 2, 1000: 1, 2000: 2, 4000: 4, 8000: 4, 16000: 3 },
+    values: { 31: 2, 63: 2, 125: 2, 250: 3, 500: 2, 1000: 1, 2000: 2, 4000: 4, 8000: 4, 16_000: 3 },
   },
 
   // Voice Presets
@@ -151,7 +151,7 @@ export const EQ_PRESETS: EQPreset[] = [
       2000: 4,
       4000: 3,
       8000: 2,
-      16000: 0,
+      16_000: 0,
     },
   },
   {
@@ -169,7 +169,7 @@ export const EQ_PRESETS: EQPreset[] = [
       2000: 3,
       4000: 2,
       8000: 1,
-      16000: 0,
+      16_000: 0,
     },
   },
   {
@@ -187,7 +187,7 @@ export const EQ_PRESETS: EQPreset[] = [
       2000: 4,
       4000: 3,
       8000: 2,
-      16000: 1,
+      16_000: 1,
     },
   },
   {
@@ -195,7 +195,7 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Deep Voice',
     description: 'Enhanced bass for deeper voices',
     category: 'voice',
-    values: { 31: 2, 63: 3, 125: 3, 250: 2, 500: 1, 1000: 1, 2000: 2, 4000: 2, 8000: 1, 16000: 0 },
+    values: { 31: 2, 63: 3, 125: 3, 250: 2, 500: 1, 1000: 1, 2000: 2, 4000: 2, 8000: 1, 16_000: 0 },
   },
 
   // Instrument Presets
@@ -204,14 +204,14 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Bass Boost',
     description: 'Enhanced low frequencies',
     category: 'instrument',
-    values: { 31: 6, 63: 5, 125: 4, 250: 2, 500: 0, 1000: 0, 2000: 0, 4000: 0, 8000: 0, 16000: 0 },
+    values: { 31: 6, 63: 5, 125: 4, 250: 2, 500: 0, 1000: 0, 2000: 0, 4000: 0, 8000: 0, 16_000: 0 },
   },
   {
     id: 'treble-boost',
     name: 'Treble Boost',
     description: 'Enhanced high frequencies',
     category: 'instrument',
-    values: { 31: 0, 63: 0, 125: 0, 250: 0, 500: 0, 1000: 1, 2000: 2, 4000: 4, 8000: 5, 16000: 6 },
+    values: { 31: 0, 63: 0, 125: 0, 250: 0, 500: 0, 1000: 1, 2000: 2, 4000: 4, 8000: 5, 16_000: 6 },
   },
   {
     id: 'mid-scoop',
@@ -228,7 +228,7 @@ export const EQ_PRESETS: EQPreset[] = [
       2000: -1,
       4000: 1,
       8000: 2,
-      16000: 3,
+      16_000: 3,
     },
   },
   {
@@ -246,7 +246,7 @@ export const EQ_PRESETS: EQPreset[] = [
       2000: -4,
       4000: -2,
       8000: 0,
-      16000: 0,
+      16_000: 0,
     },
   },
   {
@@ -254,14 +254,14 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Guitar Presence',
     description: 'Enhanced guitar frequencies',
     category: 'instrument',
-    values: { 31: 0, 63: 1, 125: 2, 250: 3, 500: 2, 1000: 2, 2000: 3, 4000: 4, 8000: 3, 16000: 1 },
+    values: { 31: 0, 63: 1, 125: 2, 250: 3, 500: 2, 1000: 2, 2000: 3, 4000: 4, 8000: 3, 16_000: 1 },
   },
   {
     id: 'drums',
     name: 'Drums',
     description: 'Punchy kick and crisp cymbals',
     category: 'instrument',
-    values: { 31: 4, 63: 3, 125: 2, 250: 0, 500: -1, 1000: 0, 2000: 1, 4000: 2, 8000: 4, 16000: 3 },
+    values: { 31: 4, 63: 3, 125: 2, 250: 0, 500: -1, 1000: 0, 2000: 1, 4000: 2, 8000: 4, 16_000: 3 },
   },
 
   // Correction Presets
@@ -270,21 +270,21 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Loudness',
     description: 'Fletcher-Munson compensation for low volume',
     category: 'correction',
-    values: { 31: 6, 63: 5, 125: 3, 250: 1, 500: 0, 1000: 0, 2000: 0, 4000: 1, 8000: 3, 16000: 5 },
+    values: { 31: 6, 63: 5, 125: 3, 250: 1, 500: 0, 1000: 0, 2000: 0, 4000: 1, 8000: 3, 16_000: 5 },
   },
   {
     id: 'small-speakers',
     name: 'Small Speakers',
     description: 'Compensation for tiny speakers',
     category: 'correction',
-    values: { 31: 5, 63: 4, 125: 3, 250: 2, 500: 1, 1000: 0, 2000: 0, 4000: 1, 8000: 2, 16000: 2 },
+    values: { 31: 5, 63: 4, 125: 3, 250: 2, 500: 1, 1000: 0, 2000: 0, 4000: 1, 8000: 2, 16_000: 2 },
   },
   {
     id: 'laptop',
     name: 'Laptop',
     description: 'Optimized for laptop speakers',
     category: 'correction',
-    values: { 31: 4, 63: 3, 125: 3, 250: 2, 500: 1, 1000: 0, 2000: 1, 4000: 2, 8000: 2, 16000: 1 },
+    values: { 31: 4, 63: 3, 125: 3, 250: 2, 500: 1, 1000: 0, 2000: 1, 4000: 2, 8000: 2, 16_000: 1 },
   },
   {
     id: 'headphones',
@@ -301,7 +301,7 @@ export const EQ_PRESETS: EQPreset[] = [
       2000: -1,
       4000: -1,
       8000: 0,
-      16000: 0,
+      16_000: 0,
     },
   },
   {
@@ -319,7 +319,7 @@ export const EQ_PRESETS: EQPreset[] = [
       2000: -2,
       4000: -4,
       8000: -3,
-      16000: -2,
+      16_000: -2,
     },
   },
 ];
@@ -626,7 +626,7 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
   }
 
   private updateBandFromTouch(touch: Touch, bandIndex: number): void {
-    const target = document.querySelector(`[data-band="${bandIndex}"]`) as HTMLElement;
+    const target = document.querySelector(`[data-band="${bandIndex}"]`)!;
     if (!target) return;
     const rect = target.getBoundingClientRect();
     const y = touch.clientY - rect.top;
@@ -736,8 +736,8 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
   }
 
   protected onPresetSearch(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.presetSearchQuery.set(input.value);
+    const inputElement = event.target as HTMLInputElement;
+    this.presetSearchQuery.set(inputElement.value);
   }
 
   // Check if current values match a preset
@@ -760,10 +760,10 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
     if (gain >= 0) {
       const percentage = gain / maxGain;
       return `${percentage * (height / 2)}px`;
-    } else {
+    } 
       const percentage = Math.abs(gain) / Math.abs(minGain);
       return `${percentage * (height / 2)}px`;
-    }
+    
   }
 
   protected getBandFillPosition(gain: number): string {

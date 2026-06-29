@@ -40,7 +40,7 @@ export interface TabMeasure {
 }
 
 // Guitar standard tuning note mapping (string -> open note)
-const GUITAR_TUNING: { note: NoteName; octave: number }[] = [
+const GUITAR_TUNING: Array<{ note: NoteName; octave: number }> = [
   { note: 'E', octave: 4 }, // String 1 (high E)
   { note: 'B', octave: 3 }, // String 2
   { note: 'G', octave: 3 }, // String 3
@@ -49,7 +49,7 @@ const GUITAR_TUNING: { note: NoteName; octave: number }[] = [
   { note: 'E', octave: 2 }, // String 6 (low E)
 ];
 
-const BASS_TUNING: { note: NoteName; octave: number }[] = [
+const BASS_TUNING: Array<{ note: NoteName; octave: number }> = [
   { note: 'G', octave: 2 }, // String 1
   { note: 'D', octave: 2 }, // String 2
   { note: 'A', octave: 1 }, // String 3
@@ -58,7 +58,7 @@ const BASS_TUNING: { note: NoteName; octave: number }[] = [
 
 // Note names in chromatic order
 const CHROMATIC_NOTES: NoteName[] = ['C', 'C', 'D', 'D', 'E', 'F', 'F', 'G', 'G', 'A', 'A', 'B'];
-const CHROMATIC_ACCIDENTALS: ('sharp' | null)[] = [
+const CHROMATIC_ACCIDENTALS: Array<'sharp' | null> = [
   null,
   'sharp',
   null,
@@ -162,7 +162,7 @@ export class TwTablatureComponent {
   protected readonly colors = computed(() => {
     const variant = this.variant();
     switch (variant) {
-      case 'dark':
+      case 'dark': {
         return {
           background: '#1E293B',
           line: '#475569',
@@ -171,7 +171,8 @@ export class TwTablatureComponent {
           technique: '#F59E0B',
           barLine: '#64748B',
         };
-      case 'minimal':
+      }
+      case 'minimal': {
         return {
           background: 'transparent',
           line: '#CBD5E1',
@@ -180,7 +181,8 @@ export class TwTablatureComponent {
           technique: '#6366F1',
           barLine: '#94A3B8',
         };
-      case 'printed':
+      }
+      case 'printed': {
         return {
           background: '#FFFFF8',
           line: '#000000',
@@ -189,7 +191,8 @@ export class TwTablatureComponent {
           technique: '#000000',
           barLine: '#000000',
         };
-      default:
+      }
+      default: {
         return {
           background: '#FFFFFF',
           line: '#64748B',
@@ -198,6 +201,7 @@ export class TwTablatureComponent {
           technique: '#7C3AED',
           barLine: '#334155',
         };
+      }
     }
   });
 

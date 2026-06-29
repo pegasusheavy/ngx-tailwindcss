@@ -43,7 +43,7 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
   private readonly elementRef = inject(ElementRef);
   private readonly a11y = inject(MusicAccessibilityService);
 
-  @ViewChild('track') private trackRef!: ElementRef<HTMLDivElement>;
+  @ViewChild('track') private readonly trackRef!: ElementRef<HTMLDivElement>;
 
   constructor() {
     // Watch for peakLevel changes
@@ -141,9 +141,9 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
 
     // Apply custom overrides
     const trackLength = this.customTrackLength() ?? config.trackLength;
-    const trackWidth = config.trackWidth;
-    const capWidth = config.capWidth;
-    const capHeight = config.capHeight;
+    const {trackWidth} = config;
+    const {capWidth} = config;
+    const {capHeight} = config;
 
     // Calculate container dimensions
     let width = orientation === 'vertical' ? capWidth + 50 : trackLength + 40;
@@ -324,7 +324,7 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
   protected readonly scaleMarks = computed(() => {
     const min = this.min();
     const max = this.max();
-    const marks: { value: number; label: string; position: number }[] = [];
+    const marks: Array<{ value: number; label: string; position: number }> = [];
 
     // Common dB marks
     const commonMarks = [12, 6, 0, -6, -12, -18, -24, -36, -48, -60];
@@ -465,7 +465,7 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
     if (this.announceChanges() && Math.abs(clampedValue - previousValue) >= 1) {
       const labelName =
         this.label() || (this.channelNumber() ? `Channel ${this.channelNumber()}` : 'Fader');
-      this.a11y.announceValueChange(labelName, `${clampedValue.toFixed(1)}`, 'dB');
+      this.a11y.announceValueChange(labelName, clampedValue.toFixed(1), 'dB');
     }
   }
 

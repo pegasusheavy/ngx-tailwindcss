@@ -1,4 +1,4 @@
-import { Component, input, computed } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type ShortcutDisplayVariant = 'default' | 'compact' | 'inline';
@@ -107,12 +107,15 @@ export class TwShortcutDisplayComponent {
     const baseClasses = 'inline-flex items-center';
 
     switch (variant) {
-      case 'compact':
+      case 'compact': {
         return `${baseClasses} gap-0.5`;
-      case 'inline':
+      }
+      case 'inline': {
         return `${baseClasses} gap-0`;
-      default:
+      }
+      default: {
         return `${baseClasses} gap-1`;
+      }
     }
   });
 
@@ -121,12 +124,15 @@ export class TwShortcutDisplayComponent {
     const baseClasses = 'inline-flex items-center justify-center font-mono';
 
     switch (variant) {
-      case 'compact':
+      case 'compact': {
         return `${baseClasses} px-1 py-0.5 text-xs bg-slate-100 dark:bg-slate-800 rounded`;
-      case 'inline':
+      }
+      case 'inline': {
         return `${baseClasses} px-1 text-xs text-slate-500`;
-      default:
+      }
+      default: {
         return `${baseClasses} px-2 py-1 text-xs bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded shadow-sm`;
+      }
     }
   });
 

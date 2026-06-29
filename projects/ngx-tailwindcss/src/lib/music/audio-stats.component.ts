@@ -88,7 +88,7 @@ export class TwAudioStatsComponent {
   // Individual inputs (used if audioInfo is not provided)
   readonly name = input<string | null>(null);
   readonly duration = input(0, { transform: numberAttribute }); // seconds
-  readonly sampleRate = input(44100, { transform: numberAttribute }); // Hz
+  readonly sampleRate = input(44_100, { transform: numberAttribute }); // Hz
   readonly bitDepth = input<number | null>(null);
   readonly channels = input(2, { transform: numberAttribute });
   readonly fileSize = input<number | null>(null); // bytes
@@ -138,7 +138,7 @@ export class TwAudioStatsComponent {
   // Formatted displays
   protected readonly formattedDuration = computed(() => {
     const info = this.effectiveInfo();
-    const duration = info.duration;
+    const {duration} = info;
     if (duration <= 0) return '0:00';
 
     const hours = Math.floor(duration / 3600);
@@ -167,18 +167,23 @@ export class TwAudioStatsComponent {
 
   protected readonly formattedChannels = computed(() => {
     const info = this.effectiveInfo();
-    const channels = info.channels;
+    const {channels} = info;
     switch (channels) {
-      case 1:
+      case 1: {
         return 'Mono';
-      case 2:
+      }
+      case 2: {
         return 'Stereo';
-      case 6:
+      }
+      case 6: {
         return '5.1 Surround';
-      case 8:
+      }
+      case 8: {
         return '7.1 Surround';
-      default:
+      }
+      default: {
         return `${channels} ch`;
+      }
     }
   });
 
@@ -210,9 +215,9 @@ export class TwAudioStatsComponent {
 
   protected readonly qualityLevel = computed((): 'low' | 'medium' | 'high' | 'lossless' => {
     const info = this.effectiveInfo();
-    const sampleRate = info.sampleRate;
+    const {sampleRate} = info;
     const bitDepth = info.bitDepth || 16;
-    const bitrate = info.bitrate;
+    const {bitrate} = info;
 
     // Lossless formats
     if (
@@ -224,12 +229,12 @@ export class TwAudioStatsComponent {
     }
 
     // High quality (HD audio)
-    if (sampleRate >= 96000 || bitDepth >= 24) {
+    if (sampleRate >= 96_000 || bitDepth >= 24) {
       return 'high';
     }
 
     // Standard CD quality or high bitrate
-    if (sampleRate >= 44100 && (bitrate ? bitrate >= 256 : true)) {
+    if (sampleRate >= 44_100 && (bitrate ? bitrate >= 256 : true)) {
       return 'medium';
     }
 
@@ -239,35 +244,43 @@ export class TwAudioStatsComponent {
   protected readonly qualityIndicatorColor = computed(() => {
     const level = this.qualityLevel();
     switch (level) {
-      case 'lossless':
+      case 'lossless': {
         return 'bg-emerald-500';
-      case 'high':
+      }
+      case 'high': {
         return 'bg-blue-500';
-      case 'medium':
+      }
+      case 'medium': {
         return 'bg-amber-500';
-      case 'low':
+      }
+      case 'low': {
         return 'bg-red-500';
+      }
     }
   });
 
   protected readonly qualityLabel = computed(() => {
     const level = this.qualityLevel();
     switch (level) {
-      case 'lossless':
+      case 'lossless': {
         return 'Lossless';
-      case 'high':
+      }
+      case 'high': {
         return 'Hi-Res';
-      case 'medium':
+      }
+      case 'medium': {
         return 'Standard';
-      case 'low':
+      }
+      case 'low': {
         return 'Low';
+      }
     }
   });
 
   // Codec details
   protected readonly codecDetails = computed(() => {
     const info = this.effectiveInfo();
-    const codecKey = info.codec?.toLowerCase().replace(/[^a-z0-9]/g, '') || '';
+    const codecKey = info.codec?.toLowerCase().replaceAll(/[^a-z0-9]/g, '') || '';
     const codecInfo = CODEC_INFO[codecKey] || null;
 
     return {
@@ -304,7 +317,7 @@ export class TwAudioStatsComponent {
     return {
       perMinute: this.formatBytes(bytesPerSecond * 60),
       perHour: this.formatBytes(bytesPerSecond * 3600),
-      per10Hours: this.formatBytes(bytesPerSecond * 36000),
+      per10Hours: this.formatBytes(bytesPerSecond * 36_000),
     };
   });
 
@@ -346,17 +359,17 @@ export class TwAudioStatsComponent {
   protected readonly formattedTotalSamples = computed(() => {
     const samples = this.totalSamples();
     if (samples < 1000) return samples.toString();
-    if (samples < 1000000) return `${(samples / 1000).toFixed(1)}K`;
-    if (samples < 1000000000) return `${(samples / 1000000).toFixed(1)}M`;
-    return `${(samples / 1000000000).toFixed(2)}B`;
+    if (samples < 1_000_000) return `${(samples / 1000).toFixed(1)}K`;
+    if (samples < 1_000_000_000) return `${(samples / 1_000_000).toFixed(1)}M`;
+    return `${(samples / 1_000_000_000).toFixed(2)}B`;
   });
 
   // Helper: Estimate bitrate from other parameters
   private estimateBitrate(): number {
     const info = this.effectiveInfo();
     const bitDepth = info.bitDepth || 16;
-    const sampleRate = info.sampleRate;
-    const channels = info.channels;
+    const {sampleRate} = info;
+    const {channels} = info;
 
     // For lossless: actual data rate
     // For lossy: estimate based on quality level
@@ -388,7 +401,7 @@ export class TwAudioStatsComponent {
   // Stats array for iteration
   protected readonly stats = computed(() => {
     const info = this.effectiveInfo();
-    const stats: { key: string; label: string; value: string; show: boolean }[] = [
+    const stats: Array<{ key: string; label: string; value: string; show: boolean }> = [
       {
         key: 'duration',
         label: 'Duration',

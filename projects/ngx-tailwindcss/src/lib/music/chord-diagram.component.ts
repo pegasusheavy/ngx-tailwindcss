@@ -188,7 +188,7 @@ export class TwChordDiagramComponent {
   protected readonly colors = computed(() => {
     const variant = this.variant();
     switch (variant) {
-      case 'dark':
+      case 'dark': {
         return {
           background: '#1E293B',
           string: '#94A3B8',
@@ -200,7 +200,8 @@ export class TwChordDiagramComponent {
           muted: '#EF4444',
           open: '#22C55E',
         };
-      case 'minimal':
+      }
+      case 'minimal': {
         return {
           background: 'transparent',
           string: '#94A3B8',
@@ -212,7 +213,8 @@ export class TwChordDiagramComponent {
           muted: '#EF4444',
           open: '#22C55E',
         };
-      case 'detailed':
+      }
+      case 'detailed': {
         return {
           background: '#FEF3C7',
           string: '#92400E',
@@ -224,7 +226,8 @@ export class TwChordDiagramComponent {
           muted: '#DC2626',
           open: '#059669',
         };
-      default:
+      }
+      default: {
         return {
           background: '#FFFFFF',
           string: '#334155',
@@ -236,6 +239,7 @@ export class TwChordDiagramComponent {
           muted: '#EF4444',
           open: '#22C55E',
         };
+      }
     }
   });
 

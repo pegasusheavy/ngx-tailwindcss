@@ -1,15 +1,15 @@
 import {
-  Component,
   ChangeDetectionStrategy,
-  input,
-  output,
-  signal,
+  Component,
   computed,
   ElementRef,
   inject,
+  input,
+  output,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TabItem, TabBarVariant, TabBarPosition, TabEvent } from './native.types';
+import { TabBarPosition, TabBarVariant, TabEvent, TabItem } from './native.types';
 
 /**
  * Document/file tab bar component
@@ -192,8 +192,8 @@ export class TwTabBarComponent {
   public readonly tabClose = output<TabEvent>();
   public readonly tabPin = output<TabEvent>();
   public readonly tabReorder = output<{ from: number; to: number }>();
-  public readonly addTab = output<void>();
-  public readonly closeAll = output<void>();
+  public readonly addTab = output();
+  public readonly closeAll = output();
   public readonly closeOthers = output<string>(); // ID of tab to keep
 
   // State

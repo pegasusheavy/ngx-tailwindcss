@@ -1,15 +1,15 @@
 import {
   Component,
+  computed,
+  DestroyRef,
+  effect,
+  ElementRef,
+  inject,
   input,
+  NgZone,
   output,
   signal,
-  computed,
-  ElementRef,
   viewChild,
-  effect,
-  inject,
-  NgZone,
-  DestroyRef,
 } from '@angular/core';
 import { CommonModule, DOCUMENT } from '@angular/common';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';

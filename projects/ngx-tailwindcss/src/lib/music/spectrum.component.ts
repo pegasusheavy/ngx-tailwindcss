@@ -142,7 +142,7 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   // Frequency scaling
   readonly frequencyScale = input<FrequencyScale>('logarithmic'); // 'linear' or 'logarithmic'
   readonly minFrequency = input(20); // Hz - lowest frequency to display
-  readonly maxFrequency = input(20000); // Hz - highest frequency to display
+  readonly maxFrequency = input(20_000); // Hz - highest frequency to display
 
   // Internal state
   private ctx: CanvasRenderingContext2D | null = null;
@@ -150,7 +150,7 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   private dataArray: Uint8Array<ArrayBuffer> = new Uint8Array(0);
   private peaks: number[] = [];
   private isRunning = false;
-  private sampleRate = 44100; // Default, updated from AudioContext
+  private sampleRate = 44_100; // Default, updated from AudioContext
   private binToBarMapping: number[][] = []; // Maps each bar to its frequency bin range
 
   protected readonly frequencyLabels = computed(() => {
@@ -165,7 +165,7 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
         const freq = this.labelToFreq(label);
         return freq >= minFreq && freq <= maxFreq;
       });
-    } else {
+    } 
       // Linear labels - evenly spaced
       const labels: string[] = [];
       const step = (maxFreq - minFreq) / 5;
@@ -174,19 +174,19 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
         labels.push(this.freqToLabel(freq));
       }
       return labels;
-    }
+    
   });
 
   private labelToFreq(label: string): number {
     if (label.endsWith('k')) {
-      return parseFloat(label) * 1000;
+      return Number.parseFloat(label) * 1000;
     }
-    return parseFloat(label);
+    return Number.parseFloat(label);
   }
 
   private freqToLabel(freq: number): string {
     if (freq >= 1000) {
-      return `${(freq / 1000).toFixed(freq >= 10000 ? 0 : 1)}k`;
+      return `${(freq / 1000).toFixed(freq >= 10_000 ? 0 : 1)}k`;
     }
     return freq.toFixed(0);
   }
@@ -272,8 +272,8 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
         const logFreqLow = logMin + (bar / barCount) * logRange;
         const logFreqHigh = logMin + ((bar + 1) / barCount) * logRange;
 
-        const freqLow = Math.pow(10, logFreqLow);
-        const freqHigh = Math.pow(10, logFreqHigh);
+        const freqLow = 10**logFreqLow;
+        const freqHigh = 10**logFreqHigh;
 
         const binLow = Math.max(0, Math.floor(freqLow / binSize));
         const binHigh = Math.min(binCount - 1, Math.floor(freqHigh / binSize));
@@ -469,8 +469,8 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     this.ctx.beginPath();
 
     const step = w / (data.length - 1);
-    for (let i = 0; i < data.length; i++) {
-      const value = data[i] / 255;
+    for (const [i, datum] of data.entries()) {
+      const value = datum / 255;
       const x = i * step;
       const y = h - value * h;
 
@@ -591,16 +591,16 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
         low: minFreq + barIndex * freqPerBar,
         high: minFreq + (barIndex + 1) * freqPerBar,
       };
-    } else {
+    } 
       const logMin = Math.log10(Math.max(1, minFreq));
       const logMax = Math.log10(maxFreq);
       const logRange = logMax - logMin;
 
       return {
-        low: Math.pow(10, logMin + (barIndex / barCount) * logRange),
-        high: Math.pow(10, logMin + ((barIndex + 1) / barCount) * logRange),
+        low: 10**(logMin + (barIndex / barCount) * logRange),
+        high: 10**(logMin + ((barIndex + 1) / barCount) * logRange),
       };
-    }
+    
   }
 
   /**

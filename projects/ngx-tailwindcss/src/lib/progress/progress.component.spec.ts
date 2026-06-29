@@ -3,10 +3,10 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
-  TwProgressComponent,
-  TwProgressCircularComponent,
   ProgressSize,
   ProgressVariant,
+  TwProgressCircularComponent,
+  TwProgressComponent,
 } from './progress.component';
 
 @Component({
@@ -101,7 +101,7 @@ describe('TwProgressComponent', () => {
       component.value.set(150);
       component.max.set(100);
       fixture.detectChanges();
-      const bar = progressEl.querySelector('.overflow-hidden > div') as HTMLElement;
+      const bar = progressEl.querySelector('.overflow-hidden > div')!;
       expect(bar?.style.width).toBe('100%');
     });
 
@@ -109,7 +109,7 @@ describe('TwProgressComponent', () => {
       component.value.set(-10);
       component.max.set(100);
       fixture.detectChanges();
-      const bar = progressEl.querySelector('.overflow-hidden > div') as HTMLElement;
+      const bar = progressEl.querySelector('.overflow-hidden > div')!;
       expect(bar?.style.width).toBe('0%');
     });
   });
