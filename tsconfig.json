@@ -1,7 +1,6 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "baseUrl": "./",
     "outDir": "./dist/out-tsc",
     "strict": true,
     "noImplicitOverride": true,
@@ -19,8 +18,8 @@
     "module": "ES2022",
     "lib": ["ES2022", "dom"],
     "paths": {
-      "@pegasus-heavy/ngx-tailwindcss": ["dist/ngx-tailwindcss"],
-      "@pegasus-heavy/ngx-tailwindcss/*": ["dist/ngx-tailwindcss/*"]
+      "@pegasus-heavy/ngx-tailwindcss": ["./dist/ngx-tailwindcss"],
+      "@pegasus-heavy/ngx-tailwindcss/*": ["./dist/ngx-tailwindcss/*"]
     }
   },
   "angularCompilerOptions": {

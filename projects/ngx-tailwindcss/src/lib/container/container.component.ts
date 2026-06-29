@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -52,8 +52,11 @@ export class TwContainerComponent {
   /** Horizontal padding */
   @Input() padding: 'none' | 'sm' | 'md' | 'lg' = 'md';
 
-  /** Additional CSS classes */
-  @Input() class = '';
+  /**
+   * Additional CSS classes. Signal input so a bound `[class]` survives Angular's
+   * special class-binding handling and re-renders the inner element on change.
+   */
+  readonly class = input('');
 
   constructor(private readonly twClass: TwClassService) {}
 
@@ -70,7 +73,7 @@ export class TwContainerComponent {
       CONTAINER_SIZES[this.size],
       this.centered ? 'mx-auto' : '',
       paddingClasses[this.padding],
-      this.class
+      this.class()
     );
   }
 }

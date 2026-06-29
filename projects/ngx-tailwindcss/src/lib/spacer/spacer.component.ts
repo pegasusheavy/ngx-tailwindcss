@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -66,8 +66,11 @@ export class TwSpacerComponent {
   /** Size of the space (or 'auto' for flexible space in flex containers) */
   @Input() size: SpacerSize = 'md';
 
-  /** Additional CSS classes */
-  @Input() class = '';
+  /**
+   * Additional CSS classes. Signal input so a bound `[class]` survives Angular's
+   * special class-binding handling and re-renders the inner element on change.
+   */
+  readonly class = input('');
 
   constructor(private readonly twClass: TwClassService) {}
 
@@ -75,7 +78,7 @@ export class TwSpacerComponent {
     const sizeClass =
       this.axis === 'horizontal' ? HORIZONTAL_SIZES[this.size] : VERTICAL_SIZES[this.size];
 
-    return this.twClass.merge(sizeClass, this.class);
+    return this.twClass.merge(sizeClass, this.class());
   }
 }
 
@@ -118,8 +121,11 @@ export class TwWrapComponent {
   /** Justification of items */
   @Input() justify: 'start' | 'center' | 'end' | 'between' | 'around' | 'evenly' = 'start';
 
-  /** Additional CSS classes */
-  @Input() class = '';
+  /**
+   * Additional CSS classes. Signal input so a bound `[class]` survives Angular's
+   * special class-binding handling and re-renders the inner element on change.
+   */
+  readonly class = input('');
 
   constructor(private readonly twClass: TwClassService) {}
 
@@ -155,7 +161,7 @@ export class TwWrapComponent {
       gapClasses[this.spacing],
       alignClasses[this.align],
       justifyClasses[this.justify],
-      this.class
+      this.class()
     );
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -95,8 +95,11 @@ export class TwGridComponent {
   /** Column gap (if different from row gap) */
   @Input() colGap?: GridGap;
 
-  /** Additional CSS classes */
-  @Input() class = '';
+  /**
+   * Additional CSS classes. Signal input so a bound `[class]` survives Angular's
+   * special class-binding handling and re-renders the inner element on change.
+   */
+  readonly class = input('');
 
   constructor(private readonly twClass: TwClassService) {}
 
@@ -125,7 +128,7 @@ export class TwGridComponent {
       classes.push(GAP_CLASSES[this.gap]);
     }
 
-    return this.twClass.merge(...classes, this.class);
+    return this.twClass.merge(...classes, this.class());
   }
 }
 
@@ -165,13 +168,16 @@ export class TwSimpleGridComponent {
   /** Gap between items */
   @Input() gap: GridGap = 'md';
 
-  /** Additional CSS classes */
-  @Input() class = '';
+  /**
+   * Additional CSS classes. Signal input so a bound `[class]` survives Angular's
+   * special class-binding handling and re-renders the inner element on change.
+   */
+  readonly class = input('');
 
   constructor(private readonly twClass: TwClassService) {}
 
   protected gridClasses(): string {
-    return this.twClass.merge('grid', GAP_CLASSES[this.gap], this.class);
+    return this.twClass.merge('grid', GAP_CLASSES[this.gap], this.class());
   }
 
   protected gridTemplateColumns(): string {
