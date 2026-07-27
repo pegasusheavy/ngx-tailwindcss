@@ -8,6 +8,7 @@ import {
   inject,
   input,
   numberAttribute,
+  OnDestroy,
   output,
   signal,
   ViewChild,
@@ -44,9 +45,20 @@ export type PanControlSize = 'sm' | 'md' | 'lg';
   ],
   host: {
     class: 'inline-block',
+    // The stereo-width variant uses a native range input with its own
+    // slider semantics, so the host only acts as a slider otherwise.
+    '[attr.role]': 'variant() === "stereo-width" ? null : "slider"',
+    '[attr.tabindex]': 'variant() === "stereo-width" || disabled() ? -1 : 0',
+    '[attr.aria-valuemin]': 'variant() === "stereo-width" ? null : min()',
+    '[attr.aria-valuemax]': 'variant() === "stereo-width" ? null : max()',
+    '[attr.aria-valuenow]': 'variant() === "stereo-width" ? null : internalValue()',
+    '[attr.aria-valuetext]': 'variant() === "stereo-width" ? null : displayValue()',
+    '[attr.aria-label]': 'variant() === "stereo-width" ? null : label() || "Pan"',
+    '[attr.aria-orientation]': 'variant() === "stereo-width" ? null : "horizontal"',
+    '[attr.aria-disabled]': 'variant() === "stereo-width" ? null : disabled()',
   },
 })
-export class TwPanControlComponent implements ControlValueAccessor {
+export class TwPanControlComponent implements ControlValueAccessor, OnDestroy {
   private readonly twClass = inject(TwClassService);
 
   // Expose Math for template
@@ -75,6 +87,13 @@ export class TwPanControlComponent implements ControlValueAccessor {
 
   private onChange: (value: number) => void = () => {};
   private onTouched: () => void = () => {};
+  private dragController: AbortController | null = null;
+  private dragRect: DOMRect | null = null;
+
+  ngOnDestroy(): void {
+    this.dragController?.abort();
+    this.dragController = null;
+  }
 
   writeValue(value: number): void {
     this.internalValue.set(value ?? 0);
@@ -140,12 +159,11 @@ export class TwPanControlComponent implements ControlValueAccessor {
         left: `${position}%`,
         width: `${center - position}%`,
       };
-    } 
-      return {
-        left: '50%',
-        width: `${position - center}%`,
-      };
-    
+    }
+    return {
+      left: '50%',
+      width: `${position - center}%`,
+    };
   });
 
   // Knob rotation (-135 to 135 degrees)
@@ -199,9 +217,16 @@ export class TwPanControlComponent implements ControlValueAccessor {
   onMouseDown(event: MouseEvent): void {
     if (this.disabled() || this.variant() === 'knob') return;
     this.isDragging.set(true);
+
+    // Capture the track rect once for the whole gesture
+    this.dragRect = this.trackRef?.nativeElement?.getBoundingClientRect() ?? null;
     this.updateValueFromMouseEvent(event);
-    document.addEventListener('mousemove', this.onMouseMove);
-    document.addEventListener('mouseup', this.onMouseUp);
+
+    this.dragController?.abort();
+    this.dragController = new AbortController();
+    const { signal: abortSignal } = this.dragController;
+    document.addEventListener('mousemove', this.onMouseMove, { signal: abortSignal });
+    document.addEventListener('mouseup', this.onMouseUp, { signal: abortSignal });
     this.onTouched();
   }
 
@@ -209,6 +234,52 @@ export class TwPanControlComponent implements ControlValueAccessor {
   onDoubleClick(): void {
     if (this.disabled()) return;
     this.setValue(0);
+  }
+
+  @HostListener('keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    if (this.disabled()) return;
+
+    const step = this.step();
+    const largeStep = step * 10;
+    const current = this.internalValue();
+    let newValue: number;
+
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'ArrowRight': {
+        newValue = current + step;
+        break;
+      }
+      case 'ArrowDown':
+      case 'ArrowLeft': {
+        newValue = current - step;
+        break;
+      }
+      case 'PageUp': {
+        newValue = current + largeStep;
+        break;
+      }
+      case 'PageDown': {
+        newValue = current - largeStep;
+        break;
+      }
+      case 'Home': {
+        newValue = this.min();
+        break;
+      }
+      case 'End': {
+        newValue = this.max();
+        break;
+      }
+      default: {
+        return;
+      }
+    }
+
+    event.preventDefault();
+    this.setValue(newValue);
+    this.onTouched();
   }
 
   private readonly onMouseMove = (event: MouseEvent): void => {
@@ -220,15 +291,16 @@ export class TwPanControlComponent implements ControlValueAccessor {
   private readonly onMouseUp = (): void => {
     if (this.isDragging()) {
       this.isDragging.set(false);
-      document.removeEventListener('mousemove', this.onMouseMove);
-      document.removeEventListener('mouseup', this.onMouseUp);
+      this.dragRect = null;
+      this.dragController?.abort();
+      this.dragController = null;
     }
   };
 
   private updateValueFromMouseEvent(event: MouseEvent): void {
     if (!this.trackRef?.nativeElement) return;
 
-    const rect = this.trackRef.nativeElement.getBoundingClientRect();
+    const rect = this.dragRect ?? this.trackRef.nativeElement.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const normalizedX = Math.max(0, Math.min(1, x / rect.width));
     const value = this.min() + normalizedX * (this.max() - this.min());
@@ -251,12 +323,15 @@ export class TwPanControlComponent implements ControlValueAccessor {
     };
 
     const onUp = (): void => {
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
+      this.dragController?.abort();
+      this.dragController = null;
     };
 
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
+    this.dragController?.abort();
+    this.dragController = new AbortController();
+    const { signal: abortSignal } = this.dragController;
+    document.addEventListener('mousemove', onMove, { signal: abortSignal });
+    document.addEventListener('mouseup', onUp, { signal: abortSignal });
     this.onTouched();
   }
 

@@ -17,6 +17,7 @@ import {
 import { CommonModule, NgStyle } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { MusicAccessibilityService } from './accessibility.service';
+import { MobileSupportService } from './mobile-support.service';
 
 export type FaderVariant = 'default' | 'studio' | 'minimal' | 'vintage' | 'channel';
 export type FaderSize = 'sm' | 'md' | 'lg' | 'xl';
@@ -37,11 +38,21 @@ export type FaderOrientation = 'vertical' | 'horizontal';
   ],
   host: {
     class: 'inline-block',
+    role: 'slider',
+    '[attr.tabindex]': 'isDisabled() ? -1 : 0',
+    '[attr.aria-valuemin]': 'min()',
+    '[attr.aria-valuemax]': 'max()',
+    '[attr.aria-valuenow]': 'internalValue()',
+    '[attr.aria-valuetext]': 'displayValue() + " dB"',
+    '[attr.aria-label]': 'ariaLabel()',
+    '[attr.aria-orientation]': 'orientation()',
+    '[attr.aria-disabled]': 'isDisabled()',
   },
 })
 export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
   private readonly elementRef = inject(ElementRef);
   private readonly a11y = inject(MusicAccessibilityService);
+  private readonly mobileSupport = inject(MobileSupportService);
 
   @ViewChild('track') private readonly trackRef!: ElementRef<HTMLDivElement>;
 
@@ -57,6 +68,8 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
     if (this.peakHoldTimeout) {
       clearTimeout(this.peakHoldTimeout);
     }
+    this.dragController?.abort();
+    this.dragController = null;
   }
 
   readonly min = input(-60, { transform: numberAttribute }); // dB
@@ -106,10 +119,27 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
   protected readonly isDragging = signal(false);
   protected readonly peakHoldLevel = signal(0); // Peak hold indicator position (0-100)
 
+  // Disabled state set imperatively via setDisabledState (forms API)
+  private readonly cvaDisabled = signal(false);
+  protected readonly isDisabled = computed(() => this.disabled() || this.cvaDisabled());
+
+  protected readonly ariaLabel = computed(() => {
+    const channel = this.channelNumber();
+    return this.label() || (channel === null ? 'Fader' : `Channel ${channel} fader`);
+  });
+
+  // Effective reduced-motion preference ('auto' follows the OS setting)
+  protected readonly effectiveReducedMotion = computed(() => {
+    const pref = this.reducedMotion();
+    return pref === 'auto' ? this.a11y.prefersReducedMotion() : pref;
+  });
+
   private onChange: (value: number) => void = () => {};
   private onTouched: () => void = () => {};
   private peakHoldTimeout: ReturnType<typeof setTimeout> | null = null;
   private lastPeakLevel = 0;
+  private dragController: AbortController | null = null;
+  private lastHapticTime = 0;
 
   protected readonly dimensions = computed(() => {
     const size = this.size();
@@ -141,9 +171,9 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
 
     // Apply custom overrides
     const trackLength = this.customTrackLength() ?? config.trackLength;
-    const {trackWidth} = config;
-    const {capWidth} = config;
-    const {capHeight} = config;
+    const { trackWidth } = config;
+    const { capWidth } = config;
+    const { capHeight } = config;
 
     // Calculate container dimensions
     let width = orientation === 'vertical' ? capWidth + 50 : trackLength + 40;
@@ -258,7 +288,7 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
     const orientation = this.orientation();
     const base = 'relative flex items-center gap-2';
     const orientationClass = orientation === 'vertical' ? 'flex-col' : 'flex-row';
-    const disabled = this.disabled() ? 'opacity-50 cursor-not-allowed' : '';
+    const disabled = this.isDisabled() ? 'opacity-50 cursor-not-allowed' : '';
     return [base, orientationClass, disabled, this.classOverride()].filter(Boolean).join(' ');
   });
 
@@ -387,47 +417,111 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
 
   @HostListener('mousedown', ['$event'])
   onMouseDown(event: MouseEvent): void {
-    if (this.disabled()) return;
+    if (this.isDisabled()) return;
     this.startDrag(event.clientX, event.clientY);
     event.preventDefault();
   }
 
   @HostListener('touchstart', ['$event'])
   onTouchStart(event: TouchEvent): void {
-    if (this.disabled()) return;
+    if (this.isDisabled()) return;
     const touch = event.touches[0];
-    this.startDrag(touch.clientX, touch.clientY);
+    const guarded = this.touchGuard();
+    if (guarded) {
+      this.mobileSupport.startTouchTracking(event);
+    }
+    this.startDrag(touch.clientX, touch.clientY, guarded);
     event.preventDefault();
   }
 
-  private startDrag(clientX: number, clientY: number): void {
+  @HostListener('keydown', ['$event'])
+  onKeyDown(event: KeyboardEvent): void {
+    if (this.isDisabled()) return;
+
+    const step = this.step();
+    const largeStep = step * 10;
+    let handled = true;
+
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'ArrowRight': {
+        this.setValue(this.internalValue() + step);
+        break;
+      }
+      case 'ArrowDown':
+      case 'ArrowLeft': {
+        this.setValue(this.internalValue() - step);
+        break;
+      }
+      case 'PageUp': {
+        this.setValue(this.internalValue() + largeStep);
+        break;
+      }
+      case 'PageDown': {
+        this.setValue(this.internalValue() - largeStep);
+        break;
+      }
+      case 'Home': {
+        this.setValue(this.min());
+        break;
+      }
+      case 'End': {
+        this.setValue(this.max());
+        break;
+      }
+      default: {
+        handled = false;
+      }
+    }
+
+    if (handled) {
+      event.preventDefault();
+    }
+  }
+
+  private startDrag(clientX: number, clientY: number, guarded = false): void {
     this.isDragging.set(true);
-    this.updateValueFromPosition(clientX, clientY);
+
+    // Capture the track rect once for the whole gesture
+    const dragRect = this.trackRef?.nativeElement.getBoundingClientRect() ?? null;
+
+    const guardPassed = (): boolean =>
+      !guarded || this.mobileSupport.validateTouchDuration(this.minTouchDuration());
+
+    if (guardPassed()) {
+      this.updateValueFromPosition(clientX, clientY, dragRect);
+    }
 
     const onMove = (e: MouseEvent | TouchEvent) => {
+      if (!guardPassed()) return;
       const pos = 'touches' in e ? e.touches[0] : e;
-      this.updateValueFromPosition(pos.clientX, pos.clientY);
+      this.updateValueFromPosition(pos.clientX, pos.clientY, dragRect);
     };
 
     const onUp = () => {
       this.isDragging.set(false);
       this.onTouched();
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-      document.removeEventListener('touchmove', onMove);
-      document.removeEventListener('touchend', onUp);
+      this.dragController?.abort();
+      this.dragController = null;
     };
 
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-    document.addEventListener('touchmove', onMove);
-    document.addEventListener('touchend', onUp);
+    this.dragController?.abort();
+    this.dragController = new AbortController();
+    const { signal: abortSignal } = this.dragController;
+    document.addEventListener('mousemove', onMove, { signal: abortSignal });
+    document.addEventListener('mouseup', onUp, { signal: abortSignal });
+    document.addEventListener('touchmove', onMove, { signal: abortSignal });
+    document.addEventListener('touchend', onUp, { signal: abortSignal });
   }
 
-  private updateValueFromPosition(clientX: number, clientY: number): void {
+  private updateValueFromPosition(
+    clientX: number,
+    clientY: number,
+    cachedRect?: DOMRect | null
+  ): void {
     if (!this.trackRef) return;
 
-    const rect = this.trackRef.nativeElement.getBoundingClientRect();
+    const rect = cachedRect ?? this.trackRef.nativeElement.getBoundingClientRect();
     const orientation = this.orientation();
     const min = this.min();
     const max = this.max();
@@ -460,12 +554,48 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
     this.internalValue.set(clampedValue);
     this.onChange(clampedValue);
     this.valueChange.emit(clampedValue);
+    this.triggerHaptics(clampedValue, previousValue);
 
     // Announce to screen readers (only on significant changes)
     if (this.announceChanges() && Math.abs(clampedValue - previousValue) >= 1) {
       const labelName =
         this.label() || (this.channelNumber() ? `Channel ${this.channelNumber()}` : 'Fader');
       this.a11y.announceValueChange(labelName, clampedValue.toFixed(1), 'dB');
+    }
+  }
+
+  private triggerHaptics(value: number, previous: number): void {
+    if (value === previous) return;
+
+    // Snap-to-zero detent
+    if (this.snapToZero() && value === 0 && previous !== 0) {
+      if (this.snapHaptic()) {
+        this.mobileSupport.triggerSnapHaptic();
+        this.hapticTrigger.emit('snap');
+      }
+      return;
+    }
+
+    // Boundary hit
+    const atBoundary =
+      (value === this.min() && previous !== this.min()) ||
+      (value === this.max() && previous !== this.max());
+    if (atBoundary) {
+      if (this.hapticFeedback()) {
+        this.mobileSupport.triggerBoundaryHaptic();
+        this.hapticTrigger.emit('boundary');
+      }
+      return;
+    }
+
+    // Regular change (throttled)
+    if (this.hapticFeedback()) {
+      const now = Date.now();
+      if (now - this.lastHapticTime >= 50) {
+        this.lastHapticTime = now;
+        this.mobileSupport.triggerHaptic('light');
+        this.hapticTrigger.emit('change');
+      }
     }
   }
 
@@ -487,6 +617,6 @@ export class TwFaderComponent implements ControlValueAccessor, OnDestroy {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    // Handled via input
+    this.cvaDisabled.set(isDisabled);
   }
 }

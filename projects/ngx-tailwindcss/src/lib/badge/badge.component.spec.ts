@@ -72,40 +72,56 @@ describe('TwBadgeComponent', () => {
   });
 
   describe('variants', () => {
-    it('should have default neutral variant', () => {
-      expect(component.variant()).toBe('neutral');
-    });
-
     it('should apply default neutral variant classes', () => {
       const classes = badgeEl.className;
       expect(classes).toContain('bg-slate-200');
     });
+
+    it('should update classes when variant changes', () => {
+      component.variant.set('success');
+      fixture.detectChanges();
+
+      expect(badgeEl.className).toContain('bg-emerald-600');
+      expect(badgeEl.className).not.toContain('bg-slate-200');
+    });
   });
 
   describe('styles', () => {
-    it('should have default solid style', () => {
-      expect(component.badgeStyle()).toBe('solid');
+    it('should update classes when badgeStyle changes', () => {
+      component.badgeStyle.set('outline');
+      fixture.detectChanges();
+
+      expect(badgeEl.className).toContain('bg-transparent');
+      expect(badgeEl.className).toContain('border-slate-400');
     });
   });
 
   describe('sizes', () => {
-    it('should have default md size', () => {
-      expect(component.size()).toBe('md');
-    });
-
     it('should apply md size classes', () => {
       const classes = badgeEl.className;
       expect(classes).toContain('text-xs');
     });
+
+    it('should update classes when size changes', () => {
+      component.size.set('lg');
+      fixture.detectChanges();
+
+      expect(badgeEl.className).toContain('text-sm');
+      expect(badgeEl.className).toContain('px-4');
+    });
   });
 
   describe('pill shape', () => {
-    it('should have pill false by default', () => {
-      expect(component.pill()).toBe(false);
-    });
-
     it('should apply rounded-md by default', () => {
       expect(badgeEl.className).toContain('rounded-md');
+    });
+
+    it('should apply rounded-full when pill', () => {
+      component.pill.set(true);
+      fixture.detectChanges();
+
+      expect(badgeEl.className).toContain('rounded-full');
+      expect(badgeEl.className).not.toContain('rounded-md');
     });
   });
 
@@ -153,8 +169,11 @@ describe('TwBadgeComponent', () => {
   });
 
   describe('class customization', () => {
-    it('should have empty classOverride by default', () => {
-      expect(component.classOverride()).toBe('');
+    it('should merge classOverride into host classes', () => {
+      component.classOverride.set('custom-badge-class');
+      fixture.detectChanges();
+
+      expect(badgeEl.className).toContain('custom-badge-class');
     });
   });
 });

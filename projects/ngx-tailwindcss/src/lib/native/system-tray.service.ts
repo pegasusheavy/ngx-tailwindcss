@@ -1,10 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
-import { NativeMenuItem, Platform } from './native.types';
+import { NativeMenuItem } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
-
-const PLATFORM_TAURI: Platform = 'tauri';
-const PLATFORM_ELECTRON: Platform = 'electron';
 
 export interface TrayConfig {
   icon: string;
@@ -24,21 +21,23 @@ export class SystemTrayService {
 
   private trayInstance: unknown = null;
 
+  // Id -> action routing table for Electron menu clicks (see convertMenuForElectron)
+  private readonly electronMenuActions = new Map<string, () => void>();
+  private electronMenuListenerRegistered = false;
+
   constructor() {
     this.checkSupport();
   }
 
   private checkSupport(): void {
-    const platform = this.platformService.platform();
-    this.isSupported.set(platform === PLATFORM_TAURI || platform === PLATFORM_ELECTRON);
+    this.isSupported.set(this.platformService.isTauri() || this.platformService.isElectron());
   }
 
   public async create(config: TrayConfig): Promise<boolean> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
+    if (this.platformService.isTauri()) {
       return this.createTauriTray(config);
-    } if (platform === PLATFORM_ELECTRON) {
+    }
+    if (this.platformService.isElectron()) {
       return this.createElectronTray(config);
     }
 
@@ -46,51 +45,77 @@ export class SystemTrayService {
     return false;
   }
 
-  public async setIcon(icon: string): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI && this.trayInstance) {
+  /**
+   * Set the tray icon.
+   * @returns false when the tray has not been created yet (Tauri) or the
+   * platform has no tray support; true when the update was dispatched.
+   */
+  public async setIcon(icon: string): Promise<boolean> {
+    if (this.platformService.isTauri()) {
+      if (!this.trayInstance) return false;
       const tray = this.trayInstance as { setIcon: (icon: string) => Promise<void> };
       await tray.setIcon(icon);
-    } else if (platform === PLATFORM_ELECTRON) {
+      return true;
+    }
+    if (this.platformService.isElectron()) {
       const { ipcRenderer } = await dynamicImport('electron');
       ipcRenderer.send('tray-set-icon', icon);
+      return true;
     }
+    return false;
   }
 
-  public async setTooltip(tooltip: string): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI && this.trayInstance) {
+  /**
+   * Set the tray tooltip.
+   * @returns false when the tray has not been created yet (Tauri) or the
+   * platform has no tray support; true when the update was dispatched.
+   */
+  public async setTooltip(tooltip: string): Promise<boolean> {
+    if (this.platformService.isTauri()) {
+      if (!this.trayInstance) return false;
       const tray = this.trayInstance as { setTooltip: (tooltip: string) => Promise<void> };
       await tray.setTooltip(tooltip);
-    } else if (platform === PLATFORM_ELECTRON) {
+      return true;
+    }
+    if (this.platformService.isElectron()) {
       const { ipcRenderer } = await dynamicImport('electron');
       ipcRenderer.send('tray-set-tooltip', tooltip);
+      return true;
     }
+    return false;
   }
 
-  public async setMenu(menu: NativeMenuItem[]): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
+  /**
+   * Set the tray context menu.
+   * On Electron, item `action` callbacks are routed by id: the main process
+   * must echo the clicked item's id back on the 'tray-menu-click' channel.
+   * @returns false when the tray has not been created yet (Tauri) or the
+   * platform has no tray support; true when the update was dispatched.
+   */
+  public async setMenu(menu: NativeMenuItem[]): Promise<boolean> {
+    if (this.platformService.isTauri()) {
+      if (!this.trayInstance) return false;
       await this.setTauriMenu(menu);
-    } else if (platform === PLATFORM_ELECTRON) {
-      const { ipcRenderer } = await dynamicImport('electron');
-      ipcRenderer.send('tray-set-menu', this.convertMenuForElectron(menu));
+      return true;
     }
+    if (this.platformService.isElectron()) {
+      const { ipcRenderer } = await dynamicImport('electron');
+      await this.registerElectronMenuClickListener();
+      ipcRenderer.send('tray-set-menu', this.convertMenuForElectron(menu));
+      return true;
+    }
+    return false;
   }
 
   public async destroy(): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI && this.trayInstance) {
+    if (this.platformService.isTauri() && this.trayInstance) {
       this.trayInstance = null;
-    } else if (platform === PLATFORM_ELECTRON) {
+    } else if (this.platformService.isElectron()) {
       const { ipcRenderer } = await dynamicImport('electron');
       ipcRenderer.send('tray-destroy');
     }
 
+    this.electronMenuActions.clear();
     this.isVisible.set(false);
   }
 
@@ -120,6 +145,7 @@ export class SystemTrayService {
     try {
       const { ipcRenderer } = await dynamicImport('electron');
 
+      await this.registerElectronMenuClickListener();
       await ipcRenderer.invoke('tray-create', {
         icon: config.icon,
         tooltip: config.tooltip,
@@ -134,24 +160,21 @@ export class SystemTrayService {
     }
   }
 
-   
-  private async buildTauriMenu(items: NativeMenuItem[]): Promise<any> {
+  private async buildTauriMenuItems(items: NativeMenuItem[]): Promise<unknown[]> {
     const tauriMenu = await dynamicImport('@tauri-apps/api/menu');
-    const { Menu, MenuItem, Submenu } = tauriMenu;
+    const { MenuItem, Submenu } = tauriMenu;
 
-     
-    const menuItems: any[] = [];
+    const menuItems: unknown[] = [];
 
     for (const item of items) {
       if (item.type === 'separator') {
         menuItems.push(await MenuItem.new({ id: 'separator', text: '-', enabled: false }));
       } else if (item.submenu) {
-        const submenuItems = await this.buildTauriMenu(item.submenu);
         menuItems.push(
           await Submenu.new({
             id: item.id,
             text: item.label,
-            items: submenuItems.items,
+            items: await this.buildTauriMenuItems(item.submenu),
           })
         );
       } else {
@@ -167,7 +190,14 @@ export class SystemTrayService {
       }
     }
 
-    return Menu.new({ items: menuItems });
+    return menuItems;
+  }
+
+  private async buildTauriMenu(items: NativeMenuItem[]): Promise<unknown> {
+    const tauriMenu = await dynamicImport('@tauri-apps/api/menu');
+    const { Menu } = tauriMenu;
+
+    return Menu.new({ items: await this.buildTauriMenuItems(items) });
   }
 
   private async setTauriMenu(items: NativeMenuItem[]): Promise<void> {
@@ -178,13 +208,44 @@ export class SystemTrayService {
     await tray.setMenu(menu);
   }
 
-  private convertMenuForElectron(items: NativeMenuItem[]): unknown[] {
+  /**
+   * Listen for tray menu clicks echoed back from the Electron main process on
+   * the 'tray-menu-click' channel (payload: the clicked item's id) and invoke
+   * the matching registered action.
+   */
+  private async registerElectronMenuClickListener(): Promise<void> {
+    if (this.electronMenuListenerRegistered) return;
+
+    try {
+      const { ipcRenderer } = await dynamicImport('electron');
+      ipcRenderer.on('tray-menu-click', (_event: unknown, id: unknown) => {
+        this.electronMenuActions.get(String(id))?.();
+      });
+      this.electronMenuListenerRegistered = true;
+    } catch (error) {
+      console.warn('Failed to register tray menu click listener:', error);
+    }
+  }
+
+  /**
+   * Convert menu items to a serializable structure for the Electron main
+   * process. Functions cannot cross the IPC boundary, so each item's `action`
+   * is registered locally under its id; the main process must echo the
+   * clicked item's id back on the 'tray-menu-click' channel for actions to
+   * fire (see registerElectronMenuClickListener).
+   */
+  private convertMenuForElectron(items: NativeMenuItem[], isRoot = true): unknown[] {
+    if (isRoot) {
+      this.electronMenuActions.clear();
+    }
+
     return items.map(item => {
       if (item.type === 'separator') {
         return { type: 'separator' };
       }
 
       const electronItem: Record<string, unknown> = {
+        id: item.id,
         label: item.label,
         enabled: !item.disabled,
         accelerator: item.shortcut,
@@ -193,7 +254,11 @@ export class SystemTrayService {
       };
 
       if (item.submenu) {
-        electronItem['submenu'] = this.convertMenuForElectron(item.submenu);
+        electronItem['submenu'] = this.convertMenuForElectron(item.submenu, false);
+      }
+
+      if (item.action) {
+        this.electronMenuActions.set(item.id, item.action);
       }
 
       return electronItem;

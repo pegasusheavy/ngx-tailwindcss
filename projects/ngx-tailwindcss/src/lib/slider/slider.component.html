@@ -3,7 +3,7 @@
   @if (label() || showValue()) {
     <div class="flex justify-between items-center mb-2">
       @if (label()) {
-        <label [class]="labelClasses()">{{ label() }}</label>
+        <label [for]="inputId()" [class]="labelClasses()">{{ label() }}</label>
       } @else {
         <span></span>
       }
@@ -50,7 +50,9 @@
       <!-- Native range input (invisible, handles interaction) -->
       <input
         type="range"
+        [id]="inputId()"
         [class]="inputClasses()"
+        [attr.aria-label]="label() || null"
         [min]="min()"
         [max]="max()"
         [step]="step()"

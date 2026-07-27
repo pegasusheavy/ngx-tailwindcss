@@ -17,20 +17,27 @@
   <!-- Position Options -->
   <app-demo-section title="Positions" [code]="positionCode">
     <p class="text-slate-600 mb-4">
-      Toasts can be positioned in different corners of the screen:
-      <code class="text-sm bg-slate-100 px-2 py-1 rounded">top-left</code>,
-      <code class="text-sm bg-slate-100 px-2 py-1 rounded">top-center</code>,
-      <code class="text-sm bg-slate-100 px-2 py-1 rounded">top-right</code>,
-      <code class="text-sm bg-slate-100 px-2 py-1 rounded">bottom-left</code>,
-      <code class="text-sm bg-slate-100 px-2 py-1 rounded">bottom-center</code>,
-      <code class="text-sm bg-slate-100 px-2 py-1 rounded">bottom-right</code>
+      The position applies to all toasts and is set on the service with
+      <code class="text-sm bg-slate-100 px-2 py-1 rounded">setPosition()</code>.
     </p>
+    <div class="flex flex-wrap gap-3">
+      <tw-button variant="outline" (click)="showAtPosition('top-left')">Top Left</tw-button>
+      <tw-button variant="outline" (click)="showAtPosition('top-center')">Top Center</tw-button>
+      <tw-button variant="outline" (click)="showAtPosition('top-right')">Top Right</tw-button>
+      <tw-button variant="outline" (click)="showAtPosition('bottom-left')">Bottom Left</tw-button>
+      <tw-button variant="outline" (click)="showAtPosition('bottom-center')">Bottom Center</tw-button>
+      <tw-button variant="outline" (click)="showAtPosition('bottom-right')">Bottom Right</tw-button>
+    </div>
   </app-demo-section>
 
   <!-- Options -->
   <app-demo-section title="Options" [code]="optionsCode">
-    <p class="text-slate-600">
+    <p class="text-slate-600 mb-4">
       Toasts support various options including custom duration, dismissible toggle, and action buttons.
     </p>
+    <div class="flex flex-wrap gap-3">
+      <tw-button variant="secondary" (click)="showWithDuration()">10 Second Toast</tw-button>
+      <tw-button variant="primary" (click)="showWithAction()">Toast with Undo Action</tw-button>
+    </div>
   </app-demo-section>
 </div>

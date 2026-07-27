@@ -1,11 +1,12 @@
 @if (_open()) {
   <!-- Backdrop -->
-  <div class="fixed inset-0 z-50" [@overlayAnimation] (click)="onBackdropClick()">
+  <div class="fixed inset-0 z-50" [@overlayAnimation]>
     <div [class]="backdropClasses()"></div>
   </div>
 
-  <!-- Modal container -->
-  <div class="fixed inset-0 z-50 overflow-y-auto" [@overlayAnimation]>
+  <!-- Modal container (carries the backdrop click handler because it covers
+       the backdrop layer; the panel stops propagation) -->
+  <div class="fixed inset-0 z-50 overflow-y-auto" [@overlayAnimation] (click)="onBackdropClick()">
     <div [class]="containerClasses()">
       <!-- Modal panel -->
       <!-- Static classes for Tailwind JIT detection: bg-white dark:bg-slate-800 -->
@@ -19,8 +20,8 @@
         [focusTrapRestoreFocus]="_restoreFocus()"
         role="dialog"
         [attr.aria-modal]="true"
-        [attr.aria-labelledby]="_ariaLabelledBy()"
-        [attr.aria-describedby]="_ariaDescribedBy()"
+        [attr.aria-labelledby]="_ariaLabelledBy() || modalTitle()?.id || null"
+        [attr.aria-describedby]="_ariaDescribedBy() || null"
         (click)="$event.stopPropagation()"
       >
         <!-- Close button -->

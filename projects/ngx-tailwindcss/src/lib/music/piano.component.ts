@@ -4,6 +4,7 @@ import {
   computed,
   inject,
   input,
+  OnDestroy,
   output,
   signal,
 } from '@angular/core';
@@ -67,7 +68,7 @@ const BLACK_KEY_OFFSETS = [0.65, 1.75, 3.6, 4.7, 5.8]; // Position multipliers f
     class: 'inline-block',
   },
 })
-export class TwPianoComponent {
+export class TwPianoComponent implements OnDestroy {
   private readonly twClass = inject(TwClassService);
 
   // Configuration
@@ -110,6 +111,18 @@ export class TwPianoComponent {
 
   private midiAccess: MIDIAccess | null = null;
   private midiInputs: MIDIInput[] = [];
+  private readonly midiStateChangeHandler = (): void => {
+    this.updateMidiDevices();
+  };
+
+  ngOnDestroy(): void {
+    this.midiAccess?.removeEventListener('statechange', this.midiStateChangeHandler);
+    for (const midiInput of this.midiInputs) {
+      midiInput.onmidimessage = null;
+    }
+    this.midiInputs = [];
+    this.midiAccess = null;
+  }
 
   // Size configurations
   private readonly sizeConfig = computed(() => {
@@ -317,15 +330,15 @@ export class TwPianoComponent {
       // Brighter = higher velocity
       const brightness = 0.5 + normalizedVelocity * 0.5;
       return { filter: `brightness(${brightness})` };
-    } if (mode === 'hue') {
+    }
+    if (mode === 'hue') {
       // Blue (soft) to Red (hard)
       const hue = (1 - normalizedVelocity) * 240; // 240=blue, 0=red
       return { filter: `hue-rotate(${hue - 200}deg)` };
-    } 
-      // Saturation mode
-      const saturation = 0.3 + normalizedVelocity * 0.7;
-      return { filter: `saturate(${saturation})` };
-    
+    }
+    // Saturation mode
+    const saturation = 0.3 + normalizedVelocity * 0.7;
+    return { filter: `saturate(${saturation})` };
   }
 
   protected getVelocityIndicatorWidth(key: PianoKey): number {
@@ -394,6 +407,18 @@ export class TwPianoComponent {
     this.onKeyUp(key);
   }
 
+  // Keyboard interaction (Enter/Space mirror mousedown/mouseup)
+  onKeyboardDown(event: Event, key: PianoKey): void {
+    if ((event as KeyboardEvent).repeat) return;
+    event.preventDefault();
+    this.onKeyDown(key);
+  }
+
+  onKeyboardUp(event: Event, key: PianoKey): void {
+    event.preventDefault();
+    this.onKeyUp(key);
+  }
+
   // MIDI handling
   async initMidi(): Promise<void> {
     if (!this.enableMidi()) return;
@@ -407,10 +432,8 @@ export class TwPianoComponent {
       this.midiAccess = await navigator.requestMIDIAccess();
       this.updateMidiDevices();
 
-      // Listen for device changes
-      this.midiAccess.addEventListener('statechange', () => {
-        this.updateMidiDevices();
-      });
+      // Listen for device changes (removed again in ngOnDestroy/disconnectMidi)
+      this.midiAccess.addEventListener('statechange', this.midiStateChangeHandler);
     } catch (error) {
       this.midiError.emit(`MIDI access denied: ${String(error)}`);
     }
@@ -435,7 +458,9 @@ export class TwPianoComponent {
         manufacturer: midiInput.manufacturer ?? 'Unknown',
       });
 
-      midiInput.onmidimessage = (event: MIDIMessageEvent) => { this.handleMidiMessage(event); };
+      midiInput.onmidimessage = (event: MIDIMessageEvent) => {
+        this.handleMidiMessage(event);
+      };
       this.midiInputs.push(midiInput);
 
       if (midiInput.state === 'connected') {
@@ -452,7 +477,7 @@ export class TwPianoComponent {
   }
 
   private handleMidiMessage(event: MIDIMessageEvent): void {
-    const {data} = event;
+    const { data } = event;
     if (!data || data.length < 3) return;
 
     const status = data[0];
@@ -519,6 +544,7 @@ export class TwPianoComponent {
   }
 
   disconnectMidi(): void {
+    this.midiAccess?.removeEventListener('statechange', this.midiStateChangeHandler);
     for (const midiInput of this.midiInputs) {
       midiInput.onmidimessage = null;
     }

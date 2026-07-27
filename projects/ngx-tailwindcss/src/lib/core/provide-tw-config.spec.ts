@@ -58,6 +58,24 @@ describe('provideTwConfig', () => {
       expect(config.theme?.secondary).toBe('bg-gray-200 text-gray-800');
     });
 
+    it('should keep untouched default theme variants on partial theme override', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          provideTwConfig({
+            theme: {
+              primary: 'bg-purple-600 text-white',
+            },
+          }),
+        ],
+      });
+
+      const config = TestBed.inject(TW_CONFIG);
+      expect(config.theme?.primary).toBe('bg-purple-600 text-white');
+      expect(config.theme?.danger).toBe(DEFAULT_TW_CONFIG.theme?.danger);
+      expect(config.theme?.secondary).toBe(DEFAULT_TW_CONFIG.theme?.secondary);
+      expect(config.theme?.neutral).toBe(DEFAULT_TW_CONFIG.theme?.neutral);
+    });
+
     it('should allow disabling Angular animations', () => {
       TestBed.configureTestingModule({
         providers: [
@@ -87,6 +105,22 @@ describe('provideTwConfig', () => {
       const config = TestBed.inject(TW_CONFIG);
       expect(config.prefix).toBe('component');
       expect(config.animationDuration).toBe(DEFAULT_TW_CONFIG.animationDuration);
+    });
+
+    it('should keep untouched default theme variants on partial theme override', () => {
+      TestBed.configureTestingModule({
+        providers: [
+          withTwConfig({
+            theme: {
+              primary: 'bg-indigo-500 text-white',
+            },
+          }),
+        ],
+      });
+
+      const config = TestBed.inject(TW_CONFIG);
+      expect(config.theme?.primary).toBe('bg-indigo-500 text-white');
+      expect(config.theme?.danger).toBe(DEFAULT_TW_CONFIG.theme?.danger);
     });
 
     it('should allow complete config override', () => {

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -32,11 +32,8 @@ const RATIO_CLASSES: Record<string, string> = {
   selector: 'tw-aspect-ratio',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="containerClasses()" [style.aspectRatio]="computedRatio()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './aspect-ratio.component.html',
   styles: [
     `
       :host {
@@ -52,31 +49,36 @@ const RATIO_CLASSES: Record<string, string> = {
   ],
 })
 export class TwAspectRatioComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Preset aspect ratio */
-  @Input() ratio: AspectRatioPreset = 'video';
+  readonly ratio = input<AspectRatioPreset>('video');
 
   /** Custom ratio value (e.g., 16/9 or 1.777) - used when ratio is 'custom' */
-  @Input() customRatio?: number;
+  readonly customRatio = input<number | undefined>(undefined);
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
-
-  protected containerClasses(): string {
+  protected readonly containerClasses = computed(() => {
     const baseClasses = 'relative overflow-hidden';
+    const ratio = this.ratio();
 
-    if (this.ratio === 'custom') {
-      return this.twClass.merge(baseClasses, this.class);
+    if (ratio === 'custom') {
+      // Without a customRatio value, fall back to the 'video' preset
+      // instead of silently applying no aspect ratio at all
+      const fallback = this.customRatio() == null ? RATIO_CLASSES['video'] : '';
+      return this.twClass.merge(baseClasses, fallback, this.class());
     }
 
-    return this.twClass.merge(baseClasses, RATIO_CLASSES[this.ratio], this.class);
-  }
+    return this.twClass.merge(baseClasses, RATIO_CLASSES[ratio], this.class());
+  });
 
-  protected computedRatio(): string | null {
-    if (this.ratio === 'custom' && this.customRatio) {
-      return String(this.customRatio);
+  protected readonly computedRatio = computed<string | null>(() => {
+    const customRatio = this.customRatio();
+    if (this.ratio() === 'custom' && customRatio != null) {
+      return String(customRatio);
     }
     return null;
-  }
+  });
 }

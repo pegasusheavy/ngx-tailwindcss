@@ -154,10 +154,6 @@ export class TwScoreEditorComponent {
   // Initial score data
   readonly initialScore = input<ScoreData | null>(null);
 
-  // Import inputs
-  readonly musicXml = input<string | null>(null);
-  readonly abcNotation = input<string | null>(null);
-
   // Features toggles
   readonly showToolbar = input(true);
   readonly showPartPanel = input(true);
@@ -424,23 +420,23 @@ export class TwScoreEditorComponent {
 
     // Add accidental offset
     switch (note.accidental) {
-    case 'sharp': {
-    chromaticPosition += 1;
-    break;
-    }
-    case 'doubleSharp': {
-    chromaticPosition += 2;
-    break;
-    }
-    case 'flat': {
-    chromaticPosition -= 1;
-    break;
-    }
-    case 'doubleFlat': {
-    chromaticPosition -= 2;
-    // No default
-    break;
-    }
+      case 'sharp': {
+        chromaticPosition += 1;
+        break;
+      }
+      case 'doubleSharp': {
+        chromaticPosition += 2;
+        break;
+      }
+      case 'flat': {
+        chromaticPosition -= 1;
+        break;
+      }
+      case 'doubleFlat': {
+        chromaticPosition -= 2;
+        // No default
+        break;
+      }
     }
 
     // Add transposition
@@ -690,7 +686,7 @@ export class TwScoreEditorComponent {
       .replaceAll('<', '&lt;')
       .replaceAll('>', '&gt;')
       .replaceAll('"', '&quot;')
-      .replaceAll('\'', '&apos;');
+      .replaceAll("'", '&apos;');
   }
 
   private keySignatureToXml(key: KeySignature): string {
@@ -742,23 +738,23 @@ export class TwScoreEditorComponent {
     xml += '        <pitch>\n';
     xml += `          <step>${note.name}</step>\n`;
     switch (note.accidental) {
-    case 'sharp': {
-    xml += '          <alter>1</alter>\n';
-    break;
-    }
-    case 'flat': {
-    xml += '          <alter>-1</alter>\n';
-    break;
-    }
-    case 'doubleSharp': {
-    xml += '          <alter>2</alter>\n';
-    break;
-    }
-    case 'doubleFlat': {
-    xml += '          <alter>-2</alter>\n';
-    // No default
-    break;
-    }
+      case 'sharp': {
+        xml += '          <alter>1</alter>\n';
+        break;
+      }
+      case 'flat': {
+        xml += '          <alter>-1</alter>\n';
+        break;
+      }
+      case 'doubleSharp': {
+        xml += '          <alter>2</alter>\n';
+        break;
+      }
+      case 'doubleFlat': {
+        xml += '          <alter>-2</alter>\n';
+        // No default
+        break;
+      }
     }
     xml += `          <octave>${note.octave}</octave>\n`;
     xml += '        </pitch>\n';
@@ -895,23 +891,23 @@ export class TwScoreEditorComponent {
   ): number {
     let midi = NOTE_TO_CHROMATIC[name] + (octave + 1) * 12;
     switch (accidental) {
-    case 'sharp': {
-    midi += 1;
-    break;
-    }
-    case 'flat': {
-    midi -= 1;
-    break;
-    }
-    case 'doubleSharp': {
-    midi += 2;
-    break;
-    }
-    case 'doubleFlat': {
-    midi -= 2;
-    // No default
-    break;
-    }
+      case 'sharp': {
+        midi += 1;
+        break;
+      }
+      case 'flat': {
+        midi -= 1;
+        break;
+      }
+      case 'doubleSharp': {
+        midi += 2;
+        break;
+      }
+      case 'doubleFlat': {
+        midi -= 2;
+        // No default
+        break;
+      }
     }
     return Math.max(0, Math.min(127, midi - transposition));
   }
@@ -1030,7 +1026,7 @@ export class TwScoreEditorComponent {
         }
       }
 
-      abc += `${measureGroups.join('|')  }|]\n`;
+      abc += `${measureGroups.join('|')}|]\n`;
     }
 
     return abc;
@@ -1041,27 +1037,27 @@ export class TwScoreEditorComponent {
 
     // Accidental
     switch (note.accidental) {
-    case 'sharp': {
-    abc += '^';
-    break;
-    }
-    case 'flat': {
-    abc += '_';
-    break;
-    }
-    case 'natural': {
-    abc += '=';
-    break;
-    }
-    case 'doubleSharp': {
-    abc += '^^';
-    break;
-    }
-    case 'doubleFlat': {
-    abc += '__';
-    // No default
-    break;
-    }
+      case 'sharp': {
+        abc += '^';
+        break;
+      }
+      case 'flat': {
+        abc += '_';
+        break;
+      }
+      case 'natural': {
+        abc += '=';
+        break;
+      }
+      case 'doubleSharp': {
+        abc += '^^';
+        break;
+      }
+      case 'doubleFlat': {
+        abc += '__';
+        // No default
+        break;
+      }
     }
 
     // Note name (lowercase for octave 5+)
@@ -1327,7 +1323,6 @@ export class TwScoreEditorComponent {
     if ((event.ctrlKey || event.metaKey) && key === 's') {
       event.preventDefault();
       this.showExportDialog.set(true);
-      
     }
   }
 

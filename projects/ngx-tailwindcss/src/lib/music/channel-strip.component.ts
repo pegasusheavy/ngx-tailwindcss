@@ -163,6 +163,19 @@ export class TwChannelStripComponent implements ControlValueAccessor {
     return this.size() === 'lg' ? 'sm' : 'xs';
   });
 
+  // Meter geometry shared by the vu-meter binding and the peak marker overlays
+  protected readonly meterHeight = computed(() => {
+    const size = this.size();
+    return size === 'sm' ? 60 : size === 'lg' ? 100 : 80;
+  });
+
+  // Peak marker offsets (px from the meter container's bottom edge; the
+  // vu-meter has 8px internal padding)
+  protected peakMarkerBottom(peak: number): number {
+    const clamped = Math.max(0, Math.min(100, peak));
+    return 8 + this.meterHeight() * (clamped / 100);
+  }
+
   protected onVolumeChange(value: number): void {
     this.volume.set(value);
     this.volumeChange.emit(value);

@@ -2,16 +2,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
+  effect,
   inject,
   input,
-  OnInit,
   output,
   signal,
+  untracked,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { interval } from 'rxjs';
 import { TwClassService } from '../core/tw-class.service';
 
 export type VuMeterVariant = 'led' | 'gradient' | 'solid' | 'retro' | 'light' | 'highContrast';
@@ -46,9 +44,8 @@ const RMS_WINDOW_SIZE = 1024;
     class: 'inline-block',
   },
 })
-export class TwVuMeterComponent implements OnInit {
+export class TwVuMeterComponent {
   private readonly twClass = inject(TwClassService);
-  private readonly destroyRef = inject(DestroyRef);
 
   // Value inputs
   readonly value = input(0);
@@ -102,31 +99,54 @@ export class TwVuMeterComponent implements OnInit {
   protected readonly rmsValues = signal<number[]>([0]); // RMS values (for 'both' mode)
   protected readonly clipStates = signal<boolean[]>([false]);
 
-  private peakDecayTimers: Array<ReturnType<typeof setInterval>> = [];
-  private rmsBuffers: Float32Array[] = []; // Circular buffers for RMS calculation
+  // Timestamp (per channel) before which a held peak must not decay
+  private peakHoldUntil: number[] = [0, 0];
+  private rmsBuffers: Float32Array[] = [
+    new Float32Array(RMS_WINDOW_SIZE),
+    new Float32Array(RMS_WINDOW_SIZE),
+  ]; // Circular buffers for RMS calculation
   private rmsWriteIndices: number[] = [0, 0];
 
-  ngOnInit(): void {
-    // Initialize RMS buffers
-    this.rmsBuffers = [new Float32Array(RMS_WINDOW_SIZE), new Float32Array(RMS_WINDOW_SIZE)];
-
-    // Setup peak decay
-    if (this.showPeak()) {
-      interval(50)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => {
-          this.decayPeaks();
+  constructor() {
+    // Bridge the declarative value inputs into the imperative setValue path
+    effect(() => {
+      if (this.stereo()) {
+        const left = this.leftValue();
+        const right = this.rightValue();
+        untracked(() => {
+          this.setValue(left, 0);
+          this.setValue(right, 1);
         });
-    }
-
-    // Setup RMS decay (slower than peak)
-    if (this.meterMode() === 'rms' || this.meterMode() === 'both') {
-      interval(50)
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe(() => {
-          this.decayRms();
+      } else {
+        const mono = this.value();
+        untracked(() => {
+          this.setValue(mono, 0);
         });
-    }
+      }
+    });
+
+    // Peak decay timer: only runs while peaks are shown
+    effect(onCleanup => {
+      if (!this.showPeak()) return;
+      const timer = setInterval(() => {
+        this.decayPeaks();
+      }, 50);
+      onCleanup(() => {
+        clearInterval(timer);
+      });
+    });
+
+    // RMS decay timer (slower than peak): only runs in rms/both mode
+    effect(onCleanup => {
+      const mode = this.meterMode();
+      if (mode !== 'rms' && mode !== 'both') return;
+      const timer = setInterval(() => {
+        this.decayRms();
+      }, 50);
+      onCleanup(() => {
+        clearInterval(timer);
+      });
+    });
   }
 
   // Computed values
@@ -198,6 +218,20 @@ export class TwVuMeterComponent implements OnInit {
 
   protected readonly containerClasses = computed(() => {
     return this.twClass.merge('inline-flex flex-col items-center gap-2', this.classOverride());
+  });
+
+  // Text alternative for assistive technology
+  protected readonly meterAriaLabel = computed(() => {
+    const max = this.max() || 1;
+    const values = this.channelValues();
+    const name = this.label() || 'Level meter';
+    if (this.stereo()) {
+      const left = Math.round(((values[0] ?? 0) / max) * 100);
+      const right = Math.round(((values[1] ?? 0) / max) * 100);
+      return `${name}: left ${left}%, right ${right}%`;
+    }
+    const mono = Math.round(((values[0] ?? 0) / max) * 100);
+    return `${name}: ${mono}%`;
   });
 
   // Effective dimensions (custom overrides take precedence)
@@ -483,24 +517,24 @@ export class TwVuMeterComponent implements OnInit {
       peaks[channel] = value;
       this.peakValues.set(peaks);
 
-      // Reset decay timer
-      if (this.peakDecayTimers[channel]) {
-        clearTimeout(this.peakDecayTimers[channel]);
-      }
-
-      this.peakDecayTimers[channel] = setTimeout(() => {
-        // Peak will decay via the interval in ngOnInit
-      }, this.peakHoldTime());
+      // Hold the new peak for peakHoldTime before decay may start
+      this.peakHoldUntil[channel] = Date.now() + this.peakHoldTime();
     }
   }
 
   private decayPeaks(): void {
     const peaks = [...this.peakValues()];
+
+    // Nothing to do while the meter is idle
+    if (peaks.every(peak => peak <= 0)) return;
+
     const values = this.channelValues();
+    const now = Date.now();
     let changed = false;
 
     peaks.forEach((peak, i) => {
-      if (peak > values[i]) {
+      // Honor the hold period: no decay until it has elapsed
+      if (peak > values[i] && now >= (this.peakHoldUntil[i] ?? 0)) {
         peaks[i] = Math.max(values[i], peak - this.max() * this.peakDecayRate());
         changed = true;
       }
@@ -513,6 +547,10 @@ export class TwVuMeterComponent implements OnInit {
 
   private decayRms(): void {
     const rmsVals = [...this.rmsValues()];
+
+    // Nothing to do while the meter is idle
+    if (rmsVals.every(rms => rms <= 0)) return;
+
     let changed = false;
 
     rmsVals.forEach((rms, i) => {

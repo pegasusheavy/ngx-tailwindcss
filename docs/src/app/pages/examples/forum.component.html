@@ -378,9 +378,11 @@
   <!-- New Thread Modal -->
   <tw-modal
     [(open)]="newThreadModalOpen"
-    title="Create New Thread"
     [showCloseButton]="true"
     size="lg">
+    <tw-modal-header>
+      <tw-modal-title>Create New Thread</tw-modal-title>
+    </tw-modal-header>
     <div class="space-y-4">
       <div>
         <label class="block text-sm font-medium text-slate-700 dark:text-zinc-300 mb-2">Category</label>

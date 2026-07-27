@@ -1,5 +1,12 @@
-<div [class]="containerClasses()">
-  <canvas #spectrumCanvas [width]="width()" [height]="height()" class="block rounded"></canvas>
+<div [class]="containerClasses()" [ngStyle]="cssVarStyles()">
+  <canvas
+    #spectrumCanvas
+    [width]="effectiveWidth()"
+    [height]="effectiveHeight()"
+    class="block rounded"
+    role="img"
+    aria-label="Audio spectrum analyzer"
+  ></canvas>
 
   <!-- Frequency Labels -->
   @if (showLabels()) {

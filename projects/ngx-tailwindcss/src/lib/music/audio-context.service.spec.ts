@@ -1,6 +1,37 @@
 import { TestBed } from '@angular/core/testing';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { AudioContextService } from './audio-context.service';
+
+class MockAudioNode {
+  connect = vi.fn();
+  disconnect = vi.fn();
+  addEventListener = vi.fn();
+}
+
+class MockAnalyserNode extends MockAudioNode {
+  fftSize = 2048;
+  smoothingTimeConstant = 0.8;
+  minDecibels = -90;
+  maxDecibels = -10;
+  frequencyBinCount = 1024;
+}
+
+class MockGainNode extends MockAudioNode {
+  gain = { value: 1 };
+}
+
+class MockAudioContext {
+  state = 'running';
+  sampleRate = 44_100;
+  destination = new MockAudioNode();
+  createMediaElementSource = vi.fn(() => new MockAudioNode());
+  createAnalyser = vi.fn(() => new MockAnalyserNode());
+  createGain = vi.fn(() => new MockGainNode());
+  resume = vi.fn().mockResolvedValue(undefined);
+  close = vi.fn().mockResolvedValue(undefined);
+  addEventListener = vi.fn();
+  removeEventListener = vi.fn();
+}
 
 describe('AudioContextService', () => {
   let service: AudioContextService;
@@ -102,6 +133,51 @@ describe('AudioContextService', () => {
 
     it('should have frequencyToBin method', () => {
       expect(typeof service.frequencyToBin).toBe('function');
+    });
+  });
+
+  describe('media element connection tracking', () => {
+    beforeEach(() => {
+      vi.stubGlobal('AudioContext', MockAudioContext);
+    });
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    it('should return the existing source when connecting the same element twice', async () => {
+      const element = document.createElement('audio');
+
+      const first = await service.connectMediaElement(element);
+      const second = await service.connectMediaElement(element);
+
+      expect(second.id).toBe(first.id);
+      expect(service.sourceCount()).toBe(1);
+    });
+
+    it('should report whether an element is connected', async () => {
+      const element = document.createElement('audio');
+      expect(service.isElementConnected(element)).toBe(false);
+
+      await service.connectMediaElement(element);
+      expect(service.isElementConnected(element)).toBe(true);
+
+      const other = document.createElement('audio');
+      expect(service.isElementConnected(other)).toBe(false);
+    });
+
+    it('should clear element tracking on disconnect', async () => {
+      const element = document.createElement('audio');
+      const source = await service.connectMediaElement(element);
+
+      service.disconnectSource(source.id);
+
+      expect(service.isElementConnected(element)).toBe(false);
+      expect(service.sourceCount()).toBe(0);
+
+      // Reconnecting after disconnect creates a fresh source
+      const reconnected = await service.connectMediaElement(element);
+      expect(reconnected.id).not.toBe(source.id);
     });
   });
 

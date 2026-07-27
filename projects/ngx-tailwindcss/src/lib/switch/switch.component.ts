@@ -1,11 +1,11 @@
 import {
+  booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
   forwardRef,
   inject,
   input,
-  model,
   output,
   signal,
 } from '@angular/core';
@@ -62,7 +62,7 @@ export class TwSwitchComponent implements ControlValueAccessor {
   // Signal-based inputs
   readonly variant = input<SwitchVariant>('primary');
   readonly size = input<SwitchSize>('md');
-  readonly disabled = input(false, { transform: (v: boolean | string) => v === '' || v === true });
+  readonly disabled = input(false, { transform: booleanAttribute });
   readonly labelPosition = input<'left' | 'right'>('right');
   readonly classOverride = input('');
 
@@ -71,18 +71,19 @@ export class TwSwitchComponent implements ControlValueAccessor {
 
   // Internal state
   protected readonly checked = signal(false);
-  protected readonly hasLabel = true;
   private readonly _disabled = signal(false);
+
+  /** Disabled either via the input or via the forms API (setDisabledState). */
+  protected readonly isDisabled = computed(() => this.disabled() || this._disabled());
 
   private onChangeFn: (value: boolean) => void = () => {};
   private onTouchedFn: () => void = () => {};
 
   protected readonly containerClasses = computed(() => {
-    const isDisabled = this._disabled() || this.disabled();
     return this.twClass.merge(
       'inline-flex items-center gap-3 cursor-pointer',
       this.labelPosition() === 'left' ? 'flex-row-reverse' : '',
-      isDisabled ? 'opacity-50 cursor-not-allowed' : '',
+      this.isDisabled() ? 'opacity-50 cursor-not-allowed' : '',
       this.classOverride()
     );
   });
@@ -115,12 +116,12 @@ export class TwSwitchComponent implements ControlValueAccessor {
     return this.twClass.merge(
       'text-slate-700 dark:text-slate-300 select-none',
       SWITCH_SIZES[this.size()].label,
-      this._disabled() ? 'text-slate-400 dark:text-slate-500' : ''
+      this.isDisabled() ? 'text-slate-400 dark:text-slate-500' : ''
     );
   });
 
   toggle(): void {
-    if (this._disabled() || this.disabled()) return;
+    if (this.isDisabled()) return;
 
     const newValue = !this.checked();
     this.checked.set(newValue);
@@ -130,8 +131,9 @@ export class TwSwitchComponent implements ControlValueAccessor {
   }
 
   // ControlValueAccessor implementation
-  writeValue(value: boolean): void {
-    this.checked.set(value);
+  writeValue(value: boolean | null | undefined): void {
+    // Coerce null/undefined from form resets so aria-checked stays boolean
+    this.checked.set(value ?? false);
   }
 
   registerOnChange(fn: (value: boolean) => void): void {

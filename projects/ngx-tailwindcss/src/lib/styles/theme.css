@@ -1,15 +1,29 @@
 /**
  * ngx-tailwindcss Theme System
  *
- * This file provides CSS custom properties (variables) for theming the component library.
- * The library uses Tailwind CSS classes by default, but you can override colors using
- * these CSS variables.
+ * This file provides CSS custom properties (variables) for theming.
+ * The shipped components style themselves with plain Tailwind CSS utility
+ * classes and do NOT read these variables directly. The variables exist for
+ * two distinct purposes:
+ *
+ * 1. Semantic tokens (--tw-color-*): consumed by the OPTIONAL theme-aware
+ *    path — the THEME_CSS_CLASSES constants (e.g.
+ *    'bg-[var(--tw-color-primary)]') and the TwThemeService runtime theming
+ *    API. If you opt into that path, overriding these variables re-colors
+ *    everything that uses it.
+ *
+ * 2. Per-component tokens (--tw-button-*, --tw-card-*, --tw-switch-*, ...):
+ *    provided as a stable naming convention for YOUR OWN CSS when you
+ *    restyle the components (e.g. via classOverride, ::part-like wrapper
+ *    selectors, or global stylesheets). The shipped components do not read
+ *    them; they are hooks for consumer stylesheets and default to the
+ *    semantic tokens above so they follow your theme automatically.
  *
  * USAGE:
  * ======
  * 1. Import this file in your application's global styles:
  *
- *    @import '@pegasus-heavy/ngx-tailwindcss/styles/theme.css';
+ *    @import '@quinnjr/ngx-tailwindcss/styles/theme.css';
  *
  * 2. Override any variables in your own CSS to customize colors:
  *
@@ -33,12 +47,14 @@
  *
  * Or use the provided service:
  *
- *    import { TwThemeService } from '@pegasus-heavy/ngx-tailwindcss';
+ *    import { TwThemeService } from '@quinnjr/ngx-tailwindcss';
  *    themeService.setColorMode('dark');
  *
  * CUSTOMIZATION LEVELS:
  * =====================
- * 1. CSS Variables (this file) - Override semantic colors
+ * 1. CSS Variables (this file) - Override semantic colors for the optional
+ *    THEME_CSS_CLASSES / TwThemeService path, or use the per-component
+ *    tokens in your own stylesheets
  * 2. Tailwind Config - Extend/override Tailwind's color palette
  * 3. Component Props - Use classOverride/classReplace on individual components
  * 4. TwThemeService - Programmatically set theme at runtime
@@ -115,6 +131,7 @@
      ===================================================== */
 
   --tw-color-text: #0f172a;
+  --tw-color-text-primary: #0f172a;
   --tw-color-text-secondary: #475569;
   --tw-color-text-muted: #94a3b8;
   --tw-color-text-disabled: #cbd5e1;
@@ -321,6 +338,7 @@
 
   /* Text colors */
   --tw-color-text: #f8fafc;
+  --tw-color-text-primary: #f8fafc;
   --tw-color-text-secondary: #94a3b8;
   --tw-color-text-muted: #64748b;
   --tw-color-text-disabled: #475569;

@@ -99,4 +99,59 @@ describe('TwTooltipDirective', () => {
     fixture.detectChanges();
     expect(component.zIndex()).toBe(5000);
   });
+
+  it('should show a tooltip with role="tooltip" on mouseenter', async () => {
+    buttonEl.dispatchEvent(new Event('mouseenter'));
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 0);
+    });
+
+    const tooltip = document.querySelector('[role="tooltip"]');
+    expect(tooltip).toBeTruthy();
+    expect(tooltip?.textContent).toContain('Test tooltip');
+    expect(buttonEl.getAttribute('aria-describedby')).toBe(tooltip?.id);
+  });
+
+  it('should remove the tooltip and aria-describedby on mouseleave', async () => {
+    buttonEl.dispatchEvent(new Event('mouseenter'));
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 0);
+    });
+    expect(document.querySelector('[role="tooltip"]')).toBeTruthy();
+
+    buttonEl.dispatchEvent(new Event('mouseleave'));
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(document.querySelector('[role="tooltip"]')).toBeNull();
+    expect(buttonEl.getAttribute('aria-describedby')).toBeNull();
+  });
+
+  it('should hide the tooltip when Escape is pressed', async () => {
+    buttonEl.dispatchEvent(new Event('mouseenter'));
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 0);
+    });
+    expect(document.querySelector('[role="tooltip"]')).toBeTruthy();
+
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(document.querySelector('[role="tooltip"]')).toBeNull();
+  });
+
+  it('should not show a tooltip when disabled', async () => {
+    component.tooltipDisabled.set(true);
+    fixture.detectChanges();
+
+    buttonEl.dispatchEvent(new Event('mouseenter'));
+    await new Promise<void>(resolve => {
+      setTimeout(resolve, 0);
+    });
+
+    expect(document.querySelector('[role="tooltip"]')).toBeNull();
+  });
 });

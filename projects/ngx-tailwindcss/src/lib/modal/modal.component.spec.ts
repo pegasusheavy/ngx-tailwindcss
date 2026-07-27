@@ -3,7 +3,12 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ModalSize, TwModalComponent } from './modal.component';
+import {
+  ModalSize,
+  TwModalComponent,
+  TwModalHeaderComponent,
+  TwModalTitleComponent,
+} from './modal.component';
 import { TwClassService } from '../core/tw-class.service';
 
 @Component({
@@ -160,6 +165,45 @@ describe('TwModalComponent', () => {
     });
   });
 
+  describe('backdrop click', () => {
+    const containerEl = (): HTMLElement | null =>
+      fixture.debugElement.query(By.css('.overflow-y-auto'))?.nativeElement ?? null;
+
+    it('should close when the backdrop area is clicked', () => {
+      component.isOpen.set(true);
+      fixture.detectChanges();
+
+      containerEl()!.click();
+      fixture.detectChanges();
+
+      expect(component.isOpen()).toBe(false);
+      expect(component.closedCount).toBe(1);
+    });
+
+    it('should not close when closeOnBackdropClick is false', () => {
+      component.closeOnBackdropClick.set(false);
+      component.isOpen.set(true);
+      fixture.detectChanges();
+
+      containerEl()!.click();
+      fixture.detectChanges();
+
+      expect(component.isOpen()).toBe(true);
+      expect(component.closedCount).toBe(0);
+    });
+
+    it('should not close when the panel itself is clicked', () => {
+      component.isOpen.set(true);
+      fixture.detectChanges();
+
+      const panel = fixture.debugElement.query(By.css('[role="dialog"]')).nativeElement;
+      panel.click();
+      fixture.detectChanges();
+
+      expect(component.isOpen()).toBe(true);
+    });
+  });
+
   describe('accessibility', () => {
     it('should have role="dialog"', () => {
       component.isOpen.set(true);
@@ -176,6 +220,15 @@ describe('TwModalComponent', () => {
       const modal = fixture.debugElement.query(By.css('[role="dialog"]'));
       expect(modal.nativeElement.getAttribute('aria-modal')).toBe('true');
     });
+
+    it('should not emit an empty aria-labelledby when unset', () => {
+      component.isOpen.set(true);
+      fixture.detectChanges();
+
+      const modal = fixture.debugElement.query(By.css('[role="dialog"]'));
+      expect(modal.nativeElement.hasAttribute('aria-labelledby')).toBe(false);
+      expect(modal.nativeElement.hasAttribute('aria-describedby')).toBe(false);
+    });
   });
 
   describe('public methods', () => {
@@ -188,5 +241,40 @@ describe('TwModalComponent', () => {
 
       expect(component.isOpen()).toBe(false);
     });
+  });
+});
+
+@Component({
+  template: `
+    <tw-modal [open]="true">
+      <tw-modal-header>
+        <tw-modal-title>My Title</tw-modal-title>
+      </tw-modal-header>
+    </tw-modal>
+  `,
+  standalone: true,
+  imports: [TwModalComponent, TwModalHeaderComponent, TwModalTitleComponent],
+})
+class TitledHostComponent {}
+
+describe('TwModalComponent with projected title', () => {
+  let fixture: ComponentFixture<TitledHostComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TitledHostComponent, NoopAnimationsModule],
+      providers: [TwClassService],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TitledHostComponent);
+    fixture.detectChanges();
+  });
+
+  it('should auto-link aria-labelledby to the projected title id', () => {
+    const dialog = fixture.debugElement.query(By.css('[role="dialog"]')).nativeElement;
+    const title = fixture.debugElement.query(By.css('tw-modal-title')).nativeElement;
+
+    expect(title.id).toBeTruthy();
+    expect(dialog.getAttribute('aria-labelledby')).toBe(title.id);
   });
 });

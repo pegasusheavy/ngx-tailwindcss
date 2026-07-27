@@ -3,10 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  contentChild,
   Directive,
   effect,
   ElementRef,
   EventEmitter,
+  forwardRef,
   inject,
   Input,
   OnDestroy,
@@ -20,12 +22,7 @@ import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
 export type DropdownPosition =
-  | 'bottom-start'
-  | 'bottom-end'
-  | 'top-start'
-  | 'top-end'
-  | 'left'
-  | 'right';
+  'bottom-start' | 'bottom-end' | 'top-start' | 'top-end' | 'left' | 'right';
 
 /**
  * Dropdown item directive
@@ -55,7 +52,7 @@ export class TwDropdownItemDirective {
     class: 'block my-1 border-t border-slate-200 dark:border-slate-700',
     role: 'separator',
   },
-  template: ``,
+  templateUrl: './dropdown-divider.component.html',
 })
 export class TwDropdownDividerComponent {}
 
@@ -69,7 +66,7 @@ export class TwDropdownDividerComponent {}
     class:
       'block px-4 py-2 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider',
   },
-  template: `<ng-content></ng-content>`,
+  templateUrl: './dropdown-header.component.html',
 })
 export class TwDropdownHeaderComponent {}
 
@@ -135,6 +132,10 @@ export class TwDropdownComponent implements OnDestroy {
 
   protected isOpen = signal(false);
 
+  private readonly triggerDirective = contentChild<TwDropdownTriggerDirective>(
+    forwardRef(() => TwDropdownTriggerDirective)
+  );
+
   // Portal elements
   private portalHost: HTMLElement | null = null;
   private portalElement: HTMLElement | null = null;
@@ -164,6 +165,11 @@ export class TwDropdownComponent implements OnDestroy {
         this.destroyPortal();
       }
     });
+
+    // Reflect open state on the trigger's aria-expanded
+    effect(() => {
+      this.triggerDirective()?.expanded.set(this.isOpen());
+    });
   }
 
   ngOnDestroy(): void {
@@ -187,8 +193,58 @@ export class TwDropdownComponent implements OnDestroy {
   }
 
   close(): void {
+    // Restore trigger focus only when focus currently sits inside the menu,
+    // so outside clicks don't have their focus stolen
+    const shouldRestoreFocus = !!this.portalElement?.contains(this.document.activeElement);
+
     this.isOpen.set(false);
     this.closed.emit();
+
+    if (shouldRestoreFocus) {
+      const trigger = this.elementRef.nativeElement.querySelector(
+        '[twdropdowntrigger]'
+      ) as HTMLElement | null;
+      trigger?.focus();
+    }
+  }
+
+  private getMenuItems(): HTMLElement[] {
+    if (!this.portalElement) return [];
+    const items = this.portalElement.querySelectorAll<HTMLElement>(
+      '[twdropdownitem]:not([disabled]):not([aria-disabled="true"])'
+    );
+    return [...items];
+  }
+
+  private moveItemFocus(key: string): void {
+    const items = this.getMenuItems();
+    if (items.length === 0) return;
+
+    const activeIndex = items.indexOf(this.document.activeElement as HTMLElement);
+    let nextIndex: number;
+
+    switch (key) {
+      case 'ArrowDown': {
+        nextIndex = activeIndex < 0 ? 0 : (activeIndex + 1) % items.length;
+        break;
+      }
+      case 'ArrowUp': {
+        nextIndex =
+          activeIndex < 0 ? items.length - 1 : (activeIndex - 1 + items.length) % items.length;
+        break;
+      }
+      case 'Home': {
+        nextIndex = 0;
+        break;
+      }
+      default: {
+        // End
+        nextIndex = items.length - 1;
+        break;
+      }
+    }
+
+    items[nextIndex].focus();
   }
 
   private createPortal(): void {
@@ -239,11 +295,12 @@ export class TwDropdownComponent implements OnDestroy {
     // Position the dropdown
     this.updatePosition();
 
-    // Animate in
+    // Animate in and focus the first menu item
     requestAnimationFrame(() => {
       if (this.portalElement) {
         this.renderer.setStyle(this.portalElement, 'opacity', '1');
         this.renderer.setStyle(this.portalElement, 'transform', 'scale(1)');
+        this.getMenuItems()[0]?.focus();
       }
     });
 
@@ -270,6 +327,12 @@ export class TwDropdownComponent implements OnDestroy {
       if (event.key === 'Escape') {
         event.preventDefault();
         this.close();
+        return;
+      }
+
+      if (['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+        event.preventDefault();
+        this.moveItemFocus(event.key);
       }
     });
 
@@ -402,7 +465,7 @@ export class TwDropdownComponent implements OnDestroy {
 @Component({
   selector: 'tw-dropdown-menu',
   standalone: true,
-  template: `<ng-content></ng-content>`,
+  templateUrl: './dropdown-menu.component.html',
 })
 export class TwDropdownMenuComponent {}
 
@@ -414,9 +477,9 @@ export class TwDropdownMenuComponent {}
   standalone: true,
   host: {
     '[attr.aria-haspopup]': '"menu"',
-    '[attr.aria-expanded]': 'expanded',
+    '[attr.aria-expanded]': 'expanded()',
   },
 })
 export class TwDropdownTriggerDirective {
-  expanded = false;
+  readonly expanded = signal(false);
 }

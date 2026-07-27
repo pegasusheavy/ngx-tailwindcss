@@ -148,32 +148,7 @@ export class TwChipComponent {
   standalone: true,
   imports: [CommonModule, TwChipComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div [class]="containerClasses()">
-      @for (value of values(); track $index) {
-        <tw-chip
-          [label]="getDisplayValue(value)"
-          [variant]="variant()"
-          [chipStyle]="chipStyle()"
-          [size]="size()"
-          [removable]="!disabled()"
-          (onRemove)="removeValue($index)"
-        >
-        </tw-chip>
-      }
-      @if (allowAdd() && !disabled()) {
-        <input
-          type="text"
-          [class]="inputClasses()"
-          [placeholder]="placeholder()"
-          [disabled]="disabled()"
-          (keydown.enter)="onAddChip($event)"
-          (keydown.backspace)="onBackspace($event)"
-          #inputRef
-        />
-      }
-    </div>
-  `,
+  templateUrl: './chips.component.html',
 })
 export class TwChipsComponent {
   private readonly twClass = inject(TwClassService);
@@ -187,6 +162,9 @@ export class TwChipsComponent {
   readonly allowAdd = input(true, { transform: booleanAttribute });
   readonly field = input('');
   readonly classOverride = input('');
+
+  /** Accessible name for the text input used to add chips */
+  readonly ariaLabel = input('Add item');
 
   readonly valuesChange = output<any[]>();
   readonly onAdd = output<any>();

@@ -141,6 +141,30 @@ describe('MidiService', () => {
       expect(service.inputs().length).toBe(0);
       expect(service.outputs().length).toBe(0);
     });
+
+    it('should detach the statechange handler on disconnect', async () => {
+      await service.requestAccess();
+      expect(mockMidiAccess.onstatechange).not.toBeNull();
+
+      service.disconnect();
+
+      expect(mockMidiAccess.onstatechange).toBeNull();
+    });
+
+    it('should ignore statechange events delivered after disconnect', async () => {
+      await service.requestAccess();
+      const handler = mockMidiAccess.onstatechange;
+      expect(handler).not.toBeNull();
+
+      service.disconnect();
+
+      // Simulate a device plug-in event arriving via a stale handler reference
+      handler?.(new Event('statechange'));
+
+      expect(service.connected()).toBe(false);
+      expect(service.inputs().length).toBe(0);
+      expect(service.outputs().length).toBe(0);
+    });
   });
 
   describe('message parsing', () => {
@@ -306,6 +330,19 @@ describe('MidiService', () => {
       expect(ccEvents[0].scaledValue).toBe(12);
     });
 
+    it('should not emit CC events for unlearned mappings (negative sentinel)', async () => {
+      await service.requestAccess();
+      service.addCCMapping({ ...testMapping, id: 'unlearned', ccNumber: -1 });
+
+      const ccEvents: unknown[] = [];
+      service.onCCChange(event => ccEvents.push(event));
+
+      // CC 0 (Bank Select) must not match the -1 sentinel
+      mockMidiAccess._mockInput.simulateMessage([0xb0, 0, 64]);
+
+      expect(ccEvents.length).toBe(0);
+    });
+
     it('should clear all mappings', () => {
       service.addCCMapping(testMapping);
       service.addCCMapping({ ...testMapping, id: 'test-fader-2', ccNumber: 10 });
@@ -401,6 +438,14 @@ describe('MidiService', () => {
       service.sendAllNotesOff('output-1', 0);
 
       expect(mockMidiAccess._mockOutput.sentMessages).toContainEqual([0xb0, 123, 0]);
+    });
+
+    it('should look up outputs by id and ignore unknown output ids', async () => {
+      await service.requestAccess();
+
+      service.sendNoteOn('no-such-output', 60, 100, 0);
+
+      expect(mockMidiAccess._mockOutput.sentMessages.length).toBe(0);
     });
   });
 

@@ -1,4 +1,9 @@
-<div [class]="containerClasses()">
+<div
+  [class]="containerClasses()"
+  [attr.aria-label]="
+    'Pitch shift: ' + semitonesDisplay() + ' semitones, ' + centsDisplay() + ' cents'
+  "
+>
   <!-- Header with Key Lock -->
   @if (showSemitones()) {
     <div class="flex items-center justify-between">

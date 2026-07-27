@@ -221,8 +221,7 @@ export class TwNoteDisplayComponent implements OnInit {
 
     if (detected) {
       const current = this.currentNote();
-      const isNewNote =
-        current?.note !== detected.note || current.octave !== detected.octave;
+      const isNewNote = current?.note !== detected.note || current.octave !== detected.octave;
 
       this.currentNote.set(detected);
       this.noteChange.emit(detected);
@@ -251,7 +250,7 @@ export class TwNoteDisplayComponent implements OnInit {
     const note = ALL_NOTES[noteIndex];
 
     // Calculate cents deviation
-    const exactFreq = a4 * 2**(roundedSemitones / 12);
+    const exactFreq = a4 * 2 ** (roundedSemitones / 12);
     const cents = Math.round(1200 * Math.log2(freq / exactFreq));
 
     return {
@@ -296,7 +295,7 @@ export class TwNoteDisplayComponent implements OnInit {
   protected readonly displayCents = computed(() => {
     const note = this.currentNote();
     if (!note) return '±0';
-    const {cents} = note;
+    const { cents } = note;
     if (cents === 0) return '±0';
     return cents > 0 ? `+${cents}` : `${cents}`;
   });

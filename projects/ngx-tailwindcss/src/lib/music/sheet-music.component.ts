@@ -160,23 +160,23 @@ export function parseMusicXML(xmlString: string): SheetMusicData | null {
         // Accidental
         let accidental: NoteAccidental = null;
         switch (alter) {
-        case 1: {
-        accidental = 'sharp';
-        break;
-        }
-        case -1: {
-        accidental = 'flat';
-        break;
-        }
-        case 2: {
-        accidental = 'doubleSharp';
-        break;
-        }
-        case -2: {
-        accidental = 'doubleFlat';
-        // No default
-        break;
-        }
+          case 1: {
+            accidental = 'sharp';
+            break;
+          }
+          case -1: {
+            accidental = 'flat';
+            break;
+          }
+          case 2: {
+            accidental = 'doubleSharp';
+            break;
+          }
+          case -2: {
+            accidental = 'doubleFlat';
+            // No default
+            break;
+          }
         }
 
         // Check for explicit accidental
@@ -318,23 +318,23 @@ export function parseABCNotation(abcString: string): SheetMusicData | null {
         // Default note length: L:1/8, L:1/4
         const length = line.slice(2).trim();
         switch (length) {
-        case '1/4': {
-        defaultNoteLength = 'quarter';
-        break;
-        }
-        case '1/8': {
-        defaultNoteLength = 'eighth';
-        break;
-        }
-        case '1/16': {
-        defaultNoteLength = 'sixteenth';
-        break;
-        }
-        case '1/2': {
-        defaultNoteLength = 'half';
-        // No default
-        break;
-        }
+          case '1/4': {
+            defaultNoteLength = 'quarter';
+            break;
+          }
+          case '1/8': {
+            defaultNoteLength = 'eighth';
+            break;
+          }
+          case '1/16': {
+            defaultNoteLength = 'sixteenth';
+            break;
+          }
+          case '1/2': {
+            defaultNoteLength = 'half';
+            // No default
+            break;
+          }
         }
       }
     }
@@ -348,7 +348,7 @@ export function parseABCNotation(abcString: string): SheetMusicData | null {
         continue;
       }
       if (inBody && !line.startsWith('%') && line.length > 0) {
-        musicBody += `${line  } `;
+        musicBody += `${line} `;
       }
     }
 
@@ -513,33 +513,33 @@ function parseABCNote(token: string, defaultDuration: NoteDuration): NoteData | 
 
   // Parse accidentals
   switch (token[i]) {
-  case '^': {
-    accidental = 'sharp';
-    i++;
-    if (token[i] === '^') {
-      accidental = 'doubleSharp';
+    case '^': {
+      accidental = 'sharp';
       i++;
+      if (token[i] === '^') {
+        accidental = 'doubleSharp';
+        i++;
+      }
+
+      break;
     }
-  
-  break;
-  }
-  case '_': {
-    accidental = 'flat';
-    i++;
-    if (token[i] === '_') {
-      accidental = 'doubleFlat';
+    case '_': {
+      accidental = 'flat';
       i++;
+      if (token[i] === '_') {
+        accidental = 'doubleFlat';
+        i++;
+      }
+
+      break;
     }
-  
-  break;
-  }
-  case '=': {
-    accidental = 'natural';
-    i++;
-  
-  break;
-  }
-  // No default
+    case '=': {
+      accidental = 'natural';
+      i++;
+
+      break;
+    }
+    // No default
   }
 
   // Parse note letter
@@ -605,11 +605,14 @@ function abcDurationToDuration(mod: string, defaultDuration: NoteDuration): Note
 
   if (mod === '2') {
     return durationOrder[Math.min(defaultIndex + 1, durationOrder.length - 1)];
-  } if (mod === '4') {
+  }
+  if (mod === '4') {
     return durationOrder[Math.min(defaultIndex + 2, durationOrder.length - 1)];
-  } if (mod === '/2' || mod === '/') {
+  }
+  if (mod === '/2' || mod === '/') {
     return durationOrder[Math.max(defaultIndex - 1, 0)];
-  } if (mod === '/4') {
+  }
+  if (mod === '/4') {
     return durationOrder[Math.max(defaultIndex - 2, 0)];
   }
 

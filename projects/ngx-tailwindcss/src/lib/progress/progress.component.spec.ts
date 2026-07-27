@@ -216,6 +216,37 @@ describe('TwProgressComponent', () => {
       const bar = progressEl.querySelector('.overflow-hidden > div');
       expect(bar?.className).toContain('progress-indeterminate-animated');
     });
+
+    it('should not emit aria-valuenow while indeterminate', () => {
+      component.indeterminate.set(true);
+      fixture.detectChanges();
+      const bar = progressEl.querySelector('[role="progressbar"]');
+      expect(bar?.hasAttribute('aria-valuenow')).toBe(false);
+
+      component.indeterminate.set(false);
+      fixture.detectChanges();
+      expect(bar?.getAttribute('aria-valuenow')).toBe('50');
+    });
+  });
+
+  describe('max edge cases', () => {
+    it('should render 0% when max is 0', () => {
+      component.showValue.set(true);
+      component.max.set(0);
+      fixture.detectChanges();
+
+      const bar = progressEl.querySelector('.overflow-hidden > div')!;
+      expect(bar?.style.width).toBe('0%');
+      expect(progressEl.textContent).toContain('0%');
+    });
+
+    it('should render 0% when max is negative', () => {
+      component.max.set(-5);
+      fixture.detectChanges();
+
+      const bar = progressEl.querySelector('.overflow-hidden > div')!;
+      expect(bar?.style.width).toBe('0%');
+    });
   });
 
   describe('accessibility', () => {
@@ -323,6 +354,16 @@ describe('TwProgressCircularComponent', () => {
       fixture.detectChanges();
       const svg = progressEl.querySelector('svg');
       expect(svg?.className.baseVal).toContain('circular-rotate');
+    });
+  });
+
+  describe('max edge cases', () => {
+    it('should render 0% when max is 0', () => {
+      component.showValue.set(true);
+      component.max.set(0);
+      fixture.detectChanges();
+
+      expect(progressEl.textContent).toContain('0%');
     });
   });
 

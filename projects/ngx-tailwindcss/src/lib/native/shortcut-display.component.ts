@@ -8,16 +8,7 @@ export type ShortcutDisplayPlatform = 'mac' | 'windows' | 'linux' | 'auto';
   selector: 'tw-shortcut-display',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <span [class]="containerClasses()">
-      @for (key of formattedKeys(); track $index; let last = $last) {
-        <kbd [class]="keyClasses()">{{ key }}</kbd>
-        @if (!last && showSeparator()) {
-          <span [class]="separatorClasses()">{{ separator() }}</span>
-        }
-      }
-    </span>
-  `,
+  templateUrl: './shortcut-display.component.html',
 })
 export class TwShortcutDisplayComponent {
   public readonly keys = input<string[]>([]);

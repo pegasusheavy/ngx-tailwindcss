@@ -24,6 +24,7 @@ import { TwClassService } from '../core/tw-class.service';
       [padded]="padded()"
       [classOverride]="classOverride()"
       [classReplace]="classReplace()"
+      (click)="onCardClick()"
       data-testid="test-card"
     >
       <tw-card-body>Card content</tw-card-body>
@@ -40,6 +41,11 @@ class TestHostComponent {
   padded = signal(false);
   classOverride = signal('');
   classReplace = signal('');
+  clickCount = 0;
+
+  onCardClick(): void {
+    this.clickCount++;
+  }
 }
 
 describe('TwCardComponent', () => {
@@ -74,40 +80,99 @@ describe('TwCardComponent', () => {
       expect(classes).toContain('shadow-md');
     });
 
-    it('should have variant input', () => {
-      expect(component.variant()).toBe('elevated');
+    it('should update classes when variant changes', () => {
+      component.variant.set('outlined');
+      fixture.detectChanges();
+      expect(cardEl.className).toContain('border-slate-200');
+      expect(cardEl.className).not.toContain('shadow-md');
+
+      component.variant.set('filled');
+      fixture.detectChanges();
+      expect(cardEl.className).toContain('bg-slate-50');
+
+      component.variant.set('ghost');
+      fixture.detectChanges();
+      expect(cardEl.className).toContain('bg-transparent');
     });
   });
 
   describe('hoverable', () => {
-    it('should have hoverable input', () => {
-      expect(component.hoverable()).toBe(false);
+    it('should apply hover classes when hoverable', () => {
+      expect(cardEl.className).not.toContain('hover:-translate-y-0.5');
+
+      component.hoverable.set(true);
+      fixture.detectChanges();
+
+      expect(cardEl.className).toContain('hover:-translate-y-0.5');
     });
   });
 
   describe('clickable', () => {
-    it('should have clickable input', () => {
-      expect(component.clickable()).toBe(false);
-    });
-
     it('should not set tabindex by default', () => {
       expect(cardEl.getAttribute('tabindex')).toBeNull();
+    });
+
+    it('should set tabindex and cursor classes when clickable', () => {
+      component.clickable.set(true);
+      fixture.detectChanges();
+
+      expect(cardEl.getAttribute('tabindex')).toBe('0');
+      expect(cardEl.className).toContain('cursor-pointer');
+    });
+
+    it('should use role="button" when clickable', () => {
+      component.clickable.set(true);
+      fixture.detectChanges();
+
+      expect(cardEl.getAttribute('role')).toBe('button');
+    });
+
+    it('should dispatch click on Enter and Space when clickable', () => {
+      component.clickable.set(true);
+      fixture.detectChanges();
+
+      cardEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      fixture.detectChanges();
+      expect(component.clickCount).toBe(1);
+
+      cardEl.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+      fixture.detectChanges();
+      expect(component.clickCount).toBe(2);
+    });
+
+    it('should not dispatch click on Enter when not clickable', () => {
+      cardEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      fixture.detectChanges();
+
+      expect(component.clickCount).toBe(0);
     });
   });
 
   describe('padded', () => {
-    it('should have padded input', () => {
-      expect(component.padded()).toBe(false);
+    it('should apply padding when padded', () => {
+      expect(cardEl.className).not.toContain('p-6');
+
+      component.padded.set(true);
+      fixture.detectChanges();
+
+      expect(cardEl.className).toContain('p-6');
     });
   });
 
   describe('class customization', () => {
-    it('should have classOverride input', () => {
-      expect(component.classOverride()).toBe('');
+    it('should merge classOverride into host classes', () => {
+      component.classOverride.set('custom-override');
+      fixture.detectChanges();
+
+      expect(cardEl.className).toContain('custom-override');
+      expect(cardEl.className).toContain('rounded-xl');
     });
 
-    it('should have classReplace input', () => {
-      expect(component.classReplace()).toBe('');
+    it('should replace all classes with classReplace', () => {
+      component.classReplace.set('only-this-class');
+      fixture.detectChanges();
+
+      expect(cardEl.className).toBe('only-this-class');
     });
   });
 });
@@ -177,6 +242,14 @@ describe('Card section directives', () => {
       expect(title.className).toContain('text-lg');
       expect(title.className).toContain('font-semibold');
     });
+
+    it('should merge custom class', () => {
+      component.titleClass.set('custom-title');
+      fixture.detectChanges();
+
+      const title = fixture.debugElement.query(By.directive(TwCardTitleDirective)).nativeElement;
+      expect(title.className).toContain('custom-title');
+    });
   });
 
   describe('TwCardSubtitleDirective', () => {
@@ -241,8 +314,12 @@ describe('TwCardMediaDirective', () => {
     expect(media.className).toContain('rounded-t-xl');
   });
 
-  it('should have position input', () => {
-    expect(component.position()).toBe('top');
+  it('should update classes when position changes', () => {
+    component.position.set('bottom');
+    fixture.detectChanges();
+
+    const media = fixture.debugElement.query(By.directive(TwCardMediaDirective)).nativeElement;
+    expect(media.className).toContain('rounded-b-xl');
   });
 });
 
@@ -285,7 +362,20 @@ describe('TwCardHorizontalComponent', () => {
     expect(cardEl.className).toContain('flex');
   });
 
-  it('should have variant input', () => {
-    expect(component.variant()).toBe('elevated');
+  it('should update classes when variant changes', () => {
+    expect(cardEl.className).toContain('shadow-md');
+
+    component.variant.set('outlined');
+    fixture.detectChanges();
+
+    expect(cardEl.className).toContain('border-slate-200');
+    expect(cardEl.className).not.toContain('shadow-md');
+  });
+
+  it('should merge classOverride', () => {
+    component.classOverride.set('custom-horizontal');
+    fixture.detectChanges();
+
+    expect(cardEl.className).toContain('custom-horizontal');
   });
 });

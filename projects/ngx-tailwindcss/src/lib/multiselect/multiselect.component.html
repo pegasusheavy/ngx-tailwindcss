@@ -1,8 +1,8 @@
 <div class="tw-multiselect relative">
   <!-- Label -->
-  @if (label) {
+  @if (label()) {
     <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-      {{ label }}
+      {{ label() }}
     </label>
   }
 
@@ -11,17 +11,19 @@
     #triggerButton
     type="button"
     [class]="triggerClasses()"
-    [disabled]="disabled"
+    [disabled]="_disabled()"
     (click)="toggleDropdown()"
     [attr.aria-expanded]="isOpen()"
-    [attr.aria-haspopup]="true"
+    [attr.aria-haspopup]="'listbox'"
+    [attr.aria-controls]="isOpen() ? listboxId : null"
+    [attr.aria-activedescendant]="activeOptionId()"
   >
     <span class="flex-1 text-left truncate">
       {{ displayText() }}
     </span>
 
     <div class="flex items-center gap-2">
-      @if (selectedValues().size > 0 && !disabled) {
+      @if (selectedValues().size > 0 && !_disabled()) {
         <button
           type="button"
           class="text-slate-400 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300"
@@ -53,9 +55,12 @@
 
   <!-- Dropdown -->
   @if (isOpen()) {
-    @if (appendTo === 'body') {
+    @if (appendTo() === 'body') {
       <div
         [class]="dropdownClasses()"
+        [id]="listboxId"
+        role="listbox"
+        aria-multiselectable="true"
         [style.top.px]="dropdownPosition()?.top"
         [style.left.px]="dropdownPosition()?.left"
         [style.width.px]="dropdownPosition()?.width"
@@ -64,7 +69,7 @@
         <ng-container *ngTemplateOutlet="dropdownContent"></ng-container>
       </div>
     } @else {
-      <div [class]="dropdownClasses()">
+      <div [class]="dropdownClasses()" [id]="listboxId" role="listbox" aria-multiselectable="true">
         <ng-container *ngTemplateOutlet="dropdownContent"></ng-container>
       </div>
     }
@@ -74,9 +79,10 @@
 <!-- Dropdown Content Template -->
 <ng-template #dropdownContent>
   <!-- Filter Input -->
-  @if (filter) {
+  @if (filter()) {
     <div class="px-2 py-2 border-b border-slate-200 dark:border-slate-700">
       <input
+        #filterInput
         type="text"
         class="w-full px-3 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
         placeholder="Search..."
@@ -88,12 +94,14 @@
   }
 
   <!-- Select All Option -->
-  @if (showSelectAll && allOptions().length > 0) {
+  @if (showSelectAll() && !selectAllLimited() && allOptions().length > 0) {
     <div
       class="px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-200 dark:border-slate-700 flex items-center gap-2"
+      role="option"
+      [attr.aria-selected]="isAllSelected()"
       (click)="toggleSelectAll(); $event.stopPropagation()"
     >
-      @if (showCheckbox) {
+      @if (showCheckbox()) {
         <div
           class="flex items-center justify-center w-4 h-4 border-2 rounded transition-colors"
           [class.border-blue-600]="isAllSelected() || isSomeSelected()"
@@ -121,7 +129,7 @@
   }
 
   <!-- Grouped Options -->
-  @if (groups.length > 0) {
+  @if (groups().length > 0) {
     @for (group of filteredGroups(); track group.label) {
       <div>
         <!-- Group Header -->
@@ -135,13 +143,19 @@
         @for (option of group.options; track option.value) {
           <div
             class="px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer flex items-center gap-2 transition-colors"
+            role="option"
+            [attr.id]="optionId(option)"
+            [attr.aria-selected]="isSelected(option)"
+            [attr.aria-disabled]="option.disabled || null"
             [class.opacity-50]="option.disabled"
             [class.cursor-not-allowed]="option.disabled"
             [class.bg-blue-50]="isSelected(option) && !option.disabled"
             [class.dark:bg-blue-900/30]="isSelected(option) && !option.disabled"
+            [class.bg-slate-100]="isActive(option)"
+            [class.dark:bg-slate-700]="isActive(option)"
             (click)="toggleOption(option); $event.stopPropagation()"
           >
-            @if (showCheckbox) {
+            @if (showCheckbox()) {
               <div
                 class="flex items-center justify-center w-4 h-4 border-2 rounded transition-colors"
                 [class.border-blue-600]="isSelected(option)"
@@ -189,13 +203,19 @@
     @for (option of filteredOptions(); track option.value) {
       <div
         class="px-3 py-2 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer flex items-center gap-2 transition-colors"
+        role="option"
+        [attr.id]="optionId(option)"
+        [attr.aria-selected]="isSelected(option)"
+        [attr.aria-disabled]="option.disabled || null"
         [class.opacity-50]="option.disabled"
         [class.cursor-not-allowed]="option.disabled"
         [class.bg-blue-50]="isSelected(option) && !option.disabled"
         [class.dark:bg-blue-900/30]="isSelected(option) && !option.disabled"
+        [class.bg-slate-100]="isActive(option)"
+        [class.dark:bg-slate-700]="isActive(option)"
         (click)="toggleOption(option); $event.stopPropagation()"
       >
-        @if (showCheckbox) {
+        @if (showCheckbox()) {
           <div
             class="flex items-center justify-center w-4 h-4 border-2 rounded transition-colors"
             [class.border-blue-600]="isSelected(option)"
@@ -234,7 +254,7 @@
   }
 
   <!-- No Results -->
-  @if (groups.length > 0 ? filteredGroups().length === 0 : filteredOptions().length === 0) {
+  @if (groups().length > 0 ? filteredGroups().length === 0 : filteredOptions().length === 0) {
     <div class="px-3 py-2 text-sm text-slate-500 dark:text-slate-400 text-center">
       No options found
     </div>

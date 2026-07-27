@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwAspectRatioComponent } from '@pegasusheavy/ngx-tailwindcss';
+import { TwAspectRatioComponent } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -33,6 +33,21 @@ export class AspectRatioDemoComponent {
   customCode = `<!-- Custom 4:3 ratio -->
 <tw-aspect-ratio ratio="custom" [customRatio]="4/3">
   <iframe src="..."></iframe>
+</tw-aspect-ratio>`;
+
+  imagesCode = `<!-- Square thumbnail -->
+<tw-aspect-ratio ratio="square" class="rounded-lg overflow-hidden shadow-md">
+  <img src="photo.jpg" alt="Mountain landscape" class="w-full h-full object-cover" />
+</tw-aspect-ratio>
+
+<!-- Video preview -->
+<tw-aspect-ratio ratio="video" class="rounded-lg overflow-hidden shadow-md">
+  <img src="photo.jpg" alt="Hiking trail" class="w-full h-full object-cover" />
+</tw-aspect-ratio>
+
+<!-- Portrait photo -->
+<tw-aspect-ratio ratio="portrait" class="rounded-lg overflow-hidden shadow-md">
+  <img src="photo.jpg" alt="Forest path" class="w-full h-full object-cover" />
 </tw-aspect-ratio>`;
 }
 

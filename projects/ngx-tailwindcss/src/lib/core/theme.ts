@@ -7,7 +7,7 @@
  * @example
  * ```typescript
  * // In app.config.ts
- * import { provideTwTheme, createTheme } from '@pegasus-heavy/ngx-tailwindcss';
+ * import { provideTwTheme, createTheme } from '@quinnjr/ngx-tailwindcss';
  *
  * const customTheme = createTheme({
  *   colors: {
@@ -283,7 +283,7 @@ export const THEME_CSS_CLASSES = {
   bgBackground: 'bg-[var(--tw-color-background)]',
 
   // Text
-  textPrimary: 'text-[var(--tw-color-text)]',
+  textPrimary: 'text-[var(--tw-color-text-primary)]',
   textSecondary: 'text-[var(--tw-color-text-secondary)]',
   textMuted: 'text-[var(--tw-color-text-muted)]',
   textInverse: 'text-[var(--tw-color-text-inverse)]',

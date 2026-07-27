@@ -3,7 +3,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   ElementRef,
   HostListener,
   inject,
@@ -15,8 +14,6 @@ import {
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { debounceTime, fromEvent, Subject } from 'rxjs';
 
 import { ClefType, KeySignature, StaffTimeSignature, TwStaffComponent } from './staff.component';
 import {
@@ -108,7 +105,6 @@ const NOTE_SHORTCUTS: Record<string, NoteName> = {
   },
 })
 export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
-  private readonly destroyRef = inject(DestroyRef);
   private readonly elementRef = inject(ElementRef);
   private readonly staffContainer = viewChild<ElementRef<HTMLDivElement>>('staffContainer');
 
@@ -169,6 +165,12 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
   private midiAccess: MIDIAccess | null = null;
   protected readonly midiConnected = signal(false);
   protected readonly midiDeviceName = signal<string | null>(null);
+  private readonly midiStateChangeHandler = (): void => {
+    this.updateMidiDevices();
+  };
+
+  // Drag state
+  private noteDragController: AbortController | null = null;
 
   // Note ID counter
   private noteIdCounter = 0;
@@ -250,6 +252,8 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.disconnectMidi();
+    this.noteDragController?.abort();
+    this.noteDragController = null;
   }
 
   // ==================== CLICK TO PLACE ====================
@@ -286,7 +290,10 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     this.hoverPosition.set(null);
   }
 
-  private getPositionFromEvent(event: MouseEvent): {
+  private getPositionFromEvent(
+    event: MouseEvent,
+    cachedRect?: DOMRect | null
+  ): {
     x: number;
     y: number;
     note: NoteName;
@@ -297,7 +304,7 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     const container = this.staffContainer()?.nativeElement;
     if (!container) return null;
 
-    const rect = container.getBoundingClientRect();
+    const rect = cachedRect ?? container.getBoundingClientRect();
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
@@ -408,8 +415,11 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
     this.isDragging.set(true);
     this.draggedNote.set(note);
 
+    // Capture the container rect once for the whole gesture
+    const dragRect = this.staffContainer()?.nativeElement.getBoundingClientRect() ?? null;
+
     const onMouseMove = (e: MouseEvent) => {
-      const position = this.getPositionFromEvent(e);
+      const position = this.getPositionFromEvent(e, dragRect);
       if (position && this.draggedNote()) {
         this.updateDraggedNotePosition(position);
       }
@@ -417,12 +427,15 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
 
     const onMouseUp = () => {
       this.finalizeDrag();
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      this.noteDragController?.abort();
+      this.noteDragController = null;
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    this.noteDragController?.abort();
+    this.noteDragController = new AbortController();
+    const { signal: abortSignal } = this.noteDragController;
+    document.addEventListener('mousemove', onMouseMove, { signal: abortSignal });
+    document.addEventListener('mouseup', onMouseUp, { signal: abortSignal });
   }
 
   private updateDraggedNotePosition(position: {
@@ -594,7 +607,6 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
       if (voice <= this.maxVoices()) {
         this.currentVoice.set(voice);
       }
-      
     }
   }
 
@@ -630,16 +642,16 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
       this.midiAccess = await navigator.requestMIDIAccess();
       this.midiConnected.set(true);
 
-      const {inputs} = this.midiAccess;
+      const { inputs } = this.midiAccess;
       inputs.forEach(midiInput => {
         this.midiDeviceName.set(midiInput.name ?? 'Unknown MIDI Device');
-        midiInput.onmidimessage = event => { this.handleMidiMessage(event); };
+        midiInput.onmidimessage = event => {
+          this.handleMidiMessage(event);
+        };
       });
 
-      // Listen for device changes
-      this.midiAccess.addEventListener('statechange', () => {
-        this.updateMidiDevices();
-      });
+      // Listen for device changes (removed again in disconnectMidi)
+      this.midiAccess.addEventListener('statechange', this.midiStateChangeHandler);
     } catch (error) {
       console.warn('MIDI not available:', error);
       this.midiConnected.set(false);
@@ -649,13 +661,15 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
   private updateMidiDevices(): void {
     if (!this.midiAccess) return;
 
-    const {inputs} = this.midiAccess;
+    const { inputs } = this.midiAccess;
     let hasInputs = false;
 
     inputs.forEach(midiInput => {
       hasInputs = true;
       this.midiDeviceName.set(midiInput.name ?? 'Unknown MIDI Device');
-      midiInput.onmidimessage = event => { this.handleMidiMessage(event); };
+      midiInput.onmidimessage = event => {
+        this.handleMidiMessage(event);
+      };
     });
 
     if (hasInputs) {
@@ -667,7 +681,7 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
   }
 
   private handleMidiMessage(event: MIDIMessageEvent): void {
-    const {data} = event;
+    const { data } = event;
     if (!data) return;
 
     const command = data[0] >> 4;
@@ -724,6 +738,7 @@ export class TwNoteInputComponent implements AfterViewInit, OnDestroy {
 
   private disconnectMidi(): void {
     if (this.midiAccess) {
+      this.midiAccess.removeEventListener('statechange', this.midiStateChangeHandler);
       this.midiAccess.inputs.forEach(midiInput => {
         midiInput.onmidimessage = null;
       });

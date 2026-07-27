@@ -1,5 +1,4 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { dynamicImport } from '../native/dynamic-import.util';
 
 // ============================================================================
 // TYPES
@@ -9,6 +8,18 @@ import { dynamicImport } from '../native/dynamic-import.util';
  * Platform type detection
  */
 export type PlatformType = 'browser' | 'tauri' | 'electron';
+
+/**
+ * Error thrown when an operation has no meaningful implementation on the
+ * current platform (typically the browser, which cannot access the file
+ * system or produce real file paths)
+ */
+export class UnsupportedOnPlatformError extends Error {
+  constructor(operation: string, platform: PlatformType, hint?: string) {
+    super(`${operation} is not supported on platform "${platform}".${hint ? ` ${hint}` : ''}`);
+    this.name = 'UnsupportedOnPlatformError';
+  }
+}
 
 /**
  * File filter for dialogs
@@ -221,18 +232,18 @@ export class NativePlatformService {
   readonly isElectron = computed(() => this._platform() === 'electron');
 
   constructor() {
-    void this.detectPlatform();
+    this.detectPlatform();
   }
 
   // =========================================================================
   // PLATFORM DETECTION
   // =========================================================================
 
-  private async detectPlatform(): Promise<void> {
+  private detectPlatform(): void {
     // Check for Tauri
     if (typeof window !== 'undefined' && '__TAURI__' in window) {
       this._platform.set('tauri');
-      await this.initTauri();
+      this.initTauri();
       this._ready.set(true);
       return;
     }
@@ -252,9 +263,10 @@ export class NativePlatformService {
     this._ready.set(true);
   }
 
-  private initTauri(): Promise<void> {
+  private initTauri(): void {
     try {
-      // Dynamic import of Tauri APIs
+      // Tauri (with `withGlobalTauri` enabled) pre-injects its API onto the
+      // window object; read those globals synchronously — no import involved
       const tauri = (window as unknown as { __TAURI__: Record<string, unknown> }).__TAURI__;
 
       if (tauri) {
@@ -268,7 +280,6 @@ export class NativePlatformService {
     } catch (error) {
       console.warn('Failed to initialize Tauri APIs:', error);
     }
-    return Promise.resolve();
   }
 
   // =========================================================================
@@ -369,14 +380,23 @@ export class NativePlatformService {
         }
       });
 
-      input.addEventListener('cancel', () => { resolve(null); });
+      input.addEventListener('cancel', () => {
+        resolve(null);
+      });
       input.click();
     });
   }
 
   /**
    * Open a save file dialog
-   * @returns Selected path or null if cancelled
+   *
+   * Browser semantics: the browser has no save dialog that can produce a real
+   * file system path or signal cancellation, so this throws
+   * {@link UnsupportedOnPlatformError} instead of fabricating a path — use
+   * `writeTextFile()` / `downloadBlob()` to trigger a download instead.
+   *
+   * @returns Selected path or null if cancelled (Tauri/Electron)
+   * @throws UnsupportedOnPlatformError in the browser
    */
   async saveFile(options: SaveFileOptions = {}): Promise<string | null> {
     const platform = this._platform();
@@ -403,8 +423,13 @@ export class NativePlatformService {
       return result.canceled ? null : (result.filePath ?? null);
     }
 
-    // Browser fallback - just return the suggested filename
-    return options.defaultPath || 'untitled';
+    // Browser: no dialog can produce a real path or signal cancellation, so
+    // fail loudly instead of fabricating a result
+    throw new UnsupportedOnPlatformError(
+      'saveFile',
+      'browser',
+      'Use writeTextFile() or downloadBlob() to trigger a download instead.'
+    );
   }
 
   // =========================================================================
@@ -495,6 +520,12 @@ export class NativePlatformService {
 
   /**
    * Check if a file exists
+   *
+   * Browser semantics: the browser cannot query the file system, so this
+   * throws {@link UnsupportedOnPlatformError} instead of fabricating `false`
+   * for every path — work with `File` objects from `openFile()` instead.
+   *
+   * @throws UnsupportedOnPlatformError in the browser
    */
   async fileExists(path: string): Promise<boolean> {
     const platform = this._platform();
@@ -508,7 +539,13 @@ export class NativePlatformService {
       return exists(path);
     }
 
-    return false;
+    // Browser: the file system cannot be queried, so fail loudly instead of
+    // reporting "does not exist" for every path
+    throw new UnsupportedOnPlatformError(
+      'fileExists',
+      'browser',
+      'Work with File objects from openFile() / the File API instead.'
+    );
   }
 
   /**
@@ -914,7 +951,9 @@ export class NativePlatformService {
   async readFileObject(file: File): Promise<string> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.addEventListener('load', () => { resolve(reader.result as string); });
+      reader.addEventListener('load', () => {
+        resolve(reader.result as string);
+      });
       reader.addEventListener('error', () => {
         reject(reader.error ?? new Error('Failed to read file'));
       });
@@ -928,7 +967,9 @@ export class NativePlatformService {
   async readFileObjectBinary(file: File): Promise<ArrayBuffer> {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
-      reader.addEventListener('load', () => { resolve(reader.result as ArrayBuffer); });
+      reader.addEventListener('load', () => {
+        resolve(reader.result as ArrayBuffer);
+      });
       reader.addEventListener('error', () => {
         reject(reader.error ?? new Error('Failed to read file'));
       });

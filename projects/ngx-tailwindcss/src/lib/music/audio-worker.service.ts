@@ -47,8 +47,11 @@ interface PendingRequest {
 /**
  * Service for offloading audio processing to a Web Worker
  *
- * This service manages a Web Worker that handles computationally intensive
- * audio processing tasks, keeping the main thread free for smooth UI updates.
+ * An opt-in service that manages a Web Worker for computationally intensive
+ * audio processing. The music visualization components run their DSP on the
+ * main thread by default; route heavy per-frame work through this service
+ * (e.g. `processFFT`, `downsampleWaveform` for large waveforms, `detectBeat`)
+ * when the main thread needs to stay free for smooth UI updates.
  *
  * @example
  * ```typescript
@@ -424,5 +427,21 @@ export class AudioWorkerService implements OnDestroy {
 
 // Re-export types for convenience
 
-
-export {type FFTProcessOptions, type FFTProcessResult, type TimeDomainOptions, type TimeDomainResult, type LevelOptions, type LevelResult, type BeatDetectionOptions, type BeatDetectionResult, type WaveformDownsampleOptions, type WaveformDownsampleResult, type SmoothDataOptions, type SmoothDataResult, type FindPeaksOptions, type FindPeaksResult, type FrequencyConversionOptions, type FrequencyConversionResult} from './audio-worker';
+export {
+  type FFTProcessOptions,
+  type FFTProcessResult,
+  type TimeDomainOptions,
+  type TimeDomainResult,
+  type LevelOptions,
+  type LevelResult,
+  type BeatDetectionOptions,
+  type BeatDetectionResult,
+  type WaveformDownsampleOptions,
+  type WaveformDownsampleResult,
+  type SmoothDataOptions,
+  type SmoothDataResult,
+  type FindPeaksOptions,
+  type FindPeaksResult,
+  type FrequencyConversionOptions,
+  type FrequencyConversionResult,
+} from './audio-worker';

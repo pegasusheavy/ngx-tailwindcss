@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwTreeComponent, TreeNode } from '@pegasusheavy/ngx-tailwindcss';
+import { TwTreeComponent, TreeNode } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -92,6 +92,29 @@ treeData: TreeNode[] = [
 ];`;
 
   selectableCode = `<tw-tree [nodes]="treeData" selectionMode="single"></tw-tree>`;
+
+  navigationCode = `<tw-tree [nodes]="simpleTree"></tw-tree>
+
+// Component
+simpleTree: TreeNode[] = [
+  {
+    label: 'Getting Started',
+    children: [
+      { label: 'Installation' },
+      { label: 'Configuration' },
+      { label: 'First Steps' },
+    ],
+  },
+  {
+    label: 'Components',
+    children: [
+      { label: 'Button' },
+      { label: 'Input' },
+      { label: 'Modal' },
+    ],
+  },
+  // ...
+];`;
 
   checkboxCode = `<tw-tree [nodes]="treeData" selectionMode="checkbox"></tw-tree>`;
 }

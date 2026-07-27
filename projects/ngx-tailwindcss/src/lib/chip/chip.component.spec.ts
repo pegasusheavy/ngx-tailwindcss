@@ -340,4 +340,22 @@ describe('TwChipsComponent', () => {
       expect(chipsEl.querySelector('div')?.className).toContain('opacity-50');
     });
   });
+
+  describe('accessibility', () => {
+    it('should use list semantics for the container and chips', () => {
+      const container = chipsEl.querySelector('div');
+      expect(container?.getAttribute('role')).toBe('list');
+
+      const chips = chipsEl.querySelectorAll('tw-chip');
+      expect(chips.length).toBe(2);
+      for (const chip of chips) {
+        expect(chip.getAttribute('role')).toBe('listitem');
+      }
+    });
+
+    it('should give the add input a default accessible name', () => {
+      const input = chipsEl.querySelector('input');
+      expect(input?.getAttribute('aria-label')).toBe('Add item');
+    });
+  });
 });

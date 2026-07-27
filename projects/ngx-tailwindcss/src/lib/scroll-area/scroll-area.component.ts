@@ -1,9 +1,31 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  ElementRef,
+  inject,
+  input,
+  ViewChild,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
 export type ScrollAreaDirection = 'vertical' | 'horizontal' | 'both';
 export type ScrollAreaScrollbar = 'auto' | 'always' | 'hover' | 'hidden';
+
+const OVERFLOW_CLASSES: Record<ScrollAreaDirection, string> = {
+  vertical: 'overflow-y-auto overflow-x-hidden',
+  horizontal: 'overflow-x-auto overflow-y-hidden',
+  both: 'overflow-auto',
+};
+
+const SCROLLBAR_CLASSES: Record<ScrollAreaScrollbar, string> = {
+  auto: '',
+  always: 'scroll-area-always',
+  hover: 'scroll-area-hover',
+  hidden: 'scroll-area-hidden',
+};
 
 /**
  * ScrollArea component for creating scrollable containers with styled scrollbars.
@@ -31,18 +53,8 @@ export type ScrollAreaScrollbar = 'auto' | 'always' | 'hover' | 'hidden';
   selector: 'tw-scroll-area',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div
-      #scrollContainer
-      [class]="scrollAreaClasses()"
-      [style.height]="height"
-      [style.maxHeight]="maxHeight"
-      [style.width]="width"
-      [style.maxWidth]="maxWidth"
-    >
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './scroll-area.component.html',
   styles: [
     `
       :host {
@@ -116,64 +128,51 @@ export type ScrollAreaScrollbar = 'auto' | 'always' | 'hover' | 'hidden';
   ],
 })
 export class TwScrollAreaComponent {
+  private readonly twClass = inject(TwClassService);
+
   @ViewChild('scrollContainer') scrollContainerRef!: ElementRef<HTMLElement>;
 
   /** Scroll direction */
-  @Input() direction: ScrollAreaDirection = 'vertical';
+  readonly direction = input<ScrollAreaDirection>('vertical');
 
   /** Scrollbar visibility */
-  @Input() scrollbar: ScrollAreaScrollbar = 'auto';
+  readonly scrollbar = input<ScrollAreaScrollbar>('auto');
 
   /** Fixed height */
-  @Input() height?: string;
+  readonly height = input<string | undefined>(undefined);
 
   /** Maximum height */
-  @Input() maxHeight?: string;
+  readonly maxHeight = input<string | undefined>(undefined);
 
   /** Fixed width */
-  @Input() width?: string;
+  readonly width = input<string | undefined>(undefined);
 
   /** Maximum width */
-  @Input() maxWidth?: string;
+  readonly maxWidth = input<string | undefined>(undefined);
 
   /** Whether to use thin scrollbar */
-  @Input() thin = false;
+  readonly thin = input(false, { transform: booleanAttribute });
 
   /** Whether to use dark mode scrollbar */
-  @Input() dark = false;
+  readonly dark = input(false, { transform: booleanAttribute });
 
   /** Whether to enable smooth scrolling */
-  @Input() smooth = true;
+  readonly smooth = input(true, { transform: booleanAttribute });
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
-
-  protected scrollAreaClasses(): string {
-    const overflowClass = {
-      vertical: 'overflow-y-auto overflow-x-hidden',
-      horizontal: 'overflow-x-auto overflow-y-hidden',
-      both: 'overflow-auto',
-    }[this.direction];
-
-    const scrollbarClass = {
-      auto: '',
-      always: 'scroll-area-always',
-      hover: 'scroll-area-hover',
-      hidden: 'scroll-area-hidden',
-    }[this.scrollbar];
-
+  protected scrollAreaClasses = computed(() => {
     return this.twClass.merge(
       'scroll-area-styled',
-      overflowClass,
-      scrollbarClass,
-      this.thin ? 'scroll-area-thin' : '',
-      this.dark ? 'scroll-area-dark' : '',
-      this.smooth ? 'scroll-smooth' : '',
-      this.class
+      OVERFLOW_CLASSES[this.direction()],
+      SCROLLBAR_CLASSES[this.scrollbar()],
+      this.thin() ? 'scroll-area-thin' : '',
+      this.dark() ? 'scroll-area-dark' : '',
+      this.smooth() ? 'scroll-smooth' : '',
+      this.class()
     );
-  }
+  });
 
   /** Scroll to a specific position */
   scrollTo(options: ScrollToOptions): void {

@@ -1,4 +1,4 @@
-import { inject, Injectable, NgZone, signal } from '@angular/core';
+import { inject, Injectable, NgZone, OnDestroy, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { IpcResponse } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
@@ -25,12 +25,13 @@ interface TauriCoreModule {
  * Handles communication between renderer and main process in Tauri/Electron
  */
 @Injectable({ providedIn: 'root' })
-export class NativeIpcService {
+export class NativeIpcService implements OnDestroy {
   private readonly platformService = inject(NativeAppPlatformService);
   private readonly ngZone = inject(NgZone);
 
-  private readonly listeners = new Map<string, Set<IpcCallback<unknown>>>();
-  private unlistenFns: Array<() => void> = [];
+  // Per-channel map of callback -> platform unlisten fn, so off() can tear
+  // down the underlying Tauri/Electron/window listener, not just bookkeeping.
+  private readonly listeners = new Map<string, Map<IpcCallback<unknown>, () => void>>();
 
   // Connection state
   private readonly _isConnected = signal(false);
@@ -103,32 +104,28 @@ export class NativeIpcService {
   }
 
   /**
-   * Listen for messages from the main process
+   * Listen for messages from the main process.
+   * Returns an unlisten function that removes both the platform listener and
+   * the service's bookkeeping (equivalent to `off(channel, callback)`).
    */
   public async on<T>(channel: string, callback: IpcCallback<T>): Promise<() => void> {
-    // Store listener
-    if (!this.listeners.has(channel)) {
-      this.listeners.set(channel, new Set());
-    }
-    this.listeners.get(channel)!.add(callback as IpcCallback<unknown>);
+    let unlisten: (() => void) | null = null;
 
     // Platform-specific setup
     if (this.platformService.isTauri()) {
       try {
         const tauriEvent = (await dynamicImport('@tauri-apps/api/event')) as TauriEventModule;
-        const unlisten = await tauriEvent.listen<T>(channel, (event: TauriEvent<T>) => {
+        unlisten = await tauriEvent.listen<T>(channel, (event: TauriEvent<T>) => {
           this.ngZone.run(() => {
             callback(event.payload);
           });
         });
-        this.unlistenFns.push(unlisten);
-        return unlisten;
       } catch (error) {
         console.warn('Tauri listen failed:', error);
       }
     }
 
-    if (this.platformService.isElectron()) {
+    if (!unlisten && this.platformService.isElectron()) {
       try {
         const electron = await dynamicImport('electron');
         const handler = (_event: unknown, data: T) => {
@@ -137,24 +134,34 @@ export class NativeIpcService {
           });
         };
         electron.ipcRenderer.on(channel, handler);
-        const unlisten = () => electron.ipcRenderer.removeListener(channel, handler);
-        this.unlistenFns.push(unlisten);
-        return unlisten;
+        unlisten = () => electron.ipcRenderer.removeListener(channel, handler);
       } catch (error) {
         console.warn('Electron on failed:', error);
       }
     }
 
-    // Browser fallback - use custom events
-    const handler = (event: Event) => {
-      this.ngZone.run(() => {
-        callback((event as CustomEvent<T>).detail);
-      });
+    if (!unlisten) {
+      // Browser fallback - use custom events
+      const handler = (event: Event) => {
+        this.ngZone.run(() => {
+          callback((event as CustomEvent<T>).detail);
+        });
+      };
+      window.addEventListener(channel, handler);
+      unlisten = () => {
+        window.removeEventListener(channel, handler);
+      };
+    }
+
+    // Store listener alongside its platform teardown fn
+    if (!this.listeners.has(channel)) {
+      this.listeners.set(channel, new Map());
+    }
+    this.listeners.get(channel)!.set(callback as IpcCallback<unknown>, unlisten);
+
+    return () => {
+      this.off(channel, callback as IpcCallback<unknown>);
     };
-    window.addEventListener(channel, handler);
-    const unlisten = () => { window.removeEventListener(channel, handler); };
-    this.unlistenFns.push(unlisten);
-    return unlisten;
   }
 
   /**
@@ -199,16 +206,28 @@ export class NativeIpcService {
   }
 
   /**
-   * Remove listener for a channel
+   * Remove listener(s) for a channel, tearing down the underlying platform
+   * listener so callbacks stop firing. Omit `callback` to remove all
+   * listeners registered for the channel.
    */
   public off(channel: string, callback?: IpcCallback<unknown>): void {
-    const listeners = this.listeners.get(channel);
-    if (!listeners) return;
+    const channelListeners = this.listeners.get(channel);
+    if (!channelListeners) return;
 
     if (callback) {
-      listeners.delete(callback);
+      const unlisten = channelListeners.get(callback);
+      if (unlisten) {
+        unlisten();
+        channelListeners.delete(callback);
+      }
+      if (channelListeners.size === 0) {
+        this.listeners.delete(channel);
+      }
     } else {
-      listeners.clear();
+      channelListeners.forEach(unlisten => {
+        unlisten();
+      });
+      this.listeners.delete(channel);
     }
   }
 
@@ -225,8 +244,15 @@ export class NativeIpcService {
    * Clean up all listeners
    */
   public destroy(): void {
-    this.unlistenFns.forEach(fn => { fn(); });
-    this.unlistenFns = [];
+    this.listeners.forEach(channelListeners => {
+      channelListeners.forEach(unlisten => {
+        unlisten();
+      });
+    });
     this.listeners.clear();
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy();
   }
 }

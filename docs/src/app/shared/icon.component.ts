@@ -119,22 +119,7 @@ const ICON_PATHS: Record<IconName, string> = {
   selector: 'app-icon',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <svg
-      [attr.class]="'inline-block ' + sizeClass()"
-      [attr.fill]="fill()"
-      [attr.stroke]="stroke()"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        [attr.stroke-width]="strokeWidth()"
-        [attr.d]="iconPath()"
-      />
-    </svg>
-  `,
+  templateUrl: './icon.component.html',
 })
 export class IconComponent {
   readonly name = input.required<IconName>();

@@ -4,14 +4,7 @@ import { Injectable, signal } from '@angular/core';
  * Haptic feedback types supported by devices
  */
 export type HapticFeedbackType =
-  | 'light'
-  | 'medium'
-  | 'heavy'
-  | 'selection'
-  | 'success'
-  | 'warning'
-  | 'error'
-  | 'impact';
+  'light' | 'medium' | 'heavy' | 'selection' | 'success' | 'warning' | 'error' | 'impact';
 
 /**
  * Touch guard configuration for preventing accidental interactions
@@ -172,8 +165,7 @@ export class MobileSupportService {
   private triggerIOSHaptic(type: HapticFeedbackType): void {
     // Check for iOS haptic engine via webkit
     const webkit = (window as unknown as Record<string, unknown>)['webkit'] as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
     if (webkit?.['messageHandlers']) {
       const handlers = webkit['messageHandlers'] as Record<string, unknown>;
       const haptic = handlers['haptic'] as { postMessage?: (msg: unknown) => void } | undefined;
@@ -211,6 +203,14 @@ export class MobileSupportService {
 
   /**
    * Check if an action should be allowed based on touch guard config
+   *
+   * This is a pure check: it does not record the action. Call
+   * {@link consumeAction} once the allowed action has actually been performed
+   * so the cooldown window starts; checking alone never blocks a later check.
+   *
+   * Only `cooldownMs` and `minDuration` are evaluated here. `minDragDistance`,
+   * `axisLock` and `requireConfirm` need per-gesture context and are handled
+   * by `TwTouchGuardDirective`, so they are intentionally ignored.
    */
   shouldAllowAction(config: TouchGuardConfig = {}): boolean {
     if (!this._touchGuardEnabled()) return true;
@@ -218,13 +218,25 @@ export class MobileSupportService {
     const now = Date.now();
     const cooldown = config.cooldownMs ?? 100;
 
-    // Check cooldown
+    // Check cooldown since the last consumed action
     if (now - this.lastActionTime < cooldown) {
       return false;
     }
 
-    this.lastActionTime = now;
+    // Check minimum touch duration (relative to startTouchTracking)
+    if (config.minDuration && !this.validateTouchDuration(config.minDuration)) {
+      return false;
+    }
+
     return true;
+  }
+
+  /**
+   * Record that a guarded action was performed, starting the cooldown window
+   * evaluated by {@link shouldAllowAction}
+   */
+  consumeAction(): void {
+    this.lastActionTime = Date.now();
   }
 
   /**
@@ -254,7 +266,8 @@ export class MobileSupportService {
    * Validate drag distance
    */
   validateDragDistance(event: TouchEvent | MouseEvent, minDistance: number = 10): boolean {
-    let currentX: number; let currentY: number;
+    let currentX: number;
+    let currentY: number;
 
     if ('touches' in event) {
       currentX = event.touches[0].clientX;
@@ -278,7 +291,8 @@ export class MobileSupportService {
     event: TouchEvent | MouseEvent,
     axisLock: 'x' | 'y' | 'none' = 'none'
   ): { dx: number; dy: number } {
-    let currentX: number; let currentY: number;
+    let currentX: number;
+    let currentY: number;
 
     if ('touches' in event) {
       currentX = event.touches[0].clientX;
@@ -359,7 +373,8 @@ export class MobileSupportService {
     const duration = Date.now() - this.touchStartTime;
     if (duration > maxDuration) return null;
 
-    let endX: number; let endY: number;
+    let endX: number;
+    let endY: number;
     if ('changedTouches' in event) {
       endX = event.changedTouches[0].clientX;
       endY = event.changedTouches[0].clientY;

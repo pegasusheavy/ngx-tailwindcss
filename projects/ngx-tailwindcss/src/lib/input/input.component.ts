@@ -1,28 +1,22 @@
 import {
-  AfterContentInit,
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
   computed,
-  ContentChild,
   Directive,
+  effect,
   ElementRef,
-  EventEmitter,
   forwardRef,
   HostBinding,
   inject,
+  input,
   Input,
-  Output,
+  output,
   signal,
   ViewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  ControlValueAccessor,
-  FormsModule,
-  NG_VALUE_ACCESSOR,
-  ReactiveFormsModule,
-} from '@angular/forms';
+import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TwClassService } from '../core/tw-class.service';
 
 export type InputVariant = 'default' | 'filled' | 'outlined' | 'underlined';
@@ -56,6 +50,8 @@ const INPUT_SIZES: Record<InputSize, string> = {
 
 const INPUT_ERROR_CLASSES = 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/20';
 
+const LABEL_REQUIRED_CLASSES = "after:content-['*'] after:ml-0.5 after:text-rose-500";
+
 /**
  * Label directive for form fields
  */
@@ -73,8 +69,14 @@ export class TwLabelDirective {
   get hostClass(): string {
     return this.twClass.merge(
       'block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5',
+      this.required ? LABEL_REQUIRED_CLASSES : '',
       this.class
     );
+  }
+
+  @HostBinding('attr.aria-required')
+  get ariaRequired(): 'true' | null {
+    return this.required ? 'true' : null;
   }
 }
 
@@ -184,103 +186,109 @@ export class TwInputComponent implements ControlValueAccessor {
   @ViewChild('inputElement') inputElement!: ElementRef<HTMLInputElement>;
 
   /** Input type */
-  @Input() type = 'text';
+  readonly type = input('text');
 
   /** Visual variant */
-  @Input() variant: InputVariant = 'default';
+  readonly variant = input<InputVariant>('default');
 
   /** Size of the input */
-  @Input() size: InputSize = 'md';
+  readonly size = input<InputSize>('md');
 
   /** Label text */
-  @Input() label = '';
+  readonly label = input('');
 
   /** Placeholder text */
-  @Input() placeholder = '';
+  readonly placeholder = input('');
 
   /** Hint/helper text */
-  @Input() hint = '';
+  readonly hint = input('');
 
   /** Error message */
-  @Input() error = '';
+  readonly error = input('');
 
   /** Whether the field is disabled */
-  @Input({ transform: booleanAttribute }) disabled = false;
+  readonly disabled = input(false, { transform: booleanAttribute });
 
   /** Whether the field is readonly */
-  @Input({ transform: booleanAttribute }) readonly = false;
+  readonly readonly = input(false, { transform: booleanAttribute });
 
   /** Whether the field is required */
-  @Input({ transform: booleanAttribute }) required = false;
+  readonly required = input(false, { transform: booleanAttribute });
 
   /** Whether to show a clear button */
-  @Input({ transform: booleanAttribute }) clearable = false;
+  readonly clearable = input(false, { transform: booleanAttribute });
 
   /** Unique ID for the input (auto-generated if not provided) */
-  @Input() inputId = `tw-input-${Math.random().toString(36).slice(2, 9)}`;
+  readonly inputId = input(`tw-input-${Math.random().toString(36).slice(2, 9)}`);
 
   /** Autocomplete attribute */
-  @Input() autocomplete = '';
+  readonly autocomplete = input('');
 
   /** Input mode for virtual keyboards */
-  @Input() inputmode = '';
+  readonly inputmode = input('');
 
   /** Validation pattern */
-  @Input() pattern = '';
+  readonly pattern = input('');
 
   /** Minimum value (for number/date inputs) */
-  @Input() min = '';
+  readonly min = input('');
 
   /** Maximum value (for number/date inputs) */
-  @Input() max = '';
+  readonly max = input('');
 
   /** Minimum length */
-  @Input() minlength: number | null = null;
+  readonly minlength = input<number | null>(null);
 
   /** Maximum length */
-  @Input() maxlength: number | null = null;
+  readonly maxlength = input<number | null>(null);
 
   /** Step value (for number inputs) */
-  @Input() step = '';
+  readonly step = input('');
 
   /** IDs of elements that describe this input */
-  @Input() describedBy = '';
+  readonly describedBy = input('');
 
   /** Additional classes to merge */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /** Focus event */
-  @Output() onFocus = new EventEmitter<FocusEvent>();
+  readonly onFocus = output<FocusEvent>();
 
   /** Clear event */
-  @Output() onClear = new EventEmitter<void>();
+  readonly onClear = output();
 
-  protected value = '';
+  protected readonly value = signal('');
+  protected readonly _disabled = signal(false);
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
 
-  get hasError(): boolean {
-    return !!this.error;
+  constructor() {
+    // Keep the CVA-driven disabled state in sync with the input binding
+    effect(() => {
+      this._disabled.set(this.disabled());
+    });
   }
 
-  protected wrapperClasses = computed(() => {
+  protected readonly hasError = computed(() => !!this.error());
+
+  protected readonly wrapperClasses = computed(() => {
     const hasAffixes = this.elementRef.nativeElement.querySelector(
       '[twInputPrefix], [twInputSuffix]'
     );
 
-    if (hasAffixes || this.clearable) {
+    if (hasAffixes || this.clearable()) {
       return this.twClass.merge(
         'flex items-center gap-2',
-        INPUT_VARIANTS[this.variant],
-        INPUT_SIZES[this.size],
-        this.hasError ? INPUT_ERROR_CLASSES : ''
+        INPUT_VARIANTS[this.variant()],
+        INPUT_SIZES[this.size()],
+        this.hasError() ? INPUT_ERROR_CLASSES : ''
       );
     }
 
     return '';
   });
 
-  protected computedClasses = computed(() => {
+  protected readonly computedClasses = computed(() => {
     const hasWrapper = this.wrapperClasses();
 
     if (hasWrapper) {
@@ -288,22 +296,22 @@ export class TwInputComponent implements ControlValueAccessor {
       return this.twClass.merge(
         'flex-1 min-w-0 bg-transparent border-none focus:ring-0 p-0',
         INPUT_BASE_CLASSES.replaceAll(/px-\d+/g, '').replaceAll(/py-[\d.]+/g, ''),
-        this.classOverride
+        this.classOverride()
       );
     }
 
     return this.twClass.merge(
       INPUT_BASE_CLASSES,
-      INPUT_VARIANTS[this.variant],
-      INPUT_SIZES[this.size],
-      this.hasError ? INPUT_ERROR_CLASSES : '',
-      this.classOverride
+      INPUT_VARIANTS[this.variant()],
+      INPUT_SIZES[this.size()],
+      this.hasError() ? INPUT_ERROR_CLASSES : '',
+      this.classOverride()
     );
   });
 
   // ControlValueAccessor implementation
   writeValue(value: string): void {
-    this.value = value ?? '';
+    this.value.set(value ?? '');
   }
 
   registerOnChange(fn: (value: string) => void): void {
@@ -315,13 +323,13 @@ export class TwInputComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this._disabled.set(isDisabled);
   }
 
   protected onInput(event: Event): void {
     const target = event.target as HTMLInputElement;
-    this.value = target.value;
-    this.onChange(this.value);
+    this.value.set(target.value);
+    this.onChange(this.value());
   }
 
   protected onBlur(): void {
@@ -329,7 +337,7 @@ export class TwInputComponent implements ControlValueAccessor {
   }
 
   clear(): void {
-    this.value = '';
+    this.value.set('');
     this.onChange('');
     this.onClear.emit();
     this.inputElement?.nativeElement?.focus();
@@ -347,7 +355,8 @@ export class TwInputComponent implements ControlValueAccessor {
 }
 
 /**
- * Textarea component with the same API as tw-input
+ * Textarea component with a subset of the tw-input API
+ * (no type/clearable/pattern/min/max/step/prefix/suffix)
  */
 @Component({
   selector: 'tw-textarea',
@@ -371,45 +380,51 @@ export class TwTextareaComponent implements ControlValueAccessor {
 
   @ViewChild('textareaElement') textareaElement!: ElementRef<HTMLTextAreaElement>;
 
-  @Input() variant: InputVariant = 'default';
-  @Input() size: InputSize = 'md';
-  @Input() label = '';
-  @Input() placeholder = '';
-  @Input() hint = '';
-  @Input() error = '';
-  @Input({ transform: booleanAttribute }) disabled = false;
-  @Input({ transform: booleanAttribute }) readonly = false;
-  @Input({ transform: booleanAttribute }) required = false;
-  @Input({ transform: booleanAttribute }) showCount = false;
-  @Input() inputId = `tw-textarea-${Math.random().toString(36).slice(2, 9)}`;
-  @Input() rows = 4;
-  @Input() minlength: number | null = null;
-  @Input() maxlength: number | null = null;
-  @Input() classOverride = '';
-  @Input({ transform: booleanAttribute }) autoResize = false;
+  readonly variant = input<InputVariant>('default');
+  readonly size = input<InputSize>('md');
+  readonly label = input('');
+  readonly placeholder = input('');
+  readonly hint = input('');
+  readonly error = input('');
+  readonly disabled = input(false, { transform: booleanAttribute });
+  readonly readonly = input(false, { transform: booleanAttribute });
+  readonly required = input(false, { transform: booleanAttribute });
+  readonly showCount = input(false, { transform: booleanAttribute });
+  readonly inputId = input(`tw-textarea-${Math.random().toString(36).slice(2, 9)}`);
+  readonly rows = input(4);
+  readonly minlength = input<number | null>(null);
+  readonly maxlength = input<number | null>(null);
+  readonly classOverride = input('');
+  readonly autoResize = input(false, { transform: booleanAttribute });
 
-  protected value = '';
+  protected readonly value = signal('');
+  protected readonly _disabled = signal(false);
   private onChange: (value: string) => void = () => {};
   private onTouched: () => void = () => {};
 
-  get hasError(): boolean {
-    return !!this.error;
+  constructor() {
+    // Keep the CVA-driven disabled state in sync with the input binding
+    effect(() => {
+      this._disabled.set(this.disabled());
+    });
   }
 
-  protected computedClasses = computed(() => {
+  protected readonly hasError = computed(() => !!this.error());
+
+  protected readonly computedClasses = computed(() => {
     return this.twClass.merge(
       INPUT_BASE_CLASSES,
-      INPUT_VARIANTS[this.variant],
-      INPUT_SIZES[this.size],
-      this.hasError ? INPUT_ERROR_CLASSES : '',
-      this.autoResize ? 'resize-none overflow-hidden' : 'resize-y',
-      this.classOverride
+      INPUT_VARIANTS[this.variant()],
+      INPUT_SIZES[this.size()],
+      this.hasError() ? INPUT_ERROR_CLASSES : '',
+      this.autoResize() ? 'resize-none overflow-hidden' : 'resize-y',
+      this.classOverride()
     );
   });
 
   writeValue(value: string): void {
-    this.value = value ?? '';
-    if (this.autoResize) {
+    this.value.set(value ?? '');
+    if (this.autoResize()) {
       setTimeout(() => {
         this.adjustHeight();
       }, 0);
@@ -425,15 +440,15 @@ export class TwTextareaComponent implements ControlValueAccessor {
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this._disabled.set(isDisabled);
   }
 
   protected onInput(event: Event): void {
     const target = event.target as HTMLTextAreaElement;
-    this.value = target.value;
-    this.onChange(this.value);
+    this.value.set(target.value);
+    this.onChange(this.value());
 
-    if (this.autoResize) {
+    if (this.autoResize()) {
       this.adjustHeight();
     }
   }

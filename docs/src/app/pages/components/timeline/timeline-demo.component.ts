@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwTimelineComponent, TimelineEvent } from '@pegasusheavy/ngx-tailwindcss';
+import { TwTimelineComponent, TimelineEvent } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -60,4 +60,13 @@ events: TimelineEvent[] = [
 
   alignCode = `<tw-timeline [events]="events" align="left"></tw-timeline>
 <tw-timeline [events]="events" align="alternate"></tw-timeline>`;
+
+  simpleCode = `<tw-timeline [events]="simpleEvents"></tw-timeline>
+
+// Component
+simpleEvents: TimelineEvent[] = [
+  { title: 'Version 1.0', description: 'Initial release', date: '2024-01-01' },
+  { title: 'Version 1.1', description: 'Bug fixes and improvements', date: '2024-02-01' },
+  { title: 'Version 2.0', description: 'Major update with new features', date: '2024-03-01' },
+];`;
 }

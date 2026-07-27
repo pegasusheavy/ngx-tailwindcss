@@ -2,9 +2,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   inject,
   input,
+  NgZone,
   numberAttribute,
   OnDestroy,
   OnInit,
@@ -13,8 +13,6 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { interval, Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 export type MetronomeVariant = 'default' | 'minimal' | 'pendulum' | 'digital';
 export type MetronomeSize = 'sm' | 'md' | 'lg';
@@ -111,7 +109,7 @@ export const ACCENT_PRESETS: Record<TimeSignature, AccentPattern[]> = {
   },
 })
 export class TwMetronomeComponent implements OnInit, OnDestroy {
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly zone = inject(NgZone);
 
   readonly bpm = input(120, { transform: numberAttribute });
   readonly timeSignature = input<TimeSignature>('4/4');
@@ -141,12 +139,22 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
   protected readonly tapTimes = signal<number[]>([]);
   protected readonly internalAccentPattern = signal<AccentLevel[]>([]);
   protected readonly selectedPresetIndex = signal(0);
+  /** True when the AudioContext could not resume without a user gesture (e.g. autoStart). */
+  protected readonly needsGesture = signal(false);
 
   // Expose Math for template
   protected readonly Math = Math;
 
-  private readonly stop$ = new Subject<void>();
   private audioContext: AudioContext | null = null;
+
+  // Lookahead scheduling state (see https://web.dev/audio-scheduling/)
+  private schedulerTimer: ReturnType<typeof setInterval> | null = null;
+  private nextNoteTime = 0;
+  private subBeatCounter = 0;
+  private beatCounter = 0;
+  private readonly pendingBeatTimeouts = new Set<ReturnType<typeof setTimeout>>();
+  private static readonly SCHEDULER_INTERVAL_MS = 25;
+  private static readonly LOOKAHEAD_SECONDS = 0.1;
 
   protected readonly beatsPerMeasure = computed(() => {
     const sig = this.timeSignature();
@@ -261,7 +269,7 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     this.initializeAccentPattern();
 
     if (this.autoStart()) {
-      this.start();
+      void this.start();
     }
   }
 
@@ -284,63 +292,112 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     void this.audioContext?.close();
   }
 
-  protected start(): void {
+  protected async start(): Promise<void> {
     if (this.isPlaying() || this.disabled()) return;
+
+    // Initialize audio context for click sounds
+    this.audioContext ??= new AudioContext();
+
+    // A context created without a user gesture (e.g. autoStart) starts
+    // suspended — resume it, and surface a needs-gesture state if that fails.
+    if (this.audioContext.state === 'suspended') {
+      try {
+        await this.audioContext.resume();
+      } catch {
+        // handled below via the state check
+      }
+      if ((this.audioContext.state as AudioContextState) !== 'running') {
+        this.needsGesture.set(true);
+        return;
+      }
+    }
+    this.needsGesture.set(false);
 
     this.isPlaying.set(true);
     this.currentBeat.set(0);
+    this.subBeatCounter = 0;
+    this.beatCounter = 0;
     this.playingChange.emit(true);
 
-    // Initialize audio context for click sounds
-    if (!this.audioContext) {
-      this.audioContext = new AudioContext();
+    // Lookahead scheduling: nextNoteTime rides on ctx.currentTime; a ~25ms
+    // timer schedules every click inside the next ~100ms window with
+    // sample-accurate oscillator.start(nextNoteTime). Tempo/time-signature/
+    // subdivision signals are read live on each advance, so changes apply
+    // without restarting.
+    this.nextNoteTime = this.audioContext.currentTime + 0.05;
+    this.zone.runOutsideAngular(() => {
+      this.scheduler();
+      this.schedulerTimer = setInterval(() => {
+        this.scheduler();
+      }, TwMetronomeComponent.SCHEDULER_INTERVAL_MS);
+    });
+  }
+
+  private scheduler(): void {
+    const ctx = this.audioContext;
+    if (!ctx || !this.isPlaying()) return;
+
+    while (this.nextNoteTime < ctx.currentTime + TwMetronomeComponent.LOOKAHEAD_SECONDS) {
+      this.scheduleSubBeat(this.nextNoteTime);
+      // Advance by the *current* interval so live bpm/subdivision changes apply
+      this.nextNoteTime += this.intervalMs() / 1000;
     }
+  }
+
+  private scheduleSubBeat(time: number): void {
+    const ctx = this.audioContext;
+    if (!ctx) return;
+
+    const subs = this.subdivisions();
+    this.subBeatCounter++;
+    const isMainBeat = subs === 1 || this.subBeatCounter % subs === 1;
+    if (!isMainBeat) return;
 
     const beats = this.beatsPerMeasure();
-    const subs = this.subdivisions();
-    let subBeat = 0;
+    const beatNum = (this.beatCounter % beats) + 1;
+    this.beatCounter++;
 
-    interval(this.intervalMs())
-      .pipe(
-        takeUntil(this.stop$),
-        takeUntilDestroyed(this.destroyRef),
-        tap(() => {
-          subBeat++;
-          const isMainBeat = subBeat % subs === 1 || subs === 1;
+    const accentLevel = this.getAccentForBeat(beatNum);
+    const isAccent = accentLevel !== 'none';
 
-          if (isMainBeat) {
-            const beatNum = (this.currentBeat() % beats) + 1;
-            this.currentBeat.set(beatNum);
+    // Sample-accurate click at the scheduled time
+    this.playClick(accentLevel, time);
 
-            const accentLevel = this.getAccentForBeat(beatNum);
-            const isAccent = accentLevel !== 'none';
-
-            // Play click sound
-            this.playClick(accentLevel);
-
-            // Emit beat event
-            this.beat.emit({
-              beat: beatNum,
-              isAccent,
-              accentLevel,
-              timestamp: Date.now(),
-            });
-
-            // Update pendulum angle
-            if (this.variant() === 'pendulum') {
-              this.pendulumAngle.set(beatNum % 2 === 0 ? 30 : -30);
-            }
-          }
-        })
-      )
-      .subscribe();
+    // Defer UI updates/outputs until the click is actually audible
+    const delayMs = Math.max(0, (time - ctx.currentTime) * 1000);
+    const timeout = setTimeout(() => {
+      this.pendingBeatTimeouts.delete(timeout);
+      if (!this.isPlaying()) return;
+      this.zone.run(() => {
+        this.currentBeat.set(beatNum);
+        this.beat.emit({
+          beat: beatNum,
+          isAccent,
+          accentLevel,
+          timestamp: Date.now(),
+        });
+        if (this.variant() === 'pendulum') {
+          this.pendulumAngle.set(beatNum % 2 === 0 ? 30 : -30);
+        }
+      });
+    }, delayMs);
+    this.pendingBeatTimeouts.add(timeout);
   }
 
   protected stop(): void {
     this.isPlaying.set(false);
     this.currentBeat.set(0);
     this.pendulumAngle.set(0);
-    this.stop$.next();
+
+    if (this.schedulerTimer) {
+      clearInterval(this.schedulerTimer);
+      this.schedulerTimer = null;
+    }
+    for (const timeout of this.pendingBeatTimeouts) {
+      clearTimeout(timeout);
+    }
+    this.pendingBeatTimeouts.clear();
+
     this.playingChange.emit(false);
   }
 
@@ -348,7 +405,7 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     if (this.isPlaying()) {
       this.stop();
     } else {
-      this.start();
+      void this.start();
     }
   }
 
@@ -356,14 +413,9 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     const inputElement = event.target as HTMLInputElement;
     const value = parseInt(inputElement.value, 10);
     if (value >= 20 && value <= 300) {
+      // The lookahead scheduler reads the bpm signal live: no restart needed
       this.currentBpm.set(value);
       this.bpmChange.emit(value);
-
-      // Restart if playing
-      if (this.isPlaying()) {
-        this.stop();
-        this.start();
-      }
     }
   }
 
@@ -371,11 +423,6 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     const newBpm = Math.max(20, Math.min(300, this.currentBpm() + amount));
     this.currentBpm.set(newBpm);
     this.bpmChange.emit(newBpm);
-
-    if (this.isPlaying()) {
-      this.stop();
-      this.start();
-    }
   }
 
   protected tapTempo(): void {
@@ -397,11 +444,6 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
       if (bpm >= 20 && bpm <= 300) {
         this.currentBpm.set(bpm);
         this.bpmChange.emit(bpm);
-
-        if (this.isPlaying()) {
-          this.stop();
-          this.start();
-        }
       }
     }
   }
@@ -409,6 +451,8 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
   protected selectTimeSignature(sig: TimeSignature): void {
     this.timeSignatureChange.emit(sig);
     this.currentBeat.set(0);
+    this.beatCounter = 0;
+    this.subBeatCounter = 0;
 
     // Update accent pattern for new time signature
     const presets = ACCENT_PRESETS[sig];
@@ -416,11 +460,6 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
       this.internalAccentPattern.set([...presets[0].pattern]);
       this.selectedPresetIndex.set(0);
       this.accentPatternChange.emit(this.internalAccentPattern());
-    }
-
-    if (this.isPlaying()) {
-      this.stop();
-      this.start();
     }
   }
 
@@ -459,9 +498,10 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     return [...this.effectiveAccentPattern()];
   }
 
-  private playClick(accentLevel: AccentLevel): void {
+  private playClick(accentLevel: AccentLevel, when?: number): void {
     if (!this.audioContext) return;
 
+    const startTime = when ?? this.audioContext.currentTime;
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
 
@@ -486,11 +526,11 @@ export class TwMetronomeComponent implements OnInit, OnDestroy {
     oscillator.frequency.value = frequencies[accentLevel];
     oscillator.type = 'sine';
 
-    gainNode.gain.value = volumes[accentLevel];
-    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.05);
+    gainNode.gain.setValueAtTime(volumes[accentLevel], startTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + 0.05);
 
-    oscillator.start(this.audioContext.currentTime);
-    oscillator.stop(this.audioContext.currentTime + 0.05);
+    oscillator.start(startTime);
+    oscillator.stop(startTime + 0.05);
   }
 
   protected readonly timeSignatures: TimeSignature[] = [

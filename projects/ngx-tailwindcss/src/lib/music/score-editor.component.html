@@ -1,4 +1,8 @@
-<div class="score-editor" [class.print-mode]="variant() === 'print'">
+<div
+  class="score-editor"
+  [class.print-mode]="variant() === 'print'"
+  aria-label="Musical score editor"
+>
   <!-- Toolbar -->
   @if (showToolbar()) {
     <div class="toolbar">

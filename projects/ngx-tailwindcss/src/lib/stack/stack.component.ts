@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -65,11 +65,8 @@ const JUSTIFY_CLASSES: Record<StackJustify, string> = {
   selector: 'tw-stack',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="stackClasses()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './stack.component.html',
   styles: [
     `
       :host {
@@ -79,41 +76,41 @@ const JUSTIFY_CLASSES: Record<StackJustify, string> = {
   ],
 })
 export class TwStackComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Direction of the stack */
-  @Input() direction: StackDirection = 'vertical';
+  readonly direction = input<StackDirection>('vertical');
 
   /** Spacing between items */
-  @Input() spacing: StackSpacing = 'md';
+  readonly spacing = input<StackSpacing>('md');
 
   /** Alignment of items (perpendicular to direction) */
-  @Input() align: StackAlign = 'stretch';
+  readonly align = input<StackAlign>('stretch');
 
   /** Justification of items (along direction) */
-  @Input() justify: StackJustify = 'start';
+  readonly justify = input<StackJustify>('start');
 
   /** Whether items should wrap */
-  @Input() wrap = false;
+  readonly wrap = input(false);
 
   /** Whether to take full width */
-  @Input() fullWidth = false;
+  readonly fullWidth = input(false);
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
-
-  protected stackClasses(): string {
+  protected readonly stackClasses = computed(() => {
     return this.twClass.merge(
       'flex',
-      DIRECTION_CLASSES[this.direction],
-      SPACING_CLASSES[this.spacing],
-      ALIGN_CLASSES[this.align],
-      JUSTIFY_CLASSES[this.justify],
-      this.wrap ? 'flex-wrap' : '',
-      this.fullWidth ? 'w-full' : '',
-      this.class
+      DIRECTION_CLASSES[this.direction()],
+      SPACING_CLASSES[this.spacing()],
+      ALIGN_CLASSES[this.align()],
+      JUSTIFY_CLASSES[this.justify()],
+      this.wrap() ? 'flex-wrap' : '',
+      this.fullWidth() ? 'w-full' : '',
+      this.class()
     );
-  }
+  });
 }
 
 /**
@@ -123,11 +120,8 @@ export class TwStackComponent {
   selector: 'tw-vstack',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="stackClasses()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './v-stack.component.html',
   styles: [
     `
       :host {
@@ -137,22 +131,22 @@ export class TwStackComponent {
   ],
 })
 export class TwVStackComponent {
-  @Input() spacing: StackSpacing = 'md';
-  @Input() align: StackAlign = 'stretch';
-  @Input() justify: StackJustify = 'start';
-  @Input() class = '';
+  private readonly twClass = inject(TwClassService);
 
-  constructor(private readonly twClass: TwClassService) {}
+  readonly spacing = input<StackSpacing>('md');
+  readonly align = input<StackAlign>('stretch');
+  readonly justify = input<StackJustify>('start');
+  readonly class = input('');
 
-  protected stackClasses(): string {
+  protected readonly stackClasses = computed(() => {
     return this.twClass.merge(
       'flex flex-col',
-      SPACING_CLASSES[this.spacing],
-      ALIGN_CLASSES[this.align],
-      JUSTIFY_CLASSES[this.justify],
-      this.class
+      SPACING_CLASSES[this.spacing()],
+      ALIGN_CLASSES[this.align()],
+      JUSTIFY_CLASSES[this.justify()],
+      this.class()
     );
-  }
+  });
 }
 
 /**
@@ -162,11 +156,8 @@ export class TwVStackComponent {
   selector: 'tw-hstack',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="stackClasses()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './h-stack.component.html',
   styles: [
     `
       :host {
@@ -176,22 +167,22 @@ export class TwVStackComponent {
   ],
 })
 export class TwHStackComponent {
-  @Input() spacing: StackSpacing = 'md';
-  @Input() align: StackAlign = 'center';
-  @Input() justify: StackJustify = 'start';
-  @Input() wrap = false;
-  @Input() class = '';
+  private readonly twClass = inject(TwClassService);
 
-  constructor(private readonly twClass: TwClassService) {}
+  readonly spacing = input<StackSpacing>('md');
+  readonly align = input<StackAlign>('center');
+  readonly justify = input<StackJustify>('start');
+  readonly wrap = input(false);
+  readonly class = input('');
 
-  protected stackClasses(): string {
+  protected readonly stackClasses = computed(() => {
     return this.twClass.merge(
       'flex flex-row',
-      SPACING_CLASSES[this.spacing],
-      ALIGN_CLASSES[this.align],
-      JUSTIFY_CLASSES[this.justify],
-      this.wrap ? 'flex-wrap' : '',
-      this.class
+      SPACING_CLASSES[this.spacing()],
+      ALIGN_CLASSES[this.align()],
+      JUSTIFY_CLASSES[this.justify()],
+      this.wrap() ? 'flex-wrap' : '',
+      this.class()
     );
-  }
+  });
 }

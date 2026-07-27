@@ -1,14 +1,40 @@
-import { Component, computed, HostBinding, Input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  HostBinding,
+  Input,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type DividerOrientation = 'horizontal' | 'vertical';
 export type DividerVariant = 'solid' | 'dashed' | 'dotted';
 export type DividerLabelPosition = 'left' | 'center' | 'right';
 
+const DIVIDER_VARIANT_CLASSES: Record<DividerVariant, string> = {
+  solid: 'divider-solid',
+  dashed: 'divider-dashed',
+  dotted: 'divider-dotted',
+};
+
+const DIVIDER_SPACING_Y_CLASSES: Record<string, string> = {
+  sm: 'my-2',
+  md: 'my-4',
+  lg: 'my-8',
+};
+
+const DIVIDER_SPACING_X_CLASSES: Record<string, string> = {
+  sm: 'mx-2',
+  md: 'mx-4',
+  lg: 'mx-8',
+};
+
 @Component({
   selector: 'tw-divider',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './divider.component.html',
   styles: [
     `
@@ -81,46 +107,25 @@ export class TwDividerComponent {
     const color = this._color() || 'border-slate-300';
     const spacing = this._spacing();
 
-    const variantClasses: Record<DividerVariant, string> = {
-      solid: 'divider-solid',
-      dashed: 'divider-dashed',
-      dotted: 'divider-dotted',
-    };
-
-    const spacingClasses: Record<string, string> = {
-      sm: 'my-2',
-      md: 'my-4',
-      lg: 'my-8',
-    };
-
-    return ['border-t-2 border-0', variantClasses[variant], color, spacingClasses[spacing]].join(
-      ' '
-    );
+    return [
+      'border-t-2 border-0',
+      DIVIDER_VARIANT_CLASSES[variant],
+      color,
+      DIVIDER_SPACING_Y_CLASSES[spacing],
+    ].join(' ');
   });
 
   protected containerClasses = computed(() => {
     const spacing = this._spacing();
 
-    const spacingClasses: Record<string, string> = {
-      sm: 'my-2',
-      md: 'my-4',
-      lg: 'my-8',
-    };
-
-    return ['flex items-center w-full', spacingClasses[spacing]].join(' ');
+    return ['flex items-center w-full', DIVIDER_SPACING_Y_CLASSES[spacing]].join(' ');
   });
 
   protected lineClasses = computed(() => {
     const variant = this._variant();
     const color = this._color() || 'border-slate-300';
 
-    const variantClasses: Record<DividerVariant, string> = {
-      solid: 'divider-solid',
-      dashed: 'divider-dashed',
-      dotted: 'divider-dotted',
-    };
-
-    return ['border-t-2 border-0', variantClasses[variant], color].join(' ');
+    return ['border-t-2 border-0', DIVIDER_VARIANT_CLASSES[variant], color].join(' ');
   });
 
   protected firstLineClasses = computed(() => {
@@ -152,23 +157,11 @@ export class TwDividerComponent {
     const color = this._color() || 'border-slate-300';
     const spacing = this._spacing();
 
-    const variantClasses: Record<DividerVariant, string> = {
-      solid: 'divider-solid',
-      dashed: 'divider-dashed',
-      dotted: 'divider-dotted',
-    };
-
-    const spacingClasses: Record<string, string> = {
-      sm: 'mx-2',
-      md: 'mx-4',
-      lg: 'mx-8',
-    };
-
     return [
       'vertical-line border-l-2 border-0',
-      variantClasses[variant],
+      DIVIDER_VARIANT_CLASSES[variant],
       color,
-      spacingClasses[spacing],
+      DIVIDER_SPACING_X_CLASSES[spacing],
     ].join(' ');
   });
 }

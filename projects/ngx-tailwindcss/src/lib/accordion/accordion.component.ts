@@ -2,14 +2,35 @@ import {
   AfterContentInit,
   Component,
   computed,
+  ContentChild,
   ContentChildren,
+  DestroyRef,
+  Directive,
+  effect,
   EventEmitter,
+  inject,
   Input,
   Output,
   QueryList,
   signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Subscription } from 'rxjs';
+
+export type AccordionVariant = 'default' | 'bordered' | 'separated';
+
+let nextAccordionItemId = 0;
+
+/**
+ * Marks projected content as the custom header of an accordion item,
+ * replacing the plain-text `itemTitle`.
+ */
+@Directive({
+  selector: '[twAccordionHeader]',
+  standalone: true,
+})
+export class TwAccordionHeaderDirective {}
 
 @Component({
   selector: 'tw-accordion-item',
@@ -30,16 +51,27 @@ export class TwAccordionItemComponent {
   @Input() set value(value: string) {
     this._value.set(value);
   }
-  @Input() variant: 'default' | 'bordered' | 'separated' = 'default';
+  @Input() set variant(value: AccordionVariant) {
+    this._variant.set(value);
+  }
 
   @Output() openChange = new EventEmitter<boolean>();
+
+  @ContentChild(TwAccordionHeaderDirective) protected headerContent?: TwAccordionHeaderDirective;
 
   protected _title = signal('');
   protected _open = signal(false);
   protected _disabled = signal(false);
   protected _value = signal('');
+  protected _variant = signal<AccordionVariant>('default');
 
-  hasHeaderContent = false;
+  protected readonly itemId = `tw-accordion-item-${nextAccordionItemId++}`;
+  protected readonly headerId = `${this.itemId}-header`;
+  protected readonly panelId = `${this.itemId}-panel`;
+
+  get hasHeaderContent(): boolean {
+    return !!this.headerContent;
+  }
 
   protected itemTitleValue = computed(() => this._title());
   protected isOpen = computed(() => this._open());
@@ -60,7 +92,7 @@ export class TwAccordionItemComponent {
   }
 
   protected itemClasses = computed(() => {
-    const { variant } = this;
+    const variant = this._variant();
 
     const variantClasses: Record<string, string> = {
       default: 'border-b border-slate-200 dark:border-slate-700 last:border-b-0',
@@ -109,7 +141,7 @@ export class TwAccordionComponent implements AfterContentInit {
   @Input() set allowMultiple(value: boolean) {
     this._allowMultiple.set(value);
   }
-  @Input() set variant(value: 'default' | 'bordered' | 'separated') {
+  @Input() set variant(value: AccordionVariant) {
     this._variant.set(value);
   }
   @Input() set defaultValue(value: string | string[]) {
@@ -119,29 +151,64 @@ export class TwAccordionComponent implements AfterContentInit {
   @ContentChildren(TwAccordionItemComponent) items!: QueryList<TwAccordionItemComponent>;
 
   protected _allowMultiple = signal(false);
-  protected _variant = signal<'default' | 'bordered' | 'separated'>('default');
+  protected _variant = signal<AccordionVariant>('default');
   protected _defaultValue = signal<string | string[]>('');
 
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly initializedItems = new WeakSet<TwAccordionItemComponent>();
+  private itemSubscriptions = new Subscription();
+
+  constructor() {
+    // Re-propagate the variant to items whenever it changes
+    effect(() => {
+      const variant = this._variant();
+      this.items?.forEach(item => (item.variant = variant));
+    });
+
+    this.destroyRef.onDestroy(() => {
+      this.itemSubscriptions.unsubscribe();
+    });
+  }
+
   ngAfterContentInit(): void {
+    this.wireItems();
+
+    this.items.changes.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.wireItems();
+    });
+  }
+
+  private wireItems(): void {
+    // Re-subscribe from scratch so removed items are released and none is doubly subscribed
+    this.itemSubscriptions.unsubscribe();
+    this.itemSubscriptions = new Subscription();
+
     const defaultValue = this._defaultValue();
     const defaults = Array.isArray(defaultValue) ? defaultValue : [defaultValue];
 
     this.items.forEach(item => {
       item.variant = this._variant();
 
-      if (defaults.includes(item.getValue())) {
-        item.setOpen(true);
+      // Only apply default-open state the first time an item is seen
+      if (!this.initializedItems.has(item)) {
+        this.initializedItems.add(item);
+
+        if (defaults.includes(item.getValue())) {
+          item.setOpen(true);
+        }
       }
 
-      item.openChange.subscribe(isOpen => {
-        if (isOpen && !this._allowMultiple()) {
-          this.items.forEach(other => {
-            if (other !== item) {
-              other.setOpen(false);
-            }
-          });
-        }
-      });
+      this.itemSubscriptions.add(
+        item.openChange.subscribe(isOpen => {
+          if (isOpen && !this._allowMultiple()) {
+            this.items.forEach(other => {
+              if (other !== item) {
+                other.setOpen(false);
+              }
+            });
+          }
+        })
+      );
     });
   }
 

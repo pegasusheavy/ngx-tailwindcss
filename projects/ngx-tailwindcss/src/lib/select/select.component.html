@@ -16,7 +16,9 @@
       [class]="triggerClasses()"
       [disabled]="isDisabled()"
       [attr.aria-expanded]="isOpen()"
-      [attr.aria-haspopup]="true"
+      aria-haspopup="listbox"
+      [attr.aria-controls]="isOpen() ? listboxId : null"
+      [attr.aria-activedescendant]="activeDescendantId()"
       (click)="toggleDropdown()"
       (keydown)="onKeydown($event)"
     >
@@ -40,7 +42,7 @@
 
     <!-- Dropdown for appendTo="self" -->
     @if (isOpen() && appendTo() === 'self') {
-      <div [class]="dropdownClasses()" role="listbox">
+      <div [id]="listboxId" [class]="dropdownClasses()" role="listbox">
         @if (filter()) {
           <div class="p-2 border-b border-slate-200 dark:border-slate-700">
             <input
@@ -94,7 +96,8 @@
             @for (option of filteredOptions(); track option.value) {
               <button
                 type="button"
-                [class]="optionClasses(option)"
+                [id]="listboxId + '-option-' + $index"
+                [class]="optionClasses(option, $index === activeIndex())"
                 [attr.aria-selected]="isSelected(option)"
                 role="option"
                 (click)="selectOption(option)"
@@ -134,7 +137,7 @@
 
 <!-- Dropdown portal for appendTo="body" -->
 @if (isOpen() && appendTo() === 'body') {
-  <div [class]="dropdownClasses()" [ngStyle]="dropdownStyle()" role="listbox">
+  <div [id]="listboxId" [class]="dropdownClasses()" [ngStyle]="dropdownStyle()" role="listbox">
     @if (filter()) {
       <div class="p-2 border-b border-slate-200 dark:border-slate-700">
         <input
@@ -188,7 +191,8 @@
         @for (option of filteredOptions(); track option.value) {
           <button
             type="button"
-            [class]="optionClasses(option)"
+            [id]="listboxId + '-option-' + $index"
+            [class]="optionClasses(option, $index === activeIndex())"
             [attr.aria-selected]="isSelected(option)"
             role="option"
             (click)="selectOption(option)"

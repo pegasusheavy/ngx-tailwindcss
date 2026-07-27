@@ -1,64 +1,37 @@
 <app-page-header
   title="Menu"
-  description="Dropdown menu component for actions and navigation options.">
+  description="Menu component for actions and navigation options, standalone or inside a dropdown.">
 </app-page-header>
 
 <div class="space-y-8">
-  <!-- Basic -->
-  <app-demo-section title="Basic Usage" [code]="basicCode">
-    <tw-menu [items]="menuItems">
-      <tw-button trigger variant="outline">Actions</tw-button>
-    </tw-menu>
+  <!-- Basic: menu inside a dropdown -->
+  <app-demo-section title="Dropdown Menu" [code]="basicCode">
+    <tw-dropdown>
+      <tw-button twDropdownTrigger variant="outline">Actions</tw-button>
+      <tw-dropdown-menu>
+        <tw-menu [items]="menuItems"></tw-menu>
+      </tw-dropdown-menu>
+    </tw-dropdown>
   </app-demo-section>
 
   <!-- With Shortcuts -->
-  <app-demo-section title="Menu Items" [code]="basicCode">
-    <tw-menu
-      [items]="[
-        { label: 'New File', shortcut: '⌘N' },
-        { label: 'New Window', shortcut: '⌘⇧N' },
-        { separator: true },
-        { label: 'Open...', shortcut: '⌘O' },
-        { label: 'Save', shortcut: '⌘S' },
-        { label: 'Save As...', shortcut: '⌘⇧S' },
-        { separator: true },
-        { label: 'Print', shortcut: '⌘P' }
-      ]">
-      <tw-button trigger>File Menu</tw-button>
-    </tw-menu>
+  <app-demo-section title="Menu Items" [code]="fileMenuCode">
+    <div class="max-w-xs">
+      <tw-menu [items]="fileMenuItems"></tw-menu>
+    </div>
   </app-demo-section>
 
   <!-- Grouped Menu -->
   <app-demo-section title="Grouped Menu" [code]="groupsCode">
-    <tw-menu
-      [items]="[
-        { label: 'Account', items: [
-          { label: 'Profile' },
-          { label: 'Settings' },
-          { label: 'Billing' }
-        ]},
-        { label: 'Team', items: [
-          { label: 'Members' },
-          { label: 'Invite' }
-        ]},
-        { separator: true },
-        { label: 'Sign Out', styleClass: 'text-rose-600' }
-      ]">
-      <tw-button trigger variant="outline">Account</tw-button>
-    </tw-menu>
+    <div class="max-w-xs">
+      <tw-menu [items]="groupedMenuItems"></tw-menu>
+    </div>
   </app-demo-section>
 
   <!-- Menu with Disabled Items -->
-  <app-demo-section title="Disabled Items" [code]="basicCode">
-    <tw-menu
-      [items]="[
-        { label: 'Cut', shortcut: '⌘X' },
-        { label: 'Copy', shortcut: '⌘C' },
-        { label: 'Paste', shortcut: '⌘V', disabled: true },
-        { separator: true },
-        { label: 'Select All', shortcut: '⌘A' }
-      ]">
-      <tw-button trigger variant="secondary">Edit</tw-button>
-    </tw-menu>
+  <app-demo-section title="Disabled Items" [code]="disabledCode">
+    <div class="max-w-xs">
+      <tw-menu [items]="editMenuItems"></tw-menu>
+    </div>
   </app-demo-section>
 </div>

@@ -1,8 +1,8 @@
 import {
-  APP_INITIALIZER,
   EnvironmentProviders,
   inject,
   makeEnvironmentProviders,
+  provideAppInitializer,
   Provider,
 } from '@angular/core';
 import { DEFAULT_THEME, TW_THEME, TwTheme } from './theme';
@@ -14,7 +14,7 @@ import { TwThemeService } from './theme.service';
  * @example
  * ```typescript
  * // In app.config.ts
- * import { provideTwTheme, createTheme } from '@pegasus-heavy/ngx-tailwindcss';
+ * import { provideTwTheme, createTheme } from '@quinnjr/ngx-tailwindcss';
  *
  * const myTheme = createTheme({
  *   colors: {
@@ -37,18 +37,11 @@ export function provideTwTheme(theme?: TwTheme): EnvironmentProviders {
       useValue: theme ?? DEFAULT_THEME,
     },
     // Initialize the theme service on app startup
-    {
-      provide: APP_INITIALIZER,
-      useFactory: () => {
-        const themeService = inject(TwThemeService);
-        return () => {
-          // The service initializes itself in the constructor
-          // This just ensures it's created at app startup
-          return Promise.resolve();
-        };
-      },
-      multi: true,
-    },
+    provideAppInitializer(() => {
+      // The service initializes itself in the constructor
+      // This just ensures it's created at app startup
+      inject(TwThemeService);
+    }),
   ]);
 }
 

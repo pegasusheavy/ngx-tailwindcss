@@ -1,10 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
-import { Platform } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
-
-const PLATFORM_TAURI: Platform = 'tauri';
-const PLATFORM_ELECTRON: Platform = 'electron';
 
 export interface NativeFileFilter {
   name: string;
@@ -39,39 +35,33 @@ export class FilePickerService {
   private readonly platformService = inject(NativeAppPlatformService);
 
   public async openFile(options: NativeOpenFileOptions = {}): Promise<FilePickerResult[] | null> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
+    if (this.platformService.isTauri()) {
       return this.openFileTauri(options);
-    } if (platform === PLATFORM_ELECTRON) {
+    }
+    if (this.platformService.isElectron()) {
       return this.openFileElectron(options);
-    } 
-      return this.openFileWeb(options);
-    
+    }
+    return this.openFileWeb(options);
   }
 
   public async saveFile(options: NativeSaveFileOptions = {}): Promise<string | null> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
+    if (this.platformService.isTauri()) {
       return this.saveFileTauri(options);
-    } if (platform === PLATFORM_ELECTRON) {
+    }
+    if (this.platformService.isElectron()) {
       return this.saveFileElectron(options);
-    } 
-      return this.saveFileWeb(options);
-    
+    }
+    return this.saveFileWeb(options);
   }
 
   public async selectDirectory(options: NativeOpenFileOptions = {}): Promise<string | null> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
+    if (this.platformService.isTauri()) {
       return this.selectDirectoryTauri(options);
-    } if (platform === PLATFORM_ELECTRON) {
+    }
+    if (this.platformService.isElectron()) {
       return this.selectDirectoryElectron(options);
-    } 
-      return this.selectDirectoryWeb();
-    
+    }
+    return this.selectDirectoryWeb();
   }
 
   private async openFileTauri(options: NativeOpenFileOptions): Promise<FilePickerResult[] | null> {
@@ -154,7 +144,7 @@ export class FilePickerService {
       }
 
       input.addEventListener('change', () => {
-        const {files} = input;
+        const { files } = input;
         if (!files || files.length === 0) {
           resolve(null);
           return;
@@ -172,7 +162,9 @@ export class FilePickerService {
         resolve(results);
       });
 
-      input.addEventListener('cancel', () => { resolve(null); });
+      input.addEventListener('cancel', () => {
+        resolve(null);
+      });
       input.click();
     });
   }
@@ -283,7 +275,7 @@ export class FilePickerService {
       input.setAttribute('webkitdirectory', '');
 
       input.addEventListener('change', () => {
-        const {files} = input;
+        const { files } = input;
         if (!files || files.length === 0) {
           resolve(null);
           return;
@@ -294,7 +286,9 @@ export class FilePickerService {
         resolve(dirName);
       });
 
-      input.addEventListener('cancel', () => { resolve(null); });
+      input.addEventListener('cancel', () => {
+        resolve(null);
+      });
       input.click();
     });
   }

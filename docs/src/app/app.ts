@@ -6,7 +6,7 @@ import {
   TwDropdownComponent,
   TwDropdownMenuComponent,
   TwDropdownItemDirective,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { filter } from 'rxjs/operators';
 import { ThemeService } from './services/theme.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -123,7 +123,7 @@ export class App implements AfterViewInit, OnDestroy {
   @ViewChild('sidebarNav') sidebarNav!: ElementRef<HTMLElement>;
 
   constructor() {
-    // Initialize URL after render to avoid change detection issues in zoneless mode
+    // Initialize URL after render so the initial value is set outside change detection
     afterNextRender(() => {
       this.currentUrl.set(this.router.url);
     });
@@ -373,42 +373,21 @@ export class App implements AfterViewInit, OnDestroy {
     },
   ];
 
-  // Flat list for mobile menu
-  protected get allComponentNavItems(): NavItem[] {
-    return this.componentCategories.flatMap(cat => cat.items);
-  }
-
   toggleMobileMenu(): void {
     this.mobileMenuOpen.update(v => !v);
   }
 
-  protected getThemeIcon(): IconDefinition {
+  protected readonly themeIcon = computed<IconDefinition>(() => {
     const theme = this.themeService.theme();
     if (theme === 'light') return faSun;
     if (theme === 'dark') return faMoon;
     return faDesktop;
-  }
+  });
 
-  protected getThemeLabel(): string {
+  protected readonly themeLabel = computed<string>(() => {
     const theme = this.themeService.theme();
     if (theme === 'light') return 'Light';
     if (theme === 'dark') return 'Dark';
     return 'System';
-  }
-
-  // Explicit methods for theme switching (needed for dropdown portal compatibility)
-  protected setLightTheme(): void {
-    console.log('Setting light theme');
-    this.themeService.setTheme('light');
-  }
-
-  protected setDarkTheme(): void {
-    console.log('Setting dark theme');
-    this.themeService.setTheme('dark');
-  }
-
-  protected setSystemTheme(): void {
-    console.log('Setting system theme');
-    this.themeService.setTheme('system');
-  }
+  });
 }

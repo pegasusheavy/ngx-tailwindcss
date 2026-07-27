@@ -1,6 +1,6 @@
 <div [class]="containerClasses()" role="tree">
   <ng-container
-    *ngTemplateOutlet="nodeTemplate; context: { $implicit: nodes, level: 0 }"
+    *ngTemplateOutlet="nodeTemplate; context: { $implicit: nodes(), level: 0 }"
   ></ng-container>
 </div>
 
@@ -9,18 +9,23 @@
     @if (node.visible !== false) {
       <div
         role="treeitem"
-        [attr.aria-expanded]="node.expanded"
+        [attr.aria-expanded]="node.children && node.children.length > 0 ? !!node.expanded : null"
         [attr.aria-selected]="isSelected(node)"
       >
         <div
+          #treeNodeRow
           [class]="nodeClasses(node, level)"
-          [style.paddingLeft.px]="level * indentSize"
+          [style.paddingLeft.px]="level * indentSize()"
+          [attr.tabindex]="nodeTabIndex(node)"
           (click)="onNodeClick(node)"
+          (keydown)="onNodeKeydown($event, node)"
+          (focus)="focusedNode.set(node)"
         >
           <!-- Expand/Collapse toggle -->
           @if (node.children && node.children.length > 0) {
             <button
               type="button"
+              tabindex="-1"
               class="p-1 rounded hover:bg-slate-200 transition-colors"
               (click)="toggleNode(node); $event.stopPropagation()"
               [attr.aria-label]="node.expanded ? 'Collapse' : 'Expand'"
@@ -41,10 +46,11 @@
           }
 
           <!-- Checkbox for selection -->
-          @if (selectionMode !== 'none') {
+          @if (selectionMode() === 'checkbox') {
             <input
               type="checkbox"
               class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              [attr.aria-label]="'Select ' + node.label"
               [checked]="isSelected(node)"
               [indeterminate]="isIndeterminate(node)"
               (change)="onCheckboxChange(node, $event)"
@@ -97,7 +103,7 @@
 
         <!-- Children -->
         @if (node.children && node.children.length > 0 && node.expanded) {
-          <div class="animate-in slide-in-from-top-1 duration-200">
+          <div role="group" class="animate-in slide-in-from-top-1 duration-200">
             <ng-container
               *ngTemplateOutlet="
                 nodeTemplate;

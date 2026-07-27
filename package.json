@@ -2,19 +2,20 @@
   "name": "@quinnjr/ngx-tailwindcss",
   "version": "1.0.1",
   "type": "module",
+  "packageManager": "pnpm@11.17.0",
   "description": "A highly customizable Angular component library for Tailwind CSS 4+. Build beautiful, accessible UI components with full theming support, intelligent class merging, and zero bundled CSS. Features 30+ components including buttons, cards, modals, forms, tables, and more.",
   "license": "MIT",
   "author": {
-    "name": "Pegasus Heavy Industries LLC",
-    "url": "https://pegasusheavy.github.io/ngx-tailwindcss"
+    "name": "Joseph R Quinn",
+    "url": "https://quinnjr.github.io/ngx-tailwindcss"
   },
-  "homepage": "https://pegasusheavy.github.io/ngx-tailwindcss",
+  "homepage": "https://quinnjr.github.io/ngx-tailwindcss",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pegasusheavy/ngx-tailwindcss.git"
+    "url": "git+https://github.com/quinnjr/ngx-tailwindcss.git"
   },
   "bugs": {
-    "url": "https://github.com/pegasusheavy/ngx-tailwindcss/issues"
+    "url": "https://github.com/quinnjr/ngx-tailwindcss/issues"
   },
   "keywords": [
     "angular",
@@ -84,7 +85,7 @@
     "lint:fix": "eslint projects/ --fix",
     "format": "prettier --write \"projects/**/*.{ts,html,scss,css,json}\"",
     "format:check": "prettier --check \"projects/**/*.{ts,html,scss,css,json}\"",
-    "prepare": "pnpm run build && node -e \"import('husky').then(({ default: husky }) => husky('./.husky')).catch(err => { console.error(err); process.exit(1) })\"",
+    "prepare": "node -e \"import('husky').then(({ default: husky }) => husky('./.husky')).catch(err => { console.error(err); process.exit(1) })\"",
     "commitlint": "commitlint"
   },
   "peerDependencies": {
@@ -140,7 +141,7 @@
   "exports": {
     ".": {
       "types": "./index.d.ts",
-      "default": "./fesm2022/pegasus-heavy-ngx-tailwindcss.mjs"
+      "default": "./fesm2022/quinnjr-ngx-tailwindcss.mjs"
     }
   },
   "sideEffects": false,

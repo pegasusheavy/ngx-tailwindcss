@@ -5,12 +5,12 @@
   }
 
   <!-- Meter display -->
-  <div [class]="meterContainerClasses()">
+  <div [class]="meterContainerClasses()" role="img" [attr.aria-label]="meterAriaLabel()">
     @if (orientation() === 'vertical') {
       <!-- Vertical meter -->
-      <div class="flex gap-1" [style.height.px]="height()">
+      <div class="flex gap-1" [style.height.px]="effectiveHeight()">
         @for (channel of channels(); track channel) {
-          <div class="relative flex flex-col-reverse" [style.width.px]="barWidth()">
+          <div class="relative flex flex-col-reverse" [style.width.px]="effectiveBarWidth()">
             <!-- Scale marks (left side of first channel) -->
             @if (showScale() && channel === 0) {
               <div
@@ -27,7 +27,9 @@
               <div
                 [class]="segmentClasses(segment, channelValues()[channel])"
                 [style.height.%]="100 / segmentCount()"
-                [style.marginBottom.px]="segment.index < segmentCount() - 1 ? gapSize() : 0"
+                [style.marginBottom.px]="
+                  segment.index < segmentCount() - 1 ? effectiveGapSize() : 0
+                "
               ></div>
             }
 
@@ -64,15 +66,15 @@
       </div>
     } @else {
       <!-- Horizontal meter -->
-      <div class="flex flex-col gap-1" [style.width.px]="width()">
+      <div class="flex flex-col gap-1" [style.width.px]="effectiveWidth()">
         @for (channel of channels(); track channel) {
-          <div class="relative flex" [style.height.px]="barWidth()">
+          <div class="relative flex" [style.height.px]="effectiveBarWidth()">
             <!-- Segments -->
             @for (segment of segments(); track segment.index) {
               <div
                 [class]="segmentClasses(segment, channelValues()[channel])"
                 [style.width.%]="100 / segmentCount()"
-                [style.marginRight.px]="segment.index < segmentCount() - 1 ? gapSize() : 0"
+                [style.marginRight.px]="segment.index < segmentCount() - 1 ? effectiveGapSize() : 0"
               ></div>
             }
 

@@ -1,7 +1,7 @@
 <div
   [class]="containerClasses()"
   role="progressbar"
-  [attr.aria-valuenow]="valueNum()"
+  [attr.aria-valuenow]="indeterminateFlag() ? undefined : valueNum()"
   [attr.aria-valuemin]="0"
   [attr.aria-valuemax]="maxNum()"
 >

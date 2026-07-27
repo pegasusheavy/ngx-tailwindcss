@@ -7,24 +7,43 @@ import { dynamicImport } from './dynamic-import.util';
 interface TauriStore {
   get(key: string): Promise<unknown>;
   set(key: string, value: unknown): Promise<void>;
-  delete(key: string): Promise<void>;
+  delete(key: string): Promise<boolean>;
   save(): Promise<void>;
 }
 
 interface TauriStoreModule {
-  Store: new (path: string) => TauriStore;
+  // Tauri plugin-store v2 API: stores are obtained via `load()`, not `new Store()`
+  load(path: string): Promise<TauriStore>;
 }
 
 /**
- * Storage service for persistent data
- * Supports local storage, secure storage, and file-based storage
+ * Storage service for persistent data.
+ * Supports Web Storage (localStorage/sessionStorage), IndexedDB, and a
+ * native-backed persistent store on Tauri/Electron.
+ *
+ * Note: despite their names, the `*Secure` methods are NOT backed by an OS
+ * keychain — see their individual docs for what each platform actually does.
  */
 @Injectable({ providedIn: 'root' })
 export class NativeStorageService {
   private readonly platformService = inject(NativeAppPlatformService);
 
   private readonly _isInitialized = signal(false);
+  /**
+   * True once the Web Storage backends are available (set at construction;
+   * stays false during SSR). Native Tauri/Electron stores load lazily on
+   * first `*Secure` call.
+   */
   public readonly isInitialized = this._isInitialized.asReadonly();
+
+  // Lazily-loaded Tauri store (plugin-store v2 `load` API)
+  private tauriStorePromise: Promise<TauriStore> | null = null;
+
+  constructor() {
+    this._isInitialized.set(
+      typeof localStorage !== 'undefined' && typeof sessionStorage !== 'undefined'
+    );
+  }
 
   // Local storage methods
   public get<T>(key: string, defaultValue?: T): T | null {
@@ -80,14 +99,36 @@ export class NativeStorageService {
     return localStorage.getItem(key) !== null;
   }
 
-  // Secure storage (using Tauri/Electron APIs when available)
+  // Persistent app-level storage on Tauri/Electron. NOT OS-keychain-backed;
+  // see the individual method docs.
+  private async getTauriStore(): Promise<TauriStore> {
+    if (!this.tauriStorePromise) {
+      this.tauriStorePromise = (async () => {
+        const storeModule = (await dynamicImport('@tauri-apps/plugin-store')) as TauriStoreModule;
+        return storeModule.load('.secure-store.json');
+      })();
+      // Allow a retry if loading the store failed
+      this.tauriStorePromise.catch(() => {
+        this.tauriStorePromise = null;
+      });
+    }
+    return this.tauriStorePromise;
+  }
+
+  /**
+   * Read a value from the platform's persistent store.
+   *
+   * Despite the name, this is NOT OS-keychain-backed secure storage:
+   * - Tauri: plaintext JSON persisted via `@tauri-apps/plugin-store`
+   *   (optional `@tauri-apps/plugin-store` peer dependency required).
+   * - Electron: delegated to the host app's `secure-storage-get` IPC handler;
+   *   security depends entirely on that implementation.
+   * - Web: falls back to plain localStorage with a console warning.
+   */
   public async getSecure<T>(key: string): Promise<T | null> {
     if (this.platformService.isTauri()) {
       try {
-        const storeModule = (await dynamicImport(
-          '@tauri-apps/plugin-store'
-        )) as TauriStoreModule;
-        const store = new storeModule.Store('.secure-store');
+        const store = await this.getTauriStore();
         return (await store.get(key)) as T | null;
       } catch (error) {
         console.error('Tauri secure storage error:', error);
@@ -110,13 +151,18 @@ export class NativeStorageService {
     return this.get<T>(key);
   }
 
+  /**
+   * Write a value to the platform's persistent store.
+   *
+   * Despite the name, the value is NOT stored in an OS keychain: on Tauri it
+   * is persisted as plaintext JSON via `@tauri-apps/plugin-store`, on
+   * Electron it is delegated to the host app's `secure-storage-set` IPC
+   * handler, and on the web it falls back to plain localStorage.
+   */
   public async setSecure(key: string, value: unknown): Promise<void> {
     if (this.platformService.isTauri()) {
       try {
-        const storeModule = (await dynamicImport(
-          '@tauri-apps/plugin-store'
-        )) as TauriStoreModule;
-        const store = new storeModule.Store('.secure-store');
+        const store = await this.getTauriStore();
         await store.set(key, value);
         await store.save();
       } catch (error) {
@@ -140,13 +186,15 @@ export class NativeStorageService {
     this.set(key, value);
   }
 
+  /**
+   * Remove a value from the platform's persistent store (plaintext JSON on
+   * Tauri, host-app IPC handler on Electron, localStorage on the web — NOT an
+   * OS keychain; see getSecure).
+   */
   public async removeSecure(key: string): Promise<void> {
     if (this.platformService.isTauri()) {
       try {
-        const storeModule = (await dynamicImport(
-          '@tauri-apps/plugin-store'
-        )) as TauriStoreModule;
-        const store = new storeModule.Store('.secure-store');
+        const store = await this.getTauriStore();
         await store.delete(key);
         await store.save();
       } catch (error) {
@@ -207,7 +255,9 @@ export class NativeStorageService {
       request.addEventListener('error', () => {
         reject(request.error ?? new Error('IndexedDB open failed'));
       });
-      request.onsuccess = () => { resolve(request.result); };
+      request.onsuccess = () => {
+        resolve(request.result);
+      };
 
       request.onupgradeneeded = event => {
         const db = (event.target as IDBOpenDBRequest).result;
@@ -252,7 +302,9 @@ export class NativeStorageService {
         request.addEventListener('error', () => {
           reject(request.error ?? new Error('IndexedDB set failed'));
         });
-        request.onsuccess = () => { resolve(); };
+        request.onsuccess = () => {
+          resolve();
+        };
       });
     } catch (error) {
       console.error('IndexedDB set error:', error);
@@ -270,7 +322,9 @@ export class NativeStorageService {
         request.addEventListener('error', () => {
           reject(request.error ?? new Error('IndexedDB remove failed'));
         });
-        request.onsuccess = () => { resolve(); };
+        request.onsuccess = () => {
+          resolve();
+        };
       });
     } catch (error) {
       console.error('IndexedDB remove error:', error);

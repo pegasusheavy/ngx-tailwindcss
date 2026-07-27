@@ -1,13 +1,39 @@
-import { Component, computed, Input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, Input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type ProgressSize = 'xs' | 'sm' | 'md' | 'lg';
 export type ProgressVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
 
+const PROGRESS_SIZE_CLASSES: Record<ProgressSize, string> = {
+  xs: 'h-1',
+  sm: 'h-1.5',
+  md: 'h-2.5',
+  lg: 'h-4',
+};
+
+const PROGRESS_VARIANT_CLASSES: Record<ProgressVariant, string> = {
+  primary: 'bg-blue-600',
+  secondary: 'bg-slate-600',
+  success: 'bg-emerald-600',
+  warning: 'bg-amber-500',
+  danger: 'bg-rose-600',
+  info: 'bg-cyan-600',
+};
+
+const CIRCULAR_STROKE_COLORS: Record<ProgressVariant, string> = {
+  primary: '#2563eb',
+  secondary: '#475569',
+  success: '#059669',
+  warning: '#f59e0b',
+  danger: '#e11d48',
+  info: '#0891b2',
+};
+
 @Component({
   selector: 'tw-progress',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './progress.component.html',
   styles: [
     `
@@ -86,10 +112,12 @@ export class TwProgressComponent {
   protected labelText = computed(() => this._label());
   protected showValueFlag = computed(() => this._showValue());
   protected labelPositionVal = computed(() => this._labelPosition());
+  protected indeterminateFlag = computed(() => this._indeterminate());
 
   protected percentage = computed(() => {
     const val = this._value();
     const maxVal = this._max();
+    if (maxVal <= 0) return 0;
     return Math.min(Math.max(Math.round((val / maxVal) * 100), 0), 100);
   });
 
@@ -98,16 +126,9 @@ export class TwProgressComponent {
   protected trackClasses = computed(() => {
     const size = this._size();
 
-    const sizeClasses: Record<ProgressSize, string> = {
-      xs: 'h-1',
-      sm: 'h-1.5',
-      md: 'h-2.5',
-      lg: 'h-4',
-    };
-
     return [
       'w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700',
-      sizeClasses[size],
+      PROGRESS_SIZE_CLASSES[size],
     ].join(' ');
   });
 
@@ -119,26 +140,10 @@ export class TwProgressComponent {
     const indeterminate = this._indeterminate();
     const labelPosition = this._labelPosition();
 
-    const variantClasses: Record<ProgressVariant, string> = {
-      primary: 'bg-blue-600',
-      secondary: 'bg-slate-600',
-      success: 'bg-emerald-600',
-      warning: 'bg-amber-500',
-      danger: 'bg-rose-600',
-      info: 'bg-cyan-600',
-    };
-
-    const sizeClasses: Record<ProgressSize, string> = {
-      xs: 'h-1',
-      sm: 'h-1.5',
-      md: 'h-2.5',
-      lg: 'h-4',
-    };
-
     const classes = [
       'rounded-full transition-all duration-300 ease-out',
-      sizeClasses[size],
-      variantClasses[variant],
+      PROGRESS_SIZE_CLASSES[size],
+      PROGRESS_VARIANT_CLASSES[variant],
     ];
 
     if (labelPosition === 'inside') {
@@ -167,6 +172,7 @@ export class TwProgressComponent {
   selector: 'tw-progress-circular',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './progress-circular.component.html',
   styles: [
     `
@@ -245,6 +251,7 @@ export class TwProgressCircularComponent {
   protected percentage = computed(() => {
     const val = this._value();
     const maxVal = this._max();
+    if (maxVal <= 0) return 0;
     return Math.min(Math.max((val / maxVal) * 100, 0), 100);
   });
 
@@ -254,18 +261,7 @@ export class TwProgressCircularComponent {
   });
 
   protected strokeColor = computed(() => {
-    const variant = this._variant();
-
-    const colors: Record<ProgressVariant, string> = {
-      primary: '#2563eb',
-      secondary: '#475569',
-      success: '#059669',
-      warning: '#f59e0b',
-      danger: '#e11d48',
-      info: '#0891b2',
-    };
-
-    return colors[variant];
+    return CIRCULAR_STROKE_COLORS[this._variant()];
   });
 
   protected valueClasses = computed(() => {

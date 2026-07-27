@@ -183,6 +183,24 @@ describe('TwCheckboxComponent', () => {
     });
   });
 
+  describe('indeterminate state', () => {
+    it('should set aria-checked="mixed" when indeterminate', () => {
+      component.indeterminate.set(true);
+      fixture.detectChanges();
+      const input = checkboxEl.querySelector('input')!;
+      expect(input.getAttribute('aria-checked')).toBe('mixed');
+    });
+
+    it('should reflect checked state in aria-checked when not indeterminate', () => {
+      const input = checkboxEl.querySelector('input')!;
+      expect(input.getAttribute('aria-checked')).toBe('false');
+
+      input.click();
+      fixture.detectChanges();
+      expect(input.getAttribute('aria-checked')).toBe('true');
+    });
+  });
+
   describe('readonly state', () => {
     it('should not toggle when readonly', () => {
       component.readonly.set(true);
@@ -307,5 +325,34 @@ describe('TwCheckboxComponent with FormControl', () => {
     const checkboxEl = fixture.debugElement.query(By.directive(TwCheckboxComponent)).nativeElement;
     const label = checkboxEl.querySelector('label');
     expect(label?.className).toContain('opacity-50');
+  });
+
+  it('should disable the native input when FormControl is disabled', () => {
+    component.control.disable();
+    fixture.detectChanges();
+
+    const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+    expect(input.disabled).toBe(true);
+  });
+
+  it('should re-enable the native input when FormControl is enabled again', () => {
+    component.control.disable();
+    fixture.detectChanges();
+    component.control.enable();
+    fixture.detectChanges();
+
+    const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+    expect(input.disabled).toBe(false);
+  });
+
+  it('should coerce a null form value to unchecked', () => {
+    component.control.setValue(true);
+    fixture.detectChanges();
+
+    component.control.setValue(null);
+    fixture.detectChanges();
+
+    const input = fixture.debugElement.query(By.css('input')).nativeElement as HTMLInputElement;
+    expect(input.checked).toBe(false);
   });
 });

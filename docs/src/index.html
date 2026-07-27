@@ -19,7 +19,7 @@
   <meta name="title" content="ngx-tailwindcss | Beautiful Angular Components for Tailwind CSS 4+">
   <meta name="description" content="Highly customizable Angular components designed for Tailwind CSS 4+. Tree-shakeable, accessible, and fully customizable UI library with 30+ components including Button, Card, Modal, Table, and more.">
   <meta name="keywords" content="angular, tailwindcss, tailwind css 4, angular components, ui library, angular ui, tailwind components, angular 19, angular 20, angular 21, standalone components, accessible components, typescript, web components">
-  <meta name="author" content="Pegasus Heavy Industries LLC">
+  <meta name="author" content="Joseph R Quinn">
   <meta name="robots" content="index, follow">
   <meta name="language" content="English">
   <meta name="revisit-after" content="7 days">
@@ -34,9 +34,8 @@
   <meta property="og:url" content="https://ngx-tailwindcss.dev/">
   <meta property="og:title" content="ngx-tailwindcss | Beautiful Angular Components for Tailwind CSS 4+">
   <meta property="og:description" content="Highly customizable Angular components designed for Tailwind CSS 4+. Tree-shakeable, accessible, and fully customizable UI library with 30+ components.">
-  <meta property="og:image" content="https://ngx-tailwindcss.dev/og-image.png">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
+  <!-- Only an SVG og-image ships with the site; Twitter does not render SVG cards, which is accepted here rather than inventing a PNG. -->
+  <meta property="og:image" content="https://quinnjr.github.io/ngx-tailwindcss/og-image.svg">
   <meta property="og:image:alt" content="ngx-tailwindcss - Angular Components for Tailwind CSS 4+">
   <meta property="og:site_name" content="ngx-tailwindcss">
   <meta property="og:locale" content="en_US">
@@ -46,15 +45,15 @@
   <meta name="twitter:url" content="https://ngx-tailwindcss.dev/">
   <meta name="twitter:title" content="ngx-tailwindcss | Beautiful Angular Components for Tailwind CSS 4+">
   <meta name="twitter:description" content="Highly customizable Angular components designed for Tailwind CSS 4+. Tree-shakeable, accessible, and fully customizable UI library with 30+ components.">
-  <meta name="twitter:image" content="https://ngx-tailwindcss.dev/og-image.png">
+  <meta name="twitter:image" content="https://quinnjr.github.io/ngx-tailwindcss/og-image.svg">
   <meta name="twitter:image:alt" content="ngx-tailwindcss - Angular Components for Tailwind CSS 4+">
-  <meta name="twitter:creator" content="@pegasusheavy">
+  <meta name="twitter:creator" content="@quinnjr">
 
   <!-- Favicons -->
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <link rel="icon" type="image/svg+xml" href="/logo.svg">
-  <link rel="apple-touch-icon" href="/logo.svg">
-  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="logo.svg">
+  <link rel="apple-touch-icon" href="logo.svg">
+  <link rel="manifest" href="manifest.json">
   <meta name="msapplication-TileColor" content="#06b6d4">
 
   <!-- Preconnect to external resources -->
@@ -75,16 +74,16 @@
     "operatingSystem": "Cross-platform",
     "description": "Highly customizable Angular components designed for Tailwind CSS 4+. A comprehensive UI library with 30+ components including Button, Card, Modal, Table, Tree, Timeline, and more.",
     "url": "https://ngx-tailwindcss.dev",
-    "downloadUrl": "https://www.npmjs.com/package/@pegasusheavy/ngx-tailwindcss",
-    "softwareVersion": "0.1.0",
+    "downloadUrl": "https://www.npmjs.com/package/@quinnjr/ngx-tailwindcss",
+    "softwareVersion": "1.0.1",
     "author": {
       "@type": "Organization",
-      "name": "Pegasus Heavy Industries LLC",
-      "url": "https://pegasusheavy.com"
+      "name": "Joseph R Quinn",
+      "url": "https://quinnjr.github.io/ngx-tailwindcss/"
     },
     "publisher": {
       "@type": "Organization",
-      "name": "Pegasus Heavy Industries LLC"
+      "name": "Joseph R Quinn"
     },
     "license": "https://opensource.org/licenses/MIT",
     "programmingLanguage": ["TypeScript", "Angular"],
@@ -93,11 +92,6 @@
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "USD"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5",
-      "ratingCount": "1"
     }
   }
   </script>
@@ -107,28 +101,23 @@
   {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "Pegasus Heavy Industries LLC",
-    "url": "https://pegasusheavy.com",
+    "name": "Joseph R Quinn",
+    "url": "https://quinnjr.github.io/ngx-tailwindcss/",
     "logo": "https://ngx-tailwindcss.dev/logo.svg",
     "sameAs": [
-      "https://github.com/PegasusHeavyIndustries"
+      "https://github.com/quinnjr/ngx-tailwindcss"
     ]
   }
   </script>
 
-  <!-- Structured Data - WebSite with SearchAction -->
+  <!-- Structured Data - WebSite -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "ngx-tailwindcss Documentation",
     "url": "https://ngx-tailwindcss.dev",
-    "description": "Official documentation for ngx-tailwindcss - Angular components for Tailwind CSS 4+",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": "https://ngx-tailwindcss.dev/search?q={search_term_string}",
-      "query-input": "required name=search_term_string"
-    }
+    "description": "Official documentation for ngx-tailwindcss - Angular components for Tailwind CSS 4+"
   }
   </script>
 
@@ -179,7 +168,7 @@
         "name": "How do I install ngx-tailwindcss?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Install using npm or pnpm: 'pnpm add @pegasusheavy/ngx-tailwindcss'. Then configure Tailwind to scan the library by adding '@source \"../node_modules/@pegasusheavy/ngx-tailwindcss/**/*.mjs\";' to your styles.css."
+          "text": "Install using npm or pnpm: 'pnpm add @quinnjr/ngx-tailwindcss'. Then configure Tailwind to scan the library by adding '@source \"../node_modules/@quinnjr/ngx-tailwindcss/**/*.mjs\";' to your styles.css."
         }
       },
       {
@@ -216,7 +205,7 @@
     <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
       <h1>ngx-tailwindcss Documentation</h1>
       <p>This application requires JavaScript to run. Please enable JavaScript in your browser settings.</p>
-      <p>Visit our <a href="https://github.com/PegasusHeavyIndustries/ngx-tailwindcss">GitHub repository</a> for documentation.</p>
+      <p>Visit our <a href="https://github.com/quinnjr/ngx-tailwindcss">GitHub repository</a> for documentation.</p>
     </div>
   </noscript>
 </body>

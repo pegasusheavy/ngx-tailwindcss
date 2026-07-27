@@ -18,12 +18,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 
 export type CompressorMeterVariant =
-  | 'default'
-  | 'minimal'
-  | 'studio'
-  | 'vintage'
-  | 'light'
-  | 'highContrast';
+  'default' | 'minimal' | 'studio' | 'vintage' | 'light' | 'highContrast';
 export type CompressorMeterSize = 'sm' | 'md' | 'lg';
 export type AttackReleaseDisplay = 'none' | 'bars' | 'envelope' | 'graph';
 
@@ -331,7 +326,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
   });
 
   protected readonly formatRatio = computed(() => {
-    const {ratio} = this.effectiveSettings();
+    const { ratio } = this.effectiveSettings();
     if (ratio >= 20) return '∞:1';
     return `${ratio}:1`;
   });
@@ -350,6 +345,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
 
   // Interaction handlers
   protected resetClip(type: 'input' | 'output' | 'both'): void {
+    if (this.disabled()) return;
     if (type === 'input' || type === 'both') {
       this.inputClip.set(false);
     }
@@ -366,8 +362,8 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
     this.ctx = canvas.getContext('2d');
     if (!this.ctx) return;
 
-    const {width} = canvas;
-    const {height} = canvas;
+    const { width } = canvas;
+    const { height } = canvas;
     const settings = this.effectiveSettings();
 
     // Clear
@@ -404,9 +400,9 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
     this.ctx.lineWidth = 2;
     this.ctx.beginPath();
 
-    const {threshold} = settings;
-    const {ratio} = settings;
-    const {knee} = settings;
+    const { threshold } = settings;
+    const { ratio } = settings;
+    const { knee } = settings;
     const minDb = this.meterMin();
     const maxDb = this.meterMax();
     const range = maxDb - minDb;
@@ -418,7 +414,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
       if (knee > 0 && Math.abs(inputDb - threshold) < knee / 2) {
         // Soft knee region
         const x = inputDb - threshold + knee / 2;
-        outputDb = inputDb + ((1 / ratio - 1) * x**2) / (2 * knee);
+        outputDb = inputDb + ((1 / ratio - 1) * x ** 2) / (2 * knee);
       } else if (inputDb < threshold) {
         // Below threshold - 1:1
         outputDb = inputDb;
@@ -474,8 +470,8 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
     if (!this.grHistoryCtx) return;
 
     const ctx = this.grHistoryCtx;
-    const {width} = canvas;
-    const {height} = canvas;
+    const { width } = canvas;
+    const { height } = canvas;
     const history = this.grHistory();
 
     // Clear
@@ -559,8 +555,8 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
     if (!this.envelopeCtx) return;
 
     const ctx = this.envelopeCtx;
-    const {width} = canvas;
-    const {height} = canvas;
+    const { width } = canvas;
+    const { height } = canvas;
     const settings = this.effectiveSettings();
 
     // Clear
@@ -683,6 +679,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
   }
 
   clearHistory(): void {
+    if (this.disabled()) return;
     this.grHistory.set([]);
   }
 
@@ -692,6 +689,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
     const size = this.size();
 
     const base = 'flex flex-col rounded-lg';
+    const disabled = this.disabled() ? 'opacity-50 pointer-events-none' : '';
 
     const variantClasses: Record<CompressorMeterVariant, string> = {
       default: 'bg-slate-800 border border-slate-700 p-4',
@@ -708,7 +706,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
       lg: 'gap-4 min-w-[360px]',
     };
 
-    return [base, variantClasses[variant], sizeClasses[size], this.classOverride()]
+    return [base, variantClasses[variant], sizeClasses[size], disabled, this.classOverride()]
       .filter(Boolean)
       .join(' ');
   });
@@ -747,7 +745,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
 
   // Attack/Release time classification
   protected readonly attackSpeed = computed(() => {
-    const {attack} = this.effectiveSettings();
+    const { attack } = this.effectiveSettings();
     if (attack <= 5) return 'fast';
     if (attack <= 30) return 'medium';
     if (attack <= 100) return 'slow';
@@ -755,7 +753,7 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
   });
 
   protected readonly releaseSpeed = computed(() => {
-    const {release} = this.effectiveSettings();
+    const { release } = this.effectiveSettings();
     if (release <= 100) return 'fast';
     if (release <= 500) return 'medium';
     if (release <= 1500) return 'slow';
@@ -764,14 +762,14 @@ export class TwCompressorMeterComponent implements OnInit, OnDestroy {
 
   // Attack bar percentage (for visual indicator)
   protected readonly attackBarPercent = computed(() => {
-    const {attack} = this.effectiveSettings();
+    const { attack } = this.effectiveSettings();
     // Logarithmic scale: 0.1ms = 0%, 500ms = 100%
     return Math.min(100, (Math.log10(attack + 1) / Math.log10(501)) * 100);
   });
 
   // Release bar percentage (for visual indicator)
   protected readonly releaseBarPercent = computed(() => {
-    const {release} = this.effectiveSettings();
+    const { release } = this.effectiveSettings();
     // Logarithmic scale: 10ms = 0%, 5000ms = 100%
     return Math.min(100, (Math.log10(release) / Math.log10(5000)) * 100);
   });

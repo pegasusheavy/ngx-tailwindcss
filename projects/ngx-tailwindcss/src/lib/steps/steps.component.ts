@@ -5,7 +5,7 @@ import {
   computed,
   inject,
   input,
-  numberAttribute,
+  model,
   output,
   TemplateRef,
 } from '@angular/core';
@@ -54,8 +54,8 @@ export class TwStepsComponent {
   /** Step definitions */
   readonly steps = input<StepItem[]>([]);
 
-  /** Current active step index */
-  readonly activeIndex = input(0, { transform: numberAttribute });
+  /** Current active step index (two-way bindable) */
+  readonly activeIndex = model(0);
 
   /** Orientation */
   readonly orientation = input<StepsOrientation>('horizontal');
@@ -70,14 +70,11 @@ export class TwStepsComponent {
   // eslint-disable-next-line @angular-eslint/no-input-rename -- public API alias kept for backward compatibility
   readonly readonlyMode = input(false, { transform: booleanAttribute, alias: 'readonly' });
 
-  /** Whether to allow clicking future steps */
+  /** Whether navigation is linear (future steps are not clickable) */
   readonly linear = input(true, { transform: booleanAttribute });
 
   /** Additional classes */
   readonly classOverride = input('');
-
-  /** Active index change event */
-  readonly activeIndexChange = output<number>();
 
   /** Step click event */
   readonly onStepClick$ = output<{ step: StepItem; index: number }>();
@@ -133,10 +130,16 @@ export class TwStepsComponent {
     };
   }
 
-  protected stepContentClasses(index: number) {
+  /** Whether the step at the given index can be activated by the user */
+  protected isStepClickable(index: number): boolean {
     const step = this.steps()[index];
-    const isClickable =
-      !this.readonlyMode() && !step.disabled && (!this.linear() || index <= this.activeIndex());
+    return (
+      !this.readonlyMode() && !step.disabled && (!this.linear() || index <= this.activeIndex())
+    );
+  }
+
+  protected stepContentClasses(index: number) {
+    const isClickable = this.isStepClickable(index);
 
     return this.twClass.merge(
       'flex items-center gap-3',
@@ -149,8 +152,7 @@ export class TwStepsComponent {
     const status = this.getStepStatus(index);
     const sizeClasses = STEPS_SIZES[this.size()].indicator;
     const step = this.steps()[index];
-    const isClickable =
-      !this.readonlyMode() && !step.disabled && (!this.linear() || index <= this.activeIndex());
+    const isClickable = this.isStepClickable(index);
 
     const statusClasses = {
       complete: 'bg-blue-600 text-white',
@@ -201,30 +203,28 @@ export class TwStepsComponent {
     if (this.readonlyMode() || step.disabled) return;
     if (this.linear() && index > this.activeIndex()) return;
 
-    this.activeIndexChange.emit(index);
+    this.activeIndex.set(index);
     this.onStepClick$.emit({ step, index });
   }
 
   /** Go to next step */
   next(): void {
     if (this.activeIndex() < this.steps().length - 1) {
-      const nextIndex = this.activeIndex() + 1;
-      this.activeIndexChange.emit(nextIndex);
+      this.activeIndex.set(this.activeIndex() + 1);
     }
   }
 
   /** Go to previous step */
   prev(): void {
     if (this.activeIndex() > 0) {
-      const prevIndex = this.activeIndex() - 1;
-      this.activeIndexChange.emit(prevIndex);
+      this.activeIndex.set(this.activeIndex() - 1);
     }
   }
 
   /** Go to specific step */
   goTo(index: number): void {
     if (index >= 0 && index < this.steps().length) {
-      this.activeIndexChange.emit(index);
+      this.activeIndex.set(index);
     }
   }
 }

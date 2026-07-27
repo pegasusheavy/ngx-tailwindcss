@@ -22,20 +22,33 @@
       tableVariant="striped"
       tableSize="md"
       containerClass="max-w-4xl"
+      (selectionChange)="onSelectionChange($event)"
+      (rowClick)="onRowClick($event)"
+      (sortChange)="onSortChange($event)"
+      (pageChange)="onPageChange($event)"
     >
       <button
         twDatatablesActions
         class="px-3 py-2 rounded-lg text-sm font-semibold text-slate-600 dark:text-slate-100 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+        (click)="exportCsv()"
       >
         Export CSV
       </button>
       <button
         twDatatablesActions
         class="px-3 py-2 rounded-lg text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 transition"
+        (click)="newInvite()"
       >
         New invite
       </button>
     </tw-datatables>
+    <div class="mt-4 max-w-4xl space-y-1 text-sm text-slate-600 dark:text-slate-400">
+      <p>Selected: {{ selectedRows.length }} row(s)</p>
+      <p>Last table event: {{ lastEvent }}</p>
+      @if (toolbarMessage) {
+        <p>Toolbar: {{ toolbarMessage }}</p>
+      }
+    </div>
   </app-demo-section>
 
   <app-demo-section
@@ -58,6 +71,7 @@
       <button
         twDatatablesActions
         class="px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-600 text-white"
+        (click)="bulkActions()"
       >
         Bulk actions
       </button>

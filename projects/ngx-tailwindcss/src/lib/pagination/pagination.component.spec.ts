@@ -88,6 +88,56 @@ describe('TwPaginationComponent', () => {
     });
   });
 
+  describe('showFirstLast', () => {
+    const firstButton = (): HTMLButtonElement | null =>
+      paginationEl.querySelector('[aria-label="First page"]');
+    const lastButton = (): HTMLButtonElement | null =>
+      paginationEl.querySelector('[aria-label="Last page"]');
+
+    it('should not render first/last buttons by default', () => {
+      expect(firstButton()).toBeNull();
+      expect(lastButton()).toBeNull();
+    });
+
+    it('should render first/last buttons when enabled', () => {
+      component.showFirstLast.set(true);
+      fixture.detectChanges();
+
+      expect(firstButton()).toBeTruthy();
+      expect(lastButton()).toBeTruthy();
+    });
+
+    it('should navigate to the first page', () => {
+      component.showFirstLast.set(true);
+      component.currentPage.set(5);
+      fixture.detectChanges();
+
+      firstButton()!.click();
+      expect(component.pageChangeValue).toBe(1);
+    });
+
+    it('should navigate to the last page', () => {
+      component.showFirstLast.set(true);
+      component.currentPage.set(5);
+      fixture.detectChanges();
+
+      lastButton()!.click();
+      expect(component.pageChangeValue).toBe(10);
+    });
+
+    it('should disable first button on first page and last button on last page', () => {
+      component.showFirstLast.set(true);
+      fixture.detectChanges();
+      expect(firstButton()!.disabled).toBe(true);
+      expect(lastButton()!.disabled).toBe(false);
+
+      component.currentPage.set(10);
+      fixture.detectChanges();
+      expect(firstButton()!.disabled).toBe(false);
+      expect(lastButton()!.disabled).toBe(true);
+    });
+  });
+
   describe('page numbers', () => {
     it('should highlight current page', () => {
       component.currentPage.set(5);

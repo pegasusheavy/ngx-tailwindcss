@@ -110,6 +110,22 @@ describe('TwAvatarComponent', () => {
 
       expect(avatarEl.textContent).toContain('JD');
     });
+
+    it('should retry rendering the image when src changes after an error', () => {
+      component.initials.set('JD');
+      fixture.detectChanges();
+
+      avatarEl.querySelector('img')?.dispatchEvent(new Event('error'));
+      fixture.detectChanges();
+      expect(avatarEl.querySelector('img')).toBeNull();
+
+      component.src.set('https://example.com/other-avatar.jpg');
+      fixture.detectChanges();
+
+      const img = avatarEl.querySelector('img');
+      expect(img).toBeTruthy();
+      expect(img?.src).toContain('other-avatar.jpg');
+    });
   });
 
   describe('sizes', () => {
@@ -308,6 +324,41 @@ describe('TwAvatarGroupComponent', () => {
 
       const overflow = groupEl.querySelector('[class*="bg-slate-100"]');
       expect(overflow).toBeNull();
+    });
+  });
+
+  describe('max', () => {
+    it('should hide projected avatars beyond max', () => {
+      component.max.set(2);
+      fixture.detectChanges();
+      fixture.detectChanges();
+
+      const avatars = fixture.debugElement.queryAll(By.directive(TwAvatarComponent));
+      expect((avatars[0].nativeElement as HTMLElement).style.display).not.toBe('none');
+      expect((avatars[1].nativeElement as HTMLElement).style.display).not.toBe('none');
+      expect((avatars[2].nativeElement as HTMLElement).style.display).toBe('none');
+    });
+
+    it('should show all avatars when max is 0', () => {
+      const avatars = fixture.debugElement.queryAll(By.directive(TwAvatarComponent));
+      for (const avatar of avatars) {
+        expect((avatar.nativeElement as HTMLElement).style.display).not.toBe('none');
+      }
+    });
+  });
+
+  describe('size propagation', () => {
+    it('should propagate the group size to projected avatars', () => {
+      component.size.set('lg');
+      fixture.detectChanges();
+      fixture.detectChanges();
+
+      const avatars = fixture.debugElement.queryAll(By.directive(TwAvatarComponent));
+      for (const avatar of avatars) {
+        const container = (avatar.nativeElement as HTMLElement).querySelector('.relative');
+        expect(container?.className).toContain('w-12');
+        expect(container?.className).toContain('h-12');
+      }
     });
   });
 });

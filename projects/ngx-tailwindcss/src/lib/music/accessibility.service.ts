@@ -12,7 +12,13 @@ interface QueuedAnnouncement {
   message: string;
   priority: AnnouncementPriority;
   timestamp: number;
+  /** Coalescing key: a queued announcement with the same label is replaced */
+  label?: string;
 }
+
+/** IDs of the live region elements this service injects into the document */
+const POLITE_REGION_ID = 'tw-music-live-polite';
+const ASSERTIVE_REGION_ID = 'tw-music-live-assertive';
 
 /**
  * Accessibility preferences
@@ -49,7 +55,6 @@ export class MusicAccessibilityService implements OnDestroy {
   private assertiveRegion: HTMLElement | null = null;
   private announcementQueue: QueuedAnnouncement[] = [];
   private isProcessingQueue = false;
-  private readonly cleanupTimer: ReturnType<typeof setTimeout> | null = null;
 
   // Media query listeners
   private reducedMotionQuery: MediaQueryList | null = null;
@@ -61,6 +66,7 @@ export class MusicAccessibilityService implements OnDestroy {
   private readonly _reducedMotion = signal(false);
   private readonly _highContrast = signal(false);
   private readonly _screenReaderHints = signal(true);
+  private readonly _largeText = signal(false);
 
   /** Whether the user prefers reduced motion */
   readonly prefersReducedMotion = this._reducedMotion.asReadonly();
@@ -72,19 +78,21 @@ export class MusicAccessibilityService implements OnDestroy {
   readonly screenReaderHints = this._screenReaderHints.asReadonly();
 
   /** Combined preferences object */
-  readonly preferences = computed(
-    (): AccessibilityPreferences => ({
-      reducedMotion: this._reducedMotion(),
-      highContrast: this._highContrast(),
-      screenReaderEnabled: this._screenReaderHints(),
-      largeText: this.checkLargeText(),
-    })
-  );
+  readonly preferences = computed((): AccessibilityPreferences => ({
+    reducedMotion: this._reducedMotion(),
+    highContrast: this._highContrast(),
+    screenReaderEnabled: this._screenReaderHints(),
+    largeText: this._largeText(),
+  }));
 
   constructor() {
     if (typeof window !== 'undefined') {
       this.initLiveRegions();
       this.initMediaQueryListeners();
+      // Checked once at startup: reading it inside the `preferences` computed
+      // would force a synchronous layout on every recompute without ever
+      // becoming reactive (getComputedStyle is not a signal dependency).
+      this._largeText.set(this.checkLargeText());
     }
   }
 
@@ -104,6 +112,8 @@ export class MusicAccessibilityService implements OnDestroy {
   announce(message: string, priority: AnnouncementPriority = 'polite'): void {
     if (!message.trim()) return;
 
+    this.ensureLiveRegions();
+
     this.announcementQueue.push({
       message,
       priority,
@@ -116,11 +126,32 @@ export class MusicAccessibilityService implements OnDestroy {
   }
 
   /**
-   * Announce a value change (debounced for rapid changes)
+   * Announce a value change (coalesced for rapid changes: a still-queued
+   * announcement with the same label is replaced by the newest value instead
+   * of flooding the queue, e.g. while dragging a fader)
    */
   announceValueChange(label: string, value: string | number, unit?: string): void {
     const message = unit ? `${label}: ${value} ${unit}` : `${label}: ${value}`;
-    this.announce(message, 'polite');
+
+    this.ensureLiveRegions();
+
+    const announcement: QueuedAnnouncement = {
+      message,
+      priority: 'polite',
+      timestamp: Date.now(),
+      label,
+    };
+
+    const pendingIndex = this.announcementQueue.findIndex(queued => queued.label === label);
+    if (pendingIndex === -1) {
+      this.announcementQueue.push(announcement);
+    } else {
+      this.announcementQueue[pendingIndex] = announcement;
+    }
+
+    if (!this.isProcessingQueue) {
+      this.processAnnouncementQueue();
+    }
   }
 
   /**
@@ -195,27 +226,44 @@ export class MusicAccessibilityService implements OnDestroy {
           announcement.priority === 'assertive' ? 500 : 1000
         );
       });
+    } else {
+      // No live region available (e.g. server-side rendering or the regions
+      // were removed): drop the message and keep draining so the queue pump
+      // never wedges with isProcessingQueue stuck at true.
+      this.processAnnouncementQueue();
+    }
+  }
+
+  /** Re-create the live regions if they are missing (browser only) */
+  private ensureLiveRegions(): void {
+    if (typeof window === 'undefined') return;
+    if (!this.politeRegion || !this.assertiveRegion) {
+      this.initLiveRegions();
     }
   }
 
   private initLiveRegions(): void {
     // Create polite live region
-    this.politeRegion = document.createElement('div');
-    this.politeRegion.setAttribute('role', 'status');
-    this.politeRegion.setAttribute('aria-live', 'polite');
-    this.politeRegion.setAttribute('aria-atomic', 'true');
-    this.applyScreenReaderOnlyStyles(this.politeRegion);
-    this.politeRegion.id = 'tw-music-live-polite';
-    document.body.append(this.politeRegion);
+    if (!this.politeRegion) {
+      this.politeRegion = document.createElement('div');
+      this.politeRegion.setAttribute('role', 'status');
+      this.politeRegion.setAttribute('aria-live', 'polite');
+      this.politeRegion.setAttribute('aria-atomic', 'true');
+      this.applyScreenReaderOnlyStyles(this.politeRegion);
+      this.politeRegion.id = POLITE_REGION_ID;
+      document.body.append(this.politeRegion);
+    }
 
     // Create assertive live region
-    this.assertiveRegion = document.createElement('div');
-    this.assertiveRegion.setAttribute('role', 'alert');
-    this.assertiveRegion.setAttribute('aria-live', 'assertive');
-    this.assertiveRegion.setAttribute('aria-atomic', 'true');
-    this.applyScreenReaderOnlyStyles(this.assertiveRegion);
-    this.assertiveRegion.id = 'tw-music-live-assertive';
-    document.body.append(this.assertiveRegion);
+    if (!this.assertiveRegion) {
+      this.assertiveRegion = document.createElement('div');
+      this.assertiveRegion.setAttribute('role', 'alert');
+      this.assertiveRegion.setAttribute('aria-live', 'assertive');
+      this.assertiveRegion.setAttribute('aria-atomic', 'true');
+      this.applyScreenReaderOnlyStyles(this.assertiveRegion);
+      this.assertiveRegion.id = ASSERTIVE_REGION_ID;
+      document.body.append(this.assertiveRegion);
+    }
   }
 
   private applyScreenReaderOnlyStyles(element: HTMLElement): void {
@@ -321,10 +369,13 @@ export class MusicAccessibilityService implements OnDestroy {
   isScreenReaderLikely(): boolean {
     if (typeof window === 'undefined') return false;
 
-    // Check for common screen reader indicators
+    // Check for common screen reader indicators, excluding the live regions
+    // this service injects itself (they would otherwise force a constant true)
     return (
       // Check for ARIA live region activity
-      document.querySelector('[aria-live]') !== null ||
+      document.querySelector(
+        `[aria-live]:not(#${POLITE_REGION_ID}):not(#${ASSERTIVE_REGION_ID})`
+      ) !== null ||
       // Check for role="application" (often added by screen readers)
       document.querySelector('[role="application"]') !== null
     );
@@ -426,10 +477,6 @@ export class MusicAccessibilityService implements OnDestroy {
     }
     if (this.highContrastQuery && this.highContrastHandler) {
       this.highContrastQuery.removeEventListener('change', this.highContrastHandler);
-    }
-
-    if (this.cleanupTimer) {
-      clearTimeout(this.cleanupTimer);
     }
   }
 }

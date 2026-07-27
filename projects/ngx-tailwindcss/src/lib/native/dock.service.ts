@@ -1,10 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
-import { NativeMenuItem, Platform } from './native.types';
+import { NativeMenuItem } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
-
-const PLATFORM_TAURI: Platform = 'tauri';
-const PLATFORM_ELECTRON: Platform = 'electron';
 
 @Injectable({
   providedIn: 'root',
@@ -14,32 +11,27 @@ export class DockService {
 
   public readonly isSupported = signal(false);
 
+  // Id -> action routing table for Electron dock menu clicks (see convertMenuForElectron)
+  private readonly electronMenuActions = new Map<string, () => void>();
+  private electronMenuListenerRegistered = false;
+
   constructor() {
     this.checkSupport();
   }
 
   private checkSupport(): void {
-    const platform = this.platformService.platform();
-    this.isSupported.set(platform === PLATFORM_TAURI || platform === PLATFORM_ELECTRON);
+    this.isSupported.set(this.platformService.isTauri() || this.platformService.isElectron());
   }
 
   /**
-   * Set the dock badge (macOS) or taskbar overlay (Windows)
+   * Set the dock badge (macOS) or taskbar overlay (Windows).
+   * No-op on Tauri (warns): Tauri has no dock badge API.
    */
   public async setBadge(text: string): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
-      try {
-        const { getCurrentWindow } = await dynamicImport('@tauri-apps/api/window');
-        // Tauri doesn't have direct dock badge API, use window title instead
-        const appWindow = getCurrentWindow();
-        // Badge functionality varies by platform in Tauri
-        console.warn('Dock badge not directly supported in Tauri, consider using notifications');
-      } catch (error) {
-        console.error('Failed to set Tauri dock badge:', error);
-      }
-    } else if (platform === PLATFORM_ELECTRON) {
+    if (this.platformService.isTauri()) {
+      // Tauri has no dock badge API; intentional no-op.
+      console.warn('Dock badge not directly supported in Tauri, consider using notifications');
+    } else if (this.platformService.isElectron()) {
       try {
         const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('set-dock-badge', text);
@@ -60,9 +52,7 @@ export class DockService {
    * Set progress on the dock icon (macOS) or taskbar (Windows)
    */
   public async setProgress(progress: number): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_ELECTRON) {
+    if (this.platformService.isElectron()) {
       try {
         const { ipcRenderer } = await dynamicImport('electron');
         // Progress should be between 0 and 1, or -1 to clear
@@ -86,9 +76,7 @@ export class DockService {
    * Bounce the dock icon (macOS only)
    */
   public async bounce(type: 'informational' | 'critical' = 'informational'): Promise<number> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_ELECTRON) {
+    if (this.platformService.isElectron()) {
       try {
         const { ipcRenderer } = await dynamicImport('electron');
         return await ipcRenderer.invoke('dock-bounce', type);
@@ -105,9 +93,7 @@ export class DockService {
    * Cancel a dock bounce (macOS only)
    */
   public async cancelBounce(id: number): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_ELECTRON) {
+    if (this.platformService.isElectron()) {
       try {
         const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('cancel-dock-bounce', id);
@@ -118,14 +104,15 @@ export class DockService {
   }
 
   /**
-   * Set the dock menu (macOS only)
+   * Set the dock menu (macOS only).
+   * Item `action` callbacks are routed by id: the main process must echo the
+   * clicked item's id back on the 'dock-menu-click' channel.
    */
   public async setMenu(items: NativeMenuItem[]): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_ELECTRON) {
+    if (this.platformService.isElectron()) {
       try {
         const { ipcRenderer } = await dynamicImport('electron');
+        await this.registerElectronMenuClickListener();
         ipcRenderer.send('set-dock-menu', this.convertMenuForElectron(items));
       } catch (error) {
         console.error('Failed to set Electron dock menu:', error);
@@ -137,9 +124,7 @@ export class DockService {
    * Show the dock icon (macOS only - if hidden)
    */
   public async show(): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_ELECTRON) {
+    if (this.platformService.isElectron()) {
       try {
         const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('show-dock');
@@ -153,9 +138,7 @@ export class DockService {
    * Hide the dock icon (macOS only)
    */
   public async hide(): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_ELECTRON) {
+    if (this.platformService.isElectron()) {
       try {
         const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('hide-dock');
@@ -169,9 +152,7 @@ export class DockService {
    * Flash the window in the taskbar (Windows only)
    */
   public async flashFrame(flash: boolean): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
+    if (this.platformService.isTauri()) {
       try {
         const { getCurrentWindow } = await dynamicImport('@tauri-apps/api/window');
         const appWindow = getCurrentWindow();
@@ -179,7 +160,7 @@ export class DockService {
       } catch (error) {
         console.error('Failed to flash Tauri window:', error);
       }
-    } else if (platform === PLATFORM_ELECTRON) {
+    } else if (this.platformService.isElectron()) {
       try {
         const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('flash-frame', flash);
@@ -189,13 +170,44 @@ export class DockService {
     }
   }
 
-  private convertMenuForElectron(items: NativeMenuItem[]): unknown[] {
+  /**
+   * Listen for dock menu clicks echoed back from the Electron main process on
+   * the 'dock-menu-click' channel (payload: the clicked item's id) and invoke
+   * the matching registered action.
+   */
+  private async registerElectronMenuClickListener(): Promise<void> {
+    if (this.electronMenuListenerRegistered) return;
+
+    try {
+      const { ipcRenderer } = await dynamicImport('electron');
+      ipcRenderer.on('dock-menu-click', (_event: unknown, id: unknown) => {
+        this.electronMenuActions.get(String(id))?.();
+      });
+      this.electronMenuListenerRegistered = true;
+    } catch (error) {
+      console.warn('Failed to register dock menu click listener:', error);
+    }
+  }
+
+  /**
+   * Convert menu items to a serializable structure for the Electron main
+   * process. Functions cannot cross the IPC boundary, so each item's `action`
+   * is registered locally under its id; the main process must echo the
+   * clicked item's id back on the 'dock-menu-click' channel for actions to
+   * fire (see registerElectronMenuClickListener).
+   */
+  private convertMenuForElectron(items: NativeMenuItem[], isRoot = true): unknown[] {
+    if (isRoot) {
+      this.electronMenuActions.clear();
+    }
+
     return items.map(item => {
       if (item.type === 'separator') {
         return { type: 'separator' };
       }
 
       const electronItem: Record<string, unknown> = {
+        id: item.id,
         label: item.label,
         enabled: !item.disabled,
         accelerator: item.shortcut,
@@ -204,11 +216,11 @@ export class DockService {
       };
 
       if (item.submenu) {
-        electronItem['submenu'] = this.convertMenuForElectron(item.submenu);
+        electronItem['submenu'] = this.convertMenuForElectron(item.submenu, false);
       }
 
-      if (typeof item.action === 'string') {
-        electronItem['click'] = item.action;
+      if (item.action) {
+        this.electronMenuActions.set(item.id, item.action);
       }
 
       return electronItem;

@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
@@ -9,13 +8,14 @@ import {
   HostListener,
   inject,
   input,
+  NgZone,
   OnDestroy,
   output,
   PLATFORM_ID,
   signal,
   ViewChild,
 } from '@angular/core';
-import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -65,11 +65,11 @@ const SELECT_SIZES: Record<SelectSize, { trigger: string; text: string }> = {
   ],
   templateUrl: './select.component.html',
 })
-export class TwSelectComponent implements ControlValueAccessor, OnDestroy, AfterViewInit {
+export class TwSelectComponent implements ControlValueAccessor, OnDestroy {
   private readonly twClass = inject(TwClassService);
   private readonly elementRef = inject(ElementRef);
-  private readonly document = inject(DOCUMENT);
   private readonly platformId = inject(PLATFORM_ID);
+  private readonly ngZone = inject(NgZone);
 
   @ViewChild('triggerButton') triggerButton!: ElementRef<HTMLButtonElement>;
 
@@ -122,9 +122,12 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   readonly classOverride = input('');
 
   /**
-   * Where to append the dropdown
-   * - 'body': Appends dropdown to document body (avoids overflow clipping)
-   * - 'self': Keeps dropdown within the component (default)
+   * How the dropdown layer is positioned
+   * - 'body': Renders the dropdown as a fixed-position layer so it escapes
+   *   `overflow` clipping from scrollable ancestors (default). Note that an
+   *   ancestor with a `transform` or `filter` creates a new containing block
+   *   and can offset the layer.
+   * - 'self': Renders the dropdown absolutely positioned within the component
    */
   readonly appendTo = input<SelectAppendTo>('body');
 
@@ -138,13 +141,15 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
   protected filterValue = signal('');
   protected selectedValue = signal<any>(null);
   protected dropdownPosition = signal<{ top: number; left: number; width: number } | null>(null);
+  /** Index of the keyboard-active option within filteredOptions() */
+  protected activeIndex = signal(-1);
   private readonly _disabled = signal(false);
+
+  protected readonly listboxId = `tw-select-listbox-${Math.random().toString(36).slice(2)}`;
 
   private onChangeFn: (value: any) => void = () => {};
   private onTouchedFn: () => void = () => {};
-  private portalContainer: HTMLElement | null = null;
-  private scrollListener: (() => void) | null = null;
-  private resizeListener: (() => void) | null = null;
+  private positionListener: (() => void) | null = null;
 
   protected isDisabled = computed(() => this.disabled() || this._disabled());
 
@@ -163,6 +168,12 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
     const filterVal = this.filterValue().toLowerCase();
     if (!filterVal) return this.options();
     return this.options().filter(opt => opt.label.toLowerCase().includes(filterVal));
+  });
+
+  protected activeDescendantId = computed(() => {
+    const index = this.activeIndex();
+    if (!this.isOpen() || index < 0 || index >= this.filteredOptions().length) return null;
+    return `${this.listboxId}-option-${index}`;
   });
 
   protected filteredGroups = computed(() => {
@@ -246,28 +257,20 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
     return {};
   });
 
-  protected optionClasses(option: SelectOption) {
+  protected optionClasses(option: SelectOption, isActive = false) {
     const isSelected = this.isSelected(option);
     return this.twClass.merge(
       'w-full flex items-center px-4 py-2.5 text-left text-sm transition-colors',
       isSelected
         ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
         : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700',
+      !isSelected && isActive ? 'bg-slate-100 dark:bg-slate-700' : '',
       option.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
     );
   }
 
-  ngAfterViewInit(): void {
-    if (this.appendTo() === 'body' && isPlatformBrowser(this.platformId)) {
-      this.setupScrollListener();
-      this.setupResizeListener();
-    }
-  }
-
   ngOnDestroy(): void {
-    this.removePortal();
-    this.removeScrollListener();
-    this.removeResizeListener();
+    this.detachPositionListeners();
   }
 
   isSelected(option: SelectOption): boolean {
@@ -278,14 +281,12 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
     if (this.isDisabled()) return;
 
     const willOpen = !this.isOpen();
-    this.isOpen.set(willOpen);
-    this.onToggle.emit(willOpen);
-
     if (willOpen) {
-      this.updateDropdownPosition();
+      this.openDropdown();
     } else {
-      this.filterValue.set('');
+      this.closeDropdown();
     }
+    this.onToggle.emit(willOpen);
   }
 
   selectOption(option: SelectOption): void {
@@ -294,14 +295,14 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
     this.selectedValue.set(option.value);
     this.onChangeFn(option.value);
     this.onChange.emit(option);
-    this.isOpen.set(false);
-    this.filterValue.set('');
+    this.closeDropdown();
     this.onTouchedFn();
   }
 
   onFilterInput(event: Event): void {
     const inputEl = event.target as HTMLInputElement;
     this.filterValue.set(inputEl.value);
+    this.activeIndex.set(-1);
   }
 
   onKeydown(event: KeyboardEvent): void {
@@ -309,19 +310,47 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
       case 'Enter':
       case ' ': {
         event.preventDefault();
+        if (this.isOpen() && event.key === 'Enter') {
+          const active = this.filteredOptions()[this.activeIndex()];
+          if (active) {
+            this.selectOption(active);
+            break;
+          }
+        }
         this.toggleDropdown();
         break;
       }
       case 'Escape': {
-        this.isOpen.set(false);
-        this.filterValue.set('');
+        this.closeDropdown();
         break;
       }
       case 'ArrowDown': {
         event.preventDefault();
-        if (!this.isOpen()) {
-          this.isOpen.set(true);
-          this.updateDropdownPosition();
+        if (this.isOpen()) {
+          this.moveActiveIndex(1);
+        } else {
+          this.openDropdown();
+        }
+        break;
+      }
+      case 'ArrowUp': {
+        event.preventDefault();
+        if (this.isOpen()) {
+          this.moveActiveIndex(-1);
+        }
+        break;
+      }
+      case 'Home': {
+        if (this.isOpen()) {
+          event.preventDefault();
+          this.activeIndex.set(this.filteredOptions().length > 0 ? 0 : -1);
+        }
+        break;
+      }
+      case 'End': {
+        if (this.isOpen()) {
+          event.preventDefault();
+          this.activeIndex.set(this.filteredOptions().length - 1);
         }
         break;
       }
@@ -337,13 +366,45 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
       return;
     }
 
-    // Check if click is inside the portal (for appendTo="body")
-    if (this.portalContainer?.contains(target)) {
-      return;
-    }
+    this.closeDropdown();
+  }
 
+  private openDropdown(): void {
+    this.isOpen.set(true);
+    this.activeIndex.set(
+      Math.max(
+        0,
+        this.filteredOptions().findIndex(option => this.isSelected(option))
+      )
+    );
+    this.updateDropdownPosition();
+    this.attachPositionListeners();
+
+    if (this.filter() && isPlatformBrowser(this.platformId)) {
+      // Focus the filter input once the dropdown has rendered
+      setTimeout(() => {
+        (this.elementRef.nativeElement as HTMLElement).querySelector('input')?.focus();
+      });
+    }
+  }
+
+  private closeDropdown(): void {
     this.isOpen.set(false);
     this.filterValue.set('');
+    this.activeIndex.set(-1);
+    this.detachPositionListeners();
+  }
+
+  private moveActiveIndex(delta: number): void {
+    const options = this.filteredOptions();
+    if (options.length === 0) return;
+
+    let index = this.activeIndex();
+    for (const _ of options) {
+      index = (index + delta + options.length) % options.length;
+      if (!options[index].disabled) break;
+    }
+    this.activeIndex.set(index);
   }
 
   private updateDropdownPosition(): void {
@@ -359,49 +420,35 @@ export class TwSelectComponent implements ControlValueAccessor, OnDestroy, After
     });
   }
 
-  private setupScrollListener(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
+  private attachPositionListeners(): void {
+    if (
+      this.positionListener ||
+      this.appendTo() !== 'body' ||
+      !isPlatformBrowser(this.platformId)
+    ) {
+      return;
+    }
 
-    this.scrollListener = () => {
-      if (this.isOpen()) {
+    const listener = () => {
+      // Re-enter the zone only to update the position signal
+      this.ngZone.run(() => {
         this.updateDropdownPosition();
-      }
+      });
     };
+    this.positionListener = listener;
 
-    window.addEventListener('scroll', this.scrollListener, true);
+    this.ngZone.runOutsideAngular(() => {
+      window.addEventListener('scroll', listener, { capture: true, passive: true });
+      window.addEventListener('resize', listener, { passive: true });
+    });
   }
 
-  private removeScrollListener(): void {
-    if (this.scrollListener) {
-      window.removeEventListener('scroll', this.scrollListener, true);
-      this.scrollListener = null;
-    }
-  }
+  private detachPositionListeners(): void {
+    if (!this.positionListener) return;
 
-  private setupResizeListener(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    this.resizeListener = () => {
-      if (this.isOpen()) {
-        this.updateDropdownPosition();
-      }
-    };
-
-    window.addEventListener('resize', this.resizeListener);
-  }
-
-  private removeResizeListener(): void {
-    if (this.resizeListener) {
-      window.removeEventListener('resize', this.resizeListener);
-      this.resizeListener = null;
-    }
-  }
-
-  private removePortal(): void {
-    if (this.portalContainer) {
-      this.portalContainer.remove();
-      this.portalContainer = null;
-    }
+    window.removeEventListener('scroll', this.positionListener, { capture: true });
+    window.removeEventListener('resize', this.positionListener);
+    this.positionListener = null;
   }
 
   // ControlValueAccessor implementation

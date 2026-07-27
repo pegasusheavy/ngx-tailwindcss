@@ -27,6 +27,8 @@ import {
   MultiSelectGroup,
   TwAvatarComponent,
   TwModalComponent,
+  TwModalHeaderComponent,
+  TwModalTitleComponent,
   TwToastService,
   TwPaginationComponent,
   TwAlertComponent,
@@ -35,7 +37,7 @@ import {
   TwDropdownMenuComponent,
   TwDropdownItemDirective,
   TwDropdownDividerComponent,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface User {
@@ -61,6 +63,8 @@ interface User {
     TwSelectComponent,
     TwAvatarComponent,
     TwModalComponent,
+    TwModalHeaderComponent,
+    TwModalTitleComponent,
     TwPaginationComponent,
     TwAlertComponent,
     TwSpinnerComponent,

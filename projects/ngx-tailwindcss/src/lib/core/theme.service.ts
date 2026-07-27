@@ -70,8 +70,7 @@ export class TwThemeService {
     // Set up system preference detection
     this.setupSystemPreferenceListener();
 
-    // Apply the theme
-    this.applyTheme();
+    // Resolve the color mode and apply the theme
     this.updateColorMode();
   }
 

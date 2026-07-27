@@ -7,7 +7,6 @@ import {
   inject,
   Input,
   numberAttribute,
-  OnDestroy,
   Renderer2,
   signal,
 } from '@angular/core';
@@ -29,14 +28,17 @@ export class TwSrOnlyDirective {
     this._enabled.set(value);
   }
 
-  @Input({ transform: booleanAttribute }) focusable = false;
+  @Input({ transform: booleanAttribute }) set focusable(value: boolean) {
+    this._focusable.set(value);
+  }
 
   private readonly _enabled = signal(true);
+  private readonly _focusable = signal(false);
 
   protected srOnlyClasses = computed(() => {
     if (!this._enabled()) return '';
 
-    if (this.focusable) {
+    if (this._focusable()) {
       return 'sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-2 focus:bg-white focus:text-slate-900 focus:border focus:border-slate-300 focus:rounded';
     }
     return 'sr-only';
@@ -50,22 +52,22 @@ export class TwSrOnlyDirective {
   selector: '[twAnnounce]',
   standalone: true,
 })
-export class TwAnnounceDirective implements OnDestroy {
+export class TwAnnounceDirective {
   private readonly ariaService = inject(TwAriaService);
   private previousMessage = '';
 
   @Input() set twAnnounce(message: string) {
     if (message && message !== this.previousMessage) {
-      this.ariaService.announce(message);
+      if (this.announceAssertive) {
+        this.ariaService.announceAssertive(message);
+      } else {
+        this.ariaService.announce(message);
+      }
       this.previousMessage = message;
     }
   }
 
   @Input({ transform: booleanAttribute }) announceAssertive = false;
-
-  ngOnDestroy(): void {
-    this.ariaService.clearAnnouncements();
-  }
 }
 
 /**
@@ -150,11 +152,26 @@ export class TwAriaPressedDirective {
 export class TwAriaDisabledDirective {
   private readonly elementRef = inject(ElementRef);
   private readonly renderer = inject(Renderer2);
+  private originalTabindex: string | null = null;
+  private isDisabled = false;
 
   @Input({ transform: booleanAttribute }) set twAriaDisabled(value: boolean) {
-    this.renderer.setAttribute(this.elementRef.nativeElement, 'aria-disabled', String(value));
+    const element = this.elementRef.nativeElement as HTMLElement;
+    this.renderer.setAttribute(element, 'aria-disabled', String(value));
     if (value) {
-      this.renderer.setAttribute(this.elementRef.nativeElement, 'tabindex', '-1');
+      if (!this.isDisabled) {
+        this.originalTabindex = element.getAttribute('tabindex');
+        this.isDisabled = true;
+      }
+      this.renderer.setAttribute(element, 'tabindex', '-1');
+    } else if (this.isDisabled) {
+      if (this.originalTabindex === null) {
+        this.renderer.removeAttribute(element, 'tabindex');
+      } else {
+        this.renderer.setAttribute(element, 'tabindex', this.originalTabindex);
+      }
+      this.originalTabindex = null;
+      this.isDisabled = false;
     }
   }
 }

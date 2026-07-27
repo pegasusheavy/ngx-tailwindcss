@@ -217,10 +217,23 @@ describe('TwGridComponent', () => {
       component.colGap.set('lg');
       fixture.detectChanges();
       const inner = gridEl.querySelector('div');
-      // Check that at least one of the axis-specific gap classes is applied
-      const hasAxisGaps =
-        inner?.className.includes('gap-y-') || inner?.className.includes('gap-x-');
-      expect(hasAxisGaps).toBe(true);
+      // Literal axis-specific gap classes (statically analyzable by Tailwind)
+      expect(inner?.className).toContain('gap-y-2');
+      expect(inner?.className).toContain('gap-x-6');
+    });
+  });
+
+  describe('input changes after init', () => {
+    it('should re-render classes when cols changes', () => {
+      component.cols.set(2);
+      fixture.detectChanges();
+      expect(gridEl.querySelector('div')?.className).toContain('grid-cols-2');
+
+      component.cols.set(6);
+      fixture.detectChanges();
+      const inner = gridEl.querySelector('div');
+      expect(inner?.className).toContain('grid-cols-6');
+      expect(inner?.className).not.toContain('grid-cols-2');
     });
   });
 

@@ -147,6 +147,12 @@ describe('TwDividerComponent', () => {
       expect(container).toBeTruthy();
     });
 
+    it('should expose separator semantics on the labeled container', () => {
+      const separator = dividerEl.querySelector('[role="separator"]');
+      expect(separator).toBeTruthy();
+      expect(separator?.getAttribute('aria-orientation')).toBe('horizontal');
+    });
+
     describe('label position', () => {
       it('should have equal lines when center position', () => {
         const lines = dividerEl.querySelectorAll('[class*="flex-1"]');
@@ -174,6 +180,12 @@ describe('TwDividerComponent', () => {
     beforeEach(() => {
       component.orientation.set('vertical');
       fixture.detectChanges();
+    });
+
+    it('should expose separator semantics on the vertical divider', () => {
+      const separator = dividerEl.querySelector('[role="separator"]');
+      expect(separator).toBeTruthy();
+      expect(separator?.getAttribute('aria-orientation')).toBe('vertical');
     });
 
     it('should apply sm spacing for vertical', () => {

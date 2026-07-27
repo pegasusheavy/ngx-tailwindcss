@@ -2,7 +2,7 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   RadioSize,
   RadioVariant,
@@ -161,6 +161,16 @@ describe('TwRadioGroupComponent', () => {
     });
   });
 
+  describe('touched state', () => {
+    it('should invoke the registered onTouched callback after blur', () => {
+      const spy = vi.fn();
+      component.radioGroup.registerOnTouched(spy);
+      const radioInputs = fixture.debugElement.queryAll(By.css('input[type="radio"]'));
+      radioInputs[0].nativeElement.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+      expect(spy).toHaveBeenCalled();
+    });
+  });
+
   describe('disabled state', () => {
     it('should disable all radios when group is disabled', () => {
       component.disabled.set(true);
@@ -316,6 +326,14 @@ describe('TwRadioGroupComponent with FormControl', () => {
     fixture.detectChanges();
 
     expect(component.control.value).toBe('y');
+  });
+
+  it('should mark the FormControl as touched after blur', () => {
+    expect(component.control.touched).toBe(false);
+    const radioInput = fixture.debugElement.query(By.css('input[type="radio"]'));
+    radioInput.nativeElement.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+    fixture.detectChanges();
+    expect(component.control.touched).toBe(true);
   });
 
   it('should disable radios when FormControl is disabled', () => {

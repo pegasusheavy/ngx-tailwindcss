@@ -5,7 +5,6 @@ import {
   HostListener,
   inject,
   input,
-  OnInit,
   output,
 } from '@angular/core';
 import { DragData } from './native.types';
@@ -22,7 +21,7 @@ import { DragData } from './native.types';
   selector: '[twDraggable]',
   standalone: true,
 })
-export class TwDraggableDirective implements OnInit {
+export class TwDraggableDirective {
   private readonly elementRef = inject(ElementRef<HTMLElement>);
 
   // Inputs
@@ -49,11 +48,6 @@ export class TwDraggableDirective implements OnInit {
   @HostBinding('class.cursor-grab')
   protected get cursorClass(): boolean {
     return this.isDraggable;
-  }
-
-  public ngOnInit(): void {
-    const el = this.elementRef.nativeElement;
-    el.style.touchAction = 'none';
   }
 
   @HostListener('dragstart', ['$event'])

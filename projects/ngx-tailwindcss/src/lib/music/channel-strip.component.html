@@ -54,6 +54,8 @@
       [disabled]="disabled()"
       (click)="toggleRecord()"
       title="Record Arm"
+      aria-label="Record arm"
+      [attr.aria-pressed]="record()"
     >
       R
     </button>
@@ -93,21 +95,54 @@
   @if (showMeter()) {
     <div class="flex-1 flex items-center justify-center py-1">
       @if (stereo()) {
-        <tw-vu-meter
-          [leftValue]="meterLevel()"
-          [rightValue]="meterLevelRight()"
-          [stereo]="true"
-          [segmentCount]="size() === 'sm' ? 8 : 12"
-          [height]="size() === 'sm' ? 60 : size() === 'lg' ? 100 : 80"
-          variant="led"
-        ></tw-vu-meter>
+        <div class="relative">
+          <tw-vu-meter
+            [leftValue]="meterLevel()"
+            [rightValue]="meterLevelRight()"
+            [stereo]="true"
+            [segmentCount]="size() === 'sm' ? 8 : 12"
+            [height]="meterHeight()"
+            variant="led"
+          ></tw-vu-meter>
+
+          <!-- External peak markers (left / right channels) -->
+          @if (meterPeak() > 0) {
+            <div
+              class="absolute h-0.5 bg-red-400 pointer-events-none"
+              [style.left.px]="8"
+              [style.width.px]="12"
+              [style.bottom.px]="peakMarkerBottom(meterPeak())"
+              title="Peak (L)"
+            ></div>
+          }
+          @if (meterPeakRight() > 0) {
+            <div
+              class="absolute h-0.5 bg-red-400 pointer-events-none"
+              [style.left.px]="24"
+              [style.width.px]="12"
+              [style.bottom.px]="peakMarkerBottom(meterPeakRight())"
+              title="Peak (R)"
+            ></div>
+          }
+        </div>
       } @else {
-        <tw-vu-meter
-          [value]="meterLevel()"
-          [segmentCount]="size() === 'sm' ? 8 : 12"
-          [height]="size() === 'sm' ? 60 : size() === 'lg' ? 100 : 80"
-          variant="led"
-        ></tw-vu-meter>
+        <div class="relative">
+          <tw-vu-meter
+            [value]="meterLevel()"
+            [segmentCount]="size() === 'sm' ? 8 : 12"
+            [height]="meterHeight()"
+            variant="led"
+          ></tw-vu-meter>
+
+          <!-- External peak marker -->
+          @if (meterPeak() > 0) {
+            <div
+              class="absolute left-2 right-2 h-0.5 bg-red-400 pointer-events-none"
+              [style.bottom.px]="peakMarkerBottom(meterPeak())"
+              title="Peak"
+            ></div>
+          }
+        </div>
       }
     </div>
   }
@@ -160,6 +195,8 @@
         [disabled]="disabled()"
         (click)="toggleMute()"
         title="Mute"
+        aria-label="Mute"
+        [attr.aria-pressed]="mute()"
       >
         M
       </button>
@@ -175,6 +212,8 @@
         [disabled]="disabled()"
         (click)="toggleSolo()"
         title="Solo"
+        aria-label="Solo"
+        [attr.aria-pressed]="solo()"
       >
         S
       </button>

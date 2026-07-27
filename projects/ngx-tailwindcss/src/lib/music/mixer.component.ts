@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   input,
   numberAttribute,
   output,
@@ -120,6 +121,13 @@ export class TwMixerComponent {
   protected readonly scrollOffset = signal(0);
   protected readonly collapsedSections = signal<Set<string>>(new Set());
   protected readonly currentBreakpoint = signal<MixerBreakpoint>('md');
+
+  constructor() {
+    // Seed the internal master volume from the input (and track later changes)
+    effect(() => {
+      this.internalMasterVolume.set(this.masterVolume());
+    });
+  }
 
   protected readonly visibleChannels = computed(() => {
     const all = this.channels();

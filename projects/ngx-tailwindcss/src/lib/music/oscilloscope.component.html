@@ -1,3 +1,10 @@
 <div [class]="containerClasses()">
-  <canvas #canvas [attr.width]="width()" [attr.height]="height()" class="block"></canvas>
+  <canvas
+    #canvas
+    [attr.width]="width()"
+    [attr.height]="height()"
+    class="block"
+    role="img"
+    aria-label="Oscilloscope waveform display"
+  ></canvas>
 </div>

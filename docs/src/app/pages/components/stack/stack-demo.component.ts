@@ -4,7 +4,7 @@ import {
   TwStackComponent,
   TwVStackComponent,
   TwHStackComponent,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

@@ -44,7 +44,7 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
   /** Whether to center the ripple regardless of click position */
   @Input({ transform: booleanAttribute }) rippleCentered = false;
 
-  private readonly activeRipples: HTMLElement[] = [];
+  private readonly activeRipples: Array<{ element: HTMLElement; animation: Animation }> = [];
   private initialized = false;
 
   constructor() {
@@ -108,7 +108,6 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
     `;
 
     this.renderer.appendChild(el, ripple);
-    this.activeRipples.push(ripple);
 
     // Trigger animation using Web Animations API for smoother animation
     const animation = ripple.animate(
@@ -123,6 +122,8 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
       }
     );
 
+    this.activeRipples.push({ element: ripple, animation });
+
     // Remove ripple after animation
     animation.onfinish = () => {
       this.removeRipple(ripple);
@@ -130,7 +131,7 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
   }
 
   private removeRipple(ripple: HTMLElement): void {
-    const index = this.activeRipples.indexOf(ripple);
+    const index = this.activeRipples.findIndex(active => active.element === ripple);
     if (index > -1) {
       this.activeRipples.splice(index, 1);
     }
@@ -141,8 +142,12 @@ export class TwRippleDirective implements OnDestroy, AfterViewInit {
   }
 
   ngOnDestroy(): void {
-    this.activeRipples.forEach(ripple => {
-      this.removeRipple(ripple);
-    });
+    // Iterate a drained copy: removing while iterating activeRipples skips entries
+    for (const { element, animation } of this.activeRipples.splice(0)) {
+      animation.cancel();
+      if (element.parentNode) {
+        this.renderer.removeChild(this.el.nativeElement, element);
+      }
+    }
   }
 }

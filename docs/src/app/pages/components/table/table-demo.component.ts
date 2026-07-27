@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwTableComponent } from '@pegasusheavy/ngx-tailwindcss';
+import { TwTableComponent } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -28,6 +28,12 @@ export class TableDemoComponent {
     { field: 'role', header: 'Role' },
   ];
 
+  selectedUsers: any[] = [];
+
+  onSelectionChange(selection: any[]): void {
+    this.selectedUsers = selection;
+  }
+
   basicCode = `<tw-table [data]="users" [columns]="columns"></tw-table>
 
 // Component
@@ -54,11 +60,20 @@ columns = [
   filterCode = `<tw-table
   [data]="users"
   [columns]="columns"
-  showGlobalFilter="true"
+  showGlobalFilter
   filterPlaceholder="Search customers..."
   [paginator]="true"
   [rows]="3"
-  tableVariant="bordered"
-  classOverride="text-slate-700 dark:text-slate-300"
+  variant="bordered"
 ></tw-table>`;
+
+  selectableCode = `<tw-table
+  [data]="users"
+  [columns]="columns"
+  [selectable]="true"
+  selectionMode="multiple"
+  (selectionChange)="onSelectionChange($event)"
+></tw-table>
+
+<p>Selected: {{ selectedUsers.length }}</p>`;
 }

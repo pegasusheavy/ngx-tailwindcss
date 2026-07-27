@@ -1,8 +1,15 @@
 import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { TwRippleDirective } from './ripple.directive';
+
+// jsdom does not implement the Web Animations API
+if (!Element.prototype.animate) {
+  Element.prototype.animate = vi.fn(
+    () => ({ onfinish: null, cancel: vi.fn() }) as unknown as Animation
+  );
+}
 
 @Component({
   template: `
@@ -79,5 +86,26 @@ describe('TwRippleDirective', () => {
     component.rippleDisabled.set(true);
     fixture.detectChanges();
     expect(component.rippleDisabled()).toBe(true);
+  });
+
+  it('should render a ripple element on mousedown', () => {
+    buttonNative.dispatchEvent(
+      new MouseEvent('mousedown', { bubbles: true, clientX: 10, clientY: 10 })
+    );
+
+    const ripple = buttonNative.querySelector('span');
+    expect(ripple).toBeTruthy();
+    expect(ripple?.style.backgroundColor).toBeTruthy();
+  });
+
+  it('should not render a ripple on mousedown when disabled', () => {
+    component.rippleDisabled.set(true);
+    fixture.detectChanges();
+
+    buttonNative.dispatchEvent(
+      new MouseEvent('mousedown', { bubbles: true, clientX: 10, clientY: 10 })
+    );
+
+    expect(buttonNative.querySelector('span')).toBeNull();
   });
 });

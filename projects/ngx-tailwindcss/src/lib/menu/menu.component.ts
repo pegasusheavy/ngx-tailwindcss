@@ -3,14 +3,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  EventEmitter,
+  ElementRef,
   inject,
-  Input,
-  Output,
+  input,
+  output,
   signal,
   TemplateRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
 export interface MenuItem {
@@ -19,6 +19,10 @@ export interface MenuItem {
   icon?: TemplateRef<any>;
   command?: (event: { item: MenuItem }) => void;
   url?: string;
+  /**
+   * @deprecated The library does not depend on `@angular/router`; this value is
+   * rendered as a plain `href` (array segments joined with `/`). Prefer `url`.
+   */
   routerLink?: string | any[];
   disabled?: boolean;
   visible?: boolean;
@@ -30,6 +34,9 @@ export interface MenuItem {
 }
 
 export type MenuVariant = 'default' | 'bordered' | 'elevated';
+
+const MENU_POPUP_CLASSES =
+  'rounded-lg shadow-lg dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700';
 
 /**
  * Menu component with Tailwind CSS styling
@@ -48,21 +55,23 @@ export type MenuVariant = 'default' | 'bordered' | 'elevated';
 })
 export class TwMenuComponent {
   private readonly twClass = inject(TwClassService);
+  private readonly elementRef = inject(ElementRef);
+  private readonly document = inject(DOCUMENT);
 
   /** Menu items */
-  @Input() items: MenuItem[] = [];
+  readonly items = input<MenuItem[]>([]);
 
   /** Visual variant */
-  @Input() variant: MenuVariant = 'default';
+  readonly variant = input<MenuVariant>('default');
 
   /** Whether menu is popup style */
-  @Input({ transform: booleanAttribute }) popup = false;
+  readonly popup = input(false, { transform: booleanAttribute });
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /** Item select event */
-  @Output() onSelect = new EventEmitter<MenuItem>();
+  readonly onSelect = output<MenuItem>();
 
   protected openSubmenu = signal<MenuItem | null>(null);
 
@@ -75,7 +84,12 @@ export class TwMenuComponent {
         'bg-white dark:bg-slate-800 rounded-lg shadow-lg dark:shadow-slate-900/50 border border-slate-100 dark:border-slate-700',
     };
 
-    return this.twClass.merge('py-1 min-w-48', variantClasses[this.variant], this.classOverride);
+    return this.twClass.merge(
+      'py-1 min-w-48',
+      variantClasses[this.variant()],
+      this.popup() ? MENU_POPUP_CLASSES : '',
+      this.classOverride()
+    );
   });
 
   protected itemClasses(item: MenuItem) {
@@ -104,6 +118,15 @@ export class TwMenuComponent {
     return 'ml-auto px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300';
   }
 
+  /** Href for link items: `url` wins; `routerLink` renders as a plain href fallback */
+  protected itemHref(item: MenuItem): string | null {
+    if (item.url) return item.url;
+    if (item.routerLink) {
+      return Array.isArray(item.routerLink) ? item.routerLink.join('/') : item.routerLink;
+    }
+    return null;
+  }
+
   onSubmenuEnter(item: MenuItem): void {
     this.openSubmenu.set(item);
   }
@@ -121,6 +144,55 @@ export class TwMenuComponent {
 
     this.onSelect.emit(item);
   }
+
+  protected onLinkClick(item: MenuItem, event: Event): void {
+    if (item.disabled) {
+      event.preventDefault();
+      return;
+    }
+    this.onItemClick(item);
+  }
+
+  protected onMenuKeydown(event: KeyboardEvent): void {
+    const { key } = event;
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(key)) return;
+
+    const menuItems = [
+      ...(this.elementRef.nativeElement as HTMLElement).querySelectorAll<HTMLElement>(
+        '[role="menuitem"]:not([disabled]):not([aria-disabled="true"])'
+      ),
+    ];
+    if (menuItems.length === 0) return;
+
+    event.preventDefault();
+    const activeIndex = menuItems.indexOf(this.document.activeElement as HTMLElement);
+    let nextIndex: number;
+
+    switch (key) {
+      case 'ArrowDown': {
+        nextIndex = activeIndex < 0 ? 0 : (activeIndex + 1) % menuItems.length;
+        break;
+      }
+      case 'ArrowUp': {
+        nextIndex =
+          activeIndex < 0
+            ? menuItems.length - 1
+            : (activeIndex - 1 + menuItems.length) % menuItems.length;
+        break;
+      }
+      case 'Home': {
+        nextIndex = 0;
+        break;
+      }
+      default: {
+        // End
+        nextIndex = menuItems.length - 1;
+        break;
+      }
+    }
+
+    menuItems[nextIndex].focus();
+  }
 }
 
 /**
@@ -131,27 +203,16 @@ export class TwMenuComponent {
   standalone: true,
   imports: [CommonModule, TwMenuComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    @if (visible()) {
-      <div
-        class="fixed z-50"
-        [style.left.px]="x()"
-        [style.top.px]="y()"
-        (click)="$event.stopPropagation()"
-      >
-        <tw-menu [items]="items" variant="elevated" (onSelect)="onItemSelect($event)"></tw-menu>
-      </div>
-    }
-  `,
+  templateUrl: './context-menu.component.html',
   host: {
     '(document:click)': 'hide()',
     '(document:contextmenu)': 'hide()',
   },
 })
 export class TwContextMenuComponent {
-  @Input() items: MenuItem[] = [];
-  @Output() onSelect = new EventEmitter<MenuItem>();
-  @Output() onHide = new EventEmitter<void>();
+  readonly items = input<MenuItem[]>([]);
+  readonly onSelect = output<MenuItem>();
+  readonly onHide = output();
 
   protected visible = signal(false);
   protected x = signal(0);

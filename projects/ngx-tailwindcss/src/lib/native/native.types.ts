@@ -3,7 +3,15 @@
  */
 
 // Platform types
-export type Platform = 'macos' | 'windows' | 'linux' | 'web' | 'tauri' | 'electron';
+/** Operating system detected from the user agent. */
+export type OsPlatform = 'macos' | 'windows' | 'linux' | 'web';
+/** Runtime shell the application is executing in. */
+export type RuntimePlatform = 'tauri' | 'electron' | 'web';
+/**
+ * @deprecated Use `OsPlatform` for OS detection or `RuntimePlatform` for
+ * runtime-shell detection instead. This union conflated the two concerns.
+ */
+export type Platform = OsPlatform | 'tauri' | 'electron';
 export type PlatformTheme = 'light' | 'dark' | 'system';
 
 // Window types
@@ -17,13 +25,7 @@ export interface WindowState {
 // Title Bar types
 export type TitleBarVariant = 'default' | 'transparent' | 'unified';
 export type TitleBarPlatform =
-  | 'macos'
-  | 'windows'
-  | 'linux'
-  | 'web'
-  | 'auto'
-  | 'tauri'
-  | 'electron';
+  'macos' | 'windows' | 'linux' | 'web' | 'auto' | 'tauri' | 'electron';
 
 // Window Controls types
 export type WindowControlsPosition = 'left' | 'right';

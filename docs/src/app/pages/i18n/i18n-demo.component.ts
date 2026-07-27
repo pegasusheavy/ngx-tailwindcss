@@ -3,12 +3,15 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   TwI18nService,
+  TwTranslations,
   TwCardComponent,
   TwCardHeaderDirective,
   TwCardTitleDirective,
   TwCardBodyDirective,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../shared/demo-section.component';
+
+type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };
 
 @Component({
   selector: 'app-i18n-demo',
@@ -57,9 +60,103 @@ export class I18nDemoComponent {
     'pagination.nextPage',
   ];
 
+  // Small in-demo translation bundles so the live panel actually changes.
+  // (Nested objects are partial; the service deep-merges them over the
+  // English defaults at runtime.)
+  private readonly demoTranslations = {
+    es: {
+      common: {
+        loading: 'Cargando...',
+        close: 'Cerrar',
+        cancel: 'Cancelar',
+        confirm: 'Confirmar',
+        save: 'Guardar',
+        delete: 'Eliminar',
+        search: 'Buscar',
+        noResults: 'No se encontraron resultados',
+      },
+      button: { loading: 'Cargando, por favor espere' },
+      input: { clearInput: 'Borrar entrada' },
+      modal: { closeModal: 'Cerrar ventana modal' },
+      table: { noData: 'No hay datos disponibles', pageOf: 'Página {page} de {total}' },
+      pagination: { nextPage: 'Ir a la página siguiente' },
+    },
+    fr: {
+      common: {
+        loading: 'Chargement...',
+        close: 'Fermer',
+        cancel: 'Annuler',
+        confirm: 'Confirmer',
+        save: 'Enregistrer',
+        delete: 'Supprimer',
+        search: 'Rechercher',
+        noResults: 'Aucun résultat trouvé',
+      },
+      button: { loading: 'Chargement, veuillez patienter' },
+      input: { clearInput: 'Effacer la saisie' },
+      modal: { closeModal: 'Fermer la fenêtre modale' },
+      table: { noData: 'Aucune donnée disponible', pageOf: 'Page {page} sur {total}' },
+      pagination: { nextPage: 'Page suivante' },
+    },
+    de: {
+      common: {
+        loading: 'Wird geladen...',
+        close: 'Schließen',
+        cancel: 'Abbrechen',
+        confirm: 'Bestätigen',
+        save: 'Speichern',
+        delete: 'Löschen',
+        search: 'Suchen',
+        noResults: 'Keine Ergebnisse gefunden',
+      },
+      button: { loading: 'Wird geladen, bitte warten' },
+      input: { clearInput: 'Eingabe löschen' },
+      modal: { closeModal: 'Modales Fenster schließen' },
+      table: { noData: 'Keine Daten verfügbar', pageOf: 'Seite {page} von {total}' },
+      pagination: { nextPage: 'Nächste Seite' },
+    },
+    ar: {
+      common: {
+        loading: 'جارٍ التحميل...',
+        close: 'إغلاق',
+        cancel: 'إلغاء',
+        confirm: 'تأكيد',
+        save: 'حفظ',
+        delete: 'حذف',
+        search: 'بحث',
+        noResults: 'لا توجد نتائج',
+      },
+      button: { loading: 'جارٍ التحميل، يرجى الانتظار' },
+      input: { clearInput: 'مسح الإدخال' },
+      modal: { closeModal: 'إغلاق النافذة' },
+      table: { noData: 'لا توجد بيانات', pageOf: 'صفحة {page} من {total}' },
+      pagination: { nextPage: 'الصفحة التالية' },
+    },
+    he: {
+      common: {
+        loading: 'טוען...',
+        close: 'סגור',
+        cancel: 'ביטול',
+        confirm: 'אישור',
+        save: 'שמור',
+        delete: 'מחק',
+        search: 'חיפוש',
+        noResults: 'לא נמצאו תוצאות',
+      },
+      button: { loading: 'טוען, אנא המתן' },
+      input: { clearInput: 'נקה קלט' },
+      modal: { closeModal: 'סגור חלון' },
+      table: { noData: 'אין נתונים זמינים', pageOf: 'עמוד {page} מתוך {total}' },
+      pagination: { nextPage: 'העמוד הבא' },
+    },
+  } as Record<string, DeepPartial<TwTranslations>>;
+
   changeLocale(locale: string): void {
     this.selectedLocale.set(locale);
     this.i18nService.setLocale(locale);
+    // Register the demo bundle for this locale (empty object resets to the
+    // English defaults).
+    this.i18nService.setTranslations((this.demoTranslations[locale] ?? {}) as Partial<TwTranslations>);
   }
 
   getTranslation(key: string): string {
@@ -73,7 +170,7 @@ export class I18nDemoComponent {
   // Code examples
   setupCode = `// app.config.ts
 import { ApplicationConfig } from '@angular/core';
-import { provideTwTranslations, provideTwLocale } from '@pegasusheavy/ngx-tailwindcss';
+import { provideTwTranslations, provideTwLocale } from '@quinnjr/ngx-tailwindcss';
 
 // Spanish translations
 const spanishTranslations = {
@@ -107,7 +204,7 @@ export const appConfig: ApplicationConfig = {
   ],
 };`;
 
-  serviceCode = `import { TwI18nService } from '@pegasusheavy/ngx-tailwindcss';
+  serviceCode = `import { TwI18nService } from '@quinnjr/ngx-tailwindcss';
 
 @Component({...})
 export class MyComponent {

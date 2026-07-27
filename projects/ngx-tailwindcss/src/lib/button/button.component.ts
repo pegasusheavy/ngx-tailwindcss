@@ -114,6 +114,7 @@ const SPINNER_SIZES: Record<ButtonSize, string> = {
     '[style.display]': '"inline-flex"',
     '[style.position]': '"relative"',
     '[style.overflow]': '"hidden"',
+    '(keydown)': 'onHostKeydown($event)',
   },
 })
 export class TwButtonComponent {
@@ -183,6 +184,11 @@ export class TwButtonComponent {
     if (this._fullWidth()) conditionalClasses.push('w-full');
     if (this._loading()) conditionalClasses.push('cursor-wait');
     if (this._iconOnly()) conditionalClasses.push('gap-0');
+    // The host is a custom element, so CSS :disabled never matches;
+    // apply the inert styles directly when disabled.
+    if (this.isDisabled()) {
+      conditionalClasses.push('opacity-50 cursor-not-allowed pointer-events-none');
+    }
 
     return this.twClass.merge(
       BUTTON_BASE_CLASSES,
@@ -196,11 +202,22 @@ export class TwButtonComponent {
 
   protected readonly spinnerSizeClass = computed(() => SPINNER_SIZES[this._size()]);
 
-  // Effect to sync ripple directive state
   constructor() {
+    // Sync ripple directive state
     effect(() => {
       this.rippleDirective.rippleDisabled = !this._ripple() || this.isDisabled();
       this.rippleDirective.rippleColor = this._rippleColor();
+    });
+
+    // The host is a custom element, not a native <button>, so a disabled
+    // attribute does not block activation; swallow clicks while disabled.
+    // Registered here so it precedes consumer (click) listeners, making
+    // stopImmediatePropagation actually suppress them.
+    (this.elementRef.nativeElement as HTMLElement).addEventListener('click', (event: Event) => {
+      if (this.isDisabled()) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+      }
     });
   }
 
@@ -217,6 +234,20 @@ export class TwButtonComponent {
   /** Programmatically blur the button */
   blur(): void {
     this.elementRef.nativeElement.blur();
+  }
+
+  /** Keyboard activation (Enter/Space) for the role="button" host element */
+  protected onHostKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    if (this.isDisabled()) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      return;
+    }
+
+    event.preventDefault();
+    (this.elementRef.nativeElement as HTMLElement).click();
   }
 }
 

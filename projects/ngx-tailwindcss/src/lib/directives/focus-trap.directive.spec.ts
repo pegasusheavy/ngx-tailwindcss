@@ -1,8 +1,21 @@
 import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { TwFocusTrapDirective } from './focus-trap.directive';
+
+// jsdom reports zero layout metrics, which the trap's visibility
+// filter treats as hidden; report a non-zero size for the tests
+beforeAll(() => {
+  Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+    configurable: true,
+    get: () => 10,
+  });
+  Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+    configurable: true,
+    get: () => 10,
+  });
+});
 
 @Component({
   template: `
@@ -83,5 +96,62 @@ describe('TwFocusTrapDirective', () => {
     const buttons = trapEl.querySelectorAll('button');
     expect(inputs.length).toBe(2);
     expect(buttons.length).toBe(1);
+  });
+
+  it('should wrap focus to the first element when tabbing from the last', () => {
+    const firstInput = fixture.debugElement.query(By.css('[data-testid="first-input"]'))
+      .nativeElement as HTMLElement;
+    const lastInput = fixture.debugElement.query(By.css('[data-testid="last-input"]'))
+      .nativeElement as HTMLElement;
+
+    lastInput.focus();
+    const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
+    lastInput.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(firstInput);
+  });
+
+  it('should wrap focus to the last element when shift-tabbing from the first', () => {
+    const firstInput = fixture.debugElement.query(By.css('[data-testid="first-input"]'))
+      .nativeElement as HTMLElement;
+    const lastInput = fixture.debugElement.query(By.css('[data-testid="last-input"]'))
+      .nativeElement as HTMLElement;
+
+    firstInput.focus();
+    const event = new KeyboardEvent('keydown', {
+      key: 'Tab',
+      shiftKey: true,
+      bubbles: true,
+      cancelable: true,
+    });
+    firstInput.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(document.activeElement).toBe(lastInput);
+  });
+
+  it('should pull focus back into the trap when it escapes', () => {
+    const firstInput = fixture.debugElement.query(By.css('[data-testid="first-input"]'))
+      .nativeElement as HTMLElement;
+
+    (document.activeElement as HTMLElement | null)?.blur();
+    document.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })
+    );
+
+    expect(document.activeElement).toBe(firstInput);
+  });
+
+  it('should not intercept Tab in the middle of the trap', () => {
+    const middleButton = fixture.debugElement.query(By.css('[data-testid="middle-button"]'))
+      .nativeElement as HTMLElement;
+
+    middleButton.focus();
+    const event = new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true });
+    middleButton.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(false);
+    expect(document.activeElement).toBe(middleButton);
   });
 });

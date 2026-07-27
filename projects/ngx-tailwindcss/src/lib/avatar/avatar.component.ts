@@ -1,5 +1,17 @@
-import { Component, computed, Input, signal } from '@angular/core';
+import {
+  AfterContentInit,
+  Component,
+  computed,
+  ContentChildren,
+  DestroyRef,
+  effect,
+  inject,
+  Input,
+  QueryList,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 export type AvatarVariant = 'circle' | 'rounded' | 'square';
@@ -10,10 +22,15 @@ export type AvatarStatus = 'online' | 'offline' | 'busy' | 'away' | 'none';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './avatar.component.html',
+  host: {
+    '[style.display]': 'hiddenInGroup() ? "none" : null',
+  },
 })
 export class TwAvatarComponent {
   @Input() set src(val: string) {
     this._src.set(val);
+    // A new source gets a fresh chance to load
+    this._imageError.set(false);
   }
   @Input() set alt(val: string) {
     this._alt.set(val);
@@ -46,6 +63,9 @@ export class TwAvatarComponent {
   protected _badge = signal('');
   protected _color = signal('');
   protected _imageError = signal(false);
+
+  /** Internal: set by TwAvatarGroupComponent to hide avatars beyond its `max` */
+  readonly hiddenInGroup = signal(false);
 
   protected srcVal = computed(() => (this._imageError() ? '' : this._src()));
   protected altVal = computed(() => this._alt());
@@ -158,7 +178,7 @@ export class TwAvatarComponent {
   imports: [CommonModule],
   templateUrl: './avatar-group.component.html',
 })
-export class TwAvatarGroupComponent {
+export class TwAvatarGroupComponent implements AfterContentInit {
   @Input() set max(val: number) {
     this._max.set(val);
   }
@@ -172,10 +192,44 @@ export class TwAvatarGroupComponent {
     this._spacing.set(val);
   }
 
+  @ContentChildren(TwAvatarComponent) protected avatars!: QueryList<TwAvatarComponent>;
+
   protected _max = signal(0);
   protected _total = signal(0);
   protected _size = signal<AvatarSize>('md');
   protected _spacing = signal<'tight' | 'normal' | 'loose'>('normal');
+
+  private readonly destroyRef = inject(DestroyRef);
+
+  constructor() {
+    // Re-apply max/size to projected avatars whenever either input changes
+    effect(() => {
+      this._max();
+      this._size();
+      this.applyToAvatars();
+    });
+  }
+
+  ngAfterContentInit(): void {
+    this.applyToAvatars();
+
+    this.avatars.changes.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.applyToAvatars();
+    });
+  }
+
+  /** Propagates the group size to each avatar and hides avatars beyond `max` */
+  private applyToAvatars(): void {
+    if (!this.avatars) return;
+
+    const max = this._max();
+    const size = this._size();
+
+    this.avatars.forEach((avatar, index) => {
+      avatar.size = size;
+      avatar.hiddenInGroup.set(max > 0 && index >= max);
+    });
+  }
 
   protected maxVal = computed(() => this._max());
   protected overflowVal = computed(() => {

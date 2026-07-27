@@ -198,14 +198,24 @@
     </div>
 
     <app-demo-section title="Oscilloscope Variants" [code]="oscilloscopeCode">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
-        <div class="space-y-2">
-          <p class="text-xs text-slate-500 dark:text-slate-400">Retro</p>
-          <tw-oscilloscope variant="retro" [width]="280" [height]="120"></tw-oscilloscope>
+      <div class="space-y-4 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
+        <div class="flex items-center gap-4">
+          <tw-button variant="primary" size="sm" (click)="toggleOscilloscopeSignal()">
+            {{ oscilloscopeAnalyser() ? 'Stop Test Signal' : 'Start Test Signal' }}
+          </tw-button>
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            Feeds a silent 220 Hz sine wave into an AnalyserNode.
+          </p>
         </div>
-        <div class="space-y-2">
-          <p class="text-xs text-slate-500 dark:text-slate-400">Neon</p>
-          <tw-oscilloscope variant="neon" [width]="280" [height]="120"></tw-oscilloscope>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Retro</p>
+            <tw-oscilloscope [analyserNode]="oscilloscopeAnalyser()" variant="retro" [width]="280" [height]="120"></tw-oscilloscope>
+          </div>
+          <div class="space-y-2">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Neon</p>
+            <tw-oscilloscope [analyserNode]="oscilloscopeAnalyser()" variant="neon" [width]="280" [height]="120"></tw-oscilloscope>
+          </div>
         </div>
       </div>
     </app-demo-section>
@@ -438,18 +448,18 @@
   <section class="space-y-8">
     <div class="border-b border-slate-200 dark:border-slate-700 pb-4">
       <h2 class="text-2xl font-bold text-slate-900 dark:text-white">Audio Visualizer</h2>
-      <p class="text-slate-600 dark:text-slate-400 mt-1">Animated audio visualization with multiple styles.</p>
+      <p class="text-slate-600 dark:text-slate-400 mt-1">Animated audio visualization with multiple styles. Shown here with <code>[demoMode]="true"</code> (generated data, no beat events); bind an <code>analyserNode</code> for live audio.</p>
     </div>
 
     <app-demo-section title="Visualizer Styles" [code]="visualizerCode">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-slate-100/60 dark:bg-slate-900/70 rounded-xl border border-slate-200 dark:border-slate-700">
         <div class="space-y-2">
           <p class="text-xs text-slate-500 dark:text-slate-400">Circular</p>
-          <tw-visualizer variant="circular" [width]="200" [height]="200"></tw-visualizer>
+          <tw-visualizer variant="circular" [demoMode]="true" [width]="200" [height]="200"></tw-visualizer>
         </div>
         <div class="space-y-2">
           <p class="text-xs text-slate-500 dark:text-slate-400">Bars</p>
-          <tw-visualizer variant="bars" [width]="280" [height]="150"></tw-visualizer>
+          <tw-visualizer variant="bars" [demoMode]="true" [width]="280" [height]="150"></tw-visualizer>
         </div>
       </div>
     </app-demo-section>

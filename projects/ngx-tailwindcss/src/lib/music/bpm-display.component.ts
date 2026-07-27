@@ -6,6 +6,7 @@ import {
   inject,
   input,
   numberAttribute,
+  OnDestroy,
   OnInit,
   output,
   signal,
@@ -16,13 +17,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 
 export type BpmDisplayVariant =
-  | 'default'
-  | 'minimal'
-  | 'led'
-  | 'digital'
-  | 'analog'
-  | 'light'
-  | 'highContrast';
+  'default' | 'minimal' | 'led' | 'digital' | 'analog' | 'light' | 'highContrast';
 export type BpmDisplaySize = 'sm' | 'md' | 'lg' | 'xl';
 export type BpmSyncStatus = 'disconnected' | 'searching' | 'synced' | 'master';
 
@@ -58,7 +53,7 @@ export const BPM_RANGES = {
     class: 'inline-block',
   },
 })
-export class TwBpmDisplayComponent implements OnInit {
+export class TwBpmDisplayComponent implements OnInit, OnDestroy {
   private readonly destroyRef = inject(DestroyRef);
 
   // Configuration
@@ -101,6 +96,18 @@ export class TwBpmDisplayComponent implements OnInit {
   protected readonly beatActive = signal(false);
 
   private beatInterval: ReturnType<typeof setInterval> | null = null;
+  private beatFlashTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  ngOnDestroy(): void {
+    if (this.beatInterval) {
+      clearInterval(this.beatInterval);
+      this.beatInterval = null;
+    }
+    if (this.beatFlashTimeout) {
+      clearTimeout(this.beatFlashTimeout);
+      this.beatFlashTimeout = null;
+    }
+  }
 
   ngOnInit(): void {
     // Sync with input
@@ -136,7 +143,9 @@ export class TwBpmDisplayComponent implements OnInit {
 
     this.beatInterval = setInterval(() => {
       this.beatActive.set(true);
-      setTimeout(() => { this.beatActive.set(false); }, 100);
+      this.beatFlashTimeout = setTimeout(() => {
+        this.beatActive.set(false);
+      }, 100);
     }, intervalMs);
   }
 
@@ -257,7 +266,9 @@ export class TwBpmDisplayComponent implements OnInit {
   }
 
   private setBpm(value: number): void {
-    const clamped = Math.max(this.minBpm(), Math.min(this.maxBpm(), value));
+    // Round to 2 decimals to avoid float noise from fine-step increments
+    const rounded = Math.round(value * 100) / 100;
+    const clamped = Math.max(this.minBpm(), Math.min(this.maxBpm(), rounded));
     this.internalBpm.set(clamped);
     this.bpmChange.emit(clamped);
 

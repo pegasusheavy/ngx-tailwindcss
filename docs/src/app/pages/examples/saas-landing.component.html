@@ -480,9 +480,11 @@
   <!-- Demo Modal -->
   <tw-modal
     [(open)]="demoModalOpen"
-    title="Watch Product Demo"
     [showCloseButton]="true"
     size="lg">
+    <tw-modal-header>
+      <tw-modal-title>Watch Product Demo</tw-modal-title>
+    </tw-modal-header>
     <div class="aspect-video bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 rounded-xl flex items-center justify-center mb-6 border border-violet-500/20">
       <div class="text-center">
         <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-violet-500/20 flex items-center justify-center">
@@ -513,8 +515,10 @@
   <!-- Contact Modal -->
   <tw-modal
     [(open)]="contactModalOpen"
-    title="Contact Sales"
     [showCloseButton]="true">
+    <tw-modal-header>
+      <tw-modal-title>Contact Sales</tw-modal-title>
+    </tw-modal-header>
     <div class="space-y-5">
       <tw-input
         [(ngModel)]="name"

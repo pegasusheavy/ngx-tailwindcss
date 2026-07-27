@@ -96,7 +96,6 @@
           [max]="maxBpm()"
           class="w-24 text-center bg-transparent border-b-2 border-blue-500 outline-none"
           [class]="bpmValueClasses()"
-         
         />
       } @else {
         <div
@@ -302,6 +301,26 @@
         (click)="incrementBpm(-1)"
       >
         -1
+      </button>
+      <button
+        type="button"
+        class="px-2 py-0.5 rounded text-xs transition-colors"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable()"
+        (click)="incrementBpm(-fineStep())"
+        [title]="'Fine decrement (-' + fineStep() + ')'"
+      >
+        -{{ fineStep() }}
+      </button>
+      <button
+        type="button"
+        class="px-2 py-0.5 rounded text-xs transition-colors"
+        [class]="buttonClasses()"
+        [disabled]="disabled() || !editable()"
+        (click)="incrementBpm(fineStep())"
+        [title]="'Fine increment (+' + fineStep() + ')'"
+      >
+        +{{ fineStep() }}
       </button>
       <button
         type="button"

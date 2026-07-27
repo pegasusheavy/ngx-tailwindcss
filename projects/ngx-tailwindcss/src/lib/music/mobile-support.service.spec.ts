@@ -58,7 +58,9 @@ describe('MobileSupportService', () => {
       } as unknown as TouchEvent;
 
       // Should not throw
-      expect(() => { service.startTouchTracking(touchEvent); }).not.toThrow();
+      expect(() => {
+        service.startTouchTracking(touchEvent);
+      }).not.toThrow();
     });
 
     it('should start touch tracking with mouse event', () => {
@@ -68,7 +70,9 @@ describe('MobileSupportService', () => {
       });
 
       // Should not throw
-      expect(() => { service.startTouchTracking(mouseEvent); }).not.toThrow();
+      expect(() => {
+        service.startTouchTracking(mouseEvent);
+      }).not.toThrow();
     });
 
     it('should validate touch duration', () => {
@@ -128,12 +132,34 @@ describe('MobileSupportService', () => {
       expect(result).toBe(true);
     });
 
-    it('should enforce cooldown', () => {
+    it('should not mutate state on check (pure shouldAllowAction)', () => {
+      // Repeated checks without consuming must all pass
+      expect(service.shouldAllowAction({ cooldownMs: 1000 })).toBe(true);
+      expect(service.shouldAllowAction({ cooldownMs: 1000 })).toBe(true);
+      expect(service.shouldAllowAction({ cooldownMs: 1000 })).toBe(true);
+    });
+
+    it('should enforce cooldown after an action is consumed', () => {
       // First action should be allowed
       expect(service.shouldAllowAction({ cooldownMs: 1000 })).toBe(true);
+      service.consumeAction();
 
       // Immediate second action should be blocked
       expect(service.shouldAllowAction({ cooldownMs: 1000 })).toBe(false);
+    });
+
+    it('should honor minDuration', () => {
+      const touchEvent = {
+        touches: [{ clientX: 0, clientY: 0 }],
+      } as unknown as TouchEvent;
+
+      service.startTouchTracking(touchEvent);
+
+      // Immediately after touch start, a long minimum duration is not met
+      expect(service.shouldAllowAction({ minDuration: 10_000 })).toBe(false);
+
+      // A zero minimum duration passes
+      expect(service.shouldAllowAction({ minDuration: 0 })).toBe(true);
     });
   });
 

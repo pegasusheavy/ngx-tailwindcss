@@ -74,42 +74,89 @@ describe('TwVolumeDialComponent', () => {
   });
 
   describe('inputs', () => {
-    it('should accept value input', () => {
+    it('should reflect the bound value in aria-valuenow', () => {
       component.value.set(75);
       fixture.detectChanges();
-      expect(component.dial).toBeTruthy();
+
+      expect(svgEl.getAttribute('aria-valuenow')).toBe('75');
     });
 
-    it('should accept min/max inputs', () => {
+    it('should render the value text when showValue is enabled', () => {
+      component.value.set(42);
+      fixture.detectChanges();
+
+      expect((fixture.nativeElement as HTMLElement).textContent).toContain('42');
+    });
+
+    it('should clamp keyboard-driven changes at max', () => {
+      component.min.set(10);
+      component.max.set(90);
+      component.value.set(90);
+      fixture.detectChanges();
+
+      svgEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }));
+      fixture.detectChanges();
+
+      expect(svgEl.getAttribute('aria-valuenow')).toBe('90');
+      expect(component.valueChanges).toHaveLength(0);
+    });
+
+    it('should clamp to min via the Home key', () => {
       component.min.set(10);
       component.max.set(90);
       fixture.detectChanges();
-      expect(component.dial).toBeTruthy();
+
+      svgEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'Home' }));
+      fixture.detectChanges();
+
+      expect(svgEl.getAttribute('aria-valuenow')).toBe('10');
+      expect(component.valueChanges).toContain(10);
     });
 
-    it('should accept step input', () => {
+    it('should jump to max via the End key', () => {
+      svgEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'End' }));
+      fixture.detectChanges();
+
+      expect(svgEl.getAttribute('aria-valuenow')).toBe('100');
+      expect(component.valueChanges).toContain(100);
+    });
+
+    it('should apply the step to keyboard increments', () => {
       component.step.set(5);
       fixture.detectChanges();
-      expect(component.dial).toBeTruthy();
+
+      svgEl.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowUp' }));
+      fixture.detectChanges();
+
+      expect(svgEl.getAttribute('aria-valuenow')).toBe('55');
+      expect(component.valueChanges).toContain(55);
     });
 
-    it('should accept variant input', () => {
+    it('should resize the SVG according to the size input', () => {
+      const expected: Record<Exclude<DialSize, 'xs'>, string> = {
+        sm: '48',
+        md: '72',
+        lg: '96',
+        xl: '128',
+      };
+
+      for (const [size, dimension] of Object.entries(expected)) {
+        component.size.set(size as DialSize);
+        fixture.detectChanges();
+
+        expect(svgEl.getAttribute('width')).toBe(dimension);
+        expect(svgEl.getAttribute('height')).toBe(dimension);
+      }
+    });
+
+    it('should render each variant without errors', () => {
       const variants: DialVariant[] = ['modern', 'vintage', 'minimal', 'led'];
 
       for (const variant of variants) {
         component.variant.set(variant);
         fixture.detectChanges();
-        expect(component.dial).toBeTruthy();
-      }
-    });
 
-    it('should accept size input', () => {
-      const sizes: DialSize[] = ['sm', 'md', 'lg', 'xl'];
-
-      for (const size of sizes) {
-        component.size.set(size);
-        fixture.detectChanges();
-        expect(component.dial).toBeTruthy();
+        expect(svgEl.querySelectorAll('path').length).toBeGreaterThan(0);
       }
     });
   });

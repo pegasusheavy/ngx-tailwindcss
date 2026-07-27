@@ -88,4 +88,50 @@ describe('TwClickOutsideDirective', () => {
   it('should initialize click count at 0', () => {
     expect(component.clickOutsideCount).toBe(0);
   });
+
+  it('should emit when clicking outside the element', async () => {
+    // Flush the microtask that attaches the document listener
+    await Promise.resolve();
+
+    const outsideButton = fixture.debugElement.query(By.css('[data-testid="outside-button"]'))
+      .nativeElement as HTMLElement;
+    outsideButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(component.clickOutsideCount).toBe(1);
+    expect(component.lastEvent).toBeInstanceOf(MouseEvent);
+  });
+
+  it('should not emit when clicking inside the element', async () => {
+    await Promise.resolve();
+
+    const insideButton = fixture.debugElement.query(By.css('[data-testid="inside-button"]'))
+      .nativeElement as HTMLElement;
+    insideButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(component.clickOutsideCount).toBe(0);
+  });
+
+  it('should not emit when clicking an excluded element', async () => {
+    component.excludeSelectors.set(['[data-testid="outside-button"]']);
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    const outsideButton = fixture.debugElement.query(By.css('[data-testid="outside-button"]'))
+      .nativeElement as HTMLElement;
+    outsideButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(component.clickOutsideCount).toBe(0);
+  });
+
+  it('should not emit when detection is disabled', async () => {
+    component.enabled.set(false);
+    fixture.detectChanges();
+    await Promise.resolve();
+
+    const outsideButton = fixture.debugElement.query(By.css('[data-testid="outside-button"]'))
+      .nativeElement as HTMLElement;
+    outsideButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+
+    expect(component.clickOutsideCount).toBe(0);
+  });
 });

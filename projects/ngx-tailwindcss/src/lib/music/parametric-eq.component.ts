@@ -3,10 +3,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   ElementRef,
   HostListener,
   inject,
   input,
+  NgZone,
   numberAttribute,
   OnDestroy,
   output,
@@ -16,13 +18,7 @@ import {
 import { CommonModule } from '@angular/common';
 
 export type EQFilterType =
-  | 'lowpass'
-  | 'highpass'
-  | 'bandpass'
-  | 'lowshelf'
-  | 'highshelf'
-  | 'peaking'
-  | 'notch';
+  'lowpass' | 'highpass' | 'bandpass' | 'lowshelf' | 'highshelf' | 'peaking' | 'notch';
 export type EQVariant = 'default' | 'dark' | 'vintage' | 'neon' | 'light' | 'highContrast';
 
 export interface EQBand {
@@ -100,6 +96,33 @@ const DEFAULT_BANDS: EQBand[] = [
 })
 export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
+
+  private readonly zone = inject(NgZone);
+
+  constructor() {
+    // Redraw when any render-affecting input or interaction state changes.
+    // Without an analyser the EQ view is static, so this replaces the old
+    // unconditional 60fps loop.
+    effect(() => {
+      this.bands();
+      this.width();
+      this.height();
+      this.variant();
+      this.showGrid();
+      this.showLabels();
+      this.showCurve();
+      this.minFreq();
+      this.maxFreq();
+      this.minGain();
+      this.maxGain();
+      this.selectedBandId();
+      this.hoverBandId();
+      this.isDragging();
+      this.analyserNode();
+
+      this.requestDraw();
+    });
+  }
 
   readonly bands = input<EQBand[]>(DEFAULT_BANDS);
   readonly width = input(600, { transform: numberAttribute });
@@ -202,19 +225,27 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     const canvas = this.canvasRef.nativeElement;
     this.ctx = canvas.getContext('2d');
-
-    const analyser = this.analyserNode();
-    if (analyser) {
-      this.frequencyData = new Uint8Array(analyser.frequencyBinCount);
-    }
-
-    this.draw();
+    this.requestDraw();
   }
 
   ngOnDestroy(): void {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
+  }
+
+  private requestDraw(): void {
+    if (!this.ctx) return;
+
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    // Drawing never writes template state, so keep frames out of the zone
+    this.zone.runOutsideAngular(() => {
+      this.animationFrameId = requestAnimationFrame(() => {
+        this.draw();
+      });
+    });
   }
 
   @HostListener('mousedown', ['$event'])
@@ -313,8 +344,13 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
     const height = this.height();
     const colors = this.colors();
 
-    canvas.width = width;
-    canvas.height = height;
+    // Only resize the canvas when dimensions actually change (resizing resets context state)
+    if (canvas.width !== width) {
+      canvas.width = width;
+    }
+    if (canvas.height !== height) {
+      canvas.height = height;
+    }
 
     // Clear and fill background
     this.ctx.fillStyle = colors.background;
@@ -322,7 +358,10 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
 
     // Draw spectrum analyzer if available
     const analyser = this.analyserNode();
-    if (analyser && this.frequencyData) {
+    if (analyser) {
+      if (this.frequencyData?.length !== analyser.frequencyBinCount) {
+        this.frequencyData = new Uint8Array(analyser.frequencyBinCount);
+      }
       analyser.getByteFrequencyData(this.frequencyData);
       this.drawSpectrum(colors.spectrum);
     }
@@ -340,11 +379,13 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
     // Draw band nodes
     this.drawBandNodes();
 
-    // Request next frame
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-    this.animationFrameId = requestAnimationFrame(() => { this.draw(); });
+    // Only keep animating while a live spectrum is displayed; static content
+    // is redrawn on demand by the input-tracking effect
+    this.animationFrameId = analyser
+      ? requestAnimationFrame(() => {
+          this.draw();
+        })
+      : null;
   }
 
   private drawGrid(gridColor: string, textColor: string): void {
@@ -550,14 +591,14 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
       }
       case 'lowpass': {
         if (freq > band.frequency) {
-          const rolloff = (band.frequency / freq)**(band.q * 2);
+          const rolloff = (band.frequency / freq) ** (band.q * 2);
           return -24 * (1 - rolloff);
         }
         return 0;
       }
       case 'highpass': {
         if (freq < band.frequency) {
-          const rolloff = (freq / band.frequency)**(band.q * 2);
+          const rolloff = (freq / band.frequency) ** (band.q * 2);
           return -24 * (1 - rolloff);
         }
         return 0;
@@ -584,7 +625,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
     const minLog = Math.log10(this.minFreq());
     const maxLog = Math.log10(this.maxFreq());
     const ratio = x / this.width();
-    return 10**(minLog + ratio * (maxLog - minLog));
+    return 10 ** (minLog + ratio * (maxLog - minLog));
   }
 
   private gainToY(gain: number): number {
@@ -617,7 +658,7 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
 
       const bandX = this.frequencyToX(band.frequency);
       const bandY = this.gainToY(band.gain);
-      const distance = Math.hypot((x - bandX), (y - bandY));
+      const distance = Math.hypot(x - bandX, y - bandY);
 
       if (distance <= hitRadius) {
         return band;
@@ -637,5 +678,65 @@ export class TwParametricEQComponent implements AfterViewInit, OnDestroy {
 
   protected selectBand(band: EQBand): void {
     this.selectedBandId.set(band.id);
+  }
+
+  // Keyboard control for the focused band: arrows adjust gain (up/down) and
+  // frequency (left/right); Home/End jump gain to 0/max
+  protected onBandKeydown(event: KeyboardEvent, band: EQBand): void {
+    if (!this.interactive()) return;
+
+    const freqFactor = event.shiftKey ? 2 ** (1 / 3) : 2 ** (1 / 12); // major third / semitone
+    let updatedBand: EQBand | null = null;
+    let property: 'frequency' | 'gain' = 'gain';
+
+    switch (event.key) {
+      case 'ArrowUp': {
+        updatedBand = { ...band, gain: Math.min(this.maxGain(), band.gain + 0.5) };
+        break;
+      }
+      case 'ArrowDown': {
+        updatedBand = { ...band, gain: Math.max(this.minGain(), band.gain - 0.5) };
+        break;
+      }
+      case 'ArrowRight': {
+        updatedBand = {
+          ...band,
+          frequency: Math.min(this.maxFreq(), Math.round(band.frequency * freqFactor)),
+        };
+        property = 'frequency';
+        break;
+      }
+      case 'ArrowLeft': {
+        updatedBand = {
+          ...band,
+          frequency: Math.max(this.minFreq(), Math.round(band.frequency / freqFactor)),
+        };
+        property = 'frequency';
+        break;
+      }
+      case 'Home': {
+        updatedBand = { ...band, gain: 0 };
+        break;
+      }
+      default: {
+        return;
+      }
+    }
+
+    event.preventDefault();
+    this.selectedBandId.set(band.id);
+
+    const updatedBands = this.bands().map(b => (b.id === band.id ? updatedBand : b));
+    this.bandsChange.emit(updatedBands);
+    this.bandChange.emit({ band: updatedBand, property });
+  }
+
+  protected bandAriaLabel(band: EQBand): string {
+    const freqLabel =
+      band.frequency >= 1000
+        ? `${(band.frequency / 1000).toFixed(1)} kilohertz`
+        : `${Math.round(band.frequency)} hertz`;
+    const gainLabel = `${band.gain > 0 ? '+' : ''}${band.gain.toFixed(1)} dB`;
+    return `EQ band at ${freqLabel}, ${gainLabel}${band.enabled ? '' : ', disabled'}`;
   }
 }

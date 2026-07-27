@@ -40,6 +40,7 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
   }
 
   private observer: IntersectionObserver | null = null;
+  private removeNativeListeners: () => void = () => {};
 
   /** The image source to lazy load */
   @Input({ required: true })
@@ -90,11 +91,15 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
       }
     }
 
-    // Use native lazy loading if requested or browser supports it
-    if (this.lazyNative || this.lazyDisabled) {
-      if (this.lazyNative) {
-        this.renderer.setAttribute(img, 'loading', 'lazy');
-      }
+    // Use native lazy loading if requested; the browser defers the fetch itself
+    if (this.lazyNative) {
+      this.renderer.setAttribute(img, 'loading', 'lazy');
+      this.loadImageNatively();
+      return;
+    }
+
+    // Load immediately when lazy loading is disabled
+    if (this.lazyDisabled) {
       this.loadImage();
       return;
     }
@@ -131,19 +136,7 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
 
     tempImg.addEventListener('load', () => {
       this.renderer.setAttribute(img, 'src', this.twLazyImage);
-
-      // Remove loading class, add loaded class
-      if (this.lazyLoadingClass) {
-        this.lazyLoadingClass.split(' ').forEach(cls => {
-          if (cls) this.renderer.removeClass(img, cls);
-        });
-      }
-      if (this.lazyLoadedClass) {
-        this.lazyLoadedClass.split(' ').forEach(cls => {
-          if (cls) this.renderer.addClass(img, cls);
-        });
-      }
-
+      this.applyLoadedClasses();
       this.lazyLoaded.emit({ loaded: true, src: this.twLazyImage });
     });
 
@@ -158,10 +151,59 @@ export class TwLazyImageDirective implements OnInit, OnDestroy {
     tempImg.src = this.twLazyImage;
   }
 
+  private loadImageNatively(): void {
+    const img = this.el.nativeElement;
+
+    const onLoad = (): void => {
+      this.removeNativeListeners();
+      this.applyLoadedClasses();
+      this.lazyLoaded.emit({ loaded: true, src: this.twLazyImage });
+    };
+
+    const onError = (): void => {
+      this.removeNativeListeners();
+      this.lazyLoaded.emit({
+        loaded: false,
+        src: this.twLazyImage,
+        error: new Error(`Failed to load image: ${this.twLazyImage}`),
+      });
+    };
+
+    this.removeNativeListeners = () => {
+      img.removeEventListener('load', onLoad);
+      img.removeEventListener('error', onError);
+      this.removeNativeListeners = () => {};
+    };
+
+    img.addEventListener('load', onLoad);
+    img.addEventListener('error', onError);
+
+    // Assign the source directly to the host image so the browser's
+    // native lazy loading controls when the fetch happens
+    this.renderer.setAttribute(img, 'src', this.twLazyImage);
+  }
+
+  private applyLoadedClasses(): void {
+    const img = this.el.nativeElement;
+
+    // Remove loading class, add loaded class
+    if (this.lazyLoadingClass) {
+      this.lazyLoadingClass.split(' ').forEach(cls => {
+        if (cls) this.renderer.removeClass(img, cls);
+      });
+    }
+    if (this.lazyLoadedClass) {
+      this.lazyLoadedClass.split(' ').forEach(cls => {
+        if (cls) this.renderer.addClass(img, cls);
+      });
+    }
+  }
+
   ngOnDestroy(): void {
     if (this.observer) {
       this.observer.disconnect();
       this.observer = null;
     }
+    this.removeNativeListeners();
   }
 }

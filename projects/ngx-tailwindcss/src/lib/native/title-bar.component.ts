@@ -27,64 +27,21 @@ import { TitleBarPlatform, TitleBarVariant } from './native.types';
   selector: 'tw-title-bar',
   standalone: true,
   imports: [CommonModule, TwWindowControlsComponent],
-  template: `
-    <header
-      [class]="containerClasses()"
-      [style.--webkit-app-region]="'drag'"
-      (dblclick)="onDoubleClick()"
-    >
-      <!-- Left section (macOS controls + icon/title on Windows/Linux) -->
-      <div class="flex items-center gap-2 min-w-0" [style.--webkit-app-region]="'no-drag'">
-        @if (effectivePlatform() === 'macos') {
-          <tw-window-controls
-            [platform]="effectivePlatform()"
-            [showClose]="showClose()"
-            [showMinimize]="showMinimize()"
-            [showMaximize]="showMaximize()"
-            [showFullscreen]="showFullscreen()"
-          ></tw-window-controls>
-        } @else {
-          @if (showIcon() && icon()) {
-            <img [src]="icon()" [alt]="title()" class="w-4 h-4 object-contain" />
-          }
-        }
-      </div>
-
-      <!-- Center section (Title) -->
-      <div
-        class="flex-1 flex items-center min-w-0"
-        [class.justify-center]="effectivePlatform() === 'macos'"
-        [class.ml-2]="effectivePlatform() !== 'macos'"
-      >
-        @if (showIcon() && icon() && effectivePlatform() === 'macos') {
-          <img [src]="icon()" [alt]="title()" class="w-4 h-4 mr-2 object-contain" />
-        }
-        <span class="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
-          {{ title() }}
-        </span>
-      </div>
-
-      <!-- Right section (Windows/Linux controls) -->
-      <div [style.--webkit-app-region]="'no-drag'">
-        @if (effectivePlatform() !== 'macos') {
-          <tw-window-controls
-            [platform]="effectivePlatform()"
-            [showClose]="showClose()"
-            [showMinimize]="showMinimize()"
-            [showMaximize]="showMaximize()"
-            [showFullscreen]="showFullscreen()"
-          ></tw-window-controls>
-        }
-      </div>
-
-      <!-- Custom content slot -->
-      <ng-content></ng-content>
-    </header>
-  `,
+  templateUrl: './title-bar.component.html',
   styles: [
     `
       :host {
         display: block;
+      }
+
+      .tw-title-bar-drag {
+        -webkit-app-region: drag;
+        app-region: drag;
+      }
+
+      .tw-title-bar-no-drag {
+        -webkit-app-region: no-drag;
+        app-region: no-drag;
       }
     `,
   ],
@@ -123,12 +80,8 @@ export class TwTitleBarComponent {
   protected readonly containerClasses = computed(() => {
     const variant = this.variant();
     const platform = this.effectivePlatform();
-    const h = this.height();
 
     const base = 'flex items-center select-none';
-
-    // Height
-    const heightClass = `h-[${h}px]`;
 
     // Platform-specific padding
     const paddingClasses: Record<string, string> = {
@@ -146,9 +99,7 @@ export class TwTitleBarComponent {
         'bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border-b border-gray-200/50 dark:border-gray-700/50',
     };
 
-    return [base, heightClass, paddingClasses[platform] || 'px-2', variantClasses[variant]].join(
-      ' '
-    );
+    return [base, paddingClasses[platform] || 'px-2', variantClasses[variant]].join(' ');
   });
 
   protected onDoubleClick(): void {

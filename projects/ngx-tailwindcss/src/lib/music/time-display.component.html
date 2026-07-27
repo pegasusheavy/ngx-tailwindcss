@@ -1,4 +1,8 @@
-<div [class]="containerClasses()">
+<div
+  [class]="containerClasses()"
+  role="img"
+  [attr.aria-label]="(label() ? label() + ': ' : '') + displayText()"
+>
   @if (variant() === 'led') {
     <!-- LED Segment Display -->
     <div class="flex items-center font-mono tracking-wider">
@@ -9,7 +13,7 @@
   } @else if (variant() === 'digital') {
     <!-- Digital LCD Display -->
     <div [class]="digitalClasses()">
-      <span class="opacity-20 absolute">{{ ghostText() }}</span>
+      <span class="opacity-20 absolute" aria-hidden="true">{{ ghostText() }}</span>
       <span class="relative">{{ displayText() }}</span>
     </div>
   } @else if (variant() === 'flip') {

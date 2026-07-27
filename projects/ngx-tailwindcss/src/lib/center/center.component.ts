@@ -1,4 +1,11 @@
-import { Component, Input } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -22,11 +29,8 @@ import { TwClassService } from '../core/tw-class.service';
   selector: 'tw-center',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="centerClasses()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './center.component.html',
   styles: [
     `
       :host {
@@ -36,33 +40,33 @@ import { TwClassService } from '../core/tw-class.service';
   ],
 })
 export class TwCenterComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Use inline-flex instead of flex */
-  @Input() inline = false;
+  readonly inline = input(false, { transform: booleanAttribute });
 
-  /** Center only horizontally */
-  @Input() horizontal = true;
+  /** Apply horizontal centering (justify-center); combines with `vertical` */
+  readonly horizontal = input(true, { transform: booleanAttribute });
 
-  /** Center only vertically */
-  @Input() vertical = true;
+  /** Apply vertical centering (items-center); combines with `horizontal` */
+  readonly vertical = input(true, { transform: booleanAttribute });
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
+  protected readonly centerClasses = computed(() => {
+    const classes: string[] = [this.inline() ? 'inline-flex' : 'flex'];
 
-  protected centerClasses(): string {
-    const classes: string[] = [this.inline ? 'inline-flex' : 'flex'];
-
-    if (this.horizontal) {
+    if (this.horizontal()) {
       classes.push('justify-center');
     }
 
-    if (this.vertical) {
+    if (this.vertical()) {
       classes.push('items-center');
     }
 
-    return this.twClass.merge(...classes, this.class);
-  }
+    return this.twClass.merge(...classes, this.class());
+  });
 }
 
 /**
@@ -80,11 +84,8 @@ export class TwCenterComponent {
   selector: 'tw-square',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="squareClasses()" [style.width]="size" [style.height]="size">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './square.component.html',
   styles: [
     `
       :host {
@@ -94,23 +95,23 @@ export class TwCenterComponent {
   ],
 })
 export class TwSquareComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Size of the square (e.g., '64px', '4rem') */
-  @Input() size = '48px';
+  readonly size = input('48px');
 
   /** Whether to center the content */
-  @Input() centerContent = true;
+  readonly centerContent = input(true, { transform: booleanAttribute });
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
-
-  protected squareClasses(): string {
+  protected readonly squareClasses = computed(() => {
     return this.twClass.merge(
-      this.centerContent ? 'flex items-center justify-center' : '',
-      this.class
+      this.centerContent() ? 'flex items-center justify-center' : '',
+      this.class()
     );
-  }
+  });
 }
 
 /**
@@ -127,11 +128,8 @@ export class TwSquareComponent {
   selector: 'tw-circle',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="circleClasses()" [style.width]="size" [style.height]="size">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './circle.component.html',
   styles: [
     `
       :host {
@@ -141,22 +139,22 @@ export class TwSquareComponent {
   ],
 })
 export class TwCircleComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Size of the circle (e.g., '64px', '4rem') */
-  @Input() size = '48px';
+  readonly size = input('48px');
 
   /** Whether to center the content */
-  @Input() centerContent = true;
+  readonly centerContent = input(true, { transform: booleanAttribute });
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
-
-  protected circleClasses(): string {
+  protected readonly circleClasses = computed(() => {
     return this.twClass.merge(
       'rounded-full',
-      this.centerContent ? 'flex items-center justify-center' : '',
-      this.class
+      this.centerContent() ? 'flex items-center justify-center' : '',
+      this.class()
     );
-  }
+  });
 }

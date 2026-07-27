@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwToastService, TwButtonComponent } from '@pegasusheavy/ngx-tailwindcss';
+import { TwToastService, TwButtonComponent, ToastPosition } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -33,6 +33,34 @@ export class ToastDemoComponent {
     this.toastService.info('New updates are available.');
   }
 
+  showAtPosition(position: ToastPosition): void {
+    this.toastService.setPosition(position);
+    this.toastService.show({
+      variant: 'info',
+      message: `Toast shown at ${position}`,
+    });
+  }
+
+  showWithDuration(): void {
+    this.toastService.show({
+      variant: 'info',
+      message: 'This toast stays for 10 seconds.',
+      duration: 10_000,
+    });
+  }
+
+  showWithAction(): void {
+    this.toastService.show({
+      variant: 'success',
+      title: 'Item archived',
+      message: 'The item was moved to the archive.',
+      action: {
+        label: 'Undo',
+        onClick: () => this.toastService.info('Archive undone.'),
+      },
+    });
+  }
+
   basicCode = `// Inject the service
 private toastService = inject(TwToastService);
 
@@ -42,10 +70,13 @@ this.toastService.error('An error occurred.');
 this.toastService.warning('Please review.');
 this.toastService.info('New updates available.');`;
 
-  positionCode = `this.toastService.show({
+  positionCode = `// Position is set on the service, not per toast
+this.toastService.setPosition('top-right');
+// 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right'
+
+this.toastService.show({
   message: 'Toast message',
-  variant: 'success',
-  position: 'top-right', // 'top-left', 'top-center', 'bottom-right', etc.
+  variant: 'info',
 });`;
 
   optionsCode = `this.toastService.show({

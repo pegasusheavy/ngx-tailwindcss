@@ -5,10 +5,11 @@ import {
   EventEmitter,
   inject,
   Input,
-  numberAttribute,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 
 export interface InViewEvent {
@@ -32,7 +33,7 @@ export interface InViewEvent {
   selector: '[twInView]',
   standalone: true,
 })
-export class TwInViewDirective implements OnInit, OnDestroy {
+export class TwInViewDirective implements OnInit, OnChanges, OnDestroy {
   private readonly el: ElementRef<HTMLElement>;
 
   constructor() {
@@ -40,6 +41,7 @@ export class TwInViewDirective implements OnInit, OnDestroy {
   }
 
   private observer: IntersectionObserver | null = null;
+  private initialized = false;
 
   /** Root margin for intersection observer (CSS margin syntax) */
   @Input()
@@ -70,6 +72,20 @@ export class TwInViewDirective implements OnInit, OnDestroy {
   leaveView = new EventEmitter<InViewEvent>();
 
   ngOnInit(): void {
+    this.initialized = true;
+    this.setupObserver();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.initialized) return;
+
+    if (changes['inViewDisabled'] || changes['inViewRootMargin'] || changes['inViewThreshold']) {
+      this.disconnectObserver();
+      this.setupObserver();
+    }
+  }
+
+  private setupObserver(): void {
     if (this.inViewDisabled || typeof IntersectionObserver === 'undefined') {
       return;
     }
@@ -106,10 +122,14 @@ export class TwInViewDirective implements OnInit, OnDestroy {
     this.observer.observe(this.el.nativeElement);
   }
 
-  ngOnDestroy(): void {
+  private disconnectObserver(): void {
     if (this.observer) {
       this.observer.disconnect();
       this.observer = null;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.disconnectObserver();
   }
 }

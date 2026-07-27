@@ -1,0 +1,10 @@
+@if (visible()) {
+  <div
+    class="fixed z-50"
+    [style.left.px]="x()"
+    [style.top.px]="y()"
+    (click)="$event.stopPropagation()"
+  >
+    <tw-menu [items]="items()" variant="elevated" (onSelect)="onItemSelect($event)"></tw-menu>
+  </div>
+}

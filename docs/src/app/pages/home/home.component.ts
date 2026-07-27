@@ -6,7 +6,7 @@ import {
   TwCardComponent,
   TwCardBodyDirective,
   TwBadgeComponent,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { IconComponent, IconName } from '../../shared/icon.component';
 
 interface Feature {
@@ -113,10 +113,10 @@ export class HomeComponent {
   ];
 
   installCode = `# Install the library
-pnpm add @pegasusheavy/ngx-tailwindcss
+pnpm add @quinnjr/ngx-tailwindcss
 
 # Configure Tailwind to scan the library
 # In your styles.css or styles.scss:
 @import "tailwindcss";
-@source "../node_modules/@pegasusheavy/ngx-tailwindcss/**/*.mjs";`;
+@source "../node_modules/@quinnjr/ngx-tailwindcss/**/*.mjs";`;
 }

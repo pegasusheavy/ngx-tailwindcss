@@ -69,7 +69,14 @@ describe('TwAlertComponent', () => {
     expect(component.alert).toBeTruthy();
   });
 
-  it('should have role="alert"', () => {
+  it('should have role="status" by default (polite)', () => {
+    expect(alertEl.getAttribute('role')).toBe('status');
+  });
+
+  it('should have role="alert" when ariaLive is assertive', () => {
+    component.ariaLive.set('assertive');
+    fixture.detectChanges();
+
     expect(alertEl.getAttribute('role')).toBe('alert');
   });
 
@@ -78,24 +85,33 @@ describe('TwAlertComponent', () => {
   });
 
   describe('variants', () => {
-    it('should have default info variant', () => {
-      expect(component.variant()).toBe('info');
-    });
-
     it('should apply info variant classes', () => {
       const classes = alertEl.className;
       expect(classes).toContain('bg-blue-50');
     });
+
+    it('should update classes when variant changes', () => {
+      component.variant.set('danger');
+      fixture.detectChanges();
+
+      expect(alertEl.className).toContain('bg-rose-50');
+      expect(alertEl.className).toContain('text-rose-800');
+      expect(alertEl.className).not.toContain('bg-blue-50');
+    });
   });
 
   describe('styles', () => {
-    it('should have default soft style', () => {
-      expect(component.alertStyle()).toBe('soft');
-    });
-
     it('should apply soft style classes', () => {
       expect(alertEl.className).toContain('bg-blue-50');
       expect(alertEl.className).toContain('text-blue-800');
+    });
+
+    it('should update classes when alertStyle changes', () => {
+      component.alertStyle.set('solid');
+      fixture.detectChanges();
+
+      expect(alertEl.className).toContain('bg-blue-600');
+      expect(alertEl.className).toContain('text-white');
     });
   });
 
@@ -152,8 +168,16 @@ describe('TwAlertComponent', () => {
   });
 
   describe('aria-live', () => {
-    it('should have polite aria-live by default', () => {
-      expect(alertEl.getAttribute('aria-live')).toBe('polite');
+    it('should omit aria-live when the role conveys it', () => {
+      expect(alertEl.getAttribute('aria-live')).toBeNull();
+    });
+
+    it('should set aria-live="off" and no role when ariaLive is off', () => {
+      component.ariaLive.set('off');
+      fixture.detectChanges();
+
+      expect(alertEl.getAttribute('role')).toBeNull();
+      expect(alertEl.getAttribute('aria-live')).toBe('off');
     });
   });
 
@@ -180,8 +204,11 @@ describe('TwAlertComponent', () => {
   });
 
   describe('class customization', () => {
-    it('should have empty classOverride by default', () => {
-      expect(component.classOverride()).toBe('');
+    it('should merge classOverride into host classes', () => {
+      component.classOverride.set('custom-alert-class');
+      fixture.detectChanges();
+
+      expect(alertEl.className).toContain('custom-alert-class');
     });
   });
 });

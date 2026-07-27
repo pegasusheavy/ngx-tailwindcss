@@ -21,7 +21,7 @@ body = """
 """
 footer = """
 ---
-*Built with ❤️ by Pegasus Heavy Industries LLC*
+*Built with ❤️ by Joseph R Quinn*
 """
 trim = true
 

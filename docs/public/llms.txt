@@ -18,14 +18,14 @@ ngx-tailwindcss is an open-source Angular UI component library that provides 30+
 ## Installation
 
 ```bash
-pnpm add @pegasus-heavy/ngx-tailwindcss
+pnpm add @quinnjr/ngx-tailwindcss
 ```
 
 Configure Tailwind to scan the library:
 
 ```css
 @import "tailwindcss";
-@source "../node_modules/@pegasus-heavy/ngx-tailwindcss/**/*.mjs";
+@source "../node_modules/@quinnjr/ngx-tailwindcss/**/*.mjs";
 ```
 
 ## Components
@@ -104,7 +104,7 @@ Configure Tailwind to scan the library:
 ## Global Configuration
 
 ```typescript
-import { provideTwConfig } from '@pegasus-heavy/ngx-tailwindcss';
+import { provideTwConfig } from '@quinnjr/ngx-tailwindcss';
 
 export const appConfig = {
   providers: [
@@ -133,12 +133,12 @@ export const appConfig = {
 ## Links
 
 - Documentation: https://ngx-tailwindcss.dev
-- GitHub: https://github.com/PegasusHeavyIndustries/ngx-tailwindcss
-- npm: https://www.npmjs.com/package/@pegasus-heavy/ngx-tailwindcss
+- GitHub: https://github.com/quinnjr/ngx-tailwindcss
+- npm: https://www.npmjs.com/package/@quinnjr/ngx-tailwindcss
 - License: MIT
 
 ## Contact
 
-- Author: Pegasus Heavy Industries LLC
-- Website: https://pegasusheavy.com
+- Author: Joseph R Quinn
+- Website: https://quinnjr.github.io/ngx-tailwindcss/
 

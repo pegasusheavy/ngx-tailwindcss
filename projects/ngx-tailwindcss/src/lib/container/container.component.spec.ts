@@ -58,33 +58,33 @@ describe('TwContainerComponent', () => {
       component.size.set('sm');
       fixture.detectChanges();
       const inner = containerEl.querySelector('div');
-      expect(inner?.className).toContain('max-w-screen-sm');
+      expect(inner?.className).toContain('max-w-(--breakpoint-sm)');
     });
 
     it('should apply md size', () => {
       component.size.set('md');
       fixture.detectChanges();
       const inner = containerEl.querySelector('div');
-      expect(inner?.className).toContain('max-w-screen-md');
+      expect(inner?.className).toContain('max-w-(--breakpoint-md)');
     });
 
     it('should apply lg size', () => {
       component.size.set('lg');
       fixture.detectChanges();
       const inner = containerEl.querySelector('div');
-      expect(inner?.className).toContain('max-w-screen-lg');
+      expect(inner?.className).toContain('max-w-(--breakpoint-lg)');
     });
 
     it('should apply xl size by default', () => {
       const inner = containerEl.querySelector('div');
-      expect(inner?.className).toContain('max-w-screen-xl');
+      expect(inner?.className).toContain('max-w-(--breakpoint-xl)');
     });
 
     it('should apply 2xl size', () => {
       component.size.set('2xl');
       fixture.detectChanges();
       const inner = containerEl.querySelector('div');
-      expect(inner?.className).toContain('max-w-screen-2xl');
+      expect(inner?.className).toContain('max-w-(--breakpoint-2xl)');
     });
 
     it('should apply full size', () => {

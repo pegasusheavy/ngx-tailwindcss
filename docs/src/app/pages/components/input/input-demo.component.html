@@ -21,6 +21,43 @@
 </app-demo-section>
 
 <app-demo-section
+  title="Two-way Binding"
+  description="Bind values with ngModel and react to changes."
+  [code]="twoWayCode">
+  <div class="max-w-md space-y-4">
+    <tw-input
+      label="Name"
+      placeholder="Enter your name"
+      [(ngModel)]="name">
+    </tw-input>
+    <tw-input
+      label="Email"
+      type="email"
+      placeholder="you@example.com"
+      [(ngModel)]="email">
+    </tw-input>
+    <tw-input
+      label="Password"
+      type="password"
+      placeholder="Enter a password"
+      [(ngModel)]="password">
+    </tw-input>
+    <tw-textarea
+      label="Bio"
+      placeholder="Tell us about yourself..."
+      [rows]="3"
+      [(ngModel)]="bio">
+    </tw-textarea>
+    <div class="rounded-lg bg-slate-100 dark:bg-slate-800 p-4 text-sm text-slate-600 dark:text-slate-300 space-y-1">
+      <p>Name: {{ name() || '—' }}</p>
+      <p>Email: {{ email() || '—' }}</p>
+      <p>Password length: {{ password().length }}</p>
+      <p>Bio: {{ bio() || '—' }}</p>
+    </div>
+  </div>
+</app-demo-section>
+
+<app-demo-section
   title="Input Variants"
   description="Different visual styles for inputs."
   [code]="variantsCode">
@@ -109,7 +146,7 @@
       label="Readonly Field"
       placeholder="This field is readonly"
       [readonly]="true"
-      value="Read-only value">
+      [(ngModel)]="readonlyValue">
     </tw-input>
   </div>
 </app-demo-section>

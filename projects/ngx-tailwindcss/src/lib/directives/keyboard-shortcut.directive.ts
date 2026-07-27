@@ -1,6 +1,7 @@
 import {
   booleanAttribute,
   Directive,
+  ElementRef,
   EventEmitter,
   inject,
   Input,
@@ -38,10 +39,13 @@ export interface KeyboardShortcutEvent {
 export class TwKeyboardShortcutDirective implements OnInit, OnDestroy {
   private readonly ngZone: NgZone;
   private readonly platformId: object;
+  private readonly el: ElementRef<HTMLElement>;
+  private listenTarget: Document | HTMLElement | null = null;
 
   constructor() {
     this.ngZone = inject(NgZone);
     this.platformId = inject(PLATFORM_ID);
+    this.el = inject(ElementRef);
   }
 
   /** Keyboard shortcut string (e.g., "ctrl+s", "ctrl+shift+p", "escape") */
@@ -78,10 +82,10 @@ export class TwKeyboardShortcutDirective implements OnInit, OnDestroy {
     const key = parts.at(-1);
     const modifiers = new Set(parts.slice(0, -1));
 
-    const ctrlRequired = modifiers.has('ctrl') || modifiers.has('control');
+    const metaRequired = modifiers.has('meta') || modifiers.has('cmd');
+    const ctrlRequired = modifiers.has('ctrl') || modifiers.has('control') || metaRequired;
     const altRequired = modifiers.has('alt');
     const shiftRequired = modifiers.has('shift');
-    const metaRequired = modifiers.has('meta') || modifiers.has('cmd');
 
     const ctrlPressed = keyEvent.ctrlKey || keyEvent.metaKey; // Treat meta as ctrl for cross-platform
     const altPressed = keyEvent.altKey;
@@ -118,15 +122,15 @@ export class TwKeyboardShortcutDirective implements OnInit, OnDestroy {
     if (!isPlatformBrowser(this.platformId)) return;
 
     this.ngZone.runOutsideAngular(() => {
-      const target = this.shortcutGlobal ? document : document.body;
-      target.addEventListener('keydown', this.keydownHandler);
+      this.listenTarget = this.shortcutGlobal ? document : this.el.nativeElement;
+      this.listenTarget.addEventListener('keydown', this.keydownHandler);
     });
   }
 
   ngOnDestroy(): void {
-    if (!isPlatformBrowser(this.platformId)) return;
-
-    const target = this.shortcutGlobal ? document : document.body;
-    target.removeEventListener('keydown', this.keydownHandler);
+    if (this.listenTarget) {
+      this.listenTarget.removeEventListener('keydown', this.keydownHandler);
+      this.listenTarget = null;
+    }
   }
 }

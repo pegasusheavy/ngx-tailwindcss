@@ -341,9 +341,11 @@
   <!-- New Post Modal -->
   <tw-modal
     [(open)]="newPostModalOpen"
-    title="Create Post"
     [showCloseButton]="true"
     size="lg">
+    <tw-modal-header>
+      <tw-modal-title>Create Post</tw-modal-title>
+    </tw-modal-header>
     <div class="space-y-4">
       <div class="flex items-center gap-3">
         <tw-avatar [initials]="currentUser.avatar" size="md" class="ring-2 ring-sky-200 dark:ring-sky-600/50 rounded-full"></tw-avatar>
@@ -385,9 +387,11 @@
   @if (selectedPost()) {
     <tw-modal
       [(open)]="postDetailModalOpen"
-      [title]="selectedPost()!.author.displayName + '\'s Post'"
       [showCloseButton]="true"
       size="lg">
+      <tw-modal-header>
+        <tw-modal-title>{{ selectedPost()!.author.displayName }}'s Post</tw-modal-title>
+      </tw-modal-header>
       <div class="space-y-4">
         <!-- Original Post -->
         <div>

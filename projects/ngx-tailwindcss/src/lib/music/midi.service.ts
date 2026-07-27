@@ -309,6 +309,13 @@ export class MidiService implements OnDestroy {
     }
     this.connectedInputs = [];
 
+    // Detach the state-change handler so a later device plug-in cannot
+    // re-subscribe a disconnected service
+    if (this._midiAccess) {
+      // eslint-disable-next-line unicorn/prefer-add-event-listener -- Web MIDI API onstatechange handler idiom
+      this._midiAccess.onstatechange = null;
+    }
+
     // Clear state
     this._inputs.set(new Map());
     this._outputs.set(new Map());
@@ -330,14 +337,17 @@ export class MidiService implements OnDestroy {
   }
 
   private handleStateChange(event: Event): void {
+    // Ignore events delivered after disconnect()
+    if (!this._midiAccess) return;
+
     this.updateDeviceLists();
 
     const midiEvent = event as MIDIConnectionEvent;
-    const {port} = midiEvent;
+    const { port } = midiEvent;
 
     if (port?.type === 'input' && port.state === 'connected') {
-        this.connectInput(port as MIDIInput);
-      }
+      this.connectInput(port as MIDIInput);
+    }
   }
 
   private updateDeviceLists(): void {
@@ -392,7 +402,7 @@ export class MidiService implements OnDestroy {
   // =========================================================================
 
   private handleMidiMessage(event: MIDIMessageEvent): void {
-    const {data} = event;
+    const { data } = event;
     if (!data || data.length === 0) return;
 
     const message = this.parseMidiMessage(data, event.timeStamp);
@@ -600,6 +610,8 @@ export class MidiService implements OnDestroy {
     const mappings = this._ccMappings();
 
     for (const [id, mapping] of mappings) {
+      // Skip unlearned mappings (negative sentinel; 0 is a real CC — Bank Select)
+      if (mapping.ccNumber < 0) continue;
       // Check if this CC matches the mapping
       if (mapping.ccNumber !== message.data1) continue;
       if (mapping.channel !== -1 && mapping.channel !== message.channel) continue;
@@ -633,7 +645,7 @@ export class MidiService implements OnDestroy {
         break;
       }
       case 'exponential': {
-        normalized = (10**normalized - 1) / 9;
+        normalized = (10 ** normalized - 1) / 9;
         break;
       }
       // 'linear' - no change
@@ -751,16 +763,7 @@ export class MidiService implements OnDestroy {
   sendMessage(outputId: string, data: number[]): void {
     if (!this._midiAccess) return;
 
-    let output: MIDIOutput | undefined;
-    this._midiAccess.outputs.forEach((o, id) => {
-      if (id === outputId) {
-        output = o;
-      }
-    });
-
-    if (output) {
-      output.send(data);
-    }
+    this._midiAccess.outputs.get(outputId)?.send(data);
   }
 
   /**
@@ -878,7 +881,7 @@ export class MidiService implements OnDestroy {
   getNoteInfo(noteNumber: number): MidiNoteInfo {
     const name = NOTE_NAMES[noteNumber % 12];
     const octave = Math.floor(noteNumber / 12) - 1;
-    const frequency = 440 * 2**((noteNumber - 69) / 12);
+    const frequency = 440 * 2 ** ((noteNumber - 69) / 12);
 
     return { number: noteNumber, name, octave, frequency };
   }

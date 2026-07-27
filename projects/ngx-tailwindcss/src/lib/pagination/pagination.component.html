@@ -42,6 +42,31 @@
   }
   @default {
     <nav class="flex items-center gap-1" aria-label="Pagination">
+      <!-- First -->
+      @if (_showFirstLast()) {
+        <button
+          type="button"
+          [disabled]="currentPageValue() <= 1"
+          [class]="navButtonClasses(currentPageValue() <= 1)"
+          (click)="goToPage(1)"
+          aria-label="First page"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+            />
+          </svg>
+        </button>
+      }
+
       <!-- Previous -->
       <button
         type="button"
@@ -83,6 +108,27 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
         </svg>
       </button>
+
+      <!-- Last -->
+      @if (_showFirstLast()) {
+        <button
+          type="button"
+          [disabled]="currentPageValue() >= totalPagesValue()"
+          [class]="navButtonClasses(currentPageValue() >= totalPagesValue())"
+          (click)="goToPage(totalPagesValue())"
+          aria-label="Last page"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+          </svg>
+        </button>
+      }
     </nav>
   }
 }

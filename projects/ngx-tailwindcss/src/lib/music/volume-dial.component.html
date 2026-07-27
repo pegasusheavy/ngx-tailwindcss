@@ -20,6 +20,7 @@
     [attr.aria-valuenow]="value()"
     [attr.aria-valuemin]="min()"
     [attr.aria-valuemax]="max()"
+    [attr.aria-valuetext]="displayValue() + unit()"
     [attr.aria-label]="label() || 'Volume dial'"
     [attr.aria-disabled]="disabled()"
   >
@@ -87,6 +88,7 @@
           [attr.cy]="led.y"
           [attr.r]="3"
           [class]="led.active ? 'fill-emerald-400' : 'fill-slate-700'"
+          [class.transition-colors]="!effectiveReducedMotion()"
         />
       }
     }

@@ -10,13 +10,7 @@ import {
 import { CommonModule } from '@angular/common';
 
 export type AudioStatsVariant =
-  | 'default'
-  | 'minimal'
-  | 'detailed'
-  | 'compact'
-  | 'pro'
-  | 'light'
-  | 'highContrast';
+  'default' | 'minimal' | 'detailed' | 'compact' | 'pro' | 'light' | 'highContrast';
 export type AudioStatsSize = 'sm' | 'md' | 'lg';
 
 export interface AudioFileInfo {
@@ -138,7 +132,7 @@ export class TwAudioStatsComponent {
   // Formatted displays
   protected readonly formattedDuration = computed(() => {
     const info = this.effectiveInfo();
-    const {duration} = info;
+    const { duration } = info;
     if (duration <= 0) return '0:00';
 
     const hours = Math.floor(duration / 3600);
@@ -167,7 +161,7 @@ export class TwAudioStatsComponent {
 
   protected readonly formattedChannels = computed(() => {
     const info = this.effectiveInfo();
-    const {channels} = info;
+    const { channels } = info;
     switch (channels) {
       case 1: {
         return 'Mono';
@@ -215,9 +209,9 @@ export class TwAudioStatsComponent {
 
   protected readonly qualityLevel = computed((): 'low' | 'medium' | 'high' | 'lossless' => {
     const info = this.effectiveInfo();
-    const {sampleRate} = info;
+    const { sampleRate } = info;
     const bitDepth = info.bitDepth || 16;
-    const {bitrate} = info;
+    const { bitrate } = info;
 
     // Lossless formats
     if (
@@ -368,8 +362,8 @@ export class TwAudioStatsComponent {
   private estimateBitrate(): number {
     const info = this.effectiveInfo();
     const bitDepth = info.bitDepth || 16;
-    const {sampleRate} = info;
-    const {channels} = info;
+    const { sampleRate } = info;
+    const { channels } = info;
 
     // For lossless: actual data rate
     // For lossy: estimate based on quality level

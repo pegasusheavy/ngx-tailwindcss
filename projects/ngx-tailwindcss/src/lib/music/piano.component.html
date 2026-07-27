@@ -1,4 +1,4 @@
-<div [class]="containerClasses()" role="application" [attr.aria-label]="'Piano keyboard'">
+<div [class]="containerClasses()" [attr.aria-label]="'Piano keyboard'">
   <!-- MIDI Status Indicator -->
   @if (enableMidi()) {
     <div class="flex items-center gap-2 mb-2 px-2 text-xs">
@@ -29,6 +29,10 @@
         (mouseleave)="onKeyUp(key)"
         (touchstart)="onTouchStart($event, key)"
         (touchend)="onTouchEnd(key)"
+        (keydown.enter)="onKeyboardDown($event, key)"
+        (keydown.space)="onKeyboardDown($event, key)"
+        (keyup.enter)="onKeyboardUp($event, key)"
+        (keyup.space)="onKeyboardUp($event, key)"
         [attr.aria-label]="key.note + key.octave"
         [attr.aria-pressed]="isKeyActive(key)"
       >
@@ -67,6 +71,10 @@
         (mouseleave)="onKeyUp(key)"
         (touchstart)="onTouchStart($event, key)"
         (touchend)="onTouchEnd(key)"
+        (keydown.enter)="onKeyboardDown($event, key)"
+        (keydown.space)="onKeyboardDown($event, key)"
+        (keyup.enter)="onKeyboardUp($event, key)"
+        (keyup.space)="onKeyboardUp($event, key)"
         [attr.aria-label]="key.note + key.octave"
         [attr.aria-pressed]="isKeyActive(key)"
       >

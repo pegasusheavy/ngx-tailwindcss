@@ -6,10 +6,10 @@
     let last = $last;
     let i = $index
   ) {
-    <div [class]="itemClasses(first, last)">
+    <div [class]="itemClasses(i, first, last)">
       <!-- Connector line -->
       @if (!last) {
-        <div [class]="connectorClasses()"></div>
+        <div [class]="connectorClasses(i)"></div>
       }
 
       <!-- Marker -->
@@ -24,7 +24,7 @@
       </div>
 
       <!-- Content -->
-      <div [class]="contentClasses()">
+      <div [class]="contentClasses(i)">
         @if (event.date) {
           <time [class]="dateClasses()">{{ event.date }}</time>
         }

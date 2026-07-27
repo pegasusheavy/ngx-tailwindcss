@@ -3,10 +3,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  ContentChild,
+  contentChild,
   EventEmitter,
   inject,
-  Input,
+  input,
+  linkedSignal,
   numberAttribute,
   Output,
   signal,
@@ -35,6 +36,20 @@ const TABLE_SIZES: Record<TableSize, { cell: string; text: string }> = {
 
 /**
  * Table/DataTable component with Tailwind CSS styling
+ *
+ * Header and per-row action slots are provided as named templates:
+ *
+ * @example
+ * ```html
+ * <tw-table [data]="rows" [columns]="cols">
+ *   <ng-template #twTableActions>
+ *     <button>Export</button>
+ *   </ng-template>
+ *   <ng-template #twRowActions let-row>
+ *     <button (click)="edit(row)">Edit</button>
+ *   </ng-template>
+ * </tw-table>
+ * ```
  */
 @Component({
   selector: 'tw-table',
@@ -46,59 +61,59 @@ const TABLE_SIZES: Record<TableSize, { cell: string; text: string }> = {
 export class TwTableComponent {
   private readonly twClass = inject(TwClassService);
 
-  @Input() data: any[] = [];
-  @Input() columns: TableColumn[] = [];
-  @Input() title = '';
-  @Input() size: TableSize = 'md';
-  @Input() variant: TableVariant = 'default';
-  @Input({ transform: booleanAttribute }) selectable = false;
-  @Input() selectionMode: 'single' | 'multiple' = 'multiple';
-  @Input({ transform: booleanAttribute }) showGlobalFilter = false;
-  @Input() filterPlaceholder = 'Search...';
-  @Input({ transform: booleanAttribute }) paginator = false;
-  @Input({ transform: numberAttribute }) rows = 10;
-  @Input() rowsPerPageOptions: number[] = [10, 25, 50, 100];
-  @Input() emptyMessage = 'No records found';
-  @Input({ transform: booleanAttribute }) hoverable = true;
-  @Input({ transform: booleanAttribute }) responsive = true;
-  @Input() trackByFn: (item: any) => any = item => item;
-  @Input() classOverride = '';
+  readonly data = input<any[]>([]);
+  readonly columns = input<TableColumn[]>([]);
+  readonly title = input('');
+  readonly size = input<TableSize>('md');
+  readonly variant = input<TableVariant>('default');
+  readonly selectable = input(false, { transform: booleanAttribute });
+  readonly selectionMode = input<'single' | 'multiple'>('multiple');
+  readonly showGlobalFilter = input(false, { transform: booleanAttribute });
+  readonly filterPlaceholder = input('Search...');
+  readonly paginator = input(false, { transform: booleanAttribute });
+  readonly rows = input(10, { transform: numberAttribute });
+  readonly rowsPerPageOptions = input<number[]>([10, 25, 50, 100]);
+  readonly emptyMessage = input('No records found');
+  readonly hoverable = input(true, { transform: booleanAttribute });
+  readonly responsive = input(true, { transform: booleanAttribute });
+  readonly trackByFn = input<(item: any) => any>(item => item);
+  readonly classOverride = input('');
 
   @Output() selectionChange = new EventEmitter<any[]>();
   @Output() rowClick = new EventEmitter<any>();
   @Output() sortChange = new EventEmitter<{ field: string; order: number }>();
   @Output() pageChange = new EventEmitter<{ page: number; rows: number }>();
 
-  @ContentChild('twTableActions') headerActionsTemplate!: TemplateRef<any>;
-  @ContentChild('twRowActions') rowActionsTemplate!: TemplateRef<any>;
+  readonly headerActionsTemplate = contentChild('twTableActions', { read: TemplateRef });
+  readonly rowActionsTemplate = contentChild('twRowActions', { read: TemplateRef });
 
   protected globalFilter = signal('');
   protected sortField = signal<string>('');
   protected sortOrder = signal<1 | -1>(1);
   protected currentPage = signal(1);
-  protected selection = signal<any[]>([]);
+  /** Current page size; follows the `rows` input until changed via the rows-per-page select. */
+  protected pageSize = linkedSignal(() => this.rows());
+  /** Selection is held as a Set internally for O(1) lookups; emitted as an array. */
+  protected selection = signal<ReadonlySet<any>>(new Set());
 
-  protected get hasHeaderActions(): boolean {
-    return !!this.headerActionsTemplate;
-  }
+  protected readonly hasHeaderActions = computed(() => !!this.headerActionsTemplate());
 
-  protected get hasRowActions(): boolean {
-    return !!this.rowActionsTemplate;
-  }
+  protected readonly hasRowActions = computed(() => !!this.rowActionsTemplate());
 
-  protected get totalColumns(): number {
-    let count = this.columns.length;
-    if (this.selectable) count++;
-    if (this.hasRowActions) count++;
+  protected readonly totalColumns = computed(() => {
+    let count = this.columns().length;
+    if (this.selectable()) count++;
+    if (this.hasRowActions()) count++;
     return count;
-  }
+  });
 
   protected filteredData = computed(() => {
-    let result = [...this.data];
+    let result = [...this.data()];
+    const columns = this.columns();
     const filter = this.globalFilter().toLowerCase();
     if (filter) {
       result = result.filter(item =>
-        this.columns.some(col => {
+        columns.some(col => {
           const value = this.getFieldValue(item, col.field);
           return value?.toString().toLowerCase().includes(filter);
         })
@@ -117,21 +132,21 @@ export class TwTableComponent {
   });
 
   protected totalRecords = computed(() => this.filteredData().length);
-  protected totalPages = computed(() => Math.ceil(this.totalRecords() / this.rows));
+  protected totalPages = computed(() => Math.ceil(this.totalRecords() / this.pageSize()));
 
   protected displayedData = computed(() => {
-    if (!this.paginator) return this.filteredData();
-    const start = (this.currentPage() - 1) * this.rows;
-    return this.filteredData().slice(start, start + this.rows);
+    if (!this.paginator()) return this.filteredData();
+    const start = (this.currentPage() - 1) * this.pageSize();
+    return this.filteredData().slice(start, start + this.pageSize());
   });
 
   protected paginationStart = computed(() => {
     if (this.totalRecords() === 0) return 0;
-    return (this.currentPage() - 1) * this.rows + 1;
+    return (this.currentPage() - 1) * this.pageSize() + 1;
   });
 
   protected paginationEnd = computed(() => {
-    return Math.min(this.currentPage() * this.rows, this.totalRecords());
+    return Math.min(this.currentPage() * this.pageSize(), this.totalRecords());
   });
 
   protected visiblePages = computed((): Array<number | string> => {
@@ -166,18 +181,18 @@ export class TwTableComponent {
   protected containerClasses = computed(() => {
     return this.twClass.merge(
       'bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden',
-      this.classOverride
+      this.classOverride()
     );
   });
 
-  protected tableWrapperClasses = computed(() => (this.responsive ? 'overflow-x-auto' : ''));
+  protected tableWrapperClasses = computed(() => (this.responsive() ? 'overflow-x-auto' : ''));
 
   protected tableClasses = computed(() => {
-    const sizeClasses = TABLE_SIZES[this.size].text;
+    const sizeClasses = TABLE_SIZES[this.size()].text;
     return this.twClass.merge(
       'w-full',
       sizeClasses,
-      this.variant === 'bordered' ? 'border-collapse' : ''
+      this.variant() === 'bordered' ? 'border-collapse' : ''
     );
   });
 
@@ -185,45 +200,71 @@ export class TwTableComponent {
     () => 'bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-700'
   );
 
-  protected thClasses(col: TableColumn) {
-    const sizeClasses = TABLE_SIZES[this.size].cell;
-    const alignClasses =
-      col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left';
-    return this.twClass.merge(
-      'font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap',
-      sizeClasses,
-      alignClasses,
-      col.sortable === false
-        ? ''
-        : 'cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 select-none'
-    );
-  }
-
   protected tbodyClasses = computed(() => 'divide-y divide-slate-100 dark:divide-slate-700');
 
-  protected trClasses(row: any, isOdd: boolean) {
-    const isSelected = this.isSelected(row);
-    return this.twClass.merge(
-      'transition-colors',
-      this.variant === 'striped' && isOdd
-        ? 'bg-slate-50 dark:bg-slate-900/50'
-        : 'bg-white dark:bg-slate-800',
-      this.hoverable ? 'hover:bg-slate-50 dark:hover:bg-slate-700' : '',
-      isSelected ? 'bg-blue-50 dark:bg-blue-900/30' : '',
-      this.selectable ? 'cursor-pointer' : ''
-    );
+  /** Per-column th/td class map, recomputed only when columns/size/variant change. */
+  private readonly columnClassMap = computed(() => {
+    const sizeClasses = TABLE_SIZES[this.size()].cell;
+    const bordered = this.variant() === 'bordered';
+    const map = new Map<TableColumn, { th: string; td: string }>();
+    for (const col of this.columns()) {
+      const alignClasses =
+        col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left';
+      map.set(col, {
+        th: this.twClass.merge(
+          'font-semibold text-slate-700 dark:text-slate-300 whitespace-nowrap',
+          sizeClasses,
+          alignClasses,
+          col.sortable === false
+            ? ''
+            : 'cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-700 select-none'
+        ),
+        td: this.twClass.merge(
+          'text-slate-600 dark:text-slate-400',
+          sizeClasses,
+          alignClasses,
+          bordered ? 'border border-slate-200 dark:border-slate-700' : ''
+        ),
+      });
+    }
+    return map;
+  });
+
+  protected thClasses(col: TableColumn): string {
+    return this.columnClassMap().get(col)?.th ?? '';
   }
 
-  protected tdClasses(col: TableColumn) {
-    const sizeClasses = TABLE_SIZES[this.size].cell;
-    const alignClasses =
-      col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left';
-    return this.twClass.merge(
-      'text-slate-600 dark:text-slate-400',
-      sizeClasses,
-      alignClasses,
-      this.variant === 'bordered' ? 'border border-slate-200 dark:border-slate-700' : ''
-    );
+  protected tdClasses(col: TableColumn): string {
+    return this.columnClassMap().get(col)?.td ?? '';
+  }
+
+  /** Row class matrix memoized per selected/odd combination. */
+  private readonly rowClassMatrix = computed(() => {
+    const striped = this.variant() === 'striped';
+    const hover = this.hoverable() ? 'hover:bg-slate-50 dark:hover:bg-slate-700' : '';
+    const pointer = this.selectable() ? 'cursor-pointer' : '';
+    const build = (isSelected: boolean, isOdd: boolean) =>
+      this.twClass.merge(
+        'transition-colors',
+        striped && isOdd ? 'bg-slate-50 dark:bg-slate-900/50' : 'bg-white dark:bg-slate-800',
+        hover,
+        isSelected ? 'bg-blue-50 dark:bg-blue-900/30' : '',
+        pointer
+      );
+    return {
+      selectedOdd: build(true, true),
+      selectedEven: build(true, false),
+      odd: build(false, true),
+      even: build(false, false),
+    };
+  });
+
+  protected trClasses(row: any, isOdd: boolean): string {
+    const matrix = this.rowClassMatrix();
+    if (this.isSelected(row)) {
+      return isOdd ? matrix.selectedOdd : matrix.selectedEven;
+    }
+    return isOdd ? matrix.odd : matrix.even;
   }
 
   protected pageButtonClasses(page: number) {
@@ -236,13 +277,19 @@ export class TwTableComponent {
     );
   }
 
+  protected ariaSort(col: TableColumn): 'ascending' | 'descending' | 'none' | null {
+    if (col.sortable === false) return null;
+    if (this.sortField() !== col.field) return 'none';
+    return this.sortOrder() === 1 ? 'ascending' : 'descending';
+  }
+
   getFieldValue(obj: any, field: string): any {
     return field.split('.').reduce((o, k) => o?.[k], obj);
   }
 
   onGlobalFilterChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.globalFilter.set(input.value);
+    const filterInput = event.target as HTMLInputElement;
+    this.globalFilter.set(filterInput.value);
     this.currentPage.set(1);
   }
 
@@ -260,47 +307,55 @@ export class TwTableComponent {
   goToPage(page: number): void {
     if (page < 1 || page > this.totalPages()) return;
     this.currentPage.set(page);
-    this.pageChange.emit({ page, rows: this.rows });
+    this.pageChange.emit({ page, rows: this.pageSize() });
+  }
+
+  onRowsPerPageChange(event: Event): void {
+    const value = Number((event.target as HTMLSelectElement).value);
+    if (!Number.isFinite(value) || value <= 0) return;
+    this.pageSize.set(value);
+    this.currentPage.set(1);
+    this.pageChange.emit({ page: 1, rows: value });
   }
 
   isSelected(row: any): boolean {
-    return this.selection().includes(row);
+    return this.selection().has(row);
   }
 
   toggleSelection(row: any): void {
-    const current = this.selection();
-    const index = current.indexOf(row);
-    if (this.selectionMode === 'single') {
-      this.selection.set(index === -1 ? [row] : []);
-    } else if (index === -1) {
-      this.selection.set([...current, row]);
+    const next = new Set(this.selection());
+    if (this.selectionMode() === 'single') {
+      const wasSelected = next.has(row);
+      next.clear();
+      if (!wasSelected) next.add(row);
+    } else if (next.has(row)) {
+      next.delete(row);
     } else {
-      this.selection.set(current.filter(r => r !== row));
+      next.add(row);
     }
-    this.selectionChange.emit(this.selection());
+    this.selection.set(next);
+    this.selectionChange.emit([...next]);
   }
 
   toggleSelectAll(): void {
     const displayed = this.displayedData();
+    const next = new Set(this.selection());
     if (this.allSelected()) {
-      this.selection.set(this.selection().filter(r => !displayed.includes(r)));
+      displayed.forEach(row => next.delete(row));
     } else {
-      const newSelection = [...this.selection()];
-      displayed.forEach(row => {
-        if (!newSelection.includes(row)) newSelection.push(row);
-      });
-      this.selection.set(newSelection);
+      displayed.forEach(row => next.add(row));
     }
-    this.selectionChange.emit(this.selection());
+    this.selection.set(next);
+    this.selectionChange.emit([...next]);
   }
 
   onRowClick(row: any): void {
     this.rowClick.emit(row);
-    if (this.selectable) this.toggleSelection(row);
+    if (this.selectable()) this.toggleSelection(row);
   }
 
   clearSelection(): void {
-    this.selection.set([]);
+    this.selection.set(new Set());
     this.selectionChange.emit([]);
   }
 

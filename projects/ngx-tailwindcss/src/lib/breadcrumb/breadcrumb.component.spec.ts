@@ -86,6 +86,28 @@ describe('TwBreadcrumbComponent', () => {
     });
   });
 
+  describe('icons', () => {
+    it('should render item icons before the label', () => {
+      component.items.set([
+        { label: 'Home', href: '/', icon: '<span class="crumb-icon">H</span>' },
+        { label: 'Current Page' },
+      ]);
+      fixture.detectChanges();
+
+      const icon = breadcrumbEl.querySelector('.crumb-icon');
+      expect(icon).toBeTruthy();
+      expect(icon?.textContent).toBe('H');
+
+      const iconWrapper = icon?.closest('[aria-hidden="true"]');
+      expect(iconWrapper).toBeTruthy();
+    });
+
+    it('should not render an icon wrapper for items without icons', () => {
+      const wrappers = breadcrumbEl.querySelectorAll('[aria-hidden="true"]');
+      expect(wrappers.length).toBe(0);
+    });
+  });
+
   describe('separators', () => {
     it('should render chevron separator by default', () => {
       const separators = breadcrumbEl.querySelectorAll('li > span:not([aria-current])');

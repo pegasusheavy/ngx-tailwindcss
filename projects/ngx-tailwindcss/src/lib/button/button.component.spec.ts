@@ -22,6 +22,7 @@ import { TwClassService } from '../core/tw-class.service';
       [ripple]="ripple()"
       [classOverride]="classOverride()"
       [classReplace]="classReplace()"
+      (click)="onClick()"
       data-testid="test-button"
     >
       {{ buttonText() }}
@@ -42,6 +43,11 @@ class TestHostComponent {
   classOverride = signal('');
   classReplace = signal('');
   buttonText = signal('Click me');
+  clickCount = 0;
+
+  onClick(): void {
+    this.clickCount++;
+  }
 }
 
 describe('TwButtonComponent', () => {
@@ -83,8 +89,12 @@ describe('TwButtonComponent', () => {
       expect(classes).toContain('bg-blue-600');
     });
 
-    it('should have variant input', () => {
-      expect(component.variant()).toBe('primary');
+    it('should update classes when variant changes', () => {
+      component.variant.set('danger');
+      fixture.detectChanges();
+
+      expect(buttonNative.className).toContain('bg-rose-600');
+      expect(buttonNative.className).not.toContain('bg-blue-600');
     });
   });
 
@@ -92,6 +102,13 @@ describe('TwButtonComponent', () => {
     it('should apply default md size classes', () => {
       const classes = buttonNative.className;
       expect(classes).toContain('text-base');
+    });
+
+    it('should update classes when size changes', () => {
+      component.size.set('lg');
+      fixture.detectChanges();
+
+      expect(buttonNative.className).toContain('text-lg');
     });
   });
 
@@ -122,6 +139,62 @@ describe('TwButtonComponent', () => {
       fixture.detectChanges();
 
       expect(buttonNative.className).toContain('disabled:opacity-50');
+    });
+
+    it('should apply inert classes directly when disabled', () => {
+      expect(buttonNative.classList.contains('pointer-events-none')).toBe(false);
+
+      component.disabled.set(true);
+      fixture.detectChanges();
+
+      // classList checks are exact-token, so these cannot be satisfied
+      // by the disabled:* variant classes
+      expect(buttonNative.classList.contains('opacity-50')).toBe(true);
+      expect(buttonNative.classList.contains('cursor-not-allowed')).toBe(true);
+      expect(buttonNative.classList.contains('pointer-events-none')).toBe(true);
+    });
+
+    it('should not fire consumer click handlers when disabled', () => {
+      component.disabled.set(true);
+      fixture.detectChanges();
+
+      buttonNative.click();
+      fixture.detectChanges();
+
+      expect(component.clickCount).toBe(0);
+    });
+
+    it('should fire consumer click handlers when enabled', () => {
+      buttonNative.click();
+      fixture.detectChanges();
+
+      expect(component.clickCount).toBe(1);
+    });
+  });
+
+  describe('keyboard activation', () => {
+    it('should fire click on Enter', () => {
+      buttonNative.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      fixture.detectChanges();
+
+      expect(component.clickCount).toBe(1);
+    });
+
+    it('should fire click on Space', () => {
+      buttonNative.dispatchEvent(new KeyboardEvent('keydown', { key: ' ', bubbles: true }));
+      fixture.detectChanges();
+
+      expect(component.clickCount).toBe(1);
+    });
+
+    it('should not fire click on Enter when disabled', () => {
+      component.disabled.set(true);
+      fixture.detectChanges();
+
+      buttonNative.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      fixture.detectChanges();
+
+      expect(component.clickCount).toBe(0);
     });
   });
 
@@ -157,18 +230,23 @@ describe('TwButtonComponent', () => {
   });
 
   describe('fullWidth', () => {
-    it('should have fullWidth input', () => {
-      expect(component.fullWidth()).toBe(false);
+    it('should apply w-full when fullWidth', () => {
+      expect(buttonNative.className).not.toContain('w-full');
+
       component.fullWidth.set(true);
-      expect(component.fullWidth()).toBe(true);
+      fixture.detectChanges();
+
+      expect(buttonNative.className).toContain('w-full');
     });
   });
 
   describe('iconOnly', () => {
-    it('should have iconOnly input', () => {
-      expect(component.iconOnly()).toBe(false);
+    it('should apply icon-only classes when iconOnly', () => {
       component.iconOnly.set(true);
-      expect(component.iconOnly()).toBe(true);
+      fixture.detectChanges();
+
+      expect(buttonNative.className).toContain('gap-0');
+      expect(buttonNative.className).toContain('p-3');
     });
   });
 

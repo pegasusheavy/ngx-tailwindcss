@@ -34,7 +34,26 @@
         <span class="text-sm text-slate-600 block mb-2">Medium</span>
         <tw-table [data]="users" [columns]="columns" size="md"></tw-table>
       </div>
+      <div>
+        <span class="text-sm text-slate-600 block mb-2">Large</span>
+        <tw-table [data]="users" [columns]="columns" size="lg"></tw-table>
+      </div>
     </div>
+  </app-demo-section>
+
+  <!-- Selectable -->
+  <app-demo-section title="Selectable Rows" [code]="selectableCode">
+    <tw-table
+      [data]="users"
+      [columns]="columns"
+      [selectable]="true"
+      selectionMode="multiple"
+      (selectionChange)="onSelectionChange($event)"
+    ></tw-table>
+    <p class="mt-3 text-sm text-slate-600">
+      Selected: {{ selectedUsers.length }}
+      {{ selectedUsers.length === 1 ? 'row' : 'rows' }}
+    </p>
   </app-demo-section>
 
   <!-- Filtering & Pagination -->

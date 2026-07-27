@@ -117,6 +117,9 @@ export const DARK_MODE_SAFELIST = [
   'dark:scrollbar-thumb-slate-600',
 ] as const;
 
-// This ensures the strings are included in the compiled output for Tailwind to scan
+// Tailwind reads this file as raw source text via the @source directive in
+// styles.scss — nothing needs to import it, and the export below is
+// tree-shaken from the build (unused by design). Do not delete this file
+// despite it having no importers: dark mode depends on @source scanning it.
 export type DarkModeSafelistClass = (typeof DARK_MODE_SAFELIST)[number];
 

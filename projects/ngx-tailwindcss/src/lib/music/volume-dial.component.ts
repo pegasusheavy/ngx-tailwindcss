@@ -7,6 +7,7 @@ import {
   inject,
   input,
   model,
+  OnDestroy,
   output,
   viewChild,
 } from '@angular/core';
@@ -14,6 +15,7 @@ import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TwClassService } from '../core/tw-class.service';
 import { MusicAccessibilityService } from './accessibility.service';
+import { MobileSupportService } from './mobile-support.service';
 
 export type DialVariant = 'modern' | 'vintage' | 'minimal' | 'led' | 'light' | 'highContrast';
 export type DialSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -97,10 +99,16 @@ const DIAL_VARIANTS: Record<
     class: 'inline-block',
   },
 })
-export class TwVolumeDialComponent implements ControlValueAccessor {
+export class TwVolumeDialComponent implements ControlValueAccessor, OnDestroy {
   private readonly twClass = inject(TwClassService);
   private readonly a11y = inject(MusicAccessibilityService);
+  private readonly mobileSupport = inject(MobileSupportService);
   private readonly dialSvg = viewChild<ElementRef<SVGElement>>('dialSvg');
+
+  ngOnDestroy(): void {
+    this.dragController?.abort();
+    this.dragController = null;
+  }
 
   // Inputs
   /** Initial/bound value - supports two-way binding with [(value)] */
@@ -140,6 +148,14 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
   private isDragging = false;
   private startAngle = 0;
   private startValue = 0;
+  private dragController: AbortController | null = null;
+  private lastHapticTime = 0;
+
+  // Effective reduced-motion preference ('auto' follows the OS setting)
+  protected readonly effectiveReducedMotion = computed(() => {
+    const pref = this.reducedMotion();
+    return pref === 'auto' ? this.a11y.prefersReducedMotion() : pref;
+  });
 
   // CVA callbacks
   private onChangeFn: (value: number) => void = () => {};
@@ -328,32 +344,40 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
     };
     const onMouseUp = (): void => {
       this.endDrag();
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    this.dragController?.abort();
+    this.dragController = new AbortController();
+    const { signal: abortSignal } = this.dragController;
+    document.addEventListener('mousemove', onMouseMove, { signal: abortSignal });
+    document.addEventListener('mouseup', onMouseUp, { signal: abortSignal });
   }
 
   onTouchStart(event: TouchEvent): void {
     if (this.disabled()) return;
     event.preventDefault();
     const touch = event.touches[0];
+    const guarded = this.touchGuard();
+    if (guarded) {
+      this.mobileSupport.startTouchTracking(event);
+    }
     this.startDrag(touch.clientX, touch.clientY);
 
     const onTouchMove = (e: TouchEvent): void => {
+      // Touch guard: ignore movement until the minimum touch duration has elapsed
+      if (guarded && !this.mobileSupport.validateTouchDuration(this.minTouchDuration())) return;
       const t = e.touches[0];
       this.handleDrag(t.clientX, t.clientY);
     };
     const onTouchEnd = (): void => {
       this.endDrag();
-      document.removeEventListener('touchmove', onTouchMove);
-      document.removeEventListener('touchend', onTouchEnd);
     };
 
-    document.addEventListener('touchmove', onTouchMove, { passive: false });
-    document.addEventListener('touchend', onTouchEnd);
+    this.dragController?.abort();
+    this.dragController = new AbortController();
+    const { signal: abortSignal } = this.dragController;
+    document.addEventListener('touchmove', onTouchMove, { passive: false, signal: abortSignal });
+    document.addEventListener('touchend', onTouchEnd, { signal: abortSignal });
   }
 
   private startDrag(clientX: number, clientY: number): void {
@@ -396,6 +420,8 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
   private endDrag(): void {
     this.isDragging = false;
     this.onTouchedFn();
+    this.dragController?.abort();
+    this.dragController = null;
   }
 
   private getAngleFromPoint(clientX: number, clientY: number): number {
@@ -459,13 +485,44 @@ export class TwVolumeDialComponent implements ControlValueAccessor {
 
   private setValue(newValue: number): void {
     if (newValue !== this.value()) {
+      const previous = this.value();
       this.value.set(newValue);
       this.onChangeFn(newValue);
+      this.triggerHaptics(newValue, previous);
 
       // Announce to screen readers (debounced)
       if (this.announceChanges()) {
         this.a11y.announceValueChange(this.label() || 'Volume', this.displayValue(), this.unit());
       }
+    }
+  }
+
+  private triggerHaptics(value: number, previous: number): void {
+    if (!this.hapticFeedback()) return;
+
+    // Center detent hit
+    if (this.centerDetent() && value === this.detentValue() && previous !== this.detentValue()) {
+      this.mobileSupport.triggerSnapHaptic();
+      this.hapticTrigger.emit('detent');
+      return;
+    }
+
+    // Boundary hit
+    const atBoundary =
+      (value === this.min() && previous !== this.min()) ||
+      (value === this.max() && previous !== this.max());
+    if (atBoundary) {
+      this.mobileSupport.triggerBoundaryHaptic();
+      this.hapticTrigger.emit('boundary');
+      return;
+    }
+
+    // Regular change (throttled)
+    const now = Date.now();
+    if (now - this.lastHapticTime >= 50) {
+      this.lastHapticTime = now;
+      this.mobileSupport.triggerHaptic('light');
+      this.hapticTrigger.emit('change');
     }
   }
 

@@ -1,5 +1,16 @@
-import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  HostListener,
+  inject,
+  input,
+  OnDestroy,
+  output,
+  PLATFORM_ID,
+} from '@angular/core';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
 export type OverlayBlur = 'none' | 'sm' | 'md' | 'lg';
@@ -44,15 +55,8 @@ const OPACITY_CLASSES: Record<OverlayOpacity, string> = {
   selector: 'tw-overlay',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    @if (visible) {
-      <div [class]="overlayClasses()" (click)="onOverlayClick($event)" [@.disabled]="!animate">
-        <div class="relative z-10" (click)="$event.stopPropagation()">
-          <ng-content></ng-content>
-        </div>
-      </div>
-    }
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './overlay.component.html',
   styles: [
     `
       :host {
@@ -61,63 +65,92 @@ const OPACITY_CLASSES: Record<OverlayOpacity, string> = {
     `,
   ],
 })
-export class TwOverlayComponent {
+export class TwOverlayComponent implements OnDestroy {
+  private readonly twClass = inject(TwClassService);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
+
   /** Whether the overlay is visible */
-  @Input() visible = false;
+  readonly visible = input(false);
 
   /** Whether clicking the overlay closes it */
-  @Input() closeOnClick = true;
+  readonly closeOnClick = input(true);
 
   /** Whether pressing Escape closes the overlay */
-  @Input() closeOnEscape = true;
+  readonly closeOnEscape = input(true);
 
   /** Blur intensity */
-  @Input() blur: OverlayBlur = 'none';
+  readonly blur = input<OverlayBlur>('none');
 
   /** Opacity level */
-  @Input() opacity: OverlayOpacity = 'medium';
+  readonly opacity = input<OverlayOpacity>('medium');
 
   /** Whether to center content */
-  @Input() centered = true;
+  readonly centered = input(true);
 
   /** Whether to lock body scroll when visible */
-  @Input() lockScroll = true;
+  readonly lockScroll = input(true);
 
   /** Whether to animate transitions */
-  @Input() animate = true;
+  readonly animate = input(true);
 
   /** Z-index of the overlay */
-  @Input() zIndex = 50;
+  readonly zIndex = input(50);
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
   /** Emits when overlay should close */
-  @Output() close = new EventEmitter<void>();
+  readonly close = output();
 
-  constructor(private readonly twClass: TwClassService) {}
+  private previousOverflow = '';
+  private scrollLocked = false;
+
+  constructor() {
+    // Lock/unlock body scroll while visible when lockScroll is enabled
+    effect(() => {
+      const shouldLock = this.visible() && this.lockScroll();
+
+      if (!isPlatformBrowser(this.platformId)) return;
+
+      if (shouldLock && !this.scrollLocked) {
+        this.previousOverflow = this.document.body.style.overflow;
+        this.document.body.style.overflow = 'hidden';
+        this.scrollLocked = true;
+      } else if (!shouldLock && this.scrollLocked) {
+        this.document.body.style.overflow = this.previousOverflow;
+        this.scrollLocked = false;
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    if (this.scrollLocked && isPlatformBrowser(this.platformId)) {
+      this.document.body.style.overflow = this.previousOverflow;
+      this.scrollLocked = false;
+    }
+  }
 
   @HostListener('document:keydown.escape')
   onEscapeKey(): void {
-    if (this.visible && this.closeOnEscape) {
+    if (this.visible() && this.closeOnEscape()) {
       this.close.emit();
     }
   }
 
-  protected overlayClasses(): string {
+  protected readonly overlayClasses = computed(() => {
     return this.twClass.merge(
       'fixed inset-0',
-      BLUR_CLASSES[this.blur],
-      OPACITY_CLASSES[this.opacity],
-      this.centered ? 'flex items-center justify-center' : '',
-      this.animate ? 'transition-opacity duration-200' : '',
-      `z-[${this.zIndex}]`,
-      this.class
+      BLUR_CLASSES[this.blur()],
+      OPACITY_CLASSES[this.opacity()],
+      this.centered() ? 'flex items-center justify-center' : '',
+      this.animate() ? 'transition-opacity duration-200' : '',
+      this.class()
     );
-  }
+  });
 
   protected onOverlayClick(event: MouseEvent): void {
-    if (this.closeOnClick && event.target === event.currentTarget) {
+    if (this.closeOnClick() && event.target === event.currentTarget) {
       this.close.emit();
     }
   }

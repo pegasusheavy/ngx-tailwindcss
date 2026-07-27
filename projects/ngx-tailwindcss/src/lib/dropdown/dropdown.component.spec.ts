@@ -9,6 +9,8 @@ import {
   TwDropdownDividerComponent,
   TwDropdownHeaderComponent,
   TwDropdownItemDirective,
+  TwDropdownMenuComponent,
+  TwDropdownTriggerDirective,
 } from './dropdown.component';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -23,14 +25,19 @@ import { TwClassService } from '../core/tw-class.service';
       data-testid="test-dropdown"
     >
       <button twDropdownTrigger data-testid="trigger">Open Menu</button>
-      <div class="tw-dropdown-menu">
+      <tw-dropdown-menu>
         <button twDropdownItem data-testid="item-1">Item 1</button>
         <button twDropdownItem data-testid="item-2">Item 2</button>
-      </div>
+      </tw-dropdown-menu>
     </tw-dropdown>
   `,
   standalone: true,
-  imports: [TwDropdownComponent, TwDropdownItemDirective],
+  imports: [
+    TwDropdownComponent,
+    TwDropdownItemDirective,
+    TwDropdownMenuComponent,
+    TwDropdownTriggerDirective,
+  ],
 })
 class TestHostComponent {
   @ViewChild(TwDropdownComponent) dropdown!: TwDropdownComponent;
@@ -108,6 +115,67 @@ describe('TwDropdownComponent', () => {
     fixture.detectChanges();
 
     expect(component.dropdown.isOpen()).toBe(false);
+  });
+
+  describe('trigger aria-expanded', () => {
+    it('should be false initially', () => {
+      expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    });
+
+    it('should be true while open and false again after close', () => {
+      trigger.click();
+      fixture.detectChanges();
+
+      expect(trigger.getAttribute('aria-expanded')).toBe('true');
+
+      component.dropdown.close();
+      fixture.detectChanges();
+
+      expect(trigger.getAttribute('aria-expanded')).toBe('false');
+    });
+  });
+
+  describe('keyboard navigation', () => {
+    const keydown = (key: string): void => {
+      document.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+      fixture.detectChanges();
+    };
+
+    it('should move focus over menu items with arrow keys', () => {
+      trigger.click();
+      fixture.detectChanges();
+
+      const item1 = document.querySelector<HTMLElement>('[data-testid="item-1"]');
+      const item2 = document.querySelector<HTMLElement>('[data-testid="item-2"]');
+      expect(item1).toBeTruthy();
+      expect(item2).toBeTruthy();
+
+      keydown('ArrowDown');
+      expect(document.activeElement).toBe(item1);
+
+      keydown('ArrowDown');
+      expect(document.activeElement).toBe(item2);
+
+      keydown('ArrowUp');
+      expect(document.activeElement).toBe(item1);
+
+      keydown('End');
+      expect(document.activeElement).toBe(item2);
+
+      keydown('Home');
+      expect(document.activeElement).toBe(item1);
+    });
+
+    it('should close on Escape and restore focus to the trigger', () => {
+      trigger.click();
+      fixture.detectChanges();
+
+      keydown('ArrowDown');
+      keydown('Escape');
+
+      expect(component.dropdown.isOpen()).toBe(false);
+      expect(document.activeElement).toBe(trigger);
+    });
   });
 
   describe('positions', () => {

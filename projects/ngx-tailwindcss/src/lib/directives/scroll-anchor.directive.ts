@@ -6,7 +6,9 @@ import {
   inject,
   Input,
   numberAttribute,
+  PLATFORM_ID,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 /**
  * Directive to smooth scroll to a target element
@@ -23,6 +25,8 @@ import {
   standalone: true,
 })
 export class TwScrollToDirective {
+  private readonly platformId = inject(PLATFORM_ID);
+
   /** Target selector or element ID */
   @Input({ required: true })
   twScrollTo = '';
@@ -45,9 +49,8 @@ export class TwScrollToDirective {
 
   @HostListener('click', ['$event'])
   onClick(event: Event): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     if (this.scrollDisabled || !this.twScrollTo) return;
-
-    event.preventDefault();
 
     const selector = this.twScrollTo.startsWith('#')
       ? this.twScrollTo
@@ -58,19 +61,26 @@ export class TwScrollToDirective {
     const target = document.querySelector(selector);
 
     if (target) {
-      const elementPosition = target.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.scrollY - this.scrollOffset;
+      event.preventDefault();
 
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: this.scrollBehavior,
-      });
+      if (this.scrollOffset === 0) {
+        target.scrollIntoView({ behavior: this.scrollBehavior, block: this.scrollBlock });
+      } else {
+        const elementPosition = target.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.scrollY - this.scrollOffset;
+
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: this.scrollBehavior,
+        });
+      }
     }
   }
 }
 
 /**
- * Directive to mark scroll target sections for scroll spy
+ * Directive that exposes the section's viewport position (via `getPosition()`)
+ * for a caller-implemented scroll spy
  *
  * @example
  * ```html
