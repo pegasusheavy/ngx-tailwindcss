@@ -22,11 +22,13 @@ import {
 import {
   TwInputComponent,
   TwModalComponent,
+  TwModalHeaderComponent,
+  TwModalTitleComponent,
   TwToastService,
   TwAccordionComponent,
   TwAccordionItemComponent,
   TwSpinnerComponent,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface Feature {
@@ -72,6 +74,8 @@ interface TeamMember {
     FontAwesomeModule,
     TwInputComponent,
     TwModalComponent,
+    TwModalHeaderComponent,
+    TwModalTitleComponent,
     TwAccordionComponent,
     TwAccordionItemComponent,
     TwSpinnerComponent,

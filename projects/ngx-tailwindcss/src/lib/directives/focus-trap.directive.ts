@@ -6,9 +6,13 @@ import {
   inject,
   Input,
   NgZone,
+  OnChanges,
   OnDestroy,
   OnInit,
+  PLATFORM_ID,
+  SimpleChanges,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -41,9 +45,10 @@ const FOCUSABLE_SELECTOR = [
   selector: '[twFocusTrap]',
   standalone: true,
 })
-export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
+export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnChanges, OnDestroy {
   private readonly el = inject(ElementRef);
   private readonly ngZone = inject(NgZone);
+  private readonly platformId = inject(PLATFORM_ID);
 
   /** Whether the focus trap is active */
   @Input({ alias: 'twFocusTrap', transform: booleanAttribute }) enabled = true;
@@ -59,8 +64,11 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
 
   private keydownHandler: ((event: KeyboardEvent) => void) | null = null;
   private previouslyFocusedElement: HTMLElement | null = null;
+  private viewInitialized = false;
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     // Store the currently focused element
     if (this.focusTrapRestoreFocus) {
       this.previouslyFocusedElement = document.activeElement as HTMLElement;
@@ -68,15 +76,41 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    if (this.enabled) {
-      this.setupTrap();
+    if (!isPlatformBrowser(this.platformId)) return;
 
-      if (this.focusTrapAutoFocus) {
-        // Delay focus to ensure DOM is ready
-        setTimeout(() => {
-          this.focusInitial();
-        }, 0);
-      }
+    this.viewInitialized = true;
+    if (this.enabled) {
+      this.activateTrap();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.viewInitialized || !changes['enabled']) return;
+
+    if (this.enabled) {
+      this.activateTrap();
+    } else {
+      this.deactivateTrap();
+    }
+  }
+
+  private activateTrap(): void {
+    if (this.keydownHandler) return;
+
+    this.setupTrap();
+
+    if (this.focusTrapAutoFocus) {
+      // Delay focus to ensure DOM is ready
+      setTimeout(() => {
+        this.focusInitial();
+      }, 0);
+    }
+  }
+
+  private deactivateTrap(): void {
+    if (this.keydownHandler) {
+      document.removeEventListener('keydown', this.keydownHandler);
+      this.keydownHandler = null;
     }
   }
 
@@ -84,40 +118,66 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
     this.keydownHandler = (event: KeyboardEvent) => {
       if (!this.enabled || event.key !== 'Tab') return;
 
-      const focusableElements = this.getFocusableElements();
-      if (focusableElements.length === 0) return;
+      const boundaries = this.getFocusBoundaries();
+      if (!boundaries) return;
 
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements.at(-1);
+      const { first, last } = boundaries;
+      const { activeElement } = document;
+      const focusIsInside = this.el.nativeElement.contains(activeElement);
 
       if (event.shiftKey) {
-        // Shift+Tab: if on first element, go to last
-        if (document.activeElement === firstElement && lastElement) {
+        // Shift+Tab: if on first element (or focus escaped the trap), go to last
+        if (!focusIsInside || activeElement === first) {
           event.preventDefault();
-          lastElement.focus();
+          last.focus();
         }
-      } else if (document.activeElement === lastElement && firstElement) {
-        // Tab: if on last element, go to first
+      } else if (!focusIsInside || activeElement === last) {
+        // Tab: if on last element (or focus escaped the trap), go to first
         event.preventDefault();
-        firstElement.focus();
+        first.focus();
       }
     };
 
+    // Listen on the document so the trap keeps working even after
+    // focus escapes the host element (e.g. a click on the backdrop)
     this.ngZone.runOutsideAngular(() => {
-      this.el.nativeElement.addEventListener('keydown', this.keydownHandler);
+      document.addEventListener('keydown', this.keydownHandler!);
     });
   }
 
-  private getFocusableElements(): HTMLElement[] {
-    const elements = this.el.nativeElement.querySelectorAll(FOCUSABLE_SELECTOR);
-    return [...elements].filter(el => {
-      const htmlEl = el as HTMLElement;
-      return (
-        htmlEl.offsetWidth > 0 &&
-        htmlEl.offsetHeight > 0 &&
-        getComputedStyle(htmlEl).visibility !== 'hidden'
-      );
-    }) as HTMLElement[];
+  private isFocusVisible(el: HTMLElement): boolean {
+    return (
+      el.offsetWidth > 0 && el.offsetHeight > 0 && getComputedStyle(el).visibility !== 'hidden'
+    );
+  }
+
+  /**
+   * Find only the first and last visible focusable elements, short-circuiting
+   * from both ends to avoid forcing a reflow for every candidate on each Tab.
+   */
+  private getFocusBoundaries(): { first: HTMLElement; last: HTMLElement } | null {
+    const candidates = [
+      ...this.el.nativeElement.querySelectorAll(FOCUSABLE_SELECTOR),
+    ] as HTMLElement[];
+
+    let first: HTMLElement | null = null;
+    for (const candidate of candidates) {
+      if (this.isFocusVisible(candidate)) {
+        first = candidate;
+        break;
+      }
+    }
+    if (!first) return null;
+
+    let last: HTMLElement = first;
+    for (let i = candidates.length - 1; i >= 0; i--) {
+      if (this.isFocusVisible(candidates[i])) {
+        last = candidates[i];
+        break;
+      }
+    }
+
+    return { first, last };
   }
 
   private focusInitial(): void {
@@ -130,9 +190,9 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Focus first focusable element
-    const focusableElements = this.getFocusableElements();
-    if (focusableElements.length > 0) {
-      focusableElements[0].focus();
+    const boundaries = this.getFocusBoundaries();
+    if (boundaries) {
+      boundaries.first.focus();
     } else {
       // If no focusable elements, make the container focusable and focus it
       this.el.nativeElement.setAttribute('tabindex', '-1');
@@ -142,25 +202,16 @@ export class TwFocusTrapDirective implements OnInit, AfterViewInit, OnDestroy {
 
   /** Manually focus the first focusable element */
   focusFirst(): void {
-    const elements = this.getFocusableElements();
-    if (elements.length > 0) {
-      elements[0].focus();
-    }
+    this.getFocusBoundaries()?.first.focus();
   }
 
   /** Manually focus the last focusable element */
   focusLast(): void {
-    const elements = this.getFocusableElements();
-    if (elements.length > 0) {
-      elements.at(-1)?.focus();
-    }
+    this.getFocusBoundaries()?.last.focus();
   }
 
   ngOnDestroy(): void {
-    if (this.keydownHandler) {
-      this.el.nativeElement.removeEventListener('keydown', this.keydownHandler);
-      this.keydownHandler = null;
-    }
+    this.deactivateTrap();
 
     // Restore focus to the previously focused element
     if (this.focusTrapRestoreFocus && this.previouslyFocusedElement) {

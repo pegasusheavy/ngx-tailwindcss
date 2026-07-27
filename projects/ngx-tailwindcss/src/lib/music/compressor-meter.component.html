@@ -13,8 +13,10 @@
     @if (inputClip() || outputClip()) {
       <button
         type="button"
-        class="px-2 py-0.5 rounded text-[10px] bg-red-600 text-white hover:bg-red-500 transition-colors"
+        class="px-2 py-0.5 rounded text-[10px] bg-red-600 text-white hover:bg-red-500 transition-colors disabled:opacity-50"
+        [disabled]="disabled()"
         (click)="resetClip('both')"
+        aria-label="Reset clip indicator"
       >
         CLIP
       </button>
@@ -36,9 +38,7 @@
             class="absolute bottom-0 left-0 right-0 transition-all"
             [class.duration-75]="animated()"
             [style.height.%]="inputMeterPercent()"
-            [style.background]="
-              'linear-gradient(to top, rgb(34, 197, 94), rgb(234, 179, 8) 70%, rgb(239, 68, 68) 90%)'
-            "
+            [style.background]="'linear-gradient(to top, rgb(34, 197, 94), rgb(234, 179, 8) 70%, rgb(239, 68, 68) 90%)'"
           ></div>
 
           <!-- Peak hold line -->
@@ -97,9 +97,7 @@
             class="absolute top-0 left-0 right-0 transition-all"
             [class.duration-75]="animated()"
             [style.height.%]="gainReductionPercent()"
-            [style.background]="
-              'linear-gradient(to bottom, rgb(234, 179, 8), rgb(249, 115, 22) 60%, rgb(239, 68, 68) 90%)'
-            "
+            [style.background]="'linear-gradient(to bottom, rgb(234, 179, 8), rgb(249, 115, 22) 60%, rgb(239, 68, 68) 90%)'"
           ></div>
 
           <!-- Scale markers -->
@@ -138,9 +136,7 @@
             class="absolute bottom-0 left-0 right-0 transition-all"
             [class.duration-75]="animated()"
             [style.height.%]="outputMeterPercent()"
-            [style.background]="
-              'linear-gradient(to top, rgb(34, 197, 94), rgb(234, 179, 8) 70%, rgb(239, 68, 68) 90%)'
-            "
+            [style.background]="'linear-gradient(to top, rgb(34, 197, 94), rgb(234, 179, 8) 70%, rgb(239, 68, 68) 90%)'"
           ></div>
 
           <!-- Peak hold line -->
@@ -193,7 +189,8 @@
         <span class="text-[10px] text-slate-500 uppercase">Gain Reduction History</span>
         <button
           type="button"
-          class="text-[10px] text-slate-500 hover:text-slate-400"
+          class="text-[10px] text-slate-500 hover:text-slate-400 disabled:opacity-50"
+          [disabled]="disabled()"
           (click)="clearHistory()"
         >
           Clear

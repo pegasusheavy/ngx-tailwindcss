@@ -38,13 +38,13 @@ ngx-tailwindcss is an open-source Angular UI component library that provides 30+
 
 ```bash
 # Using pnpm (recommended)
-pnpm add @pegasus-heavy/ngx-tailwindcss
+pnpm add @quinnjr/ngx-tailwindcss
 
 # Using npm
-npm install @pegasus-heavy/ngx-tailwindcss
+npm install @quinnjr/ngx-tailwindcss
 
 # Using yarn
-yarn add @pegasus-heavy/ngx-tailwindcss
+yarn add @quinnjr/ngx-tailwindcss
 ```
 
 ### Step 2: Configure Tailwind CSS
@@ -55,13 +55,13 @@ In your `styles.css` or `styles.scss`:
 @import "tailwindcss";
 
 /* IMPORTANT: Add this line to scan the library for Tailwind classes */
-@source "../node_modules/@pegasus-heavy/ngx-tailwindcss/**/*.mjs";
+@source "../node_modules/@quinnjr/ngx-tailwindcss/**/*.mjs";
 ```
 
 ### Step 3: Import Components
 
 ```typescript
-import { TwButtonComponent, TwCardComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwButtonComponent, TwCardComponent } from '@quinnjr/ngx-tailwindcss';
 
 @Component({
   standalone: true,
@@ -79,7 +79,7 @@ export class MyComponent {}
 
 ```typescript
 import { ApplicationConfig } from '@angular/core';
-import { provideTwConfig } from '@pegasus-heavy/ngx-tailwindcss';
+import { provideTwConfig } from '@quinnjr/ngx-tailwindcss';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -355,7 +355,7 @@ Tabbed navigation with multiple style variants.
 Programmatic toast notifications.
 
 ```typescript
-import { TwToastService } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwToastService } from '@quinnjr/ngx-tailwindcss';
 
 @Component({...})
 export class MyComponent {
@@ -725,10 +725,10 @@ Override using CSS custom properties in your styles:
 
 ```typescript
 // Good - tree-shakeable
-import { TwButtonComponent, TwCardComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwButtonComponent, TwCardComponent } from '@quinnjr/ngx-tailwindcss';
 
 // Avoid - imports everything
-import * as Tw from '@pegasus-heavy/ngx-tailwindcss';
+import * as Tw from '@quinnjr/ngx-tailwindcss';
 ```
 
 ### 2. Use Semantic Variants
@@ -830,7 +830,7 @@ All components include proper ARIA attributes, but always add context:
 **Solution:** Ensure you've added the @source directive in your CSS:
 
 ```css
-@source "../node_modules/@pegasus-heavy/ngx-tailwindcss/**/*.mjs";
+@source "../node_modules/@quinnjr/ngx-tailwindcss/**/*.mjs";
 ```
 
 ### Class Conflicts
@@ -857,14 +857,14 @@ All components include proper ARIA attributes, but always add context:
 
 ## License
 
-MIT License - Copyright (c) 2025 Pegasus Heavy Industries LLC
+MIT License - Copyright (c) 2025 Joseph R Quinn
 
 ---
 
 ## Links
 
 - **Documentation**: https://ngx-tailwindcss.dev
-- **GitHub**: https://github.com/PegasusHeavyIndustries/ngx-tailwindcss
-- **npm**: https://www.npmjs.com/package/@pegasus-heavy/ngx-tailwindcss
-- **Issues**: https://github.com/PegasusHeavyIndustries/ngx-tailwindcss/issues
+- **GitHub**: https://github.com/quinnjr/ngx-tailwindcss
+- **npm**: https://www.npmjs.com/package/@quinnjr/ngx-tailwindcss
+- **Issues**: https://github.com/quinnjr/ngx-tailwindcss/issues
 

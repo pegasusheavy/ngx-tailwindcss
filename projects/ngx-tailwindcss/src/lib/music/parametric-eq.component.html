@@ -8,6 +8,8 @@
     [class.cursor-pointer]="interactive()"
     [class.cursor-grab]="interactive() && !isDragging()"
     [class.cursor-grabbing]="isDragging()"
+    role="img"
+    aria-label="Parametric EQ frequency response curve"
   ></canvas>
 
   <!-- Band selector buttons -->
@@ -24,7 +26,10 @@
         [style.color]="'white'"
         (click)="selectBand(band)"
         (dblclick)="toggleBand(band)"
+        (keydown)="onBandKeydown($event, band)"
         [title]="band.enabled ? 'Double-click to disable' : 'Double-click to enable'"
+        [attr.aria-label]="bandAriaLabel(band)"
+        [attr.aria-pressed]="selectedBandId() === band.id"
       >
         <span
           class="w-2 h-2 rounded-full"

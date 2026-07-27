@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 set -e
 
-pnpm exec eslint projects/ngx-tailwindcss/src/lib/datatables --ext .ts --ext .html
-
+# Lint staged files within the configured lint scope (docs/ has no
+# eslint project coverage; keep this aligned with `pnpm run lint`).
+FILES=$(git diff --cached --name-only --diff-filter=ACM -- 'projects/**/*.ts' 'projects/**/*.html')
+[ -z "$FILES" ] || pnpm exec eslint $FILES

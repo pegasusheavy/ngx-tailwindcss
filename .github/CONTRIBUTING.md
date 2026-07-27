@@ -248,8 +248,8 @@ pnpm test -- --watch
 
 ## Questions?
 
-- Open a [Discussion](https://github.com/PegasusHeavyIndustries/ng-tailwindcss/discussions)
-- Check existing [Issues](https://github.com/PegasusHeavyIndustries/ng-tailwindcss/issues)
+- Open a [Discussion](https://github.com/quinnjr/ngx-tailwindcss/discussions)
+- Check existing [Issues](https://github.com/quinnjr/ngx-tailwindcss/issues)
 
 Thank you for contributing! 🙏
 

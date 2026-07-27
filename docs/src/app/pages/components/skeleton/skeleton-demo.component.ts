@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwSkeletonComponent, TwSkeletonTextComponent } from '@pegasusheavy/ngx-tailwindcss';
+import { TwSkeletonComponent, TwSkeletonTextComponent } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -27,4 +27,12 @@ export class SkeletonDemoComponent {
   textCode = `<tw-skeleton-text [lineCount]="3"></tw-skeleton-text>`;
 
   cardCode = `<tw-skeleton-card></tw-skeleton-card>`;
+
+  profileCode = `<div style="display: flex; align-items: center; gap: 16px;">
+  <tw-skeleton variant="circular" width="56px" height="56px"></tw-skeleton>
+  <div style="display: flex; flex-direction: column; gap: 12px;">
+    <tw-skeleton width="150px" height="18px"></tw-skeleton>
+    <tw-skeleton width="100px" height="14px"></tw-skeleton>
+  </div>
+</div>`;
 }

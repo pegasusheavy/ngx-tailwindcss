@@ -1,0 +1,53 @@
+<header
+  class="tw-title-bar-drag"
+  [class]="containerClasses()"
+  [style.height.px]="height()"
+  (dblclick)="onDoubleClick()"
+>
+  <!-- Left section (macOS controls + icon/title on Windows/Linux) -->
+  <div class="flex items-center gap-2 min-w-0 tw-title-bar-no-drag">
+    @if (effectivePlatform() === 'macos') {
+      <tw-window-controls
+        [platform]="effectivePlatform()"
+        [showClose]="showClose()"
+        [showMinimize]="showMinimize()"
+        [showMaximize]="showMaximize()"
+        [showFullscreen]="showFullscreen()"
+      ></tw-window-controls>
+    } @else {
+      @if (showIcon() && icon()) {
+        <img [src]="icon()" [alt]="title()" class="w-4 h-4 object-contain" />
+      }
+    }
+  </div>
+
+  <!-- Center section (Title) -->
+  <div
+    class="flex-1 flex items-center min-w-0"
+    [class.justify-center]="effectivePlatform() === 'macos'"
+    [class.ml-2]="effectivePlatform() !== 'macos'"
+  >
+    @if (showIcon() && icon() && effectivePlatform() === 'macos') {
+      <img [src]="icon()" [alt]="title()" class="w-4 h-4 mr-2 object-contain" />
+    }
+    <span class="truncate text-sm font-medium text-gray-800 dark:text-gray-200">
+      {{ title() }}
+    </span>
+  </div>
+
+  <!-- Right section (Windows/Linux controls) -->
+  <div class="tw-title-bar-no-drag">
+    @if (effectivePlatform() !== 'macos') {
+      <tw-window-controls
+        [platform]="effectivePlatform()"
+        [showClose]="showClose()"
+        [showMinimize]="showMinimize()"
+        [showMaximize]="showMaximize()"
+        [showFullscreen]="showFullscreen()"
+      ></tw-window-controls>
+    }
+  </div>
+
+  <!-- Custom content slot -->
+  <ng-content></ng-content>
+</header>

@@ -1,6 +1,13 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwMenuComponent, TwButtonComponent, MenuItem } from '@pegasusheavy/ngx-tailwindcss';
+import {
+  TwMenuComponent,
+  TwButtonComponent,
+  TwDropdownComponent,
+  TwDropdownMenuComponent,
+  TwDropdownTriggerDirective,
+  MenuItem,
+} from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -10,6 +17,9 @@ import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-
     CommonModule,
     TwMenuComponent,
     TwButtonComponent,
+    TwDropdownComponent,
+    TwDropdownMenuComponent,
+    TwDropdownTriggerDirective,
     DemoSectionComponent,
     PageHeaderComponent,
   ],
@@ -24,9 +34,45 @@ export class MenuDemoComponent {
     { label: 'Delete', command: () => console.log('Delete'), styleClass: 'text-rose-600' },
   ];
 
-  basicCode = `<tw-menu [items]="menuItems">
-  <tw-button trigger>Open Menu</tw-button>
-</tw-menu>
+  fileMenuItems: MenuItem[] = [
+    { label: 'New File', shortcut: '⌘N' },
+    { label: 'New Window', shortcut: '⌘⇧N' },
+    { separator: true },
+    { label: 'Open...', shortcut: '⌘O' },
+    { label: 'Save', shortcut: '⌘S' },
+    { label: 'Save As...', shortcut: '⌘⇧S' },
+    { separator: true },
+    { label: 'Print', shortcut: '⌘P' },
+  ];
+
+  groupedMenuItems: MenuItem[] = [
+    { label: 'Account', items: [
+      { label: 'Profile' },
+      { label: 'Settings' },
+      { label: 'Billing' },
+    ]},
+    { label: 'Team', items: [
+      { label: 'Members' },
+      { label: 'Invite' },
+    ]},
+    { separator: true },
+    { label: 'Sign Out', styleClass: 'text-rose-600' },
+  ];
+
+  editMenuItems: MenuItem[] = [
+    { label: 'Cut', shortcut: '⌘X' },
+    { label: 'Copy', shortcut: '⌘C' },
+    { label: 'Paste', shortcut: '⌘V', disabled: true },
+    { separator: true },
+    { label: 'Select All', shortcut: '⌘A' },
+  ];
+
+  basicCode = `<tw-dropdown>
+  <tw-button twDropdownTrigger variant="outline">Actions</tw-button>
+  <tw-dropdown-menu>
+    <tw-menu [items]="menuItems"></tw-menu>
+  </tw-dropdown-menu>
+</tw-dropdown>
 
 // Component
 menuItems: MenuItem[] = [
@@ -36,13 +82,45 @@ menuItems: MenuItem[] = [
   { label: 'Delete', styleClass: 'text-rose-600' },
 ];`;
 
-  groupsCode = `menuItems = [
-  { label: 'Actions', items: [
-    { label: 'Edit' },
-    { label: 'Duplicate' },
+  fileMenuCode = `<tw-menu [items]="fileMenuItems"></tw-menu>
+
+// Component
+fileMenuItems: MenuItem[] = [
+  { label: 'New File', shortcut: '⌘N' },
+  { label: 'New Window', shortcut: '⌘⇧N' },
+  { separator: true },
+  { label: 'Open...', shortcut: '⌘O' },
+  { label: 'Save', shortcut: '⌘S' },
+  { label: 'Save As...', shortcut: '⌘⇧S' },
+  { separator: true },
+  { label: 'Print', shortcut: '⌘P' },
+];`;
+
+  groupsCode = `<tw-menu [items]="groupedMenuItems"></tw-menu>
+
+// Component
+groupedMenuItems: MenuItem[] = [
+  { label: 'Account', items: [
+    { label: 'Profile' },
+    { label: 'Settings' },
+    { label: 'Billing' },
   ]},
-  { label: 'Danger Zone', items: [
-    { label: 'Delete', styleClass: 'text-rose-600' },
+  { label: 'Team', items: [
+    { label: 'Members' },
+    { label: 'Invite' },
   ]},
+  { separator: true },
+  { label: 'Sign Out', styleClass: 'text-rose-600' },
+];`;
+
+  disabledCode = `<tw-menu [items]="editMenuItems"></tw-menu>
+
+// Component
+editMenuItems: MenuItem[] = [
+  { label: 'Cut', shortcut: '⌘X' },
+  { label: 'Copy', shortcut: '⌘C' },
+  { label: 'Paste', shortcut: '⌘V', disabled: true },
+  { separator: true },
+  { label: 'Select All', shortcut: '⌘A' },
 ];`;
 }

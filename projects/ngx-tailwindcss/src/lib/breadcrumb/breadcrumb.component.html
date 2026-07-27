@@ -40,6 +40,13 @@
             }
           </span>
         }
+        @if (item.icon) {
+          <span
+            class="mr-1 inline-flex items-center [&_svg]:w-4 [&_svg]:h-4"
+            aria-hidden="true"
+            [innerHTML]="item.icon"
+          ></span>
+        }
         @if (last) {
           <span [class]="currentClasses()" aria-current="page">
             {{ item.label }}

@@ -1,11 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
-import { Platform } from './native.types';
 import { Observable, Subject } from 'rxjs';
 import { dynamicImport } from './dynamic-import.util';
-
-const PLATFORM_TAURI: Platform = 'tauri';
-const PLATFORM_ELECTRON: Platform = 'electron';
 
 export interface UpdateInfo {
   currentVersion: string;
@@ -22,13 +18,7 @@ export interface UpdateProgress {
 }
 
 export type UpdateStatus =
-  | 'idle'
-  | 'checking'
-  | 'available'
-  | 'not-available'
-  | 'downloading'
-  | 'downloaded'
-  | 'error';
+  'idle' | 'checking' | 'available' | 'not-available' | 'downloading' | 'downloaded' | 'error';
 
 @Injectable({
   providedIn: 'root',
@@ -53,14 +43,11 @@ export class UpdateService {
   }
 
   private checkSupport(): void {
-    const platform = this.platformService.platform();
-    this.isSupported.set(platform === PLATFORM_TAURI || platform === PLATFORM_ELECTRON);
+    this.isSupported.set(this.platformService.isTauri() || this.platformService.isElectron());
   }
 
   private async setupListeners(): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_ELECTRON) {
+    if (this.platformService.isElectron()) {
       await this.setupElectronListeners();
     }
   }
@@ -82,16 +69,18 @@ export class UpdateService {
   }
 
   public async checkForUpdates(): Promise<UpdateInfo | null> {
-    const platform = this.platformService.platform();
     this.status.set('checking');
     this.error.set(null);
 
     try {
-      if (platform === PLATFORM_TAURI) {
+      if (this.platformService.isTauri()) {
         return await this.checkTauriUpdates();
-      } if (platform === PLATFORM_ELECTRON) {
+      }
+      if (this.platformService.isElectron()) {
         return await this.checkElectronUpdates();
       }
+      // No native updater on this platform; settle on a terminal status.
+      this.status.set('not-available');
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to check for updates';
       this.status.set('error');
@@ -103,15 +92,20 @@ export class UpdateService {
   }
 
   public async downloadUpdate(): Promise<void> {
-    const platform = this.platformService.platform();
     this.status.set('downloading');
     this.progress.set({ percent: 0, bytesDownloaded: 0, bytesTotal: 0 });
 
     try {
-      if (platform === PLATFORM_TAURI) {
+      if (this.platformService.isTauri()) {
         await this.downloadTauriUpdate();
-      } else if (platform === PLATFORM_ELECTRON) {
+      } else if (this.platformService.isElectron()) {
         await this.downloadElectronUpdate();
+      } else {
+        // No native updater on this platform; don't strand 'downloading'.
+        const errorMessage = 'Updates are not supported on this platform';
+        this.status.set('error');
+        this.error.set(errorMessage);
+        this.updateError$.next(errorMessage);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to download update';
@@ -122,12 +116,10 @@ export class UpdateService {
   }
 
   public async installUpdate(): Promise<void> {
-    const platform = this.platformService.platform();
-
     try {
-      if (platform === PLATFORM_TAURI) {
+      if (this.platformService.isTauri()) {
         await this.installTauriUpdate();
-      } else if (platform === PLATFORM_ELECTRON) {
+      } else if (this.platformService.isElectron()) {
         await this.installElectronUpdate();
       }
     } catch (error) {
@@ -228,39 +220,45 @@ export class UpdateService {
     const update = await updater.check();
 
     if (update?.available) {
-      await update.downloadAndInstall((event: { event: string; data?: { contentLength?: number; chunkLength?: number } }) => {
-        switch (event.event) {
-        case 'Started': {
-          const total = event.data?.contentLength || 0;
-          this.progress.set({ percent: 0, bytesDownloaded: 0, bytesTotal: total });
-        
-        break;
-        }
-        case 'Progress': {
-          const current = this.progress();
-          if (current) {
-            const downloaded = current.bytesDownloaded + (event.data?.chunkLength || 0);
-            const percent = current.bytesTotal > 0 ? (downloaded / current.bytesTotal) * 100 : 0;
-            const newProgress = {
-              percent,
-              bytesDownloaded: downloaded,
-              bytesTotal: current.bytesTotal,
-            };
-            this.progress.set(newProgress);
-            this.downloadProgress$.next(newProgress);
+      await update.downloadAndInstall(
+        (event: { event: string; data?: { contentLength?: number; chunkLength?: number } }) => {
+          switch (event.event) {
+            case 'Started': {
+              const total = event.data?.contentLength || 0;
+              this.progress.set({ percent: 0, bytesDownloaded: 0, bytesTotal: total });
+
+              break;
+            }
+            case 'Progress': {
+              const current = this.progress();
+              if (current) {
+                const downloaded = current.bytesDownloaded + (event.data?.chunkLength || 0);
+                const percent =
+                  current.bytesTotal > 0 ? (downloaded / current.bytesTotal) * 100 : 0;
+                const newProgress = {
+                  percent,
+                  bytesDownloaded: downloaded,
+                  bytesTotal: current.bytesTotal,
+                };
+                this.progress.set(newProgress);
+                this.downloadProgress$.next(newProgress);
+              }
+
+              break;
+            }
+            case 'Finished': {
+              this.status.set('downloaded');
+              this.updateDownloaded$.next();
+
+              break;
+            }
+            // No default
           }
-        
-        break;
         }
-        case 'Finished': {
-          this.status.set('downloaded');
-          this.updateDownloaded$.next();
-        
-        break;
-        }
-        // No default
-        }
-      });
+      );
+    } else {
+      // Update disappeared between check and download; don't strand 'downloading'.
+      this.status.set('not-available');
     }
   }
 

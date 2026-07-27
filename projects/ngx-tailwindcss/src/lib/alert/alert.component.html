@@ -4,7 +4,7 @@
     <div [class]="iconClasses()" aria-hidden="true">
       <ng-content select="[twAlertIcon]"></ng-content>
       @if (!hasCustomIcon) {
-        @switch (variant) {
+        @switch (variant()) {
           @case ('info') {
             <svg
               class="w-5 h-5"

@@ -19,7 +19,7 @@ A multi-select dropdown component with support for grouped options, filtering, a
 ### Flat Options List
 
 ```typescript
-import { TwMultiSelectComponent, MultiSelectOption } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwMultiSelectComponent, MultiSelectOption } from '@quinnjr/ngx-tailwindcss';
 
 @Component({
   imports: [TwMultiSelectComponent],
@@ -48,7 +48,7 @@ export class MyComponent {
 ### Grouped Options
 
 ```typescript
-import { TwMultiSelectComponent, MultiSelectGroup } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwMultiSelectComponent, MultiSelectGroup } from '@quinnjr/ngx-tailwindcss';
 
 @Component({
   imports: [TwMultiSelectComponent],
@@ -99,7 +99,7 @@ export class MyComponent {
 
 ```typescript
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { TwMultiSelectComponent } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwMultiSelectComponent } from '@quinnjr/ngx-tailwindcss';
 
 @Component({
   imports: [ReactiveFormsModule, TwMultiSelectComponent],
@@ -155,7 +155,7 @@ export class MyComponent {
 | `filter` | `boolean` | `false` | Enable search/filter |
 | `size` | `'sm' \| 'md' \| 'lg'` | `'md'` | Size variant |
 | `variant` | `'default' \| 'filled'` | `'default'` | Visual variant |
-| `appendTo` | `'body' \| 'self'` | `'self'` | Where to append dropdown |
+| `appendTo` | `'body' \| 'self'` | `'self'` | Panel layering mode. `'body'` renders a fixed-position layer (escapes overflow) rather than reparenting to body |
 | `disabled` | `boolean` | `false` | Disabled state |
 | `showCheckbox` | `boolean` | `true` | Show checkboxes |
 | `showSelectAll` | `boolean` | `true` | Show select all option |
@@ -204,7 +204,15 @@ interface MultiSelectGroup {
 </tw-multiselect>
 ```
 
-### Append to Body (for overflow contexts)
+Note: the Select All row is hidden when `maxSelections` is lower than the number of
+enabled options, since selecting everything would be impossible.
+
+### Escaping Overflow Contexts
+
+`appendTo="body"` keeps the panel in place in the DOM but renders it as a
+fixed-position layer that tracks the trigger on scroll and resize, so it can escape
+`overflow: hidden`/`overflow: auto` ancestors. The panel is not reparented to
+`document.body`.
 
 ```typescript
 <tw-multiselect
@@ -261,11 +269,12 @@ Both `TwSelectComponent` and `TwMultiSelectComponent` now support grouped option
 
 ## Accessibility
 
-- Full keyboard navigation support
-- ARIA attributes for screen readers
-- ESC key to close dropdown
-- Proper focus management
-- Role and state attributes
+- Listbox pattern: `role="listbox"` with `aria-multiselectable`, `role="option"` rows
+  with `aria-selected`/`aria-disabled`, and `aria-activedescendant` on the trigger
+- Keyboard navigation: ArrowUp/ArrowDown move the active option, Home/End jump to the
+  first/last enabled option, Enter/Space toggles the active option
+- ESC key closes the dropdown and returns focus to the trigger
+- The filter input is focused automatically when the dropdown opens (when `filter` is enabled)
 
 ## Styling
 

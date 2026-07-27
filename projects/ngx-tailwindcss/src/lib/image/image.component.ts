@@ -3,14 +3,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   HostListener,
   inject,
   input,
   output,
+  PLATFORM_ID,
   signal,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
+import { TwFocusTrapDirective } from '../directives/focus-trap.directive';
 
 export type ImageFit = 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
 export type ImageBorderRadius = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
@@ -27,12 +30,14 @@ export type ImageBorderRadius = 'none' | 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3x
 @Component({
   selector: 'tw-image',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TwFocusTrapDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './image.component.html',
 })
 export class TwImageComponent {
   private readonly twClass = inject(TwClassService);
+  private readonly document = inject(DOCUMENT);
+  private readonly platformId = inject(PLATFORM_ID);
 
   /** Image source URL */
   readonly src = input.required<string>();
@@ -84,8 +89,18 @@ export class TwImageComponent {
   protected zoomLevel = signal(1);
   protected rotation = signal(0);
 
+  private previousOverflow = '';
+
   // Expose Math to template
   protected Math = Math;
+
+  constructor() {
+    // Reset the loading state whenever the source changes
+    effect(() => {
+      this.src();
+      this.loading.set(true);
+    });
+  }
 
   protected containerClasses = computed(() => {
     const radiusClasses: Record<ImageBorderRadius, string> = {
@@ -167,18 +182,32 @@ export class TwImageComponent {
     }
   }
 
+  protected onThumbnailKeydown(event: KeyboardEvent): void {
+    if (!this.preview()) return;
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.openPreview();
+    }
+  }
+
   openPreview(): void {
     this.previewVisible.set(true);
     this.zoomLevel.set(1);
     this.rotation.set(0);
     this.onShow.emit();
-    document.body.style.overflow = 'hidden';
+    if (isPlatformBrowser(this.platformId)) {
+      this.previousOverflow = this.document.body.style.overflow;
+      this.document.body.style.overflow = 'hidden';
+    }
   }
 
   closePreview(): void {
     this.previewVisible.set(false);
     this.onHide.emit();
-    document.body.style.overflow = '';
+    if (isPlatformBrowser(this.platformId)) {
+      this.document.body.style.overflow = this.previousOverflow;
+    }
   }
 
   zoomIn(): void {

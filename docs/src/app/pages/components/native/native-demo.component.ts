@@ -35,6 +35,7 @@ import {
   // Types
   NativeMenuItem,
   NativeMenuBarItem,
+  NativeBreadcrumbItem,
   FileTreeNode,
   FileTreeEvent,
   TabItem,
@@ -44,7 +45,7 @@ import {
   LogEntry,
   StatusBarItem,
   ToolbarItem,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -180,6 +181,14 @@ export class NativeDemoComponent {
     { id: 'README.md', name: 'README.md', type: 'file' },
   ];
 
+  // Breadcrumb items
+  breadcrumbItems: NativeBreadcrumbItem[] = [
+    { id: 'home', label: 'Home', path: '/' },
+    { id: 'projects', label: 'Projects', path: '/projects' },
+    { id: 'app', label: 'My App', path: '/projects/my-app' },
+    { id: 'src', label: 'src', path: '/projects/my-app/src' },
+  ];
+
   // Tab Bar items
   tabs: TabItem[] = [
     { id: 'tab1', label: 'index.html', closable: true },
@@ -190,7 +199,6 @@ export class NativeDemoComponent {
   activeTab = signal('tab1');
 
   // Command Palette
-  commandPaletteOpen = signal(false);
   commands: CommandItem[] = [
     { id: 'new-file', label: 'New File', shortcut: 'Ctrl+N', action: () => console.log('New file') },
     { id: 'open-file', label: 'Open File', shortcut: 'Ctrl+O', action: () => console.log('Open file') },
@@ -204,7 +212,7 @@ export class NativeDemoComponent {
 
   // Terminal lines
   terminalLines: TerminalLine[] = [
-    { id: '1', content: '$ npm install @pegasusheavy/ngx-tailwindcss', type: 'input', timestamp: new Date() },
+    { id: '1', content: '$ npm install @quinnjr/ngx-tailwindcss', type: 'input', timestamp: new Date() },
     { id: '2', content: 'added 127 packages in 4.2s', type: 'success', timestamp: new Date() },
     { id: '3', content: '$ ng serve', type: 'input', timestamp: new Date() },
     { id: '4', content: 'Compiling @angular/core : es2022 as esm2022', type: 'output', timestamp: new Date() },
@@ -267,16 +275,12 @@ export class AppComponent {
   // Dialog states
   showAlertDialog = signal(false);
   showConfirmDialog = signal(false);
-  showPromptDialog = signal(false);
   showAboutDialog = signal(false);
-  showUpdateDialog = signal(false);
-  showOnboarding = signal(false);
 
   // Prompt dialog ref
   private promptDialog = viewChild<TwPromptDialogComponent>('promptDialog');
 
-  // Activity & Connection states
-  isLoading = signal(false);
+  // Connection state
   connectionStatus = signal<'connected' | 'connecting' | 'disconnected' | 'error'>('connected');
 
   // Event handlers
@@ -298,20 +302,10 @@ export class AppComponent {
 
   onCommandSelect(command: CommandItem): void {
     command.action();
-    this.commandPaletteOpen.set(false);
   }
 
   onSearch(query: string): void {
     console.log('Search:', query);
-  }
-
-  openCommandPalette(): void {
-    this.commandPaletteOpen.set(true);
-  }
-
-  simulateLoading(): void {
-    this.isLoading.set(true);
-    setTimeout(() => this.isLoading.set(false), 3000);
   }
 
   toggleConnection(): void {
@@ -332,7 +326,6 @@ export class AppComponent {
 
   onPromptConfirmed(value: string): void {
     console.log('Prompt confirmed with value:', value);
-    this.showPromptDialog.set(false);
   }
 
   // Code examples
@@ -341,19 +334,17 @@ export class AppComponent {
   [title]="'My Native App'"
   platform="windows"
   variant="default"
-  (minimize)="onMinimize()"
-  (maximize)="onMaximize()"
-  (close)="onClose()">
+  (doubleClick)="onTitleBarDoubleClick()">
 </tw-title-bar>`,
 
     windowControls: `<tw-window-controls
   platform="macos"
-  (minimize)="onMinimize()"
-  (maximize)="onMaximize()"
-  (close)="onClose()">
+  (minimizeClick)="onMinimize()"
+  (maximizeClick)="onMaximize()"
+  (closeClick)="onClose()">
 </tw-window-controls>
 
-<!-- Platform options: 'macos' | 'windows' | 'linux' -->`,
+<!-- Platform options: 'macos' | 'windows' | 'linux' | 'auto' -->`,
 
     menuBar: `// Define menu items
 menuBarItems: NativeMenuBarItem[] = [
@@ -410,13 +401,17 @@ activeTab = signal('tab1');
   (tabClose)="onTabClose($event)">
 </tw-tab-bar>`,
 
-    breadcrumbs: `<tw-breadcrumbs-nav
-  [items]="[
-    { id: 'home', label: 'Home', path: '/' },
-    { id: 'projects', label: 'Projects', path: '/projects' },
-    { id: 'app', label: 'My App', path: '/projects/my-app' }
-  ]"
-  (navigate)="onNavigate($event)">
+    breadcrumbs: `// Define breadcrumb items
+breadcrumbItems: NativeBreadcrumbItem[] = [
+  { id: 'home', label: 'Home', path: '/' },
+  { id: 'projects', label: 'Projects', path: '/projects' },
+  { id: 'app', label: 'My App', path: '/projects/my-app' },
+];
+
+<tw-breadcrumbs-nav
+  [items]="breadcrumbItems"
+  (itemSelect)="onBreadcrumbSelect($event)"
+  (homeSelect)="onHomeSelect()">
 </tw-breadcrumbs-nav>`,
 
     commandPalette: `// Define commands
@@ -457,12 +452,13 @@ commands: CommandItem[] = [
 <tw-shortcut-display shortcut="Ctrl+K Ctrl+C"></tw-shortcut-display>`,
 
     themeSelector: `<tw-theme-selector
-  (themeChange)="onThemeChange($event)">
+  (modeChanged)="onModeChanged($event)"
+  (accentColorChanged)="onAccentColorChanged($event)">
 </tw-theme-selector>
 
-// Handle theme changes
-onThemeChange(theme: 'light' | 'dark' | 'system') {
-  document.documentElement.classList.toggle('dark', theme === 'dark');
+// Handle mode changes
+onModeChanged(mode: 'light' | 'dark' | 'system') {
+  document.documentElement.classList.toggle('dark', mode === 'dark');
 }`,
 
     dialogs: `// Alert Dialog
@@ -535,8 +531,7 @@ logEntries: LogEntry[] = [
 
 <tw-log-viewer
   [entries]="logEntries"
-  [showSource]="true"
-  [filter]="'error'">
+  [showSource]="true">
 </tw-log-viewer>`,
 
     codeViewer: `<tw-code-viewer
@@ -575,13 +570,9 @@ toolbarItems: ToolbarItem[] = [
 </tw-toolbar>`,
 
     activityStatus: `<!-- Activity Indicators -->
-<tw-activity-indicator
-  variant="spinner"
-  size="md"
-  [active]="isLoading()">
-</tw-activity-indicator>
+<tw-activity-indicator variant="spinner" size="md"></tw-activity-indicator>
 
-<tw-activity-indicator variant="dots" size="sm">
+<tw-activity-indicator variant="dots" size="sm" label="Loading...">
 </tw-activity-indicator>
 
 <!-- Connection Status -->
@@ -594,20 +585,21 @@ toolbarItems: ToolbarItem[] = [
 
     resizablePanels: `<tw-resizable-panels
   direction="horizontal"
-  [sizes]="[30, 70]"
-  [minSizes]="[100, 200]"
-  (sizeChange)="onPanelResize($event)">
-  <div>Left Panel</div>
-  <div>Right Panel</div>
+  [defaultSplit]="30"
+  [minSize]="20"
+  [maxSize]="80"
+  (sizeChanged)="onPanelResize($event)">
+  <div panel1>Left Panel</div>
+  <div panel2>Right Panel</div>
 </tw-resizable-panels>
 
 <!-- Vertical panels -->
 <tw-resizable-panels direction="vertical">
-  <div>Top Panel</div>
-  <div>Bottom Panel</div>
+  <div panel1>Top Panel</div>
+  <div panel2>Bottom Panel</div>
 </tw-resizable-panels>`,
 
-    platformService: `import { NativeAppPlatformService } from '@pegasusheavy/ngx-tailwindcss';
+    platformService: `import { NativeAppPlatformService } from '@quinnjr/ngx-tailwindcss';
 
 export class AppComponent {
   private platform = inject(NativeAppPlatformService);
@@ -624,7 +616,7 @@ export class AppComponent {
   }
 }`,
 
-    filePickerService: `import { FilePickerService } from '@pegasusheavy/ngx-tailwindcss';
+    filePickerService: `import { FilePickerService } from '@quinnjr/ngx-tailwindcss';
 
 export class FileComponent {
   private filePicker = inject(FilePickerService);
@@ -648,7 +640,7 @@ export class FileComponent {
   }
 }`,
 
-    notificationsService: `import { NativeNotificationsService } from '@pegasusheavy/ngx-tailwindcss';
+    notificationsService: `import { NativeNotificationsService } from '@quinnjr/ngx-tailwindcss';
 
 export class NotifyComponent {
   private notifications = inject(NativeNotificationsService);
@@ -666,7 +658,7 @@ export class NotifyComponent {
   }
 }`,
 
-    updateService: `import { UpdateService } from '@pegasusheavy/ngx-tailwindcss';
+    updateService: `import { UpdateService } from '@quinnjr/ngx-tailwindcss';
 
 export class UpdateComponent {
   private updateService = inject(UpdateService);

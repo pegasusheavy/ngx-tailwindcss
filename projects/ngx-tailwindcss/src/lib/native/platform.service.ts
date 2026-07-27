@@ -1,5 +1,5 @@
 import { computed, Injectable, signal } from '@angular/core';
-import { Platform, PlatformTheme, WindowState } from './native.types';
+import { OsPlatform, PlatformTheme, WindowState } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
 
 // Type definitions for dynamic imports (Tauri/Electron may not be present)
@@ -21,7 +21,7 @@ interface TauriWindow {
 @Injectable({ providedIn: 'root' })
 export class NativeAppPlatformService {
   // Platform detection
-  private readonly _platform = signal<Platform>(this.detectPlatform());
+  private readonly _platform = signal<OsPlatform>(this.detectPlatform());
   private readonly _isTauri = signal(this.checkTauri());
   private readonly _isElectron = signal(this.checkElectron());
   private readonly _theme = signal<PlatformTheme>('system');
@@ -35,6 +35,7 @@ export class NativeAppPlatformService {
   });
 
   // Public signals
+  /** Detected operating system. Use `isTauri`/`isElectron` for runtime-shell detection. */
   public readonly platform = this._platform.asReadonly();
   public readonly isTauri = this._isTauri.asReadonly();
   public readonly isElectron = this._isElectron.asReadonly();
@@ -57,7 +58,7 @@ export class NativeAppPlatformService {
     this.initWindowStateListener();
   }
 
-  private detectPlatform(): Platform {
+  private detectPlatform(): OsPlatform {
     if (typeof window === 'undefined') return 'web';
 
     const userAgent = navigator.userAgent.toLowerCase();
@@ -70,7 +71,12 @@ export class NativeAppPlatformService {
   }
 
   private checkTauri(): boolean {
-    return false; // Tauri support disabled
+    return (
+      typeof window !== 'undefined' &&
+      // `__TAURI_INTERNALS__` is injected by Tauri v2; `__TAURI__` by Tauri v1
+      // (and by v2 when `app.withGlobalTauri` is enabled).
+      ('__TAURI_INTERNALS__' in window || '__TAURI__' in window)
+    );
   }
 
   private checkElectron(): boolean {
@@ -118,9 +124,14 @@ export class NativeAppPlatformService {
   // Window control methods
   public async minimize(): Promise<void> {
     if (this._isTauri()) {
-      // Tauri support disabled
-      return;
-    } if (this._isElectron()) {
+      try {
+        const tauriWindow = await dynamicImport('@tauri-apps/api/window');
+        const win = tauriWindow.getCurrentWindow() as TauriWindow;
+        await win.minimize();
+      } catch (error) {
+        console.warn('Tauri minimize failed:', error);
+      }
+    } else if (this._isElectron()) {
       try {
         const electron = await dynamicImport('electron');
         electron.ipcRenderer.send('window-minimize');
@@ -198,10 +209,10 @@ export class NativeAppPlatformService {
         console.warn('Electron fullscreen failed:', error);
       }
     } else if (document.fullscreenElement) {
-        await document.exitFullscreen();
-      } else {
-        await document.documentElement.requestFullscreen();
-      }
+      await document.exitFullscreen();
+    } else {
+      await document.documentElement.requestFullscreen();
+    }
   }
 
   public async setTitle(title: string): Promise<void> {

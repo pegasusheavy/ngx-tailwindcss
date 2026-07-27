@@ -7,6 +7,7 @@ import {
   ContentChildren,
   effect,
   forwardRef,
+  HostListener,
   inject,
   input,
   output,
@@ -208,6 +209,12 @@ export class TwRadioGroupComponent implements ControlValueAccessor, AfterContent
         this.updateRadioButtons();
       }
     });
+  }
+
+  /** Marks the control as touched when focus leaves any radio in the group. */
+  @HostListener('focusout')
+  onFocusOut(): void {
+    this.onTouchedFn();
   }
 
   ngAfterContentInit(): void {

@@ -3,9 +3,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  contentChild,
   effect,
   ElementRef,
   EventEmitter,
+  forwardRef,
   HostListener,
   inject,
   Input,
@@ -145,15 +147,27 @@ export class TwModalComponent implements OnDestroy {
 
   private previousOverflow = '';
 
+  /** Projected title, used as the default aria-labelledby target */
+  protected readonly modalTitle = contentChild<TwModalTitleComponent>(
+    forwardRef(() => TwModalTitleComponent)
+  );
+
   // Effect to manage scroll lock
   constructor() {
+    let previousOpen: boolean | null = null;
     effect(() => {
-      if (this._open()) {
+      const isOpen = this._open();
+      if (isOpen) {
         this.lockScroll();
-        this.opened.emit();
+        // Emit only on an actual closed -> open transition,
+        // not when the component is constructed already open
+        if (previousOpen === false) {
+          this.opened.emit();
+        }
       } else {
         this.unlockScroll();
       }
+      previousOpen = isOpen;
     });
   }
 
@@ -235,7 +249,7 @@ export class TwModalComponent implements OnDestroy {
   host: {
     class: 'block px-6 py-4 border-b border-slate-100 dark:border-slate-700',
   },
-  template: `<ng-content></ng-content>`,
+  templateUrl: './modal-header.component.html',
 })
 export class TwModalHeaderComponent {}
 
@@ -247,10 +261,14 @@ export class TwModalHeaderComponent {}
   standalone: true,
   host: {
     class: 'block text-lg font-semibold text-slate-900 dark:text-slate-100',
+    '[attr.id]': 'id',
   },
-  template: `<ng-content></ng-content>`,
+  templateUrl: './modal-title.component.html',
 })
-export class TwModalTitleComponent {}
+export class TwModalTitleComponent {
+  /** Unique ID used as the modal's default aria-labelledby (auto-generated if not provided) */
+  @Input() id = `tw-modal-title-${Math.random().toString(36).slice(2, 9)}`;
+}
 
 /**
  * Modal body component
@@ -261,7 +279,7 @@ export class TwModalTitleComponent {}
   host: {
     class: 'block p-6',
   },
-  template: `<ng-content></ng-content>`,
+  templateUrl: './modal-body.component.html',
 })
 export class TwModalBodyComponent {}
 
@@ -276,7 +294,7 @@ export class TwModalBodyComponent {}
   host: {
     '[class]': 'computedClasses()',
   },
-  template: `<ng-content></ng-content>`,
+  templateUrl: './modal-footer.component.html',
 })
 export class TwModalFooterComponent {
   private readonly twClass = inject(TwClassService);

@@ -53,7 +53,11 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
   /** Emitted when a guarded click/tap passes validation */
   readonly guardedClick = output<MouseEvent | TouchEvent>();
 
-  /** Emitted when a long press is detected */
+  /**
+   * Emitted when a long press is detected (touch input only). Mouse long
+   * presses gate `guardedClick` the same way but do not emit this output,
+   * which keeps its `TouchEvent` payload type.
+   */
   readonly longPress = output<TouchEvent>();
 
   /** Emitted when drag starts and passes validation */
@@ -123,12 +127,12 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
       if (!this.isDragging && this.mobileSupport.validateDragDistance(e, this.minDragDistance())) {
         this.isDragging = true;
 
-        if (
-          this.getConfig().cooldownMs &&
-          !this.mobileSupport.shouldAllowAction(this.getConfig())
-        ) {
+        // Cooldown only: the tap-oriented minDuration check does not apply to
+        // drag starts. Check once, then consume once the drag is accepted.
+        if (!this.mobileSupport.shouldAllowAction({ cooldownMs: this.cooldownMs() })) {
           return;
         }
+        this.mobileSupport.consumeAction();
 
         this.guardedDragStart.emit(e);
       }
@@ -158,11 +162,17 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
         return;
       }
 
-      // Check for valid tap
-      if ((!this.isLongPressTriggered || !this.requireLongPress()) && this.mobileSupport.validateTouchDuration(this.minDuration()) && this.mobileSupport.shouldAllowAction(this.getConfig())) {
-            this.mobileSupport.triggerHaptic('selection');
-            this.guardedClick.emit(e);
-          }
+      // Check for valid tap (when a long press is required, only emit after
+      // the long press actually fired)
+      if (
+        (this.requireLongPress() ? this.isLongPressTriggered : true) &&
+        this.mobileSupport.validateTouchDuration(this.minDuration()) &&
+        this.mobileSupport.shouldAllowAction(this.getConfig())
+      ) {
+        this.mobileSupport.consumeAction();
+        this.mobileSupport.triggerHaptic('selection');
+        this.guardedClick.emit(e);
+      }
     };
 
     // Mouse handlers (for non-touch devices)
@@ -171,6 +181,16 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
 
       this.mobileSupport.startTouchTracking(e);
       this.isDragging = false;
+      this.isLongPressTriggered = false;
+
+      // Mirror the touch long-press timer so requireLongPress also works with
+      // a mouse. The longPress output itself stays touch-only (see its docs).
+      if (this.requireLongPress()) {
+        this.longPressTimer = setTimeout(() => {
+          this.isLongPressTriggered = true;
+          this.mobileSupport.triggerHaptic('medium');
+        }, this.longPressDuration());
+      }
 
       document.addEventListener('mousemove', this.mouseMoveHandler);
       document.addEventListener('mouseup', this.mouseUpHandler);
@@ -178,6 +198,12 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
 
     this.mouseMoveHandler = (e: MouseEvent) => {
       if (this.guardDisabled()) return;
+
+      // Cancel long press if moving
+      if (this.longPressTimer) {
+        clearTimeout(this.longPressTimer);
+        this.longPressTimer = null;
+      }
 
       if (!this.isDragging && this.mobileSupport.validateDragDistance(e, this.minDragDistance())) {
         this.isDragging = true;
@@ -196,16 +222,27 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
       document.removeEventListener('mousemove', this.mouseMoveHandler);
       document.removeEventListener('mouseup', this.mouseUpHandler);
 
+      if (this.longPressTimer) {
+        clearTimeout(this.longPressTimer);
+        this.longPressTimer = null;
+      }
+
       if (this.isDragging) {
         this.guardedDragEnd.emit(e);
         this.isDragging = false;
         return;
       }
 
-      // Check for valid click
-      if (this.mobileSupport.validateTouchDuration(this.minDuration()) && this.mobileSupport.shouldAllowAction(this.getConfig())) {
-          this.guardedClick.emit(e);
-        }
+      // Check for valid click (when a long press is required, only emit after
+      // the long press actually fired)
+      if (
+        (this.requireLongPress() ? this.isLongPressTriggered : true) &&
+        this.mobileSupport.validateTouchDuration(this.minDuration()) &&
+        this.mobileSupport.shouldAllowAction(this.getConfig())
+      ) {
+        this.mobileSupport.consumeAction();
+        this.guardedClick.emit(e);
+      }
     };
   }
 
@@ -213,7 +250,9 @@ export class TwTouchGuardDirective implements OnInit, OnDestroy {
     const el = this.el.nativeElement;
 
     el.addEventListener('touchstart', this.touchStartHandler, { passive: true });
-    el.addEventListener('touchmove', this.touchMoveHandler, { passive: true });
+    // touchmove must be non-passive so guardedDrag consumers can call
+    // event.preventDefault() to stop the page from scrolling during a drag
+    el.addEventListener('touchmove', this.touchMoveHandler, { passive: false });
     el.addEventListener('touchend', this.touchEndHandler, { passive: true });
     el.addEventListener('mousedown', this.mouseDownHandler);
   }

@@ -107,6 +107,19 @@ declare module '@tauri-apps/plugin-notification' {
   export function setBadgeCount(count: number): Promise<void>;
 }
 
+// @tauri-apps/plugin-store (v2: stores are obtained via `load`, not a constructor)
+declare module '@tauri-apps/plugin-store' {
+  export class Store {
+    static load(path: string): Promise<Store>;
+    get<T>(key: string): Promise<T | undefined>;
+    set(key: string, value: unknown): Promise<void>;
+    delete(key: string): Promise<boolean>;
+    save(): Promise<void>;
+  }
+
+  export function load(path: string): Promise<Store>;
+}
+
 // @tauri-apps/plugin-updater
 declare module '@tauri-apps/plugin-updater' {
   export interface Update {

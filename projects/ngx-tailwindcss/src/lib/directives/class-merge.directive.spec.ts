@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
@@ -9,9 +9,9 @@ import { provideTwConfig } from '../core/provide-tw-config';
 @Component({
   template: `
     <div
-      [twClass]="baseClasses"
-      [twClassMerge]="mergeClasses"
-      [twClassIf]="conditionalClasses"
+      [twClass]="baseClasses()"
+      [twClassMerge]="mergeClasses()"
+      [twClassIf]="conditionalClasses()"
       data-testid="class-merge-target"
     >
       Content
@@ -21,9 +21,9 @@ import { provideTwConfig } from '../core/provide-tw-config';
   imports: [TwClassDirective],
 })
 class TestHostComponent {
-  baseClasses = 'px-4 py-2 bg-blue-500';
-  mergeClasses = '';
-  conditionalClasses: Record<string, boolean | undefined> = {};
+  baseClasses = signal('px-4 py-2 bg-blue-500');
+  mergeClasses = signal('');
+  conditionalClasses = signal<Record<string, boolean | undefined>>({});
 }
 
 describe('TwClassDirective', () => {
@@ -49,47 +49,66 @@ describe('TwClassDirective', () => {
     expect(targetEl).toBeTruthy();
   });
 
-  it('should have default base classes', () => {
-    expect(component.baseClasses).toBe('px-4 py-2 bg-blue-500');
+  it('should apply base classes to the DOM', () => {
+    expect(targetEl.classList.contains('px-4')).toBe(true);
+    expect(targetEl.classList.contains('py-2')).toBe(true);
+    expect(targetEl.classList.contains('bg-blue-500')).toBe(true);
   });
 
-  it('should have default empty merge classes', () => {
-    expect(component.mergeClasses).toBe('');
+  it('should apply the merged result to the DOM (README example)', () => {
+    component.mergeClasses.set('px-8 bg-red-500');
+    fixture.detectChanges();
+
+    expect(targetEl.classList.contains('px-8')).toBe(true);
+    expect(targetEl.classList.contains('py-2')).toBe(true);
+    expect(targetEl.classList.contains('bg-red-500')).toBe(true);
+    expect(targetEl.classList.contains('px-4')).toBe(false);
+    expect(targetEl.classList.contains('bg-blue-500')).toBe(false);
   });
 
-  it('should have default empty conditional classes', () => {
-    expect(component.conditionalClasses).toEqual({});
+  it('should apply conditional classes to the DOM when the condition is true', () => {
+    component.conditionalClasses.set({ 'font-bold': true, 'opacity-50': false });
+    fixture.detectChanges();
+
+    expect(targetEl.classList.contains('font-bold')).toBe(true);
+    expect(targetEl.classList.contains('opacity-50')).toBe(false);
   });
 
-  it('should allow setting conditional classes', () => {
-    component.conditionalClasses = { 'text-white': true, 'font-bold': true };
-    expect(component.conditionalClasses['text-white']).toBe(true);
-    expect(component.conditionalClasses['font-bold']).toBe(true);
+  it('should remove conditional classes when the condition flips back to false', () => {
+    component.conditionalClasses.set({ 'font-bold': true });
+    fixture.detectChanges();
+    expect(targetEl.classList.contains('font-bold')).toBe(true);
+
+    component.conditionalClasses.set({ 'font-bold': false });
+    fixture.detectChanges();
+    expect(targetEl.classList.contains('font-bold')).toBe(false);
   });
 
-  it('should allow setting merge classes', () => {
-    component.mergeClasses = 'px-8';
-    expect(component.mergeClasses).toBe('px-8');
-  });
+  it('should update the DOM when base classes change', () => {
+    component.baseClasses.set('p-8 m-4');
+    fixture.detectChanges();
 
-  it('should allow updating base classes', () => {
-    component.baseClasses = 'p-8 m-4';
-    expect(component.baseClasses).toBe('p-8 m-4');
+    expect(targetEl.classList.contains('p-8')).toBe(true);
+    expect(targetEl.classList.contains('m-4')).toBe(true);
+    expect(targetEl.classList.contains('px-4')).toBe(false);
   });
 
   it('should handle empty base classes', () => {
-    component.baseClasses = '';
-    expect(component.baseClasses).toBe('');
+    component.baseClasses.set('');
+    fixture.detectChanges();
+
+    expect(targetEl.classList.contains('px-4')).toBe(false);
+    expect(targetEl.classList.contains('bg-blue-500')).toBe(false);
   });
 });
 
 @Component({
-  template: ` <div [twVariant]="variant" data-testid="variant-target">Content</div> `,
+  template: ` <div [twVariant]="variant()" data-testid="variant-target">Content</div> `,
   standalone: true,
   imports: [TwVariantDirective],
 })
 class VariantHostComponent {
-  variant = 'primary';
+  variant = signal('primary');
 }
 
 describe('TwVariantDirective', () => {
@@ -121,22 +140,24 @@ describe('TwVariantDirective', () => {
     expect(targetEl).toBeTruthy();
   });
 
-  it('should have default primary variant', () => {
-    expect(component.variant).toBe('primary');
+  it('should apply variant classes to the DOM', () => {
+    expect(targetEl.classList.contains('bg-blue-600')).toBe(true);
+    expect(targetEl.classList.contains('text-white')).toBe(true);
   });
 
-  it('should allow changing variant', () => {
-    component.variant = 'secondary';
-    expect(component.variant).toBe('secondary');
+  it('should swap variant classes in the DOM when the variant changes', () => {
+    component.variant.set('secondary');
+    fixture.detectChanges();
+
+    expect(targetEl.classList.contains('bg-gray-600')).toBe(true);
+    expect(targetEl.classList.contains('bg-blue-600')).toBe(false);
   });
 
-  it('should allow setting empty variant', () => {
-    component.variant = '';
-    expect(component.variant).toBe('');
-  });
+  it('should remove variant classes for an unknown variant', () => {
+    component.variant.set('unknown');
+    fixture.detectChanges();
 
-  it('should handle unknown variant', () => {
-    component.variant = 'unknown';
-    expect(component.variant).toBe('unknown');
+    expect(targetEl.classList.contains('bg-blue-600')).toBe(false);
+    expect(targetEl.classList.contains('text-white')).toBe(false);
   });
 });

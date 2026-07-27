@@ -117,6 +117,16 @@ describe('TwTabsComponent', () => {
       expect(panelLabelledBy).toBe(tabId);
     });
 
+    it('should give each panel an id matching the tab aria-controls', () => {
+      const tabButtons = fixture.debugElement.queryAll(By.css('[role="tab"]'));
+      const panel1 = fixture.debugElement.query(By.css('[data-testid="panel-1"]'));
+
+      expect(panel1.nativeElement.id).toBe('panel-tab1');
+      expect(tabButtons[0].nativeElement.getAttribute('aria-controls')).toBe(
+        panel1.nativeElement.id
+      );
+    });
+
     it('should set tabindex correctly', () => {
       const tabButtons = fixture.debugElement.queryAll(By.css('[role="tab"]'));
 
@@ -130,5 +140,59 @@ describe('TwTabsComponent', () => {
       const tabList = fixture.debugElement.query(By.css('[role="tablist"]'));
       expect(tabList.nativeElement.className).toContain('flex');
     });
+  });
+});
+
+@Component({
+  template: `
+    <tw-tabs [animated]="false">
+      <tw-tab-panel value="a" label="A" data-testid="panel-a">Content A</tw-tab-panel>
+      <tw-tab-panel value="b" label="B" [lazy]="true" data-testid="panel-b">Lazy B</tw-tab-panel>
+    </tw-tabs>
+  `,
+  standalone: true,
+  imports: [TwTabsComponent, TwTabPanelComponent],
+})
+class LazyTabsHostComponent {
+  @ViewChild(TwTabsComponent) tabs!: TwTabsComponent;
+}
+
+describe('TwTabsComponent lazy panels', () => {
+  let fixture: ComponentFixture<LazyTabsHostComponent>;
+  let component: LazyTabsHostComponent;
+
+  const lazyPanel = () => fixture.debugElement.query(By.css('[data-testid="panel-b"]'));
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [LazyTabsHostComponent],
+      providers: [TwClassService],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(LazyTabsHostComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should not render lazy panel content before first activation', () => {
+    expect(lazyPanel().nativeElement.textContent).not.toContain('Lazy B');
+  });
+
+  it('should render lazy panel content on activation', () => {
+    component.tabs.select('b');
+    fixture.detectChanges();
+    expect(lazyPanel().nativeElement.textContent).toContain('Lazy B');
+    expect(lazyPanel().nativeElement.getAttribute('hidden')).toBeNull();
+  });
+
+  it('should keep lazy panel content rendered after deactivation', () => {
+    component.tabs.select('b');
+    fixture.detectChanges();
+    component.tabs.select('a');
+    fixture.detectChanges();
+
+    // Content is retained ("load once"), only hidden
+    expect(lazyPanel().nativeElement.textContent).toContain('Lazy B');
+    expect(lazyPanel().nativeElement.getAttribute('hidden')).toBe('true');
   });
 });

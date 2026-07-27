@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwScrollTopComponent } from '@pegasusheavy/ngx-tailwindcss';
+import { TwScrollTopComponent } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -15,6 +15,8 @@ import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-
   templateUrl: './scroll-top-demo.component.html',
 })
 export class ScrollTopDemoComponent {
+  fillerLines = Array.from({ length: 30 }, (_, i) => i + 1);
+
   basicCode = `<tw-scroll-top></tw-scroll-top>`;
 
   variantsCode = `<tw-scroll-top variant="primary"></tw-scroll-top>

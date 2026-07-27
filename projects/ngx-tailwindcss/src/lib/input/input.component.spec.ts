@@ -1,7 +1,7 @@
 import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   InputSize,
@@ -176,6 +176,26 @@ describe('TwInputComponent', () => {
       fixture.detectChanges();
       expect(inputEl.getAttribute('aria-invalid')).toBe('true');
     });
+
+    it('should apply error border classes when error is set after init', () => {
+      expect(inputEl.className).not.toContain('border-rose-500');
+
+      component.error.set('Required');
+      fixture.detectChanges();
+
+      expect(inputEl.className).toContain('border-rose-500');
+    });
+  });
+
+  describe('native validation attributes', () => {
+    it('should not render pattern/min/max/step/autocomplete/inputmode by default', () => {
+      expect(inputEl.hasAttribute('pattern')).toBe(false);
+      expect(inputEl.hasAttribute('min')).toBe(false);
+      expect(inputEl.hasAttribute('max')).toBe(false);
+      expect(inputEl.hasAttribute('step')).toBe(false);
+      expect(inputEl.hasAttribute('autocomplete')).toBe(false);
+      expect(inputEl.hasAttribute('inputmode')).toBe(false);
+    });
   });
 
   describe('disabled', () => {
@@ -199,6 +219,55 @@ describe('TwInputComponent', () => {
       const clearBtn = fixture.debugElement.query(By.css('button[aria-label="Clear input"]'));
       expect(clearBtn).toBeNull();
     });
+  });
+});
+
+@Component({
+  template: ` <tw-input [formControl]="control"></tw-input> `,
+  standalone: true,
+  imports: [TwInputComponent, ReactiveFormsModule],
+})
+class ReactiveHostComponent {
+  control = new FormControl('');
+}
+
+describe('TwInputComponent with reactive forms', () => {
+  let fixture: ComponentFixture<ReactiveHostComponent>;
+  let component: ReactiveHostComponent;
+  let inputEl: HTMLInputElement;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [ReactiveHostComponent],
+      providers: [TwClassService],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(ReactiveHostComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    inputEl = fixture.debugElement.query(By.css('input')).nativeElement;
+  });
+
+  it('should reflect a programmatic setValue in the DOM', async () => {
+    await Promise.resolve();
+    component.control.setValue('hello');
+    fixture.detectChanges();
+
+    expect(inputEl.value).toBe('hello');
+  });
+
+  it('should reflect a programmatic disable in the DOM', async () => {
+    await Promise.resolve();
+    component.control.disable();
+    fixture.detectChanges();
+
+    expect(inputEl.disabled).toBe(true);
+
+    component.control.enable();
+    fixture.detectChanges();
+
+    expect(inputEl.disabled).toBe(false);
   });
 });
 
@@ -262,6 +331,48 @@ describe('TwTextareaComponent', () => {
   it('should apply resize classes by default', () => {
     expect(textareaEl.className).toContain('resize-y');
   });
+
+  it('should apply error border classes when error is set after init', () => {
+    expect(textareaEl.className).not.toContain('border-rose-500');
+
+    component.error.set('Required');
+    fixture.detectChanges();
+
+    expect(textareaEl.className).toContain('border-rose-500');
+  });
+
+  describe('showCount', () => {
+    it('should show count with maxlength', () => {
+      component.showCount.set(true);
+      component.maxlength.set(100);
+      fixture.detectChanges();
+
+      const count = fixture.debugElement.query(By.css('.text-right'));
+      expect(count).toBeTruthy();
+      expect(count.nativeElement.textContent).toContain('0 / 100');
+    });
+
+    it('should show bare count without maxlength', () => {
+      component.showCount.set(true);
+      fixture.detectChanges();
+
+      const count = fixture.debugElement.query(By.css('.text-right'));
+      expect(count).toBeTruthy();
+      expect(count.nativeElement.textContent.trim()).toBe('0');
+    });
+
+    it('should update count on input', () => {
+      component.showCount.set(true);
+      fixture.detectChanges();
+
+      textareaEl.value = 'abc';
+      textareaEl.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+
+      const count = fixture.debugElement.query(By.css('.text-right'));
+      expect(count.nativeElement.textContent.trim()).toBe('3');
+    });
+  });
 });
 
 @Component({
@@ -308,6 +419,21 @@ describe('Input directives', () => {
 
       const label = fixture.debugElement.query(By.directive(TwLabelDirective)).nativeElement;
       expect(label.className).toContain('custom-label');
+    });
+
+    it('should not mark as required by default', () => {
+      const label = fixture.debugElement.query(By.directive(TwLabelDirective)).nativeElement;
+      expect(label.hasAttribute('aria-required')).toBe(false);
+      expect(label.className).not.toContain("after:content-['*']");
+    });
+
+    it('should render required indicator and aria-required when required', () => {
+      component.required.set(true);
+      fixture.detectChanges();
+
+      const label = fixture.debugElement.query(By.directive(TwLabelDirective)).nativeElement;
+      expect(label.getAttribute('aria-required')).toBe('true');
+      expect(label.className).toContain("after:content-['*']");
     });
   });
 

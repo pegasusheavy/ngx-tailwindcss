@@ -180,6 +180,11 @@ describe('TwSkeletonComponent', () => {
     const inner = skeletonEl.querySelector('div');
     expect(inner?.className).toContain('bg-slate-200');
   });
+
+  it('should hide the placeholder from assistive technology', () => {
+    const inner = skeletonEl.querySelector('div');
+    expect(inner?.getAttribute('aria-hidden')).toBe('true');
+  });
 });
 
 describe('TwSkeletonTextComponent', () => {

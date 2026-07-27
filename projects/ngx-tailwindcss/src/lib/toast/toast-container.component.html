@@ -1,4 +1,4 @@
-<div [class]="containerClasses()">
+<div [class]="containerClasses()" aria-live="polite" aria-atomic="false">
   @for (toast of toasts(); track toast.id) {
     <tw-toast
       [variant]="toast.variant || 'info'"

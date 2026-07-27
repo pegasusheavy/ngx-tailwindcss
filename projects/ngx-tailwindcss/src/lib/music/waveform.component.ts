@@ -3,12 +3,13 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   effect,
   ElementRef,
   inject,
   input,
+  NgZone,
   OnChanges,
+  OnDestroy,
   output,
   signal,
   SimpleChanges,
@@ -97,9 +98,9 @@ const COLOR_SCHEMES: Record<WaveformColorScheme, WaveformColors> = {
     class: 'inline-block',
   },
 })
-export class TwWaveformComponent implements AfterViewInit, OnChanges {
+export class TwWaveformComponent implements AfterViewInit, OnChanges, OnDestroy {
   private readonly twClass = inject(TwClassService);
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly zone = inject(NgZone);
   private readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('waveformCanvas');
 
   // Data inputs
@@ -110,8 +111,10 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   // Real-time mode inputs
   readonly mode = input<WaveformMode>('static'); // 'static' or 'realtime'
   readonly analyserNode = input<AnalyserNode | null>(null); // For real-time mode
-  readonly fftSize = input(2048); // FFT size for real-time analysis
-  readonly smoothing = input(0.8); // Smoothing factor for real-time
+  /** FFT size for real-time analysis. When omitted, the analyser node's existing fftSize is used untouched. */
+  readonly fftSize = input<number | undefined>(undefined);
+  /** Smoothing factor for real-time analysis. When omitted, the analyser node's existing smoothing is used untouched. */
+  readonly smoothing = input<number | undefined>(undefined);
   readonly showTriggerLine = input(false); // Show center trigger line in realtime mode
   readonly gain = input(1); // Amplitude gain for realtime mode
 
@@ -176,6 +179,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   private ctx: CanvasRenderingContext2D | null = null;
   private peakData: number[] = [];
   private animationFrame: number | null = null;
+  private panDragController: AbortController | null = null;
+  private peakProcessToken = 0;
 
   // Real-time mode data
   private timeDomainData: Uint8Array<ArrayBuffer> | null = null;
@@ -204,8 +209,8 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if ((changes['audioBuffer'] || changes['peaks']) && this.mode() === 'static') {
-        this.processPeaks();
-      }
+      this.processPeaks();
+    }
     if (changes['width'] || changes['height'] || changes['variant'] || changes['colorScheme']) {
       this.draw();
     }
@@ -220,6 +225,17 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     if (changes['analyserNode'] && this.mode() === 'realtime') {
       this.setupRealTimeMode();
     }
+  }
+
+  ngOnDestroy(): void {
+    this.stopRealTimeMode();
+    if (this.animationFrame !== null) {
+      cancelAnimationFrame(this.animationFrame);
+      this.animationFrame = null;
+    }
+    this.panDragController?.abort();
+    this.panDragController = null;
+    this.peakProcessToken++;
   }
 
   // Computed values - Size-aware dimensions
@@ -325,6 +341,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
   private processPeaks(): void {
     const buffer = this.audioBuffer();
     const inputPeaks = this.peaks();
+    const token = ++this.peakProcessToken;
 
     if (inputPeaks.length > 0) {
       this.peakData = inputPeaks;
@@ -343,50 +360,109 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     try {
       const channelData = buffer.getChannelData(0);
-      const {sampleRate} = buffer;
-      const samplesPerPixel = Math.floor(channelData.length / this.effectiveWidth());
+      const width = this.effectiveWidth();
+      const samplesPerPixel = Math.floor(channelData.length / width);
 
-      this.peakData = [];
-
-      for (let i = 0; i < this.effectiveWidth(); i++) {
-        const start = i * samplesPerPixel;
-        const end = start + samplesPerPixel;
-        let max = 0;
-
-        for (let j = start; j < end && j < channelData.length; j++) {
-          const abs = Math.abs(channelData[j]);
-          if (abs > max) max = abs;
-        }
-
-        this.peakData.push(max);
+      // Small buffers: scan synchronously
+      if (channelData.length <= 262_144) {
+        this.peakData = this.scanPeakRange(channelData, samplesPerPixel, 0, width);
+        this.loading.set(false);
+        this.draw();
+        return;
       }
 
-      this.loading.set(false);
-      this.draw();
+      // Large buffers: chunk the scan across macrotasks so the loading state can render
+      void this.processPeaksChunked(channelData, samplesPerPixel, width, token);
     } catch {
       this.loading.set(false);
       this.error.set('Failed to process audio data');
     }
   }
 
+  private async processPeaksChunked(
+    channelData: Float32Array,
+    samplesPerPixel: number,
+    width: number,
+    token: number
+  ): Promise<void> {
+    try {
+      const peaks: number[] = [];
+      const pixelsPerChunk = Math.max(1, Math.floor(262_144 / Math.max(1, samplesPerPixel)));
+
+      for (let start = 0; start < width; start += pixelsPerChunk) {
+        const end = Math.min(width, start + pixelsPerChunk);
+        peaks.push(...this.scanPeakRange(channelData, samplesPerPixel, start, end));
+
+        // Yield to the browser between chunks; bail if inputs changed or destroyed
+        await new Promise<void>(resolve => {
+          setTimeout(resolve, 0);
+        });
+        if (token !== this.peakProcessToken) return;
+      }
+
+      this.peakData = peaks;
+      this.loading.set(false);
+      this.draw();
+    } catch {
+      if (token !== this.peakProcessToken) return;
+      this.loading.set(false);
+      this.error.set('Failed to process audio data');
+    }
+  }
+
+  private scanPeakRange(
+    channelData: Float32Array,
+    samplesPerPixel: number,
+    startPixel: number,
+    endPixel: number
+  ): number[] {
+    const peaks: number[] = [];
+    for (let i = startPixel; i < endPixel; i++) {
+      const start = i * samplesPerPixel;
+      const end = start + samplesPerPixel;
+      let max = 0;
+
+      for (let j = start; j < end && j < channelData.length; j++) {
+        const abs = Math.abs(channelData[j]);
+        if (abs > max) max = abs;
+      }
+
+      peaks.push(max);
+    }
+    return peaks;
+  }
+
   // Real-time mode setup
   private setupRealTimeMode(): void {
+    // Ensure any previous loop is stopped before (re)starting
+    this.stopRealTimeMode();
+
     const analyser = this.analyserNode();
     if (!analyser) {
       this.drawEmpty();
       return;
     }
 
-    // Configure analyser
-    analyser.fftSize = this.fftSize();
-    analyser.smoothingTimeConstant = this.smoothing();
+    // Only configure the analyser when the corresponding input was explicitly
+    // provided; otherwise adapt to the node's existing configuration so a
+    // shared node is not mutated behind the caller's back.
+    const fft = this.fftSize();
+    if (fft !== undefined) {
+      analyser.fftSize = fft;
+    }
+    const smoothing = this.smoothing();
+    if (smoothing !== undefined) {
+      analyser.smoothingTimeConstant = smoothing;
+    }
 
-    // Create data buffer
+    // Create data buffer sized to the node's (possibly pre-existing) fftSize
     this.timeDomainData = new Uint8Array(analyser.fftSize);
 
-    // Start real-time loop
+    // Start real-time loop outside the zone; drawing never touches template state
     this.isRealTimeRunning = true;
-    this.drawRealTime();
+    this.zone.runOutsideAngular(() => {
+      this.drawRealTime();
+    });
   }
 
   private stopRealTimeMode(): void {
@@ -402,7 +478,9 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     const analyser = this.analyserNode();
     if (!analyser || !this.timeDomainData) {
-      this.animationFrame = requestAnimationFrame(() => { this.drawRealTime(); });
+      this.animationFrame = requestAnimationFrame(() => {
+        this.drawRealTime();
+      });
       return;
     }
 
@@ -430,7 +508,9 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
     }
 
     // Continue animation loop
-    this.animationFrame = requestAnimationFrame(() => { this.drawRealTime(); });
+    this.animationFrame = requestAnimationFrame(() => {
+      this.drawRealTime();
+    });
   }
 
   private drawRealTimeLine(): void {
@@ -633,26 +713,28 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
       cancelAnimationFrame(this.animationFrame);
     }
 
-    this.animationFrame = requestAnimationFrame(() => {
-      const variant = this.variant();
-      switch (variant) {
-        case 'bars': {
-          this.drawBars();
-          break;
+    this.zone.runOutsideAngular(() => {
+      this.animationFrame = requestAnimationFrame(() => {
+        const variant = this.variant();
+        switch (variant) {
+          case 'bars': {
+            this.drawBars();
+            break;
+          }
+          case 'line': {
+            this.drawLine();
+            break;
+          }
+          case 'mirror': {
+            this.drawMirror();
+            break;
+          }
+          case 'gradient': {
+            this.drawGradient();
+            break;
+          }
         }
-        case 'line': {
-          this.drawLine();
-          break;
-        }
-        case 'mirror': {
-          this.drawMirror();
-          break;
-        }
-        case 'gradient': {
-          this.drawGradient();
-          break;
-        }
-      }
+      });
     });
   }
 
@@ -1124,7 +1206,7 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     // Only pan with middle mouse button or when holding shift
     const isMouseEvent = 'button' in event;
-    if (isMouseEvent && (event).button !== 1 && !event.shiftKey) return;
+    if (isMouseEvent && event.button !== 1 && !event.shiftKey) return;
 
     event.preventDefault();
     this.isPanning.set(true);
@@ -1147,16 +1229,17 @@ export class TwWaveformComponent implements AfterViewInit, OnChanges {
 
     const onEnd = () => {
       this.isPanning.set(false);
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onEnd);
-      document.removeEventListener('touchmove', onMove);
-      document.removeEventListener('touchend', onEnd);
+      this.panDragController?.abort();
+      this.panDragController = null;
     };
 
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onEnd);
-    document.addEventListener('touchmove', onMove);
-    document.addEventListener('touchend', onEnd);
+    this.panDragController?.abort();
+    this.panDragController = new AbortController();
+    const { signal: abortSignal } = this.panDragController;
+    document.addEventListener('mousemove', onMove, { signal: abortSignal });
+    document.addEventListener('mouseup', onEnd, { signal: abortSignal });
+    document.addEventListener('touchmove', onMove, { signal: abortSignal });
+    document.addEventListener('touchend', onEnd, { signal: abortSignal });
   }
 
   // Touch pinch zoom

@@ -1,0 +1,26 @@
+<div [class]="containerClasses()" role="list">
+  @for (value of values(); track $index) {
+    <tw-chip
+      role="listitem"
+      [label]="getDisplayValue(value)"
+      [variant]="variant()"
+      [chipStyle]="chipStyle()"
+      [size]="size()"
+      [removable]="!disabled()"
+      (onRemove)="removeValue($index)"
+    >
+    </tw-chip>
+  }
+  @if (allowAdd() && !disabled()) {
+    <input
+      type="text"
+      [class]="inputClasses()"
+      [placeholder]="placeholder()"
+      [attr.aria-label]="ariaLabel()"
+      [disabled]="disabled()"
+      (keydown.enter)="onAddChip($event)"
+      (keydown.backspace)="onBackspace($event)"
+      #inputRef
+    />
+  }
+</div>

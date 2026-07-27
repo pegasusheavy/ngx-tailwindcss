@@ -1,6 +1,6 @@
 /* TEAM */
-Company: Pegasus Heavy Industries LLC
-Site: https://pegasusheavy.com
+Author: Joseph R Quinn
+Site: https://quinnjr.github.io/ngx-tailwindcss/
 Location: United States
 
 /* THANKS */

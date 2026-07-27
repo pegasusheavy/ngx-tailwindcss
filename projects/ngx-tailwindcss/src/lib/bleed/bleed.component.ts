@@ -1,9 +1,24 @@
-import { Component, Input } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
 export type BleedDirection = 'horizontal' | 'left' | 'right' | 'all';
 export type BleedAmount = 'sm' | 'md' | 'lg' | 'xl' | 'full';
+
+const AMOUNT_MAP: Record<BleedAmount, string> = {
+  sm: '1rem',
+  md: '2rem',
+  lg: '4rem',
+  xl: '6rem',
+  full: '50vw',
+};
 
 /**
  * Bleed component for breaking out of container constraints.
@@ -35,11 +50,8 @@ export type BleedAmount = 'sm' | 'md' | 'lg' | 'xl' | 'full';
   selector: 'tw-bleed',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="bleedClasses()" [style]="bleedStyles()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './bleed.component.html',
   styles: [
     `
       :host {
@@ -49,93 +61,103 @@ export type BleedAmount = 'sm' | 'md' | 'lg' | 'xl' | 'full';
   ],
 })
 export class TwBleedComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Direction of the bleed */
-  @Input() direction: BleedDirection = 'horizontal';
+  readonly direction = input<BleedDirection>('horizontal');
 
   /** Amount of bleed */
-  @Input() amount: BleedAmount = 'md';
+  readonly amount = input<BleedAmount>('md');
 
-  /** Custom bleed amount (e.g., '2rem', '32px') */
-  @Input() customAmount?: string;
+  /** Custom bleed amount (e.g., '2rem', '32px'); takes precedence over `amount` */
+  readonly customAmount = input<string | undefined>(undefined);
 
   /** Whether to preserve the same visual spacing inside */
-  @Input() preservePadding = false;
+  readonly preservePadding = input(false, { transform: booleanAttribute });
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
+  protected readonly bleedClasses = computed(() => {
+    return this.twClass.merge('relative', this.class());
+  });
 
-  protected bleedClasses(): string {
-    return this.twClass.merge('relative', this.class);
-  }
+  protected readonly bleedStyles = computed<Record<string, string>>(() => {
+    const direction = this.direction();
+    const customAmount = this.customAmount();
+    const preservePadding = this.preservePadding();
 
-  protected bleedStyles(): Record<string, string> {
-    const amountMap: Record<BleedAmount, string> = {
-      sm: '1rem',
-      md: '2rem',
-      lg: '4rem',
-      xl: '6rem',
-      full: '50vw',
-    };
-
-    const bleedValue = this.customAmount || amountMap[this.amount];
-    const isFull = this.amount === 'full';
+    // A custom amount takes precedence, even over amount="full"
+    const isFull = this.amount() === 'full' && !customAmount;
+    const bleedValue = customAmount || AMOUNT_MAP[this.amount()];
+    const fullMargin = 'calc(-50vw + 50%)';
+    const fullPadding = 'calc(50vw - 50%)';
 
     const styles: Record<string, string> = {};
 
-    if (this.direction === 'horizontal' || this.direction === 'all') {
+    if (direction === 'horizontal' || direction === 'all') {
       if (isFull) {
-        styles['marginLeft'] = 'calc(-50vw + 50%)';
-        styles['marginRight'] = 'calc(-50vw + 50%)';
+        styles['marginLeft'] = fullMargin;
+        styles['marginRight'] = fullMargin;
         styles['width'] = '100vw';
+
+        if (preservePadding) {
+          styles['paddingLeft'] = fullPadding;
+          styles['paddingRight'] = fullPadding;
+        }
       } else {
         styles['marginLeft'] = `-${bleedValue}`;
         styles['marginRight'] = `-${bleedValue}`;
-      }
 
-      if (this.preservePadding && !isFull) {
-        styles['paddingLeft'] = bleedValue;
-        styles['paddingRight'] = bleedValue;
+        if (preservePadding) {
+          styles['paddingLeft'] = bleedValue;
+          styles['paddingRight'] = bleedValue;
+        }
       }
     }
 
-    if (this.direction === 'left') {
+    if (direction === 'left') {
       if (isFull) {
-        styles['marginLeft'] = 'calc(-50vw + 50%)';
+        styles['marginLeft'] = fullMargin;
+
+        if (preservePadding) {
+          styles['paddingLeft'] = fullPadding;
+        }
       } else {
         styles['marginLeft'] = `-${bleedValue}`;
-      }
 
-      if (this.preservePadding && !isFull) {
-        styles['paddingLeft'] = bleedValue;
+        if (preservePadding) {
+          styles['paddingLeft'] = bleedValue;
+        }
       }
     }
 
-    if (this.direction === 'right') {
+    if (direction === 'right') {
       if (isFull) {
-        styles['marginRight'] = 'calc(-50vw + 50%)';
+        styles['marginRight'] = fullMargin;
+
+        if (preservePadding) {
+          styles['paddingRight'] = fullPadding;
+        }
       } else {
         styles['marginRight'] = `-${bleedValue}`;
-      }
 
-      if (this.preservePadding && !isFull) {
-        styles['paddingRight'] = bleedValue;
+        if (preservePadding) {
+          styles['paddingRight'] = bleedValue;
+        }
       }
     }
 
-    if (this.direction === 'all') {
-      if (!isFull) {
-        styles['marginTop'] = `-${bleedValue}`;
-        styles['marginBottom'] = `-${bleedValue}`;
-      }
+    if (direction === 'all' && !isFull) {
+      styles['marginTop'] = `-${bleedValue}`;
+      styles['marginBottom'] = `-${bleedValue}`;
 
-      if (this.preservePadding && !isFull) {
+      if (preservePadding) {
         styles['paddingTop'] = bleedValue;
         styles['paddingBottom'] = bleedValue;
       }
     }
 
     return styles;
-  }
+  });
 }

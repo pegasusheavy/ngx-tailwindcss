@@ -1,4 +1,14 @@
-import { Directive, inject, input, NgZone, OnDestroy, OnInit, output } from '@angular/core';
+import {
+  computed,
+  Directive,
+  ElementRef,
+  inject,
+  input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  output,
+} from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
 import { KeyboardShortcut } from './native.types';
 
@@ -18,6 +28,7 @@ import { KeyboardShortcut } from './native.types';
 export class TwShortcutDirective implements OnInit, OnDestroy {
   private readonly platformService = inject(NativeAppPlatformService);
   private readonly ngZone = inject(NgZone);
+  private readonly elementRef = inject(ElementRef<HTMLElement>);
 
   // Inputs
   public readonly twShortcut = input.required<string>();
@@ -28,28 +39,34 @@ export class TwShortcutDirective implements OnInit, OnDestroy {
   // Outputs
   public readonly shortcutTriggered = output<KeyboardEvent>();
 
-  private readonly keydownHandler = (event: KeyboardEvent) => { this.handleKeydown(event); };
+  // Parse once per twShortcut() change instead of on every keydown
+  private readonly parsedShortcut = computed(() => this.parseShortcut(this.twShortcut()));
+
+  private readonly keydownHandler = (event: Event) => {
+    this.handleKeydown(event as KeyboardEvent);
+  };
+  /** The exact node the keydown listener is attached to */
+  private listenerTarget: HTMLElement | Document | null = null;
 
   public ngOnInit(): void {
-    if (this.shortcutGlobal()) {
-      document.addEventListener('keydown', this.keydownHandler);
-    } else {
-      window.addEventListener('keydown', this.keydownHandler);
-    }
+    const target: HTMLElement | Document = this.shortcutGlobal()
+      ? document
+      : this.elementRef.nativeElement;
+    this.listenerTarget = target;
+    this.ngZone.runOutsideAngular(() => {
+      target.addEventListener('keydown', this.keydownHandler);
+    });
   }
 
   public ngOnDestroy(): void {
-    if (this.shortcutGlobal()) {
-      document.removeEventListener('keydown', this.keydownHandler);
-    } else {
-      window.removeEventListener('keydown', this.keydownHandler);
-    }
+    this.listenerTarget?.removeEventListener('keydown', this.keydownHandler);
+    this.listenerTarget = null;
   }
 
   private handleKeydown(event: KeyboardEvent): void {
     if (!this.shortcutEnabled()) return;
 
-    const shortcut = this.parseShortcut(this.twShortcut());
+    const shortcut = this.parsedShortcut();
     if (!shortcut) return;
 
     if (this.matchesShortcut(event, shortcut)) {

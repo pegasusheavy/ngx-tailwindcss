@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TwInputComponent, TwTextareaComponent } from '@pegasusheavy/ngx-tailwindcss';
+import { TwInputComponent, TwTextareaComponent } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -22,6 +22,7 @@ export class InputDemoComponent {
   email = signal('');
   bio = signal('');
   password = signal('');
+  readonlyValue = 'Read-only value';
 
   // Code examples
   basicCode = `<tw-input
@@ -34,6 +35,23 @@ export class InputDemoComponent {
   type="email"
   placeholder="you@example.com">
 </tw-input>`;
+
+  twoWayCode = `<!-- name = signal(''); -->
+<tw-input
+  label="Name"
+  placeholder="Enter your name"
+  [(ngModel)]="name">
+</tw-input>
+
+<tw-textarea
+  label="Bio"
+  placeholder="Tell us about yourself..."
+  [rows]="3"
+  [(ngModel)]="bio">
+</tw-textarea>
+
+<p>Name: {{ name() }}</p>
+<p>Bio: {{ bio() }}</p>`;
 
   variantsCode = `<tw-input variant="default" label="Default" placeholder="Default variant"></tw-input>
 <tw-input variant="filled" label="Filled" placeholder="Filled variant"></tw-input>
@@ -73,11 +91,11 @@ export class InputDemoComponent {
   [disabled]="true">
 </tw-input>
 
-<!-- Readonly field -->
+<!-- Readonly field (readonlyValue = 'Read-only value') -->
 <tw-input
   label="Readonly Field"
   [readonly]="true"
-  value="Read-only value">
+  [(ngModel)]="readonlyValue">
 </tw-input>`;
 
   clearableCode = `<tw-input

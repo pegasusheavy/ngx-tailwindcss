@@ -1,91 +1,41 @@
-import { Injectable, signal, effect, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Injectable, inject } from '@angular/core';
+import { ColorMode, TwThemeService } from '@quinnjr/ngx-tailwindcss';
 
-export type Theme = 'light' | 'dark' | 'system';
+export type Theme = ColorMode;
 
+/**
+ * Thin wrapper around the library's TwThemeService so the docs shell and the
+ * /theming demo share a single source of truth for the color mode.
+ *
+ * The library service owns persistence (localStorage 'tw-color-mode') and the
+ * `<html class="dark">` toggle; this wrapper only re-exposes that API under
+ * the names the docs templates already use. It never writes storage on init —
+ * persistence happens only when the user picks a theme via setTheme().
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class ThemeService {
-  private readonly STORAGE_KEY = 'ngx-tailwindcss-theme';
-  private isBrowser: boolean;
+  private readonly twTheme = inject(TwThemeService);
 
   /** The user's theme preference */
-  readonly theme = signal<Theme>('system');
+  readonly theme = this.twTheme.colorMode.asReadonly();
 
   /** Whether dark mode is currently active (resolved from theme preference) */
-  readonly isDark = signal<boolean>(false);
-
-  constructor(@Inject(PLATFORM_ID) platformId: object) {
-    this.isBrowser = isPlatformBrowser(platformId);
-
-    if (this.isBrowser) {
-      // Load saved preference
-      const saved = localStorage.getItem(this.STORAGE_KEY) as Theme | null;
-      if (saved && ['light', 'dark', 'system'].includes(saved)) {
-        this.theme.set(saved);
-      }
-
-      // Initial resolution
-      this.resolveTheme();
-
-      // Listen for system preference changes
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      mediaQuery.addEventListener('change', () => {
-        if (this.theme() === 'system') {
-          this.resolveTheme();
-        }
-      });
-
-      // Effect to update DOM and save preference when theme changes
-      effect(() => {
-        const currentTheme = this.theme();
-        this.resolveTheme();
-        localStorage.setItem(this.STORAGE_KEY, currentTheme);
-      });
-    }
-  }
+  readonly isDark = this.twTheme.isDark.asReadonly();
 
   /** Set the theme preference */
   setTheme(theme: Theme): void {
-    this.theme.set(theme);
+    this.twTheme.setColorMode(theme);
   }
 
   /** Toggle between light and dark (ignores system) */
   toggleTheme(): void {
-    const current = this.isDark();
-    this.setTheme(current ? 'light' : 'dark');
+    this.setTheme(this.isDark() ? 'light' : 'dark');
   }
 
   /** Cycle through themes: light -> dark -> system */
   cycleTheme(): void {
-    const current = this.theme();
-    const next: Theme =
-      current === 'light' ? 'dark' : current === 'dark' ? 'system' : 'light';
-    this.setTheme(next);
-  }
-
-  private resolveTheme(): void {
-    if (!this.isBrowser) return;
-
-    const theme = this.theme();
-    let isDark: boolean;
-
-    if (theme === 'system') {
-      isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    } else {
-      isDark = theme === 'dark';
-    }
-
-    this.isDark.set(isDark);
-
-    // Update the DOM
-    const root = document.documentElement;
-    if (isDark) {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
-    }
+    this.twTheme.cycleColorMode();
   }
 }
-

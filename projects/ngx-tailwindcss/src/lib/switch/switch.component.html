@@ -3,17 +3,16 @@
     type="button"
     role="switch"
     [attr.aria-checked]="checked()"
+    [attr.aria-disabled]="isDisabled()"
     [class]="trackClasses()"
-    [disabled]="disabled()"
+    [disabled]="isDisabled()"
     (click)="toggle()"
     (keydown.space)="toggle(); $event.preventDefault()"
     (keydown.enter)="toggle(); $event.preventDefault()"
   >
     <span [class]="thumbClasses()"></span>
   </button>
-  @if (hasLabel) {
-    <span [class]="labelClasses()">
-      <ng-content></ng-content>
-    </span>
-  }
+  <span [class]="labelClasses()">
+    <ng-content></ng-content>
+  </span>
 </label>

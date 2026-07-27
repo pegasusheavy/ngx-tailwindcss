@@ -1,24 +1,33 @@
-<div [class]="containerClasses()" role="radiogroup" [attr.aria-label]="ariaLabel()">
+<div
+  [class]="containerClasses()"
+  role="radiogroup"
+  [attr.aria-label]="ariaLabel()"
+  [attr.aria-readonly]="readonly() ? true : null"
+>
   @for (star of starsArray(); track $index) {
     <button
       type="button"
+      role="radio"
       [class]="starClasses($index)"
-      [disabled]="isDisabled() || readonly()"
-      [attr.aria-checked]="$index < value()"
-      (click)="onStarClick($index)"
+      [disabled]="isDisabled()"
+      [attr.aria-checked]="value() > 0 && $index === activeStarIndex()"
+      [attr.aria-label]="$index + 1 + ' stars'"
+      [attr.tabindex]="$index === activeStarIndex() ? 0 : -1"
+      (click)="onStarClick($index, $event)"
+      (keydown)="onStarKeydown($event)"
       (mouseenter)="onStarHover($index)"
       (mouseleave)="onStarLeave()"
       (focus)="focus.emit($event)"
       (blur)="onInputBlur($event)"
     >
-      @if ($index < getFilledStars($index)) {
+      @if ($index + 1 <= currentValue()) {
         <!-- Filled star -->
         <svg [class]="iconClasses()" fill="currentColor" viewBox="0 0 24 24">
           <path
             d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
           />
         </svg>
-      } @else if ($index < getFilledStars($index) + 0.5 && allowHalf()) {
+      } @else if (allowHalf() && $index + 0.5 <= currentValue()) {
         <!-- Half star -->
         <svg [class]="iconClasses()" viewBox="0 0 24 24">
           <defs>

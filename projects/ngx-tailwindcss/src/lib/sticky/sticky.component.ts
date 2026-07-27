@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -39,11 +39,8 @@ const OFFSET_VALUES: Record<StickyOffset, string> = {
   selector: 'tw-sticky',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="stickyClasses()" [style]="stickyStyles()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './sticky.component.html',
   styles: [
     `
       :host {
@@ -53,40 +50,41 @@ const OFFSET_VALUES: Record<StickyOffset, string> = {
   ],
 })
 export class TwStickyComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Which edge to stick to */
-  @Input() position: StickyPosition = 'top';
+  readonly position = input<StickyPosition>('top');
 
   /** Offset from the edge */
-  @Input() offset: StickyOffset = 'none';
+  readonly offset = input<StickyOffset>('none');
 
   /** Custom offset value (e.g., '60px', '4rem') */
-  @Input() customOffset?: string;
+  readonly customOffset = input<string | undefined>(undefined);
 
   /** Z-index for stacking */
-  @Input() zIndex = 10;
+  readonly zIndex = input(10);
 
   /** Whether sticky is disabled */
-  @Input() disabled = false;
+  readonly disabled = input(false);
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
+  protected readonly stickyClasses = computed(() => {
+    return this.twClass.merge(this.disabled() ? 'relative' : 'sticky', this.class());
+  });
 
-  protected stickyClasses(): string {
-    return this.twClass.merge(this.disabled ? 'relative' : 'sticky', this.class);
-  }
-
-  protected stickyStyles(): Record<string, string> {
-    if (this.disabled) {
+  protected readonly stickyStyles = computed<Record<string, string>>(() => {
+    if (this.disabled()) {
       return {};
     }
 
-    const offsetValue = this.customOffset || OFFSET_VALUES[this.offset];
+    const offsetValue = this.customOffset() || OFFSET_VALUES[this.offset()];
 
-    return {
-      [this.position]: offsetValue,
-      zIndex: this.zIndex.toString(),
+    const styles: Record<string, string> = {
+      zIndex: this.zIndex().toString(),
     };
-  }
+    styles[this.position()] = offsetValue;
+    return styles;
+  });
 }

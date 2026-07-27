@@ -4,15 +4,17 @@ import {
   Component,
   computed,
   ContentChild,
-  EventEmitter,
+  effect,
   HostListener,
   inject,
   Input,
-  Output,
-  signal,
+  input,
+  model,
+  output,
+  PLATFORM_ID,
   TemplateRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
 export type SidebarPosition = 'left' | 'right' | 'top' | 'bottom';
@@ -47,56 +49,58 @@ const SIDEBAR_SIZES: Record<SidebarPosition, Record<SidebarSize, string>> = {
 })
 export class TwSidebarComponent {
   private readonly twClass = inject(TwClassService);
+  private readonly platformId = inject(PLATFORM_ID);
 
-  /** Whether the sidebar is visible */
+  /** Whether the sidebar is visible. Supports two-way binding via `[(visible)]`. */
+  readonly visible = model(false);
+
+  /**
+   * Whether the sidebar is visible
+   *
+   * @deprecated Use `[(visible)]` instead.
+   */
   @Input({ transform: booleanAttribute })
   set visibleInput(value: boolean) {
     this.visible.set(value);
   }
 
   /** Header text */
-  @Input() header = '';
+  readonly header = input('');
 
   /** Position of the sidebar */
-  @Input() position: SidebarPosition = 'left';
+  readonly position = input<SidebarPosition>('left');
 
   /** Size of the sidebar */
-  @Input() size: SidebarSize = 'md';
+  readonly size = input<SidebarSize>('md');
 
   /** Whether to show backdrop */
-  @Input({ transform: booleanAttribute }) showBackdrop = true;
+  readonly showBackdrop = input(true, { transform: booleanAttribute });
 
   /** Whether clicking backdrop closes sidebar */
-  @Input({ transform: booleanAttribute }) dismissible = true;
+  readonly dismissible = input(true, { transform: booleanAttribute });
 
   /** Whether pressing Escape closes sidebar */
-  @Input({ transform: booleanAttribute }) closeOnEscape = true;
+  readonly closeOnEscape = input(true, { transform: booleanAttribute });
 
   /** Whether to show close button */
-  @Input({ transform: booleanAttribute }) showCloseButton = true;
+  readonly showCloseButton = input(true, { transform: booleanAttribute });
 
   /** Whether the sidebar is modal (blocks interaction with page) */
-  @Input({ transform: booleanAttribute }) modal = true;
+  readonly modal = input(true, { transform: booleanAttribute });
 
   /** Additional classes */
-  @Input() classOverride = '';
-
-  /** Visibility change event */
-  @Output() visibleChange = new EventEmitter<boolean>();
+  readonly classOverride = input('');
 
   /** Show event */
-  @Output() onShow = new EventEmitter<void>();
+  readonly onShow = output();
 
   /** Hide event */
-  @Output() onHide = new EventEmitter<void>();
+  readonly onHide = output();
 
-  @ContentChild('twSidebarFooter') footerTemplate!: TemplateRef<any>;
+  @ContentChild('twSidebarFooter', { read: TemplateRef }) footerTemplate?: TemplateRef<unknown>;
 
-  protected visible = signal(false);
-
-  protected get hasFooter(): boolean {
-    return !!this.footerTemplate;
-  }
+  /** Previous body overflow value, restored on hide so underlying scroll locks survive */
+  private previousBodyOverflow: string | null = null;
 
   protected backdropClasses = computed(() => {
     return this.twClass.merge(
@@ -115,7 +119,7 @@ export class TwSidebarComponent {
       sizeClasses,
       positionClasses,
       transformClasses,
-      this.classOverride
+      this.classOverride()
     );
   });
 
@@ -131,12 +135,31 @@ export class TwSidebarComponent {
     return 'px-6 py-4 border-t border-slate-200 dark:border-slate-700';
   });
 
+  constructor() {
+    // Routes every visibility change (model writes, show()/hide(), [(visible)]
+    // bindings) through the show/hide side effects.
+    let first = true;
+    effect(() => {
+      const visible = this.visible();
+      if (first) {
+        first = false;
+        if (!visible) return;
+      }
+
+      if (visible) {
+        this.applyShowEffects();
+      } else {
+        this.applyHideEffects();
+      }
+    });
+  }
+
   private getSizeClasses(): string {
-    return SIDEBAR_SIZES[this.position][this.size];
+    return SIDEBAR_SIZES[this.position()][this.size()];
   }
 
   private getPositionClasses(): string {
-    switch (this.position) {
+    switch (this.position()) {
       case 'left': {
         return 'top-0 left-0 h-full';
       }
@@ -155,7 +178,7 @@ export class TwSidebarComponent {
   private getTransformClasses(): string {
     if (this.visible()) return 'translate-x-0 translate-y-0';
 
-    switch (this.position) {
+    switch (this.position()) {
       case 'left': {
         return '-translate-x-full';
       }
@@ -173,37 +196,43 @@ export class TwSidebarComponent {
 
   @HostListener('document:keydown.escape')
   onEscapePress(): void {
-    if (this.closeOnEscape && this.visible()) {
+    if (this.closeOnEscape() && this.visible()) {
       this.hide();
     }
   }
 
   onBackdropClick(): void {
-    if (this.dismissible) {
+    if (this.dismissible()) {
       this.hide();
+    }
+  }
+
+  private applyShowEffects(): void {
+    this.onShow.emit();
+
+    if (this.modal() && isPlatformBrowser(this.platformId)) {
+      this.previousBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  private applyHideEffects(): void {
+    this.onHide.emit();
+
+    if (this.modal() && isPlatformBrowser(this.platformId)) {
+      document.body.style.overflow = this.previousBodyOverflow ?? '';
+      this.previousBodyOverflow = null;
     }
   }
 
   /** Show the sidebar */
   show(): void {
     this.visible.set(true);
-    this.visibleChange.emit(true);
-    this.onShow.emit();
-
-    if (this.modal) {
-      document.body.style.overflow = 'hidden';
-    }
   }
 
   /** Hide the sidebar */
   hide(): void {
     this.visible.set(false);
-    this.visibleChange.emit(false);
-    this.onHide.emit();
-
-    if (this.modal) {
-      document.body.style.overflow = '';
-    }
   }
 
   /** Toggle the sidebar visibility */

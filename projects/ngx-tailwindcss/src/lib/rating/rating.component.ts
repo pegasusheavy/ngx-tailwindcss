@@ -37,7 +37,7 @@ const RATING_SIZES: Record<RatingSize, string> = {
  * ```html
  * <tw-rating [(ngModel)]="rating"></tw-rating>
  * <tw-rating [stars]="10" [allowHalf]="true" variant="warning"></tw-rating>
- * <tw-rating [readonly]="true" [value]="4.5"></tw-rating>
+ * <tw-rating [readonly]="true" [(ngModel)]="rating"></tw-rating>
  * ```
  */
 @Component({
@@ -100,14 +100,15 @@ export class TwRatingComponent implements ControlValueAccessor {
     );
   });
 
-  getFilledStars(index: number): number {
-    const currentValue = this.hoverValue() ?? this.value();
-    return currentValue;
-  }
+  /** Value currently displayed: the hovered value while hovering, otherwise the selected value */
+  protected currentValue = computed(() => this.hoverValue() ?? this.value());
+
+  /** Index of the star that participates in the roving tabindex */
+  protected activeStarIndex = computed(() => Math.max(0, Math.ceil(this.value()) - 1));
 
   protected starClasses(index: number) {
     const variant = RATING_VARIANTS[this.variant()];
-    const isFilled = this.getFilledStars(index) > index;
+    const isFilled = this.currentValue() > index;
 
     return this.twClass.merge(
       'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded transition-colors duration-100',
@@ -124,15 +125,60 @@ export class TwRatingComponent implements ControlValueAccessor {
     return 'ml-2 text-sm font-medium text-slate-600 dark:text-slate-400';
   }
 
-  onStarClick(index: number): void {
+  onStarClick(index: number, event?: MouseEvent): void {
     if (this.isDisabled() || this.readonly()) return;
 
     let newValue = index + 1;
 
-    // If clicking the same star that's already fully selected, decrease by 1 (or 0.5 if allowHalf)
-    if (this.value() === newValue && !this.allowHalf()) {
+    // With allowHalf, clicking the left half of a star selects a half step
+    if (this.allowHalf() && event) {
+      const target = event.currentTarget as HTMLElement | null;
+      const width = target?.getBoundingClientRect().width ?? 0;
+      if (width > 0 && event.offsetX < width / 2) {
+        newValue = index + 0.5;
+      }
+    }
+
+    // Clicking the currently selected value clears the rating
+    if (this.value() === newValue) {
       newValue = 0;
     }
+
+    this.value.set(newValue);
+    this.onChangeFn(newValue);
+    this.change.emit(newValue);
+  }
+
+  onStarKeydown(event: KeyboardEvent): void {
+    if (this.isDisabled() || this.readonly()) return;
+
+    const step = this.allowHalf() ? 0.5 : 1;
+    let newValue: number | null = null;
+
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowUp': {
+        newValue = Math.min(this.stars(), this.value() + step);
+        break;
+      }
+      case 'ArrowLeft':
+      case 'ArrowDown': {
+        newValue = Math.max(0, this.value() - step);
+        break;
+      }
+      case 'Home': {
+        newValue = step;
+        break;
+      }
+      case 'End': {
+        newValue = this.stars();
+        break;
+      }
+    }
+
+    if (newValue === null) return;
+    event.preventDefault();
+    if (newValue === this.value()) return;
 
     this.value.set(newValue);
     this.onChangeFn(newValue);

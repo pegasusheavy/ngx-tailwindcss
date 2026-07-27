@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwImageComponent } from '@pegasusheavy/ngx-tailwindcss';
+import { TwImageComponent } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -23,6 +23,12 @@ export class ImageDemoComponent {
 
   sizesCode = `<tw-image src="..." width="200" height="150"></tw-image>
 <tw-image src="..." width="300" height="200"></tw-image>`;
+
+  galleryCode = `<div class="flex flex-wrap gap-4">
+  <tw-image src="..." alt="Image 1" width="200" height="150" [preview]="true"></tw-image>
+  <tw-image src="..." alt="Image 2" width="200" height="150" [preview]="true"></tw-image>
+  <tw-image src="..." alt="Image 3" width="200" height="150" [preview]="true"></tw-image>
+</div>`;
 
   fitCode = `<tw-image src="..." fit="cover"></tw-image>
 <tw-image src="..." fit="contain"></tw-image>

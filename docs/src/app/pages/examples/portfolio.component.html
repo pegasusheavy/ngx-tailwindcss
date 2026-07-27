@@ -612,8 +612,10 @@
   <!-- Contact Modal -->
   <tw-modal
     [(open)]="contactModalOpen"
-    title="Let's Connect"
     [showCloseButton]="true">
+    <tw-modal-header>
+      <tw-modal-title>Let's Connect</tw-modal-title>
+    </tw-modal-header>
     <div class="space-y-5">
       <tw-input
         [(ngModel)]="contactName"

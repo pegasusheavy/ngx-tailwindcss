@@ -2,7 +2,11 @@ import { Component, signal, ViewChild } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { TwAccordionComponent, TwAccordionItemComponent } from './accordion.component';
+import {
+  TwAccordionComponent,
+  TwAccordionHeaderDirective,
+  TwAccordionItemComponent,
+} from './accordion.component';
 
 @Component({
   template: `
@@ -87,6 +91,23 @@ describe('TwAccordionComponent', () => {
       fixture.detectChanges();
       const innerDiv = accordionEl.querySelector('div');
       expect(innerDiv?.className).not.toContain('divide-y');
+    });
+
+    it('should re-propagate variant changes to items', () => {
+      component.variant.set('separated');
+      fixture.detectChanges();
+      fixture.detectChanges();
+
+      const items = fixture.debugElement.queryAll(By.directive(TwAccordionItemComponent));
+      const itemWrapper = items[0].nativeElement.querySelector('div');
+      expect(itemWrapper?.className).toContain('bg-slate-50');
+
+      component.variant.set('bordered');
+      fixture.detectChanges();
+      fixture.detectChanges();
+
+      expect(itemWrapper?.className).toContain('border');
+      expect(itemWrapper?.className).not.toContain('bg-slate-50');
     });
   });
 
@@ -176,6 +197,47 @@ describe('TwAccordionComponent', () => {
       const disabledHeader = items[2].query(By.css('button'));
       expect(disabledHeader.nativeElement.className).toContain('cursor-not-allowed');
     });
+
+    it('should disable the header button and set aria-disabled', () => {
+      const items = fixture.debugElement.queryAll(By.directive(TwAccordionItemComponent));
+      const disabledHeader = items[2].query(By.css('button')).nativeElement as HTMLButtonElement;
+
+      expect(disabledHeader.disabled).toBe(true);
+      expect(disabledHeader.getAttribute('aria-disabled')).toBe('true');
+
+      const enabledHeader = items[0].query(By.css('button')).nativeElement as HTMLButtonElement;
+      expect(enabledHeader.disabled).toBe(false);
+      expect(enabledHeader.getAttribute('aria-disabled')).toBe('false');
+    });
+  });
+
+  describe('accessibility wiring', () => {
+    it('should link the header button to the panel via aria-controls', () => {
+      const items = fixture.debugElement.queryAll(By.directive(TwAccordionItemComponent));
+      const header = items[0].query(By.css('button')).nativeElement as HTMLButtonElement;
+
+      header.click();
+      fixture.detectChanges();
+
+      const panel = items[0].nativeElement.querySelector('[role="region"]') as HTMLElement;
+      expect(panel).toBeTruthy();
+      expect(header.id).toBeTruthy();
+      expect(panel.id).toBeTruthy();
+      expect(header.getAttribute('aria-controls')).toBe(panel.id);
+      expect(panel.getAttribute('aria-labelledby')).toBe(header.id);
+    });
+
+    it('should set aria-expanded on the header button', () => {
+      const items = fixture.debugElement.queryAll(By.directive(TwAccordionItemComponent));
+      const header = items[0].query(By.css('button')).nativeElement as HTMLButtonElement;
+
+      expect(header.getAttribute('aria-expanded')).toBe('false');
+
+      header.click();
+      fixture.detectChanges();
+
+      expect(header.getAttribute('aria-expanded')).toBe('true');
+    });
   });
 });
 
@@ -240,5 +302,44 @@ describe('TwAccordionItemComponent', () => {
     fixture.detectChanges();
 
     expect(component.item1ChangeValue).toBe(true);
+  });
+});
+
+@Component({
+  template: `
+    <tw-accordion>
+      <tw-accordion-item value="custom" itemTitle="Fallback Title">
+        <span twAccordionHeader class="custom-header">Custom Header</span>
+        Content
+      </tw-accordion-item>
+    </tw-accordion>
+  `,
+  standalone: true,
+  imports: [TwAccordionComponent, TwAccordionItemComponent, TwAccordionHeaderDirective],
+})
+class CustomHeaderHostComponent {}
+
+describe('TwAccordionItemComponent with custom header', () => {
+  let fixture: ComponentFixture<CustomHeaderHostComponent>;
+  let itemEl: HTMLElement;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [CustomHeaderHostComponent],
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(CustomHeaderHostComponent);
+    fixture.detectChanges();
+    itemEl = fixture.debugElement.query(By.directive(TwAccordionItemComponent)).nativeElement;
+  });
+
+  it('should render the projected header content', () => {
+    const header = itemEl.querySelector('.custom-header');
+    expect(header).toBeTruthy();
+    expect(header?.textContent).toContain('Custom Header');
+  });
+
+  it('should not render the itemTitle alongside the custom header', () => {
+    expect(itemEl.textContent).not.toContain('Fallback Title');
   });
 });

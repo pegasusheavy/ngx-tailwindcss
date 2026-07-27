@@ -57,6 +57,8 @@
         [width]="canvasSize().width"
         [height]="canvasSize().height"
         class="w-full"
+        role="img"
+        aria-label="Loop waveform"
       ></canvas>
 
       <!-- Progress Bar Overlay -->
@@ -247,6 +249,8 @@
             [class.text-slate-400]="!layer.muted"
             [class.hover:bg-slate-600]="!layer.muted"
             (click)="toggleLayerMute(layer.id)"
+            [attr.aria-label]="(layer.muted ? 'Unmute ' : 'Mute ') + layer.name"
+            [attr.aria-pressed]="layer.muted"
           >
             M
           </button>
@@ -263,6 +267,7 @@
             max="100"
             step="1"
             class="w-16 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+            [attr.aria-label]="layer.name + ' volume'"
           />
 
           <!-- Delete Button -->
@@ -270,6 +275,7 @@
             type="button"
             class="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-500/20 transition-colors"
             (click)="deleteLayer(layer.id)"
+            [attr.aria-label]="'Delete ' + layer.name"
           >
             <svg
               class="w-4 h-4"
@@ -298,6 +304,7 @@
         max="100"
         step="1"
         class="flex-1 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+        aria-label="Master volume"
       />
       <span class="text-xs text-slate-400 w-8 text-right"
         >{{ masterVolume() * 100 | number: '1.0-0' }}%</span

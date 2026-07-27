@@ -2,7 +2,6 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   forwardRef,
   inject,
   input,
@@ -75,22 +74,19 @@ export class TwCheckboxComponent implements ControlValueAccessor {
 
   // Internal state
   protected readonly checked = signal(false);
+  /** Disabled state set through the forms API (setDisabledState) */
   private readonly _disabled = signal(false);
+
+  /** Effective disabled state: the `disabled` input OR the forms API state */
+  protected readonly isDisabled = computed(() => this.disabled() || this._disabled());
 
   private onChangeFn: (value: boolean) => void = () => {};
   private onTouchedFn: () => void = () => {};
 
-  // Sync disabled state from input
-  constructor() {
-    effect(() => {
-      this._disabled.set(this.disabled());
-    });
-  }
-
   protected readonly labelContainerClasses = computed(() => {
     return this.twClass.merge(
       'inline-flex items-center gap-2 cursor-pointer',
-      this._disabled() ? 'opacity-50 cursor-not-allowed' : '',
+      this.isDisabled() ? 'opacity-50 cursor-not-allowed' : '',
       this.classOverride()
     );
   });
@@ -112,12 +108,12 @@ export class TwCheckboxComponent implements ControlValueAccessor {
     return this.twClass.merge(
       'text-slate-700 dark:text-slate-300 select-none',
       CHECKBOX_SIZES[this.size()].label,
-      this._disabled() ? 'text-slate-400 dark:text-slate-500' : ''
+      this.isDisabled() ? 'text-slate-400 dark:text-slate-500' : ''
     );
   });
 
   onCheckboxChange(event: Event): void {
-    if (this._disabled() || this.readonly()) return;
+    if (this.isDisabled() || this.readonly()) return;
 
     const inputElement = event.target as HTMLInputElement;
     const isChecked = inputElement.checked;
@@ -133,8 +129,8 @@ export class TwCheckboxComponent implements ControlValueAccessor {
   }
 
   // ControlValueAccessor implementation
-  writeValue(value: boolean): void {
-    this.checked.set(value);
+  writeValue(value: boolean | null | undefined): void {
+    this.checked.set(value ?? false);
   }
 
   registerOnChange(fn: (value: boolean) => void): void {
@@ -151,7 +147,7 @@ export class TwCheckboxComponent implements ControlValueAccessor {
 
   /** Toggle the checkbox programmatically */
   toggle(): void {
-    if (!this._disabled() && !this.readonly()) {
+    if (!this.isDisabled() && !this.readonly()) {
       this.checked.set(!this.checked());
       this.onChangeFn(this.checked());
       this.onChange.emit({ checked: this.checked(), value: this.value() });

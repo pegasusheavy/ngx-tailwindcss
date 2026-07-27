@@ -1,4 +1,4 @@
-import { Component, Input, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -22,6 +22,76 @@ const COLS_CLASSES: Record<string, string> = {
   auto: 'grid-cols-[repeat(auto-fit,minmax(200px,1fr))]',
 };
 
+// Tailwind only generates classes it can see as complete literals, so each
+// responsive breakpoint needs its own lookup map (no runtime `sm:${...}`).
+const SM_COLS_CLASSES: Record<string, string> = {
+  1: 'sm:grid-cols-1',
+  2: 'sm:grid-cols-2',
+  3: 'sm:grid-cols-3',
+  4: 'sm:grid-cols-4',
+  5: 'sm:grid-cols-5',
+  6: 'sm:grid-cols-6',
+  7: 'sm:grid-cols-7',
+  8: 'sm:grid-cols-8',
+  9: 'sm:grid-cols-9',
+  10: 'sm:grid-cols-10',
+  11: 'sm:grid-cols-11',
+  12: 'sm:grid-cols-12',
+  none: 'sm:grid-cols-none',
+  auto: 'sm:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]',
+};
+
+const MD_COLS_CLASSES: Record<string, string> = {
+  1: 'md:grid-cols-1',
+  2: 'md:grid-cols-2',
+  3: 'md:grid-cols-3',
+  4: 'md:grid-cols-4',
+  5: 'md:grid-cols-5',
+  6: 'md:grid-cols-6',
+  7: 'md:grid-cols-7',
+  8: 'md:grid-cols-8',
+  9: 'md:grid-cols-9',
+  10: 'md:grid-cols-10',
+  11: 'md:grid-cols-11',
+  12: 'md:grid-cols-12',
+  none: 'md:grid-cols-none',
+  auto: 'md:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]',
+};
+
+const LG_COLS_CLASSES: Record<string, string> = {
+  1: 'lg:grid-cols-1',
+  2: 'lg:grid-cols-2',
+  3: 'lg:grid-cols-3',
+  4: 'lg:grid-cols-4',
+  5: 'lg:grid-cols-5',
+  6: 'lg:grid-cols-6',
+  7: 'lg:grid-cols-7',
+  8: 'lg:grid-cols-8',
+  9: 'lg:grid-cols-9',
+  10: 'lg:grid-cols-10',
+  11: 'lg:grid-cols-11',
+  12: 'lg:grid-cols-12',
+  none: 'lg:grid-cols-none',
+  auto: 'lg:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]',
+};
+
+const XL_COLS_CLASSES: Record<string, string> = {
+  1: 'xl:grid-cols-1',
+  2: 'xl:grid-cols-2',
+  3: 'xl:grid-cols-3',
+  4: 'xl:grid-cols-4',
+  5: 'xl:grid-cols-5',
+  6: 'xl:grid-cols-6',
+  7: 'xl:grid-cols-7',
+  8: 'xl:grid-cols-8',
+  9: 'xl:grid-cols-9',
+  10: 'xl:grid-cols-10',
+  11: 'xl:grid-cols-11',
+  12: 'xl:grid-cols-12',
+  none: 'xl:grid-cols-none',
+  auto: 'xl:grid-cols-[repeat(auto-fit,minmax(200px,1fr))]',
+};
+
 const GAP_CLASSES: Record<GridGap, string> = {
   none: 'gap-0',
   xs: 'gap-1',
@@ -30,6 +100,26 @@ const GAP_CLASSES: Record<GridGap, string> = {
   lg: 'gap-6',
   xl: 'gap-8',
   '2xl': 'gap-12',
+};
+
+const GAP_X_CLASSES: Record<GridGap, string> = {
+  none: 'gap-x-0',
+  xs: 'gap-x-1',
+  sm: 'gap-x-2',
+  md: 'gap-x-4',
+  lg: 'gap-x-6',
+  xl: 'gap-x-8',
+  '2xl': 'gap-x-12',
+};
+
+const GAP_Y_CLASSES: Record<GridGap, string> = {
+  none: 'gap-y-0',
+  xs: 'gap-y-1',
+  sm: 'gap-y-2',
+  md: 'gap-y-4',
+  lg: 'gap-y-6',
+  xl: 'gap-y-8',
+  '2xl': 'gap-y-12',
 };
 
 /**
@@ -57,11 +147,8 @@ const GAP_CLASSES: Record<GridGap, string> = {
   selector: 'tw-grid',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="gridClasses()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './grid.component.html',
   styles: [
     `
       :host {
@@ -71,29 +158,31 @@ const GAP_CLASSES: Record<GridGap, string> = {
   ],
 })
 export class TwGridComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Number of columns (base) */
-  @Input() cols: GridCols = 1;
+  readonly cols = input<GridCols>(1);
 
   /** Number of columns at sm breakpoint */
-  @Input() colsSm?: GridCols;
+  readonly colsSm = input<GridCols | undefined>(undefined);
 
   /** Number of columns at md breakpoint */
-  @Input() colsMd?: GridCols;
+  readonly colsMd = input<GridCols | undefined>(undefined);
 
   /** Number of columns at lg breakpoint */
-  @Input() colsLg?: GridCols;
+  readonly colsLg = input<GridCols | undefined>(undefined);
 
   /** Number of columns at xl breakpoint */
-  @Input() colsXl?: GridCols;
+  readonly colsXl = input<GridCols | undefined>(undefined);
 
   /** Gap between items */
-  @Input() gap: GridGap = 'md';
+  readonly gap = input<GridGap>('md');
 
   /** Row gap (if different from column gap) */
-  @Input() rowGap?: GridGap;
+  readonly rowGap = input<GridGap | undefined>(undefined);
 
   /** Column gap (if different from row gap) */
-  @Input() colGap?: GridGap;
+  readonly colGap = input<GridGap | undefined>(undefined);
 
   /**
    * Additional CSS classes. Signal input so a bound `[class]` survives Angular's
@@ -101,35 +190,38 @@ export class TwGridComponent {
    */
   readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
-
-  protected gridClasses(): string {
-    const classes = ['grid', COLS_CLASSES[this.cols.toString()]];
+  protected readonly gridClasses = computed(() => {
+    const classes = ['grid', COLS_CLASSES[this.cols().toString()]];
 
     // Responsive columns
-    if (this.colsSm) {
-      classes.push(`sm:${COLS_CLASSES[this.colsSm.toString()]}`);
+    const colsSm = this.colsSm();
+    if (colsSm) {
+      classes.push(SM_COLS_CLASSES[colsSm.toString()]);
     }
-    if (this.colsMd) {
-      classes.push(`md:${COLS_CLASSES[this.colsMd.toString()]}`);
+    const colsMd = this.colsMd();
+    if (colsMd) {
+      classes.push(MD_COLS_CLASSES[colsMd.toString()]);
     }
-    if (this.colsLg) {
-      classes.push(`lg:${COLS_CLASSES[this.colsLg.toString()]}`);
+    const colsLg = this.colsLg();
+    if (colsLg) {
+      classes.push(LG_COLS_CLASSES[colsLg.toString()]);
     }
-    if (this.colsXl) {
-      classes.push(`xl:${COLS_CLASSES[this.colsXl.toString()]}`);
+    const colsXl = this.colsXl();
+    if (colsXl) {
+      classes.push(XL_COLS_CLASSES[colsXl.toString()]);
     }
 
     // Gap handling
-    if (this.rowGap && this.colGap) {
-      classes.push(GAP_CLASSES[this.rowGap].replace('gap-', 'gap-y-'));
-      classes.push(GAP_CLASSES[this.colGap].replace('gap-', 'gap-x-'));
+    const rowGap = this.rowGap();
+    const colGap = this.colGap();
+    if (rowGap && colGap) {
+      classes.push(GAP_Y_CLASSES[rowGap], GAP_X_CLASSES[colGap]);
     } else {
-      classes.push(GAP_CLASSES[this.gap]);
+      classes.push(GAP_CLASSES[this.gap()]);
     }
 
     return this.twClass.merge(...classes, this.class());
-  }
+  });
 }
 
 /**
@@ -148,11 +240,8 @@ export class TwGridComponent {
   selector: 'tw-simple-grid',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="gridClasses()" [style.gridTemplateColumns]="gridTemplateColumns()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './simple-grid.component.html',
   styles: [
     `
       :host {
@@ -162,11 +251,13 @@ export class TwGridComponent {
   ],
 })
 export class TwSimpleGridComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Minimum width of each child (e.g., '200px', '15rem') */
-  @Input() minChildWidth = '200px';
+  readonly minChildWidth = input('200px');
 
   /** Gap between items */
-  @Input() gap: GridGap = 'md';
+  readonly gap = input<GridGap>('md');
 
   /**
    * Additional CSS classes. Signal input so a bound `[class]` survives Angular's
@@ -174,13 +265,11 @@ export class TwSimpleGridComponent {
    */
   readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
+  protected readonly gridClasses = computed(() => {
+    return this.twClass.merge('grid', GAP_CLASSES[this.gap()], this.class());
+  });
 
-  protected gridClasses(): string {
-    return this.twClass.merge('grid', GAP_CLASSES[this.gap], this.class());
-  }
-
-  protected gridTemplateColumns(): string {
-    return `repeat(auto-fit, minmax(${this.minChildWidth}, 1fr))`;
-  }
+  protected readonly gridTemplateColumns = computed(() => {
+    return `repeat(auto-fit, minmax(${this.minChildWidth()}, 1fr))`;
+  });
 }

@@ -83,16 +83,25 @@ export class TwTimelineComponent {
     );
   });
 
-  protected itemClasses(isFirst: boolean, isLast: boolean) {
+  /** Effective alignment for an item; 'alternate' resolves per index (even left, odd right) */
+  protected effectiveAlign(index: number): 'left' | 'right' {
+    const align = this.align();
+    if (align === 'alternate') {
+      return index % 2 === 0 ? 'left' : 'right';
+    }
+    return align;
+  }
+
+  protected itemClasses(index: number, isFirst: boolean, isLast: boolean) {
     return this.twClass.merge(
       'relative flex gap-4',
       this.layout() === 'horizontal' ? 'flex-col flex-1' : '',
-      this.align() === 'right' ? 'flex-row-reverse' : '',
+      this.effectiveAlign(index) === 'right' ? 'flex-row-reverse' : '',
       isLast ? '' : 'pb-8'
     );
   }
 
-  protected connectorClasses() {
+  protected connectorClasses(index: number) {
     if (this.layout() === 'horizontal') {
       return this.twClass.merge(
         'absolute top-4 left-full w-full h-0.5 bg-slate-300',
@@ -133,7 +142,9 @@ export class TwTimelineComponent {
     return this.twClass.merge(
       'absolute w-0.5 bg-slate-300 bottom-0',
       topPosition[this.markerSize()],
-      this.align() === 'right' ? rightPosition[this.markerSize()] : leftPosition[this.markerSize()]
+      this.effectiveAlign(index) === 'right'
+        ? rightPosition[this.markerSize()]
+        : leftPosition[this.markerSize()]
     );
   }
 
@@ -161,8 +172,11 @@ export class TwTimelineComponent {
     );
   }
 
-  protected contentClasses() {
-    return this.twClass.merge('flex-1 min-w-0', this.align() === 'right' ? 'text-right' : '');
+  protected contentClasses(index: number) {
+    return this.twClass.merge(
+      'flex-1 min-w-0',
+      this.effectiveAlign(index) === 'right' ? 'text-right' : ''
+    );
   }
 
   protected dateClasses() {

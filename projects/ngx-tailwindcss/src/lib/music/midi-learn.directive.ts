@@ -1,4 +1,5 @@
 import {
+  computed,
   Directive,
   ElementRef,
   HostListener,
@@ -72,8 +73,12 @@ export class TwMidiLearnDirective implements OnInit, OnDestroy {
   /** Pre-configured CC number (skip learn mode) */
   readonly midiCC = input<number | null>(null);
 
-  /** Enable right-click to start MIDI Learn */
-  readonly enableContextMenuLearn = input(true);
+  /**
+   * Enable right-click to start MIDI Learn.
+   * Off by default so that merely applying the directive does not suppress
+   * the browser context menu; set to `true` to opt in.
+   */
+  readonly enableContextMenuLearn = input(false);
 
   /** Emitted when a MIDI value is received for this control */
   readonly midiValueChange = output<CCValueChangeEvent>();
@@ -143,7 +148,7 @@ export class TwMidiLearnDirective implements OnInit, OnDestroy {
       // Pre-register with our configuration (CC will be learned)
       this.midiService.addCCMapping({
         id: this.twMidiLearn(),
-        ccNumber: 0, // Will be updated when learned
+        ccNumber: -1, // Sentinel: not learned yet (0 is a real CC — Bank Select)
         channel: this.midiChannel(),
         minValue: this.midiMinValue(),
         maxValue: this.midiMaxValue(),
@@ -164,19 +169,21 @@ export class TwMidiLearnDirective implements OnInit, OnDestroy {
   }
 
   /**
-   * Check if MIDI Learn is active for this control
+   * Whether MIDI Learn is active for this control
+   * (computed so the host class bindings only re-evaluate on signal changes)
    */
-  isLearning(): boolean {
+  readonly isLearning = computed(() => {
     const learnState = this.midiService.learnState();
     return learnState.active && learnState.targetId === this.twMidiLearn();
-  }
+  });
 
   /**
-   * Check if this control has a MIDI mapping
+   * Whether this control has a MIDI mapping
+   * (computed so the host class bindings only re-evaluate on signal changes)
    */
-  isMapped(): boolean {
-    return this.midiService.getCCMapping(this.twMidiLearn()) !== undefined;
-  }
+  readonly isMapped = computed(
+    () => this.midiService.getCCMapping(this.twMidiLearn()) !== undefined
+  );
 
   /**
    * Get the current mapping

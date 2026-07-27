@@ -94,6 +94,48 @@ describe('TwToastService', () => {
       expect(service.toasts().length).toBe(1);
       vi.useRealTimers();
     });
+
+    it('should cancel the auto-dismiss timer when dismissed early', () => {
+      vi.useFakeTimers();
+      const id = service.show({ message: 'Test toast', duration: 1000 });
+      service.dismiss(id);
+      expect(vi.getTimerCount()).toBe(0);
+      vi.useRealTimers();
+    });
+
+    it('should cancel all timers on dismissAll', () => {
+      vi.useFakeTimers();
+      service.show({ message: 'Toast 1', duration: 1000 });
+      service.show({ message: 'Toast 2', duration: 2000 });
+      service.dismissAll();
+      expect(vi.getTimerCount()).toBe(0);
+      expect(service.toasts().length).toBe(0);
+      vi.useRealTimers();
+    });
+  });
+
+  describe('maxToasts cap', () => {
+    it('should evict the oldest toast beyond the default cap of 10', () => {
+      for (let i = 0; i < 12; i++) {
+        service.show({ message: `Toast ${i}`, duration: 0 });
+      }
+      expect(service.toasts().length).toBe(10);
+      expect(service.toasts()[0].message).toBe('Toast 2');
+      expect(service.toasts()[9].message).toBe('Toast 11');
+    });
+
+    it('should respect a custom cap and cancel evicted timers', () => {
+      vi.useFakeTimers();
+      service.setMaxToasts(2);
+      service.show({ message: 'Toast 1', duration: 1000 });
+      service.show({ message: 'Toast 2', duration: 1000 });
+      service.show({ message: 'Toast 3', duration: 1000 });
+
+      expect(service.toasts().length).toBe(2);
+      expect(service.toasts().map(t => t.message)).toEqual(['Toast 2', 'Toast 3']);
+      expect(vi.getTimerCount()).toBe(2);
+      vi.useRealTimers();
+    });
   });
 
   describe('convenience methods', () => {
@@ -271,6 +313,32 @@ describe('TwToastComponent', () => {
     expect(toastEl.querySelector('[class*="rounded-xl"]')).toBeTruthy();
     expect(toastEl.querySelector('[class*="shadow-lg"]')).toBeTruthy();
   });
+
+  describe('accessibility', () => {
+    it('should use role="status" for non-urgent variants', () => {
+      expect(toastEl.querySelector('[role="status"]')).toBeTruthy();
+      expect(toastEl.querySelector('[role="alert"]')).toBeNull();
+
+      component.variant.set('success');
+      fixture.detectChanges();
+      expect(toastEl.querySelector('[role="status"]')).toBeTruthy();
+    });
+
+    it('should use role="alert" for danger and warning variants', () => {
+      component.variant.set('danger');
+      fixture.detectChanges();
+      expect(toastEl.querySelector('[role="alert"]')).toBeTruthy();
+
+      component.variant.set('warning');
+      fixture.detectChanges();
+      expect(toastEl.querySelector('[role="alert"]')).toBeTruthy();
+    });
+
+    it('should label the dismiss button', () => {
+      const dismissBtn = toastEl.querySelector('button[aria-label="Dismiss notification"]');
+      expect(dismissBtn).toBeTruthy();
+    });
+  });
 });
 
 describe('TwToastContainerComponent', () => {
@@ -301,6 +369,22 @@ describe('TwToastContainerComponent', () => {
 
     const toasts = fixture.debugElement.queryAll(By.directive(TwToastComponent));
     expect(toasts.length).toBe(2);
+  });
+
+  it('should be a polite non-atomic live region', () => {
+    const container = fixture.debugElement.query(By.css('[class*="fixed"]'));
+    expect(container.nativeElement.getAttribute('aria-live')).toBe('polite');
+    expect(container.nativeElement.getAttribute('aria-atomic')).toBe('false');
+  });
+
+  it('should reuse the same dismiss closure per toast id', () => {
+    const id = service.show({ message: 'Toast 1' });
+    const first = component.getDismissFunction(id);
+    const second = component.getDismissFunction(id);
+    expect(first).toBe(second);
+
+    first();
+    expect(service.toasts().length).toBe(0);
   });
 
   describe('position classes', () => {

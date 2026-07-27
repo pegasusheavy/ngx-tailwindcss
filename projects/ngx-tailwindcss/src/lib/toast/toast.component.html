@@ -1,4 +1,4 @@
-<div [class]="toastClasses()" role="alert">
+<div [class]="toastClasses()" [attr.role]="roleValue()">
   <div class="flex items-start gap-3">
     <!-- Icon -->
     <div [class]="iconClasses()">
@@ -79,6 +79,7 @@
     @if (dismissibleValue()) {
       <button
         type="button"
+        aria-label="Dismiss notification"
         class="flex-shrink-0 p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
         (click)="onDismiss()"
       >

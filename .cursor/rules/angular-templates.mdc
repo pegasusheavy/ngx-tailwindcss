@@ -4,6 +4,10 @@
 
 All Angular component templates MUST be in separate `.html` files, not inline in the TypeScript file.
 
+## Exemption
+
+Test-host components declared inside `*.spec.ts` files are exempt and may use inline template strings.
+
 ## Requirements
 
 1. **Use `templateUrl` instead of `template`**

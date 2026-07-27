@@ -25,8 +25,9 @@ import {
   TwPianoChordComponent,
   TwStaffComponent,
   TwLooperComponent,
+  TwButtonComponent,
   NoteEvent,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -58,6 +59,7 @@ import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-
     TwPianoChordComponent,
     TwStaffComponent,
     TwLooperComponent,
+    TwButtonComponent,
     DemoSectionComponent,
     PageHeaderComponent,
   ],
@@ -75,10 +77,9 @@ export class MusicDemoComponent implements OnInit, OnDestroy {
 
   // VU Meter state
   @ViewChild('vuMeter') vuMeter?: TwVuMeterComponent;
-  meterValue = signal(0);
   leftChannel = signal(0);
   rightChannel = signal(0);
-  private meterInterval?: ReturnType<typeof setInterval>;
+  private simulationInterval?: ReturnType<typeof setInterval>;
 
   // Waveform state
   waveformProgress = 0;
@@ -95,17 +96,12 @@ export class MusicDemoComponent implements OnInit, OnDestroy {
 
   // Spectrum state
   spectrumData: number[] = [];
-  private spectrumInterval?: ReturnType<typeof setInterval>;
 
   // Piano state
   lastNote = signal<string>('');
 
   // Metronome state
   bpm = 120;
-  metronomeRunning = false;
-
-  // EQ state
-  eqBands = [0, 2, 4, 2, 0, -2, 0, 2, 4, 2];
 
   // Compressor state
   gainReduction = signal(-6);
@@ -115,33 +111,29 @@ export class MusicDemoComponent implements OnInit, OnDestroy {
   // Note display state
   currentNote = 'A';
   currentOctave = 4;
-  currentCents = -5;
 
   // BPM state
   currentBpm = signal(128);
 
-  // Oscilloscope data
-  oscilloscopeData: number[] = [];
+  // Oscilloscope signal source
+  oscilloscopeAnalyser = signal<AnalyserNode | undefined>(undefined);
+  private oscilloscopeContext?: AudioContext;
+  private oscillator?: OscillatorNode;
 
   constructor() {
     this.generateSamplePeaks();
     this.generateSpectrumData();
-    this.generateOscilloscopeData();
   }
 
   ngOnInit(): void {
-    this.startMeterSimulation();
-    this.startSpectrumSimulation();
-    this.startCompressorSimulation();
+    this.startSimulation();
   }
 
   ngOnDestroy(): void {
-    if (this.meterInterval) {
-      clearInterval(this.meterInterval);
+    if (this.simulationInterval) {
+      clearInterval(this.simulationInterval);
     }
-    if (this.spectrumInterval) {
-      clearInterval(this.spectrumInterval);
-    }
+    this.stopOscilloscopeSignal();
   }
 
   private generateSamplePeaks(): void {
@@ -161,50 +153,58 @@ export class MusicDemoComponent implements OnInit, OnDestroy {
     }
   }
 
-  private generateOscilloscopeData(): void {
-    this.oscilloscopeData = [];
-    for (let i = 0; i < 256; i++) {
-      // Generate a sine wave with some noise
-      const value = 128 + Math.sin(i / 10) * 60 + (Math.random() - 0.5) * 20;
-      this.oscilloscopeData.push(Math.max(0, Math.min(255, value)));
-    }
-  }
-
-  private startMeterSimulation(): void {
-    this.meterInterval = setInterval(() => {
+  private startSimulation(): void {
+    this.simulationInterval = setInterval(() => {
+      // VU meter levels
       const baseLevel = 50 + Math.sin(Date.now() / 500) * 20;
       const leftNoise = Math.random() * 30;
       const rightNoise = Math.random() * 30;
 
       this.leftChannel.set(Math.min(100, baseLevel + leftNoise));
       this.rightChannel.set(Math.min(100, baseLevel + rightNoise - 5));
-      this.meterValue.set(Math.min(100, baseLevel + (leftNoise + rightNoise) / 2));
 
       if (this.vuMeter) {
         this.vuMeter.setValues(this.leftChannel(), this.rightChannel());
       }
 
-      // Update oscilloscope
-      this.generateOscilloscopeData();
-    }, 50);
-  }
-
-  private startSpectrumSimulation(): void {
-    this.spectrumInterval = setInterval(() => {
+      // Spectrum bars
       this.spectrumData = this.spectrumData.map((val) => {
         const change = (Math.random() - 0.5) * 40;
         const decay = val > 100 ? -10 : 5;
         return Math.max(20, Math.min(255, val + change + decay));
       });
-    }, 50);
-  }
 
-  private startCompressorSimulation(): void {
-    setInterval(() => {
+      // Compressor levels
       this.gainReduction.set(-Math.random() * 12);
       this.inputLevel.set(-6 - Math.random() * 12);
       this.outputLevel.set(-12 - Math.random() * 12);
     }, 100);
+  }
+
+  toggleOscilloscopeSignal(): void {
+    if (this.oscilloscopeAnalyser()) {
+      this.stopOscilloscopeSignal();
+      return;
+    }
+
+    // Silent signal graph: oscillator -> analyser (never routed to speakers)
+    this.oscilloscopeContext = new AudioContext();
+    const analyser = this.oscilloscopeContext.createAnalyser();
+    this.oscillator = this.oscilloscopeContext.createOscillator();
+    this.oscillator.type = 'sine';
+    this.oscillator.frequency.value = 220;
+    this.oscillator.connect(analyser);
+    this.oscillator.start();
+    this.oscilloscopeAnalyser.set(analyser);
+  }
+
+  private stopOscilloscopeSignal(): void {
+    this.oscillator?.stop();
+    this.oscillator?.disconnect();
+    this.oscillator = undefined;
+    void this.oscilloscopeContext?.close();
+    this.oscilloscopeContext = undefined;
+    this.oscilloscopeAnalyser.set(undefined);
   }
 
   onSeek(position: number): void {
@@ -242,10 +242,6 @@ export class MusicDemoComponent implements OnInit, OnDestroy {
 
   onBpmChange(bpm: number): void {
     this.currentBpm.set(bpm);
-  }
-
-  onMetronomeTick(): void {
-    // Handle tick
   }
 
   // Code examples
@@ -294,33 +290,38 @@ export class MusicDemoComponent implements OnInit, OnDestroy {
   panControlCode = `<tw-pan-control [(ngModel)]="pan" variant="knob"></tw-pan-control>
 <tw-pan-control [(ngModel)]="pan" variant="slider"></tw-pan-control>`;
 
-  oscilloscopeCode = `<tw-oscilloscope [timeDomainData]="waveformData" variant="classic"></tw-oscilloscope>`;
+  oscilloscopeCode = `<!-- analyser: AnalyserNode fed by your audio graph -->
+<tw-oscilloscope [analyserNode]="analyser" variant="retro" [width]="280" [height]="120"></tw-oscilloscope>
+<tw-oscilloscope [analyserNode]="analyser" variant="neon" [width]="280" [height]="120"></tw-oscilloscope>`;
 
-  metronomeCode = `<tw-metronome [bpm]="120" [running]="true" (tick)="onTick()"></tw-metronome>`;
+  metronomeCode = `<tw-metronome [bpm]="bpm" variant="digital"></tw-metronome>
+<tw-metronome [bpm]="bpm" variant="pendulum"></tw-metronome>`;
 
-  channelStripCode = `<tw-channel-strip label="CH 1" [(volume)]="volume" [(pan)]="pan"></tw-channel-strip>`;
+  channelStripCode = `<tw-channel-strip label="CH 1" [channelNumber]="1"></tw-channel-strip>`;
 
   mixerCode = `<tw-mixer [channels]="channels" (channelChange)="onChannelChange($event)"></tw-mixer>`;
 
   visualizerCode = `<tw-visualizer [analyserNode]="analyser" variant="circular"></tw-visualizer>`;
 
-  tunerCode = `<tw-tuner [frequency]="440" [targetNote]="'A'" [cents]="0"></tw-tuner>`;
+  tunerCode = `<tw-tuner [referenceFrequency]="440" [showFrequency]="true" [showCents]="true" [showMeter]="true"></tw-tuner>`;
 
-  noteDisplayCode = `<tw-note-display [note]="'A'" [octave]="4" [cents]="-5"></tw-note-display>`;
+  noteDisplayCode = `<tw-note-display [noteName]="currentNote" [octave]="currentOctave" [showCents]="true"></tw-note-display>
+<tw-note-display [noteName]="currentNote" [octave]="currentOctave" variant="led" [showOctave]="true"></tw-note-display>`;
 
   bpmDisplayCode = `<tw-bpm-display [(bpm)]="bpm" [showTapTempo]="true"></tw-bpm-display>`;
 
   compressorCode = `<tw-compressor-meter [gainReduction]="-6" [threshold]="-18"></tw-compressor-meter>`;
 
-  chordDiagramCode = `<tw-chord-diagram chord="C" variant="guitar"></tw-chord-diagram>`;
+  chordDiagramCode = `<tw-chord-diagram chord="C"></tw-chord-diagram>
+<tw-chord-diagram chord="Am" variant="detailed"></tw-chord-diagram>`;
 
   pianoChordCode = `<tw-piano-chord chord="C"></tw-piano-chord>`;
 
-  graphicEqCode = `<tw-graphic-eq [bands]="10" [(values)]="eqBands"></tw-graphic-eq>`;
+  graphicEqCode = `<tw-graphic-eq [bandCount]="10" [sliderHeight]="200"></tw-graphic-eq>`;
 
   parametricEqCode = `<tw-parametric-eq [bands]="bands" (bandChange)="onBandChange($event)"></tw-parametric-eq>`;
 
   staffCode = `<tw-staff [clef]="'treble'" [keySignature]="'C'" [timeSignature]="'4/4'"></tw-staff>`;
 
-  looperCode = `<tw-looper [maxLayers]="4" (record)="onRecord()" (play)="onPlay()"></tw-looper>`;
+  looperCode = `<tw-looper [maxLayers]="4"></tw-looper>`;
 }

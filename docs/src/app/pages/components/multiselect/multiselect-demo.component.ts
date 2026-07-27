@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TwMultiSelectComponent, MultiSelectGroup } from '@pegasusheavy/ngx-tailwindcss';
+import { TwMultiSelectComponent, MultiSelectGroup } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -164,5 +164,17 @@ countryGroups: MultiSelectGroup[] = [
   { label: 'Available', value: 'a' },
   { label: 'Disabled', value: 'b', disabled: true },
 ]"></tw-multiselect>`;
+
+  featuresCode = `<!-- With select all -->
+<tw-multiselect [options]="options" [showSelectAll]="true"></tw-multiselect>
+
+<!-- Without checkboxes -->
+<tw-multiselect [options]="options" [showCheckbox]="false"></tw-multiselect>
+
+<!-- Without select all -->
+<tw-multiselect [options]="options" [showSelectAll]="false"></tw-multiselect>
+
+<!-- With label -->
+<tw-multiselect [options]="options" label="Favorite Fruits"></tw-multiselect>`;
 }
 

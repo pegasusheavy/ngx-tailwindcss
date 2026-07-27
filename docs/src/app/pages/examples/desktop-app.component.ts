@@ -61,7 +61,7 @@ import {
   TwDropdownMenuComponent,
   TwDropdownItemDirective,
   TwModalComponent,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface FileItem {

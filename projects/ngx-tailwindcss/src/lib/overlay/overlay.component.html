@@ -1,0 +1,12 @@
+@if (visible()) {
+  <div
+    [class]="overlayClasses()"
+    [style.zIndex]="zIndex()"
+    (click)="onOverlayClick($event)"
+    [@.disabled]="!animate()"
+  >
+    <div class="relative z-10" (click)="$event.stopPropagation()">
+      <ng-content></ng-content>
+    </div>
+  </div>
+}

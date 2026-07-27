@@ -157,6 +157,54 @@ describe('TwStepsComponent', () => {
       component.stepsComponent.goTo(10);
       expect(component.onActiveIndexChangeSpy).not.toHaveBeenCalled();
     });
+
+    it('should update the activeIndex model itself via next()', () => {
+      component.stepsComponent.next();
+      fixture.detectChanges();
+      expect(component.stepsComponent.activeIndex()).toBe(1);
+      expect(component.stepsComponent.getStepStatus(0)).toBe('complete');
+    });
+
+    it('should update the activeIndex model itself via goTo()', () => {
+      component.stepsComponent.goTo(2);
+      fixture.detectChanges();
+      expect(component.stepsComponent.activeIndex()).toBe(2);
+    });
+
+    it('should update the activeIndex model when clicking a previous step', () => {
+      component.activeIndex.set(2);
+      fixture.detectChanges();
+      component.stepsComponent.onStepClick(0);
+      fixture.detectChanges();
+      expect(component.stepsComponent.activeIndex()).toBe(0);
+      expect(component.onActiveIndexChangeSpy).toHaveBeenCalledWith(0);
+    });
+  });
+
+  describe('accessibility', () => {
+    it('should render steps as buttons', () => {
+      const buttons = stepsEl.queryAll(By.css('button[type="button"]'));
+      expect(buttons.length).toBe(component.steps().length);
+    });
+
+    it('should mark the active step with aria-current="step"', () => {
+      const buttons = stepsEl.queryAll(By.css('button[type="button"]'));
+      expect(buttons[0].nativeElement.getAttribute('aria-current')).toBe('step');
+      expect(buttons[1].nativeElement.getAttribute('aria-current')).toBeNull();
+    });
+
+    it('should disable non-clickable future steps in linear mode', () => {
+      const buttons = stepsEl.queryAll(By.css('button[type="button"]'));
+      expect(buttons[0].nativeElement.disabled).toBe(false);
+      expect(buttons[2].nativeElement.disabled).toBe(true);
+    });
+
+    it('should disable all steps in readonly mode', () => {
+      component.readonly.set(true);
+      fixture.detectChanges();
+      const buttons = stepsEl.queryAll(By.css('button[type="button"]'));
+      expect(buttons.every(b => b.nativeElement.disabled)).toBe(true);
+    });
   });
 
   describe('orientation', () => {

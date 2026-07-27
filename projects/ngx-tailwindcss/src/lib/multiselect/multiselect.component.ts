@@ -4,14 +4,14 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   ElementRef,
-  EventEmitter,
   forwardRef,
   HostListener,
   inject,
-  Input,
+  input,
   OnDestroy,
-  Output,
+  output,
   PLATFORM_ID,
   signal,
   ViewChild,
@@ -69,51 +69,52 @@ const MULTISELECT_SIZES: Record<MultiSelectSize, { trigger: string; text: string
 })
 export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, AfterViewInit {
   @ViewChild('triggerButton') triggerButton!: ElementRef<HTMLButtonElement>;
+  @ViewChild('filterInput') filterInput?: ElementRef<HTMLInputElement>;
 
   /** Options to display (flat list) */
-  @Input() options: MultiSelectOption[] = [];
+  readonly options = input<MultiSelectOption[]>([]);
 
   /** Grouped options to display */
-  @Input() groups: MultiSelectGroup[] = [];
+  readonly groups = input<MultiSelectGroup[]>([]);
 
   /** Placeholder text */
-  @Input() placeholder = 'Select options';
+  readonly placeholder = input('Select options');
 
   /** Label text */
-  @Input() label = '';
+  readonly label = input('');
 
   /** Enable search/filter */
-  @Input({ transform: booleanAttribute }) filter = false;
+  readonly filter = input(false, { transform: booleanAttribute });
 
   /** Size variant */
-  @Input() size: MultiSelectSize = 'md';
+  readonly size = input<MultiSelectSize>('md');
 
   /** Visual variant */
-  @Input() variant: MultiSelectVariant = 'default';
+  readonly variant = input<MultiSelectVariant>('default');
 
   /** Where to append dropdown */
-  @Input() appendTo: MultiSelectAppendTo = 'self';
+  readonly appendTo = input<MultiSelectAppendTo>('self');
 
   /** Disabled state */
-  @Input({ transform: booleanAttribute }) disabled = false;
+  readonly disabled = input(false, { transform: booleanAttribute });
 
   /** Show checkboxes */
-  @Input({ transform: booleanAttribute }) showCheckbox = true;
+  readonly showCheckbox = input(true, { transform: booleanAttribute });
 
   /** Show select all option */
-  @Input({ transform: booleanAttribute }) showSelectAll = true;
+  readonly showSelectAll = input(true, { transform: booleanAttribute });
 
   /** Maximum number of selections allowed (0 = unlimited) */
-  @Input() maxSelections = 0;
+  readonly maxSelections = input(0);
 
   /** Custom class for dropdown */
-  @Input() dropdownClass = '';
+  readonly dropdownClass = input('');
 
   /** Custom class for trigger button */
-  @Input() triggerClass = '';
+  readonly triggerClass = input('');
 
   /** Selection change event */
-  @Output() selectionChange = new EventEmitter<unknown[]>();
+  readonly selectionChange = output<unknown[]>();
 
   protected readonly twClass = inject(TwClassService);
   protected readonly elementRef = inject(ElementRef);
@@ -124,17 +125,54 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
   protected filterValue = signal('');
   protected selectedValues = signal<Set<unknown>>(new Set());
   protected dropdownPosition = signal<{ top: number; left: number; width: number } | null>(null);
+  protected readonly _disabled = signal(false);
+  protected activeIndex = signal(-1);
+
+  protected readonly listboxId = `tw-multiselect-listbox-${Math.random().toString(36).slice(2, 9)}`;
 
   private onChangeFn: (value: unknown[]) => void = () => {};
   private onTouchedFn: () => void = () => {};
   private clickListener: ((event: MouseEvent) => void) | null = null;
   private resizeListener: (() => void) | null = null;
+  private scrollListener: (() => void) | null = null;
+
+  constructor() {
+    // Keep the CVA-driven disabled state in sync with the input binding
+    effect(() => {
+      this._disabled.set(this.disabled());
+    });
+  }
 
   protected allOptions = computed(() => {
-    if (this.groups.length > 0) {
-      return this.groups.flatMap(g => g.options);
+    const groups = this.groups();
+    if (groups.length > 0) {
+      return groups.flatMap(g => g.options);
     }
-    return this.options;
+    return this.options();
+  });
+
+  protected enabledOptions = computed(() => this.allOptions().filter(opt => !opt.disabled));
+
+  /**
+   * The number of enabled options a "Select All" can effectively reach,
+   * capped by maxSelections when set.
+   */
+  protected selectAllTarget = computed(() => {
+    const enabledCount = this.enabledOptions().length;
+    const max = this.maxSelections();
+    return max > 0 ? Math.min(max, enabledCount) : enabledCount;
+  });
+
+  /** Select All cannot select everything when maxSelections is lower than the option count */
+  protected selectAllLimited = computed(() => {
+    const max = this.maxSelections();
+    return max > 0 && max < this.enabledOptions().length;
+  });
+
+  /** Number of currently selected enabled options (ignores disabled pre-selected values) */
+  protected selectedEnabledCount = computed(() => {
+    const selected = this.selectedValues();
+    return this.enabledOptions().filter(opt => selected.has(opt.value)).length;
   });
 
   protected selectedOptions = computed(() => {
@@ -144,16 +182,17 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
 
   protected displayText = computed(() => {
     const selected = this.selectedOptions();
-    if (selected.length === 0) return this.placeholder;
+    if (selected.length === 0) return this.placeholder();
     if (selected.length === 1) return selected[0].label;
     return `${selected.length} selected`;
   });
 
   protected filteredGroups = computed(() => {
+    const groups = this.groups();
     const filter = this.filterValue().toLowerCase();
-    if (!filter) return this.groups;
+    if (!filter) return groups;
 
-    return this.groups
+    return groups
       .map(group => ({
         ...group,
         options: group.options.filter(opt => opt.label.toLowerCase().includes(filter)),
@@ -162,15 +201,30 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
   });
 
   protected filteredOptions = computed(() => {
+    const options = this.options();
     const filter = this.filterValue().toLowerCase();
-    if (!filter) return this.options;
+    if (!filter) return options;
 
-    return this.options.filter(opt => opt.label.toLowerCase().includes(filter));
+    return options.filter(opt => opt.label.toLowerCase().includes(filter));
+  });
+
+  /** Currently visible options in display order (flattened across groups) */
+  protected visibleOptions = computed(() => {
+    if (this.groups().length > 0) {
+      return this.filteredGroups().flatMap(g => g.options);
+    }
+    return this.filteredOptions();
+  });
+
+  protected activeOptionId = computed(() => {
+    const index = this.activeIndex();
+    if (index < 0 || index >= this.visibleOptions().length) return null;
+    return `${this.listboxId}-option-${index}`;
   });
 
   protected triggerClasses = computed(() => {
-    const sizeClasses = MULTISELECT_SIZES[this.size].trigger;
-    const textClasses = MULTISELECT_SIZES[this.size].text;
+    const sizeClasses = MULTISELECT_SIZES[this.size()].trigger;
+    const textClasses = MULTISELECT_SIZES[this.size()].text;
 
     const baseClasses = [
       'flex items-center justify-between w-full rounded-md border transition-colors',
@@ -178,11 +232,11 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
       sizeClasses,
     ];
 
-    if (this.disabled) {
+    if (this._disabled()) {
       baseClasses.push(
         'bg-slate-100 dark:bg-slate-900 text-slate-400 dark:text-slate-500 cursor-not-allowed border-slate-300 dark:border-slate-700'
       );
-    } else if (this.variant === 'filled') {
+    } else if (this.variant() === 'filled') {
       baseClasses.push(
         'bg-slate-100 dark:bg-slate-700 border-slate-100 dark:border-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 focus:bg-white dark:focus:bg-slate-800 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20'
       );
@@ -192,7 +246,7 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
       );
     }
 
-    return this.twClass.merge(baseClasses.join(' '), this.triggerClass);
+    return this.twClass.merge(baseClasses.join(' '), this.triggerClass());
   });
 
   protected dropdownClasses = computed(() => {
@@ -201,7 +255,7 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
       'focus:outline-none',
     ];
 
-    return this.twClass.merge(baseClasses.join(' '), this.dropdownClass);
+    return this.twClass.merge(baseClasses.join(' '), this.dropdownClass());
   });
 
   ngAfterViewInit(): void {
@@ -210,11 +264,19 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
       this.document.addEventListener('click', this.clickListener);
 
       this.resizeListener = () => {
-        if (this.isOpen() && this.appendTo === 'body') {
+        if (this.isOpen() && this.appendTo() === 'body') {
           this.updateDropdownPosition();
         }
       };
       window.addEventListener('resize', this.resizeListener);
+
+      this.scrollListener = () => {
+        if (this.isOpen() && this.appendTo() === 'body') {
+          this.updateDropdownPosition();
+        }
+      };
+      // Capture so scrolls inside nested containers reposition the panel too
+      window.addEventListener('scroll', this.scrollListener, true);
     }
   }
 
@@ -224,6 +286,9 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
     }
     if (this.resizeListener) {
       window.removeEventListener('resize', this.resizeListener);
+    }
+    if (this.scrollListener) {
+      window.removeEventListener('scroll', this.scrollListener, true);
     }
   }
 
@@ -245,11 +310,11 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
   }
 
   setDisabledState(isDisabled: boolean): void {
-    this.disabled = isDisabled;
+    this._disabled.set(isDisabled);
   }
 
   toggleDropdown(): void {
-    if (this.disabled) return;
+    if (this._disabled()) return;
 
     if (this.isOpen()) {
       this.closeDropdown();
@@ -259,20 +324,31 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
   }
 
   openDropdown(): void {
+    // Position synchronously so the panel never paints unpositioned
+    if (this.appendTo() === 'body') {
+      this.updateDropdownPosition();
+    }
+
     this.isOpen.set(true);
+    this.activeIndex.set(-1);
     this.onTouchedFn();
 
-    if (this.appendTo === 'body') {
+    if (this.filter() && isPlatformBrowser(this.platformId)) {
       setTimeout(() => {
-        this.updateDropdownPosition();
+        this.filterInput?.nativeElement?.focus();
       }, 0);
     }
   }
 
-  closeDropdown(): void {
+  closeDropdown(returnFocus = false): void {
     this.isOpen.set(false);
     this.filterValue.set('');
     this.dropdownPosition.set(null);
+    this.activeIndex.set(-1);
+
+    if (returnFocus) {
+      this.triggerButton?.nativeElement?.focus();
+    }
   }
 
   toggleOption(option: MultiSelectOption): void {
@@ -283,7 +359,7 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
     if (selected.has(option.value)) {
       selected.delete(option.value);
     } else {
-      if (this.maxSelections > 0 && selected.size >= this.maxSelections) {
+      if (this.maxSelections() > 0 && selected.size >= this.maxSelections()) {
         return; // Max selections reached
       }
       selected.add(option.value);
@@ -296,18 +372,17 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
   }
 
   toggleSelectAll(): void {
-    const allOptions = this.allOptions().filter(opt => !opt.disabled);
-    const selected = this.selectedValues();
+    const enabledOptions = this.enabledOptions();
 
-    if (selected.size === allOptions.length) {
+    if (this.selectedEnabledCount() >= this.selectAllTarget()) {
       // Deselect all
       this.selectedValues.set(new Set());
       this.onChangeFn([]);
       this.selectionChange.emit([]);
     } else {
       // Select all (respecting max selections)
-      const toSelect =
-        this.maxSelections > 0 ? allOptions.slice(0, this.maxSelections) : allOptions;
+      const max = this.maxSelections();
+      const toSelect = max > 0 ? enabledOptions.slice(0, max) : enabledOptions;
       const values = toSelect.map(opt => opt.value);
       this.selectedValues.set(new Set(values));
       this.onChangeFn(values);
@@ -320,13 +395,23 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
   }
 
   isAllSelected(): boolean {
-    const allOptions = this.allOptions().filter(opt => !opt.disabled);
-    return allOptions.length > 0 && this.selectedValues().size === allOptions.length;
+    const target = this.selectAllTarget();
+    return target > 0 && this.selectedEnabledCount() >= target;
   }
 
   isSomeSelected(): boolean {
-    const { size } = this.selectedValues();
-    return size > 0 && size < this.allOptions().filter(opt => !opt.disabled).length;
+    const count = this.selectedEnabledCount();
+    return count > 0 && count < this.selectAllTarget();
+  }
+
+  protected isActive(option: MultiSelectOption): boolean {
+    const index = this.activeIndex();
+    return index >= 0 && this.visibleOptions()[index] === option;
+  }
+
+  protected optionId(option: MultiSelectOption): string | null {
+    const index = this.visibleOptions().indexOf(option);
+    return index >= 0 ? `${this.listboxId}-option-${index}` : null;
   }
 
   clearAll(): void {
@@ -336,14 +421,94 @@ export class TwMultiSelectComponent implements ControlValueAccessor, OnDestroy, 
   }
 
   protected onFilterInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.filterValue.set(input.value);
+    const filterInput = event.target as HTMLInputElement;
+    this.filterValue.set(filterInput.value);
+    this.activeIndex.set(-1);
+  }
+
+  @HostListener('keydown', ['$event'])
+  protected onKeydown(event: KeyboardEvent): void {
+    if (this._disabled()) return;
+
+    const isFilterInput = event.target === this.filterInput?.nativeElement;
+
+    switch (event.key) {
+      case 'ArrowDown': {
+        event.preventDefault();
+        if (this.isOpen()) {
+          this.moveActiveIndex(1);
+        } else {
+          this.openDropdown();
+        }
+        break;
+      }
+      case 'ArrowUp': {
+        if (this.isOpen()) {
+          event.preventDefault();
+          this.moveActiveIndex(-1);
+        }
+        break;
+      }
+      case 'Home': {
+        if (this.isOpen() && !isFilterInput) {
+          event.preventDefault();
+          this.setActiveToEdge(true);
+        }
+        break;
+      }
+      case 'End': {
+        if (this.isOpen() && !isFilterInput) {
+          event.preventDefault();
+          this.setActiveToEdge(false);
+        }
+        break;
+      }
+      case 'Enter':
+      case ' ': {
+        if (event.key === ' ' && isFilterInput) return;
+        if (this.isOpen() && this.activeIndex() >= 0) {
+          event.preventDefault();
+          const option = this.visibleOptions()[this.activeIndex()];
+          if (option) {
+            this.toggleOption(option);
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  private moveActiveIndex(delta: number): void {
+    const options = this.visibleOptions();
+    if (options.length === 0) return;
+
+    let index = this.activeIndex();
+    for (const _ of options) {
+      index = (index + delta + options.length) % options.length;
+      if (!options[index].disabled) break;
+    }
+    this.activeIndex.set(index);
+  }
+
+  private setActiveToEdge(first: boolean): void {
+    const options = this.visibleOptions();
+    if (first) {
+      const index = options.findIndex(opt => !opt.disabled);
+      if (index >= 0) this.activeIndex.set(index);
+      return;
+    }
+    for (let i = options.length - 1; i >= 0; i--) {
+      if (!options[i].disabled) {
+        this.activeIndex.set(i);
+        return;
+      }
+    }
   }
 
   @HostListener('document:keydown.escape')
   protected onEscapePress(): void {
     if (this.isOpen()) {
-      this.closeDropdown();
+      this.closeDropdown(true);
     }
   }
 

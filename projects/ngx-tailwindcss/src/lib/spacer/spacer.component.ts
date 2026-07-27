@@ -1,4 +1,4 @@
-import { Component, Input, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -26,6 +26,32 @@ const VERTICAL_SIZES: Record<string, string> = {
   auto: 'flex-1',
 };
 
+const GAP_CLASSES: Record<string, string> = {
+  xs: 'gap-1',
+  sm: 'gap-2',
+  md: 'gap-4',
+  lg: 'gap-6',
+  xl: 'gap-8',
+  '2xl': 'gap-12',
+  '3xl': 'gap-16',
+  auto: 'gap-4',
+};
+
+const ALIGN_CLASSES: Record<string, string> = {
+  start: 'items-start',
+  center: 'items-center',
+  end: 'items-end',
+};
+
+const JUSTIFY_CLASSES: Record<string, string> = {
+  start: 'justify-start',
+  center: 'justify-center',
+  end: 'justify-end',
+  between: 'justify-between',
+  around: 'justify-around',
+  evenly: 'justify-evenly',
+};
+
 /**
  * Spacer component for adding space between elements.
  * In flex containers, use size="auto" to create flexible space.
@@ -47,7 +73,13 @@ const VERTICAL_SIZES: Record<string, string> = {
   selector: 'tw-spacer',
   standalone: true,
   imports: [CommonModule],
-  template: `<div [class]="spacerClasses()" aria-hidden="true"></div>`,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './spacer.component.html',
+  host: {
+    // Reflect the axis onto the host element so `[axis]` property bindings
+    // match the `:host([axis='horizontal'])` style below, not just static usage.
+    '[attr.axis]': 'axis()',
+  },
   styles: [
     `
       :host {
@@ -60,11 +92,13 @@ const VERTICAL_SIZES: Record<string, string> = {
   ],
 })
 export class TwSpacerComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Direction of the space */
-  @Input() axis: 'horizontal' | 'vertical' = 'vertical';
+  readonly axis = input<'horizontal' | 'vertical'>('vertical');
 
   /** Size of the space (or 'auto' for flexible space in flex containers) */
-  @Input() size: SpacerSize = 'md';
+  readonly size = input<SpacerSize>('md');
 
   /**
    * Additional CSS classes. Signal input so a bound `[class]` survives Angular's
@@ -72,14 +106,12 @@ export class TwSpacerComponent {
    */
   readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
-
-  protected spacerClasses(): string {
+  protected spacerClasses = computed(() => {
     const sizeClass =
-      this.axis === 'horizontal' ? HORIZONTAL_SIZES[this.size] : VERTICAL_SIZES[this.size];
+      this.axis() === 'horizontal' ? HORIZONTAL_SIZES[this.size()] : VERTICAL_SIZES[this.size()];
 
     return this.twClass.merge(sizeClass, this.class());
-  }
+  });
 }
 
 /**
@@ -98,11 +130,8 @@ export class TwSpacerComponent {
   selector: 'tw-wrap',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="wrapClasses()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './wrap.component.html',
   styles: [
     `
       :host {
@@ -112,14 +141,16 @@ export class TwSpacerComponent {
   ],
 })
 export class TwWrapComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Spacing between items */
-  @Input() spacing: SpacerSize = 'md';
+  readonly spacing = input<SpacerSize>('md');
 
   /** Alignment of items */
-  @Input() align: 'start' | 'center' | 'end' = 'start';
+  readonly align = input<'start' | 'center' | 'end'>('start');
 
   /** Justification of items */
-  @Input() justify: 'start' | 'center' | 'end' | 'between' | 'around' | 'evenly' = 'start';
+  readonly justify = input<'start' | 'center' | 'end' | 'between' | 'around' | 'evenly'>('start');
 
   /**
    * Additional CSS classes. Signal input so a bound `[class]` survives Angular's
@@ -127,41 +158,13 @@ export class TwWrapComponent {
    */
   readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
-
-  protected wrapClasses(): string {
-    const gapClasses: Record<string, string> = {
-      xs: 'gap-1',
-      sm: 'gap-2',
-      md: 'gap-4',
-      lg: 'gap-6',
-      xl: 'gap-8',
-      '2xl': 'gap-12',
-      '3xl': 'gap-16',
-      auto: 'gap-4',
-    };
-
-    const alignClasses: Record<string, string> = {
-      start: 'items-start',
-      center: 'items-center',
-      end: 'items-end',
-    };
-
-    const justifyClasses: Record<string, string> = {
-      start: 'justify-start',
-      center: 'justify-center',
-      end: 'justify-end',
-      between: 'justify-between',
-      around: 'justify-around',
-      evenly: 'justify-evenly',
-    };
-
+  protected wrapClasses = computed(() => {
     return this.twClass.merge(
       'flex flex-wrap',
-      gapClasses[this.spacing],
-      alignClasses[this.align],
-      justifyClasses[this.justify],
+      GAP_CLASSES[this.spacing()],
+      ALIGN_CLASSES[this.align()],
+      JUSTIFY_CLASSES[this.justify()],
       this.class()
     );
-  }
+  });
 }

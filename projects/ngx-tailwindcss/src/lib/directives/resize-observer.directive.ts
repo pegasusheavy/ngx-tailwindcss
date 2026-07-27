@@ -7,9 +7,11 @@ import {
   Input,
   NgZone,
   numberAttribute,
+  OnChanges,
   OnDestroy,
   OnInit,
   Output,
+  SimpleChanges,
 } from '@angular/core';
 import { debounceTime, Subject, Subscription } from 'rxjs';
 
@@ -32,7 +34,7 @@ export interface ResizeEvent {
   selector: '[twResizeObserver]',
   standalone: true,
 })
-export class TwResizeObserverDirective implements OnInit, OnDestroy {
+export class TwResizeObserverDirective implements OnInit, OnChanges, OnDestroy {
   private readonly el: ElementRef<HTMLElement>;
   private readonly ngZone: NgZone;
 
@@ -44,6 +46,7 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
   private observer: ResizeObserver | null = null;
   private readonly resizeSubject = new Subject<ResizeEvent>();
   private subscription: Subscription | null = null;
+  private initialized = false;
 
   /** Debounce time in milliseconds (default: 0 = no debounce) */
   @Input({ transform: numberAttribute })
@@ -58,6 +61,20 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
   resize = new EventEmitter<ResizeEvent>();
 
   ngOnInit(): void {
+    this.initialized = true;
+    this.setupObserver();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!this.initialized) return;
+
+    if (changes['resizeDebounce'] || changes['resizeDisabled']) {
+      this.teardownObserver();
+      this.setupObserver();
+    }
+  }
+
+  private setupObserver(): void {
     if (this.resizeDisabled || typeof ResizeObserver === 'undefined') {
       return;
     }
@@ -67,7 +84,9 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
       this.subscription = this.resizeSubject
         .pipe(debounceTime(this.resizeDebounce))
         .subscribe(event => {
-          this.resize.emit(event);
+          this.ngZone.run(() => {
+            this.resize.emit(event);
+          });
         });
     }
 
@@ -91,13 +110,18 @@ export class TwResizeObserverDirective implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
+  private teardownObserver(): void {
     if (this.observer) {
       this.observer.disconnect();
       this.observer = null;
     }
     if (this.subscription) {
       this.subscription.unsubscribe();
+      this.subscription = null;
     }
+  }
+
+  ngOnDestroy(): void {
+    this.teardownObserver();
   }
 }

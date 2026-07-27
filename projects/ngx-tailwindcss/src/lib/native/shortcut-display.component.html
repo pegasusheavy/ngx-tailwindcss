@@ -1,0 +1,8 @@
+<span [class]="containerClasses()">
+  @for (key of formattedKeys(); track $index; let last = $last) {
+    <kbd [class]="keyClasses()">{{ key }}</kbd>
+    @if (!last && showSeparator()) {
+      <span [class]="separatorClasses()">{{ separator() }}</span>
+    }
+  }
+</span>

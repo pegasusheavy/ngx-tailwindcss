@@ -21,6 +21,9 @@ import { TwClassService } from '../core/tw-class.service';
     >
       <button twPopoverTrigger>Click me</button>
       <div class="popover-content">Popover content here</div>
+      <button type="button" data-testid="action" (click)="actionCount = actionCount + 1">
+        Action
+      </button>
     </tw-popover>
   `,
   standalone: true,
@@ -39,6 +42,7 @@ class TestHostComponent {
 
   showCount = 0;
   hideCount = 0;
+  actionCount = 0;
 
   onShow() {
     this.showCount++;
@@ -67,7 +71,9 @@ describe('TwPopoverComponent', () => {
 
   afterEach(() => {
     // Clean up any portals
-    document.querySelectorAll('[style*="position: fixed"]').forEach(el => { el.remove(); });
+    document.querySelectorAll('[style*="position: fixed"]').forEach(el => {
+      el.remove();
+    });
   });
 
   it('should create the popover', () => {
@@ -100,6 +106,69 @@ describe('TwPopoverComponent', () => {
 
       expect(component.popover.visible()).toBe(false);
       expect(component.hideCount).toBe(1);
+    });
+  });
+
+  describe('live projected content', () => {
+    it('should keep projected event handlers working inside the portal', () => {
+      component.popover.show();
+      fixture.detectChanges();
+
+      const portal = document.querySelector('[role="tooltip"]');
+      const action = portal?.querySelector<HTMLButtonElement>('[data-testid="action"]');
+      expect(action).toBeTruthy();
+
+      action!.click();
+      fixture.detectChanges();
+
+      expect(component.actionCount).toBe(1);
+    });
+
+    it('should restore projected content to the host on close', () => {
+      component.popover.show();
+      fixture.detectChanges();
+      component.popover.hide();
+      fixture.detectChanges();
+
+      const source = popoverEl.querySelector('.popover-content-source')!;
+      expect(source).toBeTruthy();
+      expect(source.style.display).toBe('none');
+      expect(source.querySelector('[data-testid="action"]')).toBeTruthy();
+
+      // Content survives a second open/close cycle
+      component.popover.show();
+      fixture.detectChanges();
+      const portal = document.querySelector('[role="tooltip"]');
+      expect(portal?.querySelector('.popover-content')).toBeTruthy();
+    });
+  });
+
+  describe('focus trigger', () => {
+    it('should show popover on focusin and hide on focusout', () => {
+      component.trigger.set('focus');
+      fixture.detectChanges();
+
+      const triggerContainer = popoverEl.querySelector('div') as HTMLElement;
+      triggerContainer.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(component.popover.visible()).toBe(true);
+
+      triggerContainer.dispatchEvent(new FocusEvent('focusout', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(component.popover.visible()).toBe(false);
+    });
+
+    it('should open on focusin for hover trigger (keyboard equivalence)', () => {
+      component.trigger.set('hover');
+      fixture.detectChanges();
+
+      const triggerContainer = popoverEl.querySelector('div') as HTMLElement;
+      triggerContainer.dispatchEvent(new FocusEvent('focusin', { bubbles: true }));
+      fixture.detectChanges();
+
+      expect(component.popover.visible()).toBe(true);
     });
   });
 

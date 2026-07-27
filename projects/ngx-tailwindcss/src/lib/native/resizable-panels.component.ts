@@ -30,98 +30,7 @@ export interface PanelConfig {
   selector: 'tw-resizable-panels',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div
-      #container
-      [class]="containerClasses()"
-      [style.--panel-1-size]="panel1Size() + '%'"
-      [style.--panel-2-size]="panel2Size() + '%'"
-    >
-      <!-- Panel 1 -->
-      <div
-        [class]="panelClasses(0)"
-        [style.flex-basis]="panel1Collapsed() ? '0%' : panel1Size() + '%'"
-        [class.hidden]="panel1Collapsed()"
-      >
-        <ng-content select="[panel1]"></ng-content>
-      </div>
-
-      <!-- Resize Handle -->
-      <div
-        [class]="handleClasses()"
-        (mousedown)="startResize($event)"
-        (dblclick)="resetSize()"
-        (touchstart)="startResize($event)"
-      >
-        <div [class]="handleIndicatorClasses()"></div>
-
-        <!-- Collapse Buttons -->
-        @if (showCollapseButtons()) {
-          <div [class]="collapseButtonsClasses()">
-            @if (panel1Config()?.collapsible) {
-              <button
-                (click)="togglePanel1Collapse()"
-                class="p-1 hover:bg-slate-300 dark:hover:bg-slate-600 rounded"
-                [title]="panel1Collapsed() ? 'Expand' : 'Collapse'"
-              >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  @if (direction() === 'horizontal') {
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      [attr.d]="panel1Collapsed() ? 'M13 5l7 7-7 7' : 'M11 19l-7-7 7-7'"
-                    />
-                  } @else {
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      [attr.d]="panel1Collapsed() ? 'M19 13l-7 7-7-7' : 'M5 11l7-7 7 7'"
-                    />
-                  }
-                </svg>
-              </button>
-            }
-            @if (panel2Config()?.collapsible) {
-              <button
-                (click)="togglePanel2Collapse()"
-                class="p-1 hover:bg-slate-300 dark:hover:bg-slate-600 rounded"
-                [title]="panel2Collapsed() ? 'Expand' : 'Collapse'"
-              >
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  @if (direction() === 'horizontal') {
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      [attr.d]="panel2Collapsed() ? 'M11 19l-7-7 7-7' : 'M13 5l7 7-7 7'"
-                    />
-                  } @else {
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      [attr.d]="panel2Collapsed() ? 'M5 11l7-7 7 7' : 'M19 13l-7 7-7-7'"
-                    />
-                  }
-                </svg>
-              </button>
-            }
-          </div>
-        }
-      </div>
-
-      <!-- Panel 2 -->
-      <div
-        [class]="panelClasses(1)"
-        [style.flex-basis]="panel2Collapsed() ? '0%' : panel2Size() + '%'"
-        [class.hidden]="panel2Collapsed()"
-      >
-        <ng-content select="[panel2]"></ng-content>
-      </div>
-    </div>
-  `,
+  templateUrl: './resizable-panels.component.html',
 })
 export class TwResizablePanelsComponent {
   private readonly document = inject(DOCUMENT);
@@ -149,7 +58,13 @@ export class TwResizablePanelsComponent {
   public readonly panel2Collapsed = signal(false);
   public readonly isResizing = signal(false);
 
+  /** Cleanup for the document listeners of an in-progress drag */
+  private activeResizeEnd: (() => void) | null = null;
+
   constructor() {
+    // Ensure document listeners are removed if the component is destroyed mid-drag
+    this.destroyRef.onDestroy(() => this.activeResizeEnd?.());
+
     effect(() => {
       this.panel1Size.set(this.defaultSplit());
     });
@@ -190,9 +105,8 @@ export class TwResizablePanelsComponent {
         ? 'cursor-col-resize'
         : 'cursor-row-resize'
       : '';
-    const size = dir === 'horizontal' ? `w-${this.handleSize()}` : `h-${this.handleSize()}`;
 
-    return `${baseClasses} ${size} ${cursor} ${dir === 'horizontal' ? 'cursor-col-resize' : 'cursor-row-resize'}`;
+    return `${baseClasses} ${cursor} ${dir === 'horizontal' ? 'cursor-col-resize' : 'cursor-row-resize'}`;
   });
 
   public readonly handleIndicatorClasses = computed(() => {
@@ -246,12 +160,16 @@ export class TwResizablePanelsComponent {
       this.document.removeEventListener('mouseup', handleEnd);
       this.document.removeEventListener('touchmove', handleMove);
       this.document.removeEventListener('touchend', handleEnd);
+      this.activeResizeEnd = null;
     };
 
-    this.document.addEventListener('mousemove', handleMove);
-    this.document.addEventListener('mouseup', handleEnd);
-    this.document.addEventListener('touchmove', handleMove);
-    this.document.addEventListener('touchend', handleEnd);
+    this.activeResizeEnd = handleEnd;
+    this.ngZone.runOutsideAngular(() => {
+      this.document.addEventListener('mousemove', handleMove);
+      this.document.addEventListener('mouseup', handleEnd);
+      this.document.addEventListener('touchmove', handleMove);
+      this.document.addEventListener('touchend', handleEnd);
+    });
   }
 
   public resetSize(): void {

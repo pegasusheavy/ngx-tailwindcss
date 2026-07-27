@@ -120,6 +120,50 @@ export class TwAriaService {
 }
 
 /**
+ * Monotonic counter backing AriaUtils.generateId.
+ */
+let idCounter = 0;
+
+/**
+ * Role lookup table for AriaUtils.getRole.
+ */
+const ROLES: Record<string, Record<string, string>> = {
+  button: { default: 'button', menu: 'menuitem', toolbar: 'button' },
+  alert: { default: 'alert', status: 'status' },
+  dialog: { default: 'dialog', alert: 'alertdialog' },
+  tab: { default: 'tab' },
+  tabpanel: { default: 'tabpanel' },
+  tablist: { default: 'tablist' },
+  menu: { default: 'menu', menubar: 'menubar' },
+  menuitem: { default: 'menuitem', checkbox: 'menuitemcheckbox', radio: 'menuitemradio' },
+  listbox: { default: 'listbox' },
+  option: { default: 'option' },
+  tree: { default: 'tree' },
+  treeitem: { default: 'treeitem' },
+  grid: { default: 'grid', treegrid: 'treegrid' },
+  row: { default: 'row' },
+  cell: {
+    default: 'cell',
+    gridcell: 'gridcell',
+    columnheader: 'columnheader',
+    rowheader: 'rowheader',
+  },
+  progressbar: { default: 'progressbar' },
+  slider: { default: 'slider' },
+  spinbutton: { default: 'spinbutton' },
+  switch: { default: 'switch' },
+  tooltip: { default: 'tooltip' },
+  navigation: { default: 'navigation' },
+  region: { default: 'region' },
+  search: { default: 'search' },
+  form: { default: 'form' },
+  banner: { default: 'banner' },
+  complementary: { default: 'complementary' },
+  contentinfo: { default: 'contentinfo' },
+  main: { default: 'main' },
+};
+
+/**
  * Utility functions for generating ARIA attributes.
  */
 export const AriaUtils = {
@@ -127,7 +171,7 @@ export const AriaUtils = {
    * Generate a unique ID for ARIA relationships.
    */
   generateId(prefix = 'tw'): string {
-    return `${prefix}-${Math.random().toString(36).slice(2, 9)}`;
+    return `${prefix}-${++idCounter}`;
   },
 
   /**
@@ -150,43 +194,7 @@ export const AriaUtils = {
    * Get appropriate role for a component based on context.
    */
   getRole(component: string, context?: string): string {
-    const roles: Record<string, Record<string, string>> = {
-      button: { default: 'button', menu: 'menuitem', toolbar: 'button' },
-      alert: { default: 'alert', status: 'status' },
-      dialog: { default: 'dialog', alert: 'alertdialog' },
-      tab: { default: 'tab' },
-      tabpanel: { default: 'tabpanel' },
-      tablist: { default: 'tablist' },
-      menu: { default: 'menu', menubar: 'menubar' },
-      menuitem: { default: 'menuitem', checkbox: 'menuitemcheckbox', radio: 'menuitemradio' },
-      listbox: { default: 'listbox' },
-      option: { default: 'option' },
-      tree: { default: 'tree' },
-      treeitem: { default: 'treeitem' },
-      grid: { default: 'grid', treegrid: 'treegrid' },
-      row: { default: 'row' },
-      cell: {
-        default: 'cell',
-        gridcell: 'gridcell',
-        columnheader: 'columnheader',
-        rowheader: 'rowheader',
-      },
-      progressbar: { default: 'progressbar' },
-      slider: { default: 'slider' },
-      spinbutton: { default: 'spinbutton' },
-      switch: { default: 'switch' },
-      tooltip: { default: 'tooltip' },
-      navigation: { default: 'navigation' },
-      region: { default: 'region' },
-      search: { default: 'search' },
-      form: { default: 'form' },
-      banner: { default: 'banner' },
-      complementary: { default: 'complementary' },
-      contentinfo: { default: 'contentinfo' },
-      main: { default: 'main' },
-    };
-
-    const componentRoles = roles[component];
+    const componentRoles = ROLES[component];
     if (!componentRoles) return component;
 
     return componentRoles[context || 'default'] || componentRoles['default'];

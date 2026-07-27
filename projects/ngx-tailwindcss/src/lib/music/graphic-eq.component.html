@@ -216,7 +216,7 @@
         <div class="flex flex-col items-center">
           <!-- Slider Track -->
           <div
-            class="relative rounded-full cursor-pointer"
+            class="relative rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400"
             [class]="colors().track"
             [style.height.px]="sliderHeight()"
             [style.width]="bandCount() > 15 ? '8px' : bandCount() > 10 ? '12px' : '16px'"
@@ -224,7 +224,17 @@
             (mousedown)="onBandMouseDown($event, i)"
             (touchstart)="onBandTouchStart($event, i)"
             (dblclick)="resetBand(i)"
+            (keydown)="onBandKeydown($event, i)"
             [title]="'Double-click to reset ' + band.label"
+            role="slider"
+            [attr.tabindex]="interactive() && !disabled() ? 0 : -1"
+            aria-orientation="vertical"
+            [attr.aria-label]="band.label + ' band gain'"
+            [attr.aria-valuemin]="minGain()"
+            [attr.aria-valuemax]="maxGain()"
+            [attr.aria-valuenow]="band.gain"
+            [attr.aria-valuetext]="(band.gain > 0 ? '+' : '') + band.gain.toFixed(1) + ' dB'"
+            [attr.aria-disabled]="disabled()"
           >
             <!-- Center line (0 dB) -->
             <div

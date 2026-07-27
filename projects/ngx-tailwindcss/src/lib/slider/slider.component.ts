@@ -96,6 +96,9 @@ export class TwSliderComponent implements ControlValueAccessor {
   /** Format function for display value */
   readonly valueFormat = input<(value: number) => string>(v => v.toString());
 
+  /** ID applied to the range input and referenced by the label */
+  readonly inputId = input(`tw-slider-${Math.random().toString(36).slice(2)}`);
+
   /** Additional classes */
   readonly classOverride = input('');
 
@@ -131,10 +134,12 @@ export class TwSliderComponent implements ControlValueAccessor {
   });
 
   protected ticks = computed(() => {
-    if (this.tickCount() <= 0) return [];
+    const count = this.tickCount();
+    if (count <= 0) return [];
+    if (count === 1) return [this.min()];
     const ticks: number[] = [];
-    const step = (this.max() - this.min()) / (this.tickCount() - 1);
-    for (let i = 0; i < this.tickCount(); i++) {
+    const step = (this.max() - this.min()) / (count - 1);
+    for (let i = 0; i < count; i++) {
       ticks.push(Math.round(this.min() + step * i));
     }
     return ticks;

@@ -1,17 +1,23 @@
 <!-- Backdrop -->
-@if (visible() && showBackdrop) {
+@if (visible() && showBackdrop()) {
   <div [class]="backdropClasses()" (click)="onBackdropClick()" aria-hidden="true"></div>
 }
 
 <!-- Sidebar panel -->
-<div [class]="panelClasses()" [attr.aria-hidden]="!visible()" role="dialog" aria-modal="true">
+<div
+  [class]="panelClasses()"
+  [attr.aria-hidden]="!visible()"
+  [attr.inert]="visible() ? null : ''"
+  role="dialog"
+  aria-modal="true"
+>
   <!-- Header -->
-  @if (header || showCloseButton) {
+  @if (header() || showCloseButton()) {
     <div [class]="headerClasses()">
-      @if (header) {
-        <h2 class="text-lg font-semibold text-slate-900">{{ header }}</h2>
+      @if (header()) {
+        <h2 class="text-lg font-semibold text-slate-900">{{ header() }}</h2>
       }
-      @if (showCloseButton) {
+      @if (showCloseButton()) {
         <button
           type="button"
           class="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
@@ -38,8 +44,13 @@
   </div>
 
   <!-- Footer -->
-  @if (hasFooter) {
+  @if (footerTemplate) {
     <div [class]="footerClasses()">
+      <ng-container *ngTemplateOutlet="footerTemplate"></ng-container>
+    </div>
+  } @else {
+    <!-- Fallback slot for attribute-marked footers; hidden when nothing is projected -->
+    <div class="empty:hidden" [class]="footerClasses()">
       <ng-content select="[twSidebarFooter]"></ng-content>
     </div>
   }

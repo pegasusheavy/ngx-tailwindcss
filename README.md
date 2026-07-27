@@ -1,4 +1,4 @@
-# @pegasus-heavy/ngx-tailwindcss
+# @quinnjr/ngx-tailwindcss
 
 A highly customizable Angular component library designed for **Tailwind CSS 4+**. This library provides beautiful, accessible UI components that leverage Tailwind's utility-first approach while giving you complete control over styling.
 
@@ -7,16 +7,16 @@ A highly customizable Angular component library designed for **Tailwind CSS 4+**
 - 🎨 **Fully Customizable** - Override any styling through class props or global configuration
 - 🌊 **Tailwind CSS 4+ Ready** - Built for the latest Tailwind with CSS-first configuration
 - ♿ **Accessible** - WCAG compliant with proper ARIA attributes and keyboard navigation
-- 📦 **Tree-Shakeable** - Import only what you need with secondary entry points
+- 📦 **Tree-Shakeable** - Standalone components can be imported individually, so bundlers keep only what you use
 - 🔧 **No Bundled CSS** - Your Tailwind config, your rules
 - ⚡ **Standalone Components** - No NgModule required, works with Angular 19+
 
 ## Installation
 
 ```bash
-pnpm add @pegasus-heavy/ngx-tailwindcss
+pnpm add @quinnjr/ngx-tailwindcss
 # or
-npm install @pegasus-heavy/ngx-tailwindcss
+npm install @quinnjr/ngx-tailwindcss
 ```
 
 ### Peer Dependencies
@@ -39,7 +39,7 @@ Add the library's component templates to your Tailwind content configuration so 
 /* app.css or styles.css */
 @import "tailwindcss";
 
-@source "../node_modules/@pegasus-heavy/ngx-tailwindcss/**/*.{js,mjs}";
+@source "../node_modules/@quinnjr/ngx-tailwindcss/**/*.{js,mjs}";
 ```
 
 **For Tailwind CSS 3.x (tailwind.config.js):**
@@ -49,7 +49,7 @@ Add the library's component templates to your Tailwind content configuration so 
 module.exports = {
   content: [
     "./src/**/*.{html,ts}",
-    "./node_modules/@pegasus-heavy/ngx-tailwindcss/**/*.{js,mjs}",
+    "./node_modules/@quinnjr/ngx-tailwindcss/**/*.{js,mjs}",
   ],
   // ... rest of your config
 };
@@ -65,7 +65,7 @@ import {
   TwButtonComponent,
   TwCardComponent,
   TwCardBodyDirective
-} from '@pegasus-heavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 
 @Component({
   selector: 'app-example',
@@ -85,7 +85,7 @@ export class ExampleComponent {}
 Or import everything at once:
 
 ```typescript
-import { TW_ALL } from '@pegasus-heavy/ngx-tailwindcss';
+import { TW_ALL } from '@quinnjr/ngx-tailwindcss';
 
 @Component({
   imports: [...TW_ALL],
@@ -100,7 +100,7 @@ Customize default styles and behavior globally:
 ```typescript
 // app.config.ts
 import { ApplicationConfig } from '@angular/core';
-import { provideTwConfig } from '@pegasus-heavy/ngx-tailwindcss';
+import { provideTwConfig } from '@quinnjr/ngx-tailwindcss';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -183,7 +183,7 @@ export const appConfig: ApplicationConfig = {
 <tw-badge variant="success">Active</tw-badge>
 <tw-badge variant="warning" badgeStyle="soft">Pending</tw-badge>
 <tw-badge variant="danger" badgeStyle="dot">Offline</tw-badge>
-<tw-badge variant="info" [pill]="true" [removable]="true" [remove]="onRemove">
+<tw-badge variant="info" [pill]="true" [removable]="true" (remove)="onRemove()">
   Tag
 </tw-badge>
 ```
@@ -297,7 +297,11 @@ export const appConfig: ApplicationConfig = {
 </div>
 ```
 
+Conflict resolution is a lightweight, tailwind-merge-style approximation: it handles common utility conflicts (spacing, colors, sizing, and the like) but does not cover every Tailwind edge case — see the docs for details.
+
 ## Customization Examples
+
+`classOverride` is available on most components; `classReplace` is currently supported on `tw-button` and `tw-card` only.
 
 ### Per-Component Override
 
@@ -320,7 +324,7 @@ export const appConfig: ApplicationConfig = {
 ### Using the Class Service
 
 ```typescript
-import { TwClassService } from '@pegasus-heavy/ngx-tailwindcss';
+import { TwClassService } from '@quinnjr/ngx-tailwindcss';
 
 @Component({...})
 export class MyComponent {
@@ -336,7 +340,11 @@ export class MyComponent {
 }
 ```
 
+## Development
+
+Installing dependencies no longer builds the library automatically — run `pnpm run build` before starting the docs app (or anything else that consumes `dist/ngx-tailwindcss`).
+
 ## License
 
-MIT © Pegasus Heavy Industries LLC
+MIT © Joseph R Quinn
 

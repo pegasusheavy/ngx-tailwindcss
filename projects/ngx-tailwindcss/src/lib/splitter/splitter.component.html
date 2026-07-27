@@ -1,0 +1,37 @@
+<div #container [class]="containerClasses()">
+  <div
+    [class]="paneClasses()"
+    [style.flexBasis.%]="sizes()[0]"
+    [style.minWidth.px]="direction() === 'horizontal' ? minSizes()[0] : undefined"
+    [style.minHeight.px]="direction() === 'vertical' ? minSizes()[0] : undefined"
+  >
+    <ng-content select="[twSplitterPaneStart], [twSplitterPane], tw-splitter-pane"></ng-content>
+  </div>
+
+  <div
+    #gutter
+    role="separator"
+    aria-label="Resize panes"
+    aria-valuemin="0"
+    aria-valuemax="100"
+    [attr.aria-valuenow]="gutterAriaValueNow()"
+    [attr.aria-orientation]="direction() === 'horizontal' ? 'vertical' : 'horizontal'"
+    [attr.aria-disabled]="disabled() ? true : null"
+    [attr.tabindex]="disabled() ? -1 : 0"
+    [class]="gutterClasses()"
+    (mousedown)="onGutterMouseDown($event)"
+    (touchstart)="onGutterTouchStart($event)"
+    (keydown)="onGutterKeydown($event)"
+  >
+    <div [class]="gutterHandleClasses()"></div>
+  </div>
+
+  <div
+    [class]="paneClasses()"
+    [style.flexBasis.%]="sizes()[1]"
+    [style.minWidth.px]="direction() === 'horizontal' ? minSizes()[1] : undefined"
+    [style.minHeight.px]="direction() === 'vertical' ? minSizes()[1] : undefined"
+  >
+    <ng-content select="[twSplitterPaneEnd]"></ng-content>
+  </div>
+</div>

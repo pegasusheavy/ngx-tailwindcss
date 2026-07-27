@@ -589,17 +589,19 @@ export class TwI18nService {
   });
 
   constructor() {
-    // Try to detect locale from Angular's LOCALE_ID or browser
-    try {
-      const localeId = inject(LOCALE_ID, { optional: true });
-      if (localeId) {
-        this.setLocale(localeId);
-      }
-    } catch {
-      // Use browser locale if available
-      if (typeof navigator !== 'undefined') {
-        this.setLocale(navigator.language || 'en');
-      }
+    // Resolve locale: explicit TW_LOCALE wins, then a non-default LOCALE_ID,
+    // then the browser locale (LOCALE_ID defaults to 'en-US' in Angular)
+    const twLocale = inject(TW_LOCALE, { optional: true });
+    const localeId = inject(LOCALE_ID, { optional: true });
+
+    if (twLocale) {
+      this.setLocale(twLocale);
+    } else if (localeId && localeId !== 'en-US') {
+      this.setLocale(localeId);
+    } else if (typeof navigator !== 'undefined' && navigator.language) {
+      this.setLocale(navigator.language);
+    } else if (localeId) {
+      this.setLocale(localeId);
     }
 
     // Try to inject custom translations

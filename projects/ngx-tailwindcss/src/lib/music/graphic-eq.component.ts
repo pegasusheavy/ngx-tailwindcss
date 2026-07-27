@@ -2,10 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  effect,
   forwardRef,
   input,
   numberAttribute,
+  OnDestroy,
   output,
   signal,
 } from '@angular/core';
@@ -58,7 +58,18 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Rock',
     description: 'Punchy midrange, enhanced bass and presence',
     category: 'music',
-    values: { 31: 4, 63: 3, 125: 2, 250: 0, 500: -1, 1000: 1, 2000: 3, 4000: 4, 8000: 3, 16_000: 2 },
+    values: {
+      31: 4,
+      63: 3,
+      125: 2,
+      250: 0,
+      500: -1,
+      1000: 1,
+      2000: 3,
+      4000: 4,
+      8000: 3,
+      16_000: 2,
+    },
   },
   {
     id: 'pop',
@@ -72,7 +83,18 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Jazz',
     description: 'Warm and natural with smooth highs',
     category: 'music',
-    values: { 31: 2, 63: 3, 125: 2, 250: 1, 500: 0, 1000: -1, 2000: 0, 4000: 1, 8000: 2, 16_000: 2 },
+    values: {
+      31: 2,
+      63: 3,
+      125: 2,
+      250: 1,
+      500: 0,
+      1000: -1,
+      2000: 0,
+      4000: 1,
+      8000: 2,
+      16_000: 2,
+    },
   },
   {
     id: 'classical',
@@ -261,7 +283,18 @@ export const EQ_PRESETS: EQPreset[] = [
     name: 'Drums',
     description: 'Punchy kick and crisp cymbals',
     category: 'instrument',
-    values: { 31: 4, 63: 3, 125: 2, 250: 0, 500: -1, 1000: 0, 2000: 1, 4000: 2, 8000: 4, 16_000: 3 },
+    values: {
+      31: 4,
+      63: 3,
+      125: 2,
+      250: 0,
+      500: -1,
+      1000: 0,
+      2000: 1,
+      4000: 2,
+      8000: 4,
+      16_000: 3,
+    },
   },
 
   // Correction Presets
@@ -341,7 +374,7 @@ export const EQ_PRESETS: EQPreset[] = [
     class: 'block',
   },
 })
-export class TwGraphicEQComponent implements ControlValueAccessor {
+export class TwGraphicEQComponent implements ControlValueAccessor, OnDestroy {
   readonly bandCount = input<GraphicEQBandCount>(10);
   readonly minGain = input(-12, { transform: numberAttribute });
   readonly maxGain = input(12, { transform: numberAttribute });
@@ -381,6 +414,12 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
 
   private onChange: (value: EQBandValue[]) => void = () => {};
   private onTouched: () => void = () => {};
+  private dragController: AbortController | null = null;
+
+  ngOnDestroy(): void {
+    this.dragController?.abort();
+    this.dragController = null;
+  }
 
   protected readonly frequencies = computed(() => {
     return BAND_FREQUENCIES[this.bandCount()];
@@ -574,63 +613,116 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
   protected onBandMouseDown(event: MouseEvent, bandIndex: number): void {
     if (!this.interactive() || this.disabled()) return;
     this.draggingBand.set(bandIndex);
-    this.updateBandFromEvent(event, bandIndex);
+
+    // Capture the track rect once for the whole gesture
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    this.updateBandValue(bandIndex, event.clientY - rect.top, rect.height);
 
     const onMove = (e: MouseEvent) => {
       if (this.draggingBand() !== null) {
-        this.updateBandFromEvent(e, this.draggingBand()!);
+        this.updateBandValue(this.draggingBand()!, e.clientY - rect.top, rect.height);
       }
     };
 
     const onUp = () => {
       this.draggingBand.set(null);
       this.onTouched();
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
+      this.dragController?.abort();
+      this.dragController = null;
     };
 
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
+    this.dragController?.abort();
+    this.dragController = new AbortController();
+    const { signal: abortSignal } = this.dragController;
+    document.addEventListener('mousemove', onMove, { signal: abortSignal });
+    document.addEventListener('mouseup', onUp, { signal: abortSignal });
     event.preventDefault();
   }
 
   protected onBandTouchStart(event: TouchEvent, bandIndex: number): void {
     if (!this.interactive() || this.disabled()) return;
     this.draggingBand.set(bandIndex);
+
+    // Capture the track rect once for the whole gesture
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
     const touch = event.touches[0];
-    this.updateBandFromTouch(touch, bandIndex);
+    this.updateBandValue(bandIndex, touch.clientY - rect.top, rect.height);
 
     const onMove = (e: TouchEvent) => {
       if (this.draggingBand() !== null && e.touches[0]) {
-        this.updateBandFromTouch(e.touches[0], this.draggingBand()!);
+        this.updateBandValue(this.draggingBand()!, e.touches[0].clientY - rect.top, rect.height);
       }
     };
 
     const onEnd = () => {
       this.draggingBand.set(null);
       this.onTouched();
-      document.removeEventListener('touchmove', onMove);
-      document.removeEventListener('touchend', onEnd);
+      this.dragController?.abort();
+      this.dragController = null;
     };
 
-    document.addEventListener('touchmove', onMove);
-    document.addEventListener('touchend', onEnd);
+    this.dragController?.abort();
+    this.dragController = new AbortController();
+    const { signal: abortSignal } = this.dragController;
+    document.addEventListener('touchmove', onMove, { signal: abortSignal });
+    document.addEventListener('touchend', onEnd, { signal: abortSignal });
     event.preventDefault();
   }
 
-  private updateBandFromEvent(event: MouseEvent, bandIndex: number): void {
-    const target = event.currentTarget as HTMLElement;
-    const rect = target.getBoundingClientRect();
-    const y = event.clientY - rect.top;
-    this.updateBandValue(bandIndex, y, rect.height);
-  }
+  // Keyboard control for a focused band slider
+  protected onBandKeydown(event: KeyboardEvent, bandIndex: number): void {
+    if (!this.interactive() || this.disabled()) return;
 
-  private updateBandFromTouch(touch: Touch, bandIndex: number): void {
-    const target = document.querySelector(`[data-band="${bandIndex}"]`)!;
-    if (!target) return;
-    const rect = target.getBoundingClientRect();
-    const y = touch.clientY - rect.top;
-    this.updateBandValue(bandIndex, y, rect.height);
+    const step = this.step();
+    const largeStep = step * 4;
+    const current = this.bandValues()[bandIndex] ?? 0;
+    let gain: number;
+
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'ArrowRight': {
+        gain = current + step;
+        break;
+      }
+      case 'ArrowDown':
+      case 'ArrowLeft': {
+        gain = current - step;
+        break;
+      }
+      case 'PageUp': {
+        gain = current + largeStep;
+        break;
+      }
+      case 'PageDown': {
+        gain = current - largeStep;
+        break;
+      }
+      case 'Home': {
+        gain = this.minGain();
+        break;
+      }
+      case 'End': {
+        gain = this.maxGain();
+        break;
+      }
+      default: {
+        return;
+      }
+    }
+
+    event.preventDefault();
+    gain = Math.max(this.minGain(), Math.min(this.maxGain(), gain));
+
+    this.bandValues.update(values => {
+      const newValues = [...values];
+      newValues[bandIndex] = gain;
+      return newValues;
+    });
+
+    const freq = this.frequencies()[bandIndex];
+    this.bandChange.emit({ frequency: freq, gain });
+    this.emitValues();
+    this.onTouched();
   }
 
   private updateBandValue(bandIndex: number, y: number, height: number): void {
@@ -760,10 +852,9 @@ export class TwGraphicEQComponent implements ControlValueAccessor {
     if (gain >= 0) {
       const percentage = gain / maxGain;
       return `${percentage * (height / 2)}px`;
-    } 
-      const percentage = Math.abs(gain) / Math.abs(minGain);
-      return `${percentage * (height / 2)}px`;
-    
+    }
+    const percentage = Math.abs(gain) / Math.abs(minGain);
+    return `${percentage * (height / 2)}px`;
   }
 
   protected getBandFillPosition(gain: number): string {

@@ -1,10 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { NativeAppPlatformService } from './platform.service';
-import { Platform } from './native.types';
 import { dynamicImport } from './dynamic-import.util';
-
-const PLATFORM_TAURI: Platform = 'tauri';
-const PLATFORM_ELECTRON: Platform = 'electron';
 
 export interface NativeNotificationOptions {
   title: string;
@@ -35,9 +31,7 @@ export class NativeNotificationsService {
   }
 
   private checkSupport(): void {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI || platform === PLATFORM_ELECTRON) {
+    if (this.platformService.isTauri() || this.platformService.isElectron()) {
       this.isSupported.set(true);
       this.permissionGranted.set(true);
     } else if (typeof Notification !== 'undefined') {
@@ -47,9 +41,7 @@ export class NativeNotificationsService {
   }
 
   public async requestPermission(): Promise<boolean> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
+    if (this.platformService.isTauri()) {
       try {
         const notification = await dynamicImport('@tauri-apps/plugin-notification');
         let granted = await notification.isPermissionGranted();
@@ -63,7 +55,7 @@ export class NativeNotificationsService {
         console.error('Failed to request Tauri notification permission:', error);
         return false;
       }
-    } else if (platform === PLATFORM_ELECTRON) {
+    } else if (this.platformService.isElectron()) {
       this.permissionGranted.set(true);
       return true;
     } else if (typeof Notification !== 'undefined') {
@@ -82,24 +74,20 @@ export class NativeNotificationsService {
       if (!granted) return null;
     }
 
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
+    if (this.platformService.isTauri()) {
       return this.showTauriNotification(options);
-    } if (platform === PLATFORM_ELECTRON) {
+    }
+    if (this.platformService.isElectron()) {
       return this.showElectronNotification(options);
-    } 
-      return this.showWebNotification(options);
-    
+    }
+    return this.showWebNotification(options);
   }
 
   public async setBadgeCount(count: number): Promise<void> {
-    const platform = this.platformService.platform();
-
-    if (platform === PLATFORM_TAURI) {
+    if (this.platformService.isTauri()) {
       // Badge count not directly available in current Tauri plugin
       console.warn('Badge count not directly supported in Tauri');
-    } else if (platform === PLATFORM_ELECTRON) {
+    } else if (this.platformService.isElectron()) {
       try {
         const { ipcRenderer } = await dynamicImport('electron');
         ipcRenderer.send('set-badge-count', count);
@@ -173,7 +161,9 @@ export class NativeNotificationsService {
       });
 
       if (options.timeout) {
-        setTimeout(() => { notification.close(); }, options.timeout);
+        setTimeout(() => {
+          notification.close();
+        }, options.timeout);
       }
 
       return Promise.resolve(id);

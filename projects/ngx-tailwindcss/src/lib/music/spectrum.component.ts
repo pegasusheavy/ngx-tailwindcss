@@ -4,11 +4,13 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   input,
+  linkedSignal,
+  NgZone,
   OnChanges,
-  signal,
   SimpleChanges,
   viewChild,
 } from '@angular/core';
@@ -17,13 +19,7 @@ import { TwClassService } from '../core/tw-class.service';
 
 export type SpectrumVariant = 'bars' | 'line' | 'gradient' | 'mirror';
 export type SpectrumColorScheme =
-  | 'classic'
-  | 'fire'
-  | 'ice'
-  | 'neon'
-  | 'mono'
-  | 'light'
-  | 'highContrast';
+  'classic' | 'fire' | 'ice' | 'neon' | 'mono' | 'light' | 'highContrast';
 export type FrequencyScale = 'linear' | 'logarithmic';
 
 interface ColorStop {
@@ -91,6 +87,7 @@ const COLOR_SCHEMES: Record<SpectrumColorScheme, ColorStop[]> = {
 export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   private readonly twClass = inject(TwClassService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly zone = inject(NgZone);
   private readonly canvas = viewChild<ElementRef<HTMLCanvasElement>>('spectrumCanvas');
 
   // Data inputs
@@ -105,9 +102,12 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   readonly barCount = input(32);
   readonly barGap = input(2);
   readonly barRadius = input(2);
-  readonly smoothing = input(0.8);
-  readonly minDecibels = input(-90);
-  readonly maxDecibels = input(-10);
+  /** Smoothing factor applied to the analyser. When omitted, the node's existing smoothing is used untouched. */
+  readonly smoothing = input<number | undefined>(undefined);
+  /** Analyser minDecibels. When omitted, the node's existing value is used untouched. */
+  readonly minDecibels = input<number | undefined>(undefined);
+  /** Analyser maxDecibels. When omitted, the node's existing value is used untouched. */
+  readonly maxDecibels = input<number | undefined>(undefined);
   readonly showPeaks = input(true);
   readonly peakDecay = input(0.02);
   readonly showLabels = input(false);
@@ -144,17 +144,38 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   readonly minFrequency = input(20); // Hz - lowest frequency to display
   readonly maxFrequency = input(20_000); // Hz - highest frequency to display
 
+  // Internal scale state: seeded by the frequencyScale input, overridable via setFrequencyScale()
+  protected readonly effectiveFrequencyScale = linkedSignal(() => this.frequencyScale());
+
   // Internal state
   private ctx: CanvasRenderingContext2D | null = null;
   private animationFrame: number | null = null;
   private dataArray: Uint8Array<ArrayBuffer> = new Uint8Array(0);
+  private conversionBuffer: Uint8Array = new Uint8Array(0); // Reused for number[] frequencyData
   private peaks: number[] = [];
   private isRunning = false;
   private sampleRate = 44_100; // Default, updated from AudioContext
   private binToBarMapping: number[][] = []; // Maps each bar to its frequency bin range
 
+  constructor() {
+    // Rebuild analyser config, bin mapping and peaks whenever a mapping-relevant input changes
+    effect(() => {
+      // Tracked dependencies
+      this.analyserNode();
+      this.barCount();
+      this.effectiveFrequencyScale();
+      this.minFrequency();
+      this.maxFrequency();
+      this.smoothing();
+      this.minDecibels();
+      this.maxDecibels();
+
+      this.setupAnalyser();
+    });
+  }
+
   protected readonly frequencyLabels = computed(() => {
-    const scale = this.frequencyScale();
+    const scale = this.effectiveFrequencyScale();
     const barCount = this.barCount();
     const minFreq = this.minFrequency();
     const maxFreq = this.maxFrequency();
@@ -165,16 +186,15 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
         const freq = this.labelToFreq(label);
         return freq >= minFreq && freq <= maxFreq;
       });
-    } 
-      // Linear labels - evenly spaced
-      const labels: string[] = [];
-      const step = (maxFreq - minFreq) / 5;
-      for (let i = 0; i <= 5; i++) {
-        const freq = minFreq + i * step;
-        labels.push(this.freqToLabel(freq));
-      }
-      return labels;
-    
+    }
+    // Linear labels - evenly spaced
+    const labels: string[] = [];
+    const step = (maxFreq - minFreq) / 5;
+    for (let i = 0; i <= 5; i++) {
+      const freq = minFreq + i * step;
+      labels.push(this.freqToLabel(freq));
+    }
+    return labels;
   });
 
   private labelToFreq(label: string): number {
@@ -202,9 +222,7 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['analyserNode']) {
-      this.setupAnalyser();
-    }
+    // analyserNode changes are handled by the constructor effect
     if (changes['frequencyData'] && !this.analyserNode()) {
       this.draw();
     }
@@ -219,9 +237,21 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   private setupAnalyser(): void {
     const analyser = this.analyserNode();
     if (analyser) {
-      analyser.smoothingTimeConstant = this.smoothing();
-      analyser.minDecibels = this.minDecibels();
-      analyser.maxDecibels = this.maxDecibels();
+      // Only configure the analyser when the corresponding input was explicitly
+      // provided; otherwise adapt to the node's existing configuration so a
+      // shared node is not mutated behind the caller's back.
+      const smoothing = this.smoothing();
+      if (smoothing !== undefined) {
+        analyser.smoothingTimeConstant = smoothing;
+      }
+      const minDb = this.minDecibels();
+      if (minDb !== undefined) {
+        analyser.minDecibels = minDb;
+      }
+      const maxDb = this.maxDecibels();
+      if (maxDb !== undefined) {
+        analyser.maxDecibels = maxDb;
+      }
       this.dataArray = new Uint8Array(analyser.frequencyBinCount);
       this.peaks = Array.from({ length: this.barCount() }).fill(0) as number[];
 
@@ -237,7 +267,7 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
 
   private calculateBinMapping(binCount: number): void {
     const barCount = this.barCount();
-    const scale = this.frequencyScale();
+    const scale = this.effectiveFrequencyScale();
     const minFreq = this.minFrequency();
     const maxFreq = this.maxFrequency();
     const nyquist = this.sampleRate / 2;
@@ -272,8 +302,8 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
         const logFreqLow = logMin + (bar / barCount) * logRange;
         const logFreqHigh = logMin + ((bar + 1) / barCount) * logRange;
 
-        const freqLow = 10**logFreqLow;
-        const freqHigh = 10**logFreqHigh;
+        const freqLow = 10 ** logFreqLow;
+        const freqHigh = 10 ** logFreqHigh;
 
         const binLow = Math.max(0, Math.floor(freqLow / binSize));
         const binHigh = Math.min(binCount - 1, Math.floor(freqHigh / binSize));
@@ -303,7 +333,10 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
       this.animationFrame = requestAnimationFrame(animate);
     };
 
-    animate();
+    // Draw loop never touches template state, so keep it out of the zone
+    this.zone.runOutsideAngular(() => {
+      animate();
+    });
 
     this.destroyRef.onDestroy(() => {
       this.isRunning = false;
@@ -316,8 +349,8 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   private draw(): void {
     if (!this.ctx) return;
 
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const variant = this.variant();
 
     // Clear canvas
@@ -326,9 +359,7 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     this.ctx.fillRect(0, 0, w, h);
 
     // Get frequency data
-    const data = this.analyserNode()
-      ? this.dataArray
-      : new Uint8Array(this.frequencyData() as number[]);
+    const data = this.analyserNode() ? this.dataArray : this.getStaticData();
     if (data.length === 0) return;
 
     switch (variant) {
@@ -351,14 +382,25 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
     }
   }
 
+  // Reusable conversion buffer so frequencyData mode does not allocate per frame
+  private getStaticData(): Uint8Array {
+    const source = this.frequencyData();
+    if (source instanceof Uint8Array) return source;
+    if (this.conversionBuffer.length !== source.length) {
+      this.conversionBuffer = new Uint8Array(source.length);
+    }
+    this.conversionBuffer.set(source);
+    return this.conversionBuffer;
+  }
+
   private drawBars(data: Uint8Array): void {
     if (!this.ctx) return;
 
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const barCount = this.barCount();
-    const gap = this.barGap();
-    const radius = this.barRadius();
+    const gap = this.effectiveBarGap();
+    const radius = this.effectiveBarRadius();
     const colors = COLOR_SCHEMES[this.colorScheme()];
 
     const barWidth = (w - (barCount - 1) * gap) / barCount;
@@ -421,11 +463,11 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   private drawGradientBars(data: Uint8Array): void {
     if (!this.ctx) return;
 
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const barCount = this.barCount();
-    const gap = this.barGap();
-    const radius = this.barRadius();
+    const gap = this.effectiveBarGap();
+    const radius = this.effectiveBarRadius();
     const colors = COLOR_SCHEMES[this.colorScheme()];
 
     const barWidth = (w - (barCount - 1) * gap) / barCount;
@@ -451,8 +493,8 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   private drawLine(data: Uint8Array): void {
     if (!this.ctx) return;
 
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const colors = COLOR_SCHEMES[this.colorScheme()];
 
     // Create gradient for line
@@ -499,11 +541,11 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
   private drawMirror(data: Uint8Array): void {
     if (!this.ctx) return;
 
-    const w = this.width();
-    const h = this.height();
+    const w = this.effectiveWidth();
+    const h = this.effectiveHeight();
     const barCount = this.barCount();
-    const gap = this.barGap();
-    const radius = this.barRadius();
+    const gap = this.effectiveBarGap();
+    const radius = this.effectiveBarRadius();
     const colors = COLOR_SCHEMES[this.colorScheme()];
 
     const barWidth = (w - (barCount - 1) * gap) / barCount;
@@ -580,7 +622,7 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
    * Get the frequency range for a specific bar
    */
   getBarFrequencyRange(barIndex: number): { low: number; high: number } {
-    const scale = this.frequencyScale();
+    const scale = this.effectiveFrequencyScale();
     const barCount = this.barCount();
     const minFreq = this.minFrequency();
     const maxFreq = this.maxFrequency();
@@ -591,22 +633,22 @@ export class TwSpectrumComponent implements AfterViewInit, OnChanges {
         low: minFreq + barIndex * freqPerBar,
         high: minFreq + (barIndex + 1) * freqPerBar,
       };
-    } 
-      const logMin = Math.log10(Math.max(1, minFreq));
-      const logMax = Math.log10(maxFreq);
-      const logRange = logMax - logMin;
+    }
+    const logMin = Math.log10(Math.max(1, minFreq));
+    const logMax = Math.log10(maxFreq);
+    const logRange = logMax - logMin;
 
-      return {
-        low: 10**(logMin + (barIndex / barCount) * logRange),
-        high: 10**(logMin + ((barIndex + 1) / barCount) * logRange),
-      };
-    
+    return {
+      low: 10 ** (logMin + (barIndex / barCount) * logRange),
+      high: 10 ** (logMin + ((barIndex + 1) / barCount) * logRange),
+    };
   }
 
   /**
    * Set frequency scale and recalculate bin mapping
    */
   setFrequencyScale(scale: FrequencyScale): void {
+    this.effectiveFrequencyScale.set(scale);
     const analyser = this.analyserNode();
     if (analyser) {
       this.calculateBinMapping(analyser.frequencyBinCount);

@@ -127,6 +127,23 @@ describe('TwTimelineComponent', () => {
       const eventItems = timelineEl.queryAll(By.css('.relative.flex'));
       expect(eventItems[0].nativeElement.className).toContain('flex-row-reverse');
     });
+
+    it('should alternate sides when align is alternate', () => {
+      component.align.set('alternate');
+      fixture.detectChanges();
+      const eventItems = timelineEl.queryAll(By.css('.relative.flex'));
+      expect(eventItems[0].nativeElement.className).not.toContain('flex-row-reverse');
+      expect(eventItems[1].nativeElement.className).toContain('flex-row-reverse');
+      expect(eventItems[2].nativeElement.className).not.toContain('flex-row-reverse');
+    });
+
+    it('should right-align content of odd items when align is alternate', () => {
+      component.align.set('alternate');
+      fixture.detectChanges();
+      const contents = timelineEl.queryAll(By.css('.flex-1.min-w-0'));
+      expect(contents[0].nativeElement.className).not.toContain('text-right');
+      expect(contents[1].nativeElement.className).toContain('text-right');
+    });
   });
 
   describe('marker sizes', () => {

@@ -1,15 +1,15 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  computed,
+  effect,
   ElementRef,
   HostListener,
   inject,
   input,
   OnDestroy,
-  OnInit,
   output,
   signal,
+  viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NativeAppPlatformService } from './platform.service';
@@ -27,118 +27,13 @@ import { NativeContextMenuEvent, NativeContextMenuPosition, NativeMenuItem } fro
   selector: 'tw-native-context-menu',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    @if (isOpen()) {
-      <div
-        class="fixed z-50 min-w-48 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700"
-        [style.left.px]="position().x"
-        [style.top.px]="position().y"
-        role="menu"
-        [attr.aria-label]="'Context menu'"
-      >
-        @for (item of items(); track item.id) {
-          @if (item.type === 'separator') {
-            <div class="h-px my-1 mx-2 bg-gray-200 dark:bg-gray-700"></div>
-          } @else {
-            <button
-              type="button"
-              class="w-full px-3 py-1.5 flex items-center gap-3 text-left text-sm transition-colors"
-              [class.bg-blue-500]="hoveredItemId() === item.id && !item.disabled"
-              [class.text-white]="hoveredItemId() === item.id && !item.disabled"
-              [class.hover:bg-blue-500]="!item.disabled"
-              [class.hover:text-white]="!item.disabled"
-              [class.text-gray-700]="hoveredItemId() !== item.id"
-              [class.dark:text-gray-300]="hoveredItemId() !== item.id"
-              [class.opacity-50]="item.disabled"
-              [class.cursor-not-allowed]="item.disabled"
-              role="menuitem"
-              [attr.aria-disabled]="item.disabled"
-              [disabled]="item.disabled"
-              (click)="selectItem(item, $event)"
-              (mouseenter)="hoveredItemId.set(item.id)"
-              (mouseleave)="hoveredItemId.set(null)"
-            >
-              <!-- Icon -->
-              @if (item.icon) {
-                <span class="w-4 text-center opacity-70">{{ item.icon }}</span>
-              }
-
-              <!-- Checkbox indicator -->
-              @if (item.type === 'checkbox') {
-                <span class="w-4 flex items-center justify-center">
-                  @if (item.checked) {
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 16 16">
-                      <path
-                        d="M13.78 4.22a.75.75 0 010 1.06l-7.25 7.25a.75.75 0 01-1.06 0L2.22 9.28a.75.75 0 011.06-1.06L6 10.94l6.72-6.72a.75.75 0 011.06 0z"
-                      />
-                    </svg>
-                  }
-                </span>
-              }
-
-              <!-- Label -->
-              <span class="flex-1">{{ item.label }}</span>
-
-              <!-- Shortcut -->
-              @if (item.shortcut) {
-                <span class="ml-6 text-xs opacity-60 font-mono">
-                  {{ formatShortcut(item.shortcut) }}
-                </span>
-              }
-
-              <!-- Submenu arrow -->
-              @if (item.type === 'submenu' && item.submenu?.length) {
-                <svg class="w-3 h-3 opacity-60" fill="currentColor" viewBox="0 0 16 16">
-                  <path
-                    d="M6.22 4.22a.75.75 0 011.06 0l3.25 3.25a.75.75 0 010 1.06l-3.25 3.25a.75.75 0 01-1.06-1.06L8.94 8 6.22 5.28a.75.75 0 010-1.06z"
-                  />
-                </svg>
-              }
-            </button>
-
-            <!-- Submenu -->
-            @if (item.type === 'submenu' && item.submenu?.length && hoveredItemId() === item.id) {
-              <div
-                class="absolute left-full top-0 ml-0.5 min-w-44 py-1 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700"
-                role="menu"
-              >
-                @for (subItem of item.submenu; track subItem.id) {
-                  @if (subItem.type === 'separator') {
-                    <div class="h-px my-1 mx-2 bg-gray-200 dark:bg-gray-700"></div>
-                  } @else {
-                    <button
-                      type="button"
-                      class="w-full px-3 py-1.5 flex items-center gap-3 text-left text-sm transition-colors hover:bg-blue-500 hover:text-white text-gray-700 dark:text-gray-300"
-                      [class.opacity-50]="subItem.disabled"
-                      role="menuitem"
-                      [disabled]="subItem.disabled"
-                      (click)="selectItem(subItem, $event)"
-                    >
-                      @if (subItem.icon) {
-                        <span class="w-4 text-center opacity-70">{{ subItem.icon }}</span>
-                      }
-                      <span class="flex-1">{{ subItem.label }}</span>
-                      @if (subItem.shortcut) {
-                        <span class="ml-4 text-xs opacity-60">{{
-                          formatShortcut(subItem.shortcut)
-                        }}</span>
-                      }
-                    </button>
-                  }
-                }
-              </div>
-            }
-          }
-        }
-      </div>
-    }
-  `,
+  templateUrl: './context-menu.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'tw-native-context-menu',
   },
 })
-export class TwNativeContextMenuComponent implements OnInit, OnDestroy {
+export class TwNativeContextMenuComponent implements OnDestroy {
   private readonly platformService = inject(NativeAppPlatformService);
 
   // Inputs
@@ -155,25 +50,34 @@ export class TwNativeContextMenuComponent implements OnInit, OnDestroy {
   protected readonly position = signal<NativeContextMenuPosition>({ x: 0, y: 0 });
   protected readonly hoveredItemId = signal<string | null>(null);
 
-  private readonly contextMenuHandler = (e: MouseEvent) => { this.onContextMenu(e); };
+  // View
+  private readonly menuRef = viewChild<ElementRef<HTMLElement>>('menu');
 
-  public ngOnInit(): void {
-    // Attach to trigger element
-    const triggerEl = this.trigger();
-    if (triggerEl) {
-      triggerEl.addEventListener('contextmenu', this.contextMenuHandler);
-    } else {
-      // If no trigger, listen on document
-      document.addEventListener('contextmenu', this.contextMenuHandler);
-    }
+  private readonly contextMenuHandler = (e: Event) => {
+    this.onContextMenu(e as MouseEvent);
+  };
+  /** The exact node the contextmenu listener is currently attached to */
+  private listenerTarget: HTMLElement | Document | null = null;
+
+  constructor() {
+    // Attach to the trigger element (or document), re-binding whenever it changes
+    effect(() => {
+      const triggerEl = this.trigger();
+      this.detachContextMenuListener();
+      const target = triggerEl ?? document;
+      target.addEventListener('contextmenu', this.contextMenuHandler);
+      this.listenerTarget = target;
+    });
   }
 
   public ngOnDestroy(): void {
-    const triggerEl = this.trigger();
-    if (triggerEl) {
-      triggerEl.removeEventListener('contextmenu', this.contextMenuHandler);
-    } else {
-      document.removeEventListener('contextmenu', this.contextMenuHandler);
+    this.detachContextMenuListener();
+  }
+
+  private detachContextMenuListener(): void {
+    if (this.listenerTarget) {
+      this.listenerTarget.removeEventListener('contextmenu', this.contextMenuHandler);
+      this.listenerTarget = null;
     }
   }
 
@@ -195,29 +99,33 @@ export class TwNativeContextMenuComponent implements OnInit, OnDestroy {
   private onContextMenu(event: MouseEvent): void {
     event.preventDefault();
 
-    // Calculate position, ensuring menu stays within viewport
-    let x = event.clientX;
-    let y = event.clientY;
+    const x = event.clientX;
+    const y = event.clientY;
 
     // We'll adjust after render if needed
     this.position.set({ x, y });
     this.isOpen.set(true);
     this.opened.emit({ x, y });
+    this.clampToViewport(x, y);
+  }
 
-    // Adjust position after a tick to ensure menu is rendered
+  /** Adjust position after a tick (once the menu is rendered) so it stays within the viewport */
+  private clampToViewport(x: number, y: number): void {
     setTimeout(() => {
-      const menuEl = document.querySelector('.tw-context-menu > div')!;
+      const menuEl = this.menuRef()?.nativeElement;
       if (menuEl) {
         const rect = menuEl.getBoundingClientRect();
 
-        if (x + rect.width > window.innerWidth) {
-          x = window.innerWidth - rect.width - 8;
+        let clampedX = x;
+        let clampedY = y;
+        if (clampedX + rect.width > window.innerWidth) {
+          clampedX = window.innerWidth - rect.width - 8;
         }
-        if (y + rect.height > window.innerHeight) {
-          y = window.innerHeight - rect.height - 8;
+        if (clampedY + rect.height > window.innerHeight) {
+          clampedY = window.innerHeight - rect.height - 8;
         }
 
-        this.position.set({ x: Math.max(8, x), y: Math.max(8, y) });
+        this.position.set({ x: Math.max(8, clampedX), y: Math.max(8, clampedY) });
       }
     }, 0);
   }
@@ -248,6 +156,7 @@ export class TwNativeContextMenuComponent implements OnInit, OnDestroy {
     this.position.set({ x, y });
     this.isOpen.set(true);
     this.opened.emit({ x, y });
+    this.clampToViewport(x, y);
   }
 
   public close(): void {

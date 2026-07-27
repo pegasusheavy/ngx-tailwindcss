@@ -1,5 +1,13 @@
 <!-- Thumbnail/Main image -->
-<div [class]="containerClasses()" [style]="containerStyles()" (click)="onImageClick()">
+<div
+  [class]="containerClasses()"
+  [style]="containerStyles()"
+  [attr.role]="preview() ? 'button' : null"
+  [attr.tabindex]="preview() ? 0 : null"
+  [attr.aria-label]="preview() ? 'Open image preview' : null"
+  (click)="onImageClick()"
+  (keydown)="onThumbnailKeydown($event)"
+>
   @if (loading()) {
     <div [class]="placeholderClasses()">
       <svg
@@ -42,6 +50,10 @@
 @if (previewVisible()) {
   <div
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
+    role="dialog"
+    aria-modal="true"
+    aria-label="Image preview"
+    twFocusTrap
     (click)="closePreview()"
   >
     <!-- Controls -->

@@ -33,6 +33,8 @@ import {
 import {
   TwInputComponent,
   TwModalComponent,
+  TwModalHeaderComponent,
+  TwModalTitleComponent,
   TwToastService,
   TwTabsComponent,
   TwTabPanelComponent,
@@ -40,7 +42,7 @@ import {
   TwAccordionComponent,
   TwAccordionItemComponent,
   TwRatingComponent,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface Photo {
@@ -88,6 +90,8 @@ interface Service {
     FontAwesomeModule,
     TwInputComponent,
     TwModalComponent,
+    TwModalHeaderComponent,
+    TwModalTitleComponent,
     TwTabsComponent,
     TwTabPanelComponent,
     TwSpinnerComponent,

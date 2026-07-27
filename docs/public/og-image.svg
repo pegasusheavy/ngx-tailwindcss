@@ -64,5 +64,5 @@
   <text x="80" y="550" font-family="system-ui, -apple-system, sans-serif" font-size="24" fill="url(#textGradient)">ngx-tailwindcss.dev</text>
 
   <!-- Author -->
-  <text x="1120" y="550" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#64748b">Pegasus Heavy Industries LLC</text>
+  <text x="1120" y="550" text-anchor="end" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#64748b">Joseph R Quinn</text>
 </svg>

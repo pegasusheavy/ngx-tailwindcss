@@ -45,7 +45,7 @@ import {
   TwAccordionComponent,
   TwAccordionItemComponent,
   TwDividerComponent,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface Product {

@@ -26,11 +26,13 @@ import {
   TwBadgeComponent,
   TwAvatarComponent,
   TwModalComponent,
+  TwModalHeaderComponent,
+  TwModalTitleComponent,
   TwToastService,
   TwDividerComponent,
   TwAlertComponent,
   TwChipComponent,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface User {
@@ -101,6 +103,8 @@ interface Notification {
     TwBadgeComponent,
     TwAvatarComponent,
     TwModalComponent,
+    TwModalHeaderComponent,
+    TwModalTitleComponent,
     TwDividerComponent,
     TwAlertComponent,
     TwChipComponent,

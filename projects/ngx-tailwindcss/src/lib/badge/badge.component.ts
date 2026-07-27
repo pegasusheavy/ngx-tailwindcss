@@ -13,13 +13,7 @@ import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
 export type BadgeVariant =
-  | 'primary'
-  | 'secondary'
-  | 'success'
-  | 'warning'
-  | 'danger'
-  | 'info'
-  | 'neutral';
+  'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info' | 'neutral';
 export type BadgeSize = 'sm' | 'md' | 'lg';
 export type BadgeStyle = 'solid' | 'soft' | 'outline' | 'dot';
 

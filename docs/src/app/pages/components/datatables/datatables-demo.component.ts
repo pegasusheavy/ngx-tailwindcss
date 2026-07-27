@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwDatatablesComponent } from '@pegasusheavy/ngx-tailwindcss';
+import { TwDatatablesComponent } from '@quinnjr/ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -68,6 +68,39 @@ export class DatatablesDemoComponent {
     { field: 'status', header: 'Status' },
     { field: 'created', header: 'Joined' },
   ];
+
+  selectedRows: unknown[] = [];
+  lastEvent = 'None yet';
+  toolbarMessage = '';
+
+  onSelectionChange(selection: unknown[]): void {
+    this.selectedRows = selection;
+  }
+
+  onRowClick(row: unknown): void {
+    const name = (row as { name?: string }).name ?? 'unknown';
+    this.lastEvent = `Row clicked: ${name}`;
+  }
+
+  onSortChange(event: { field: string; order: number }): void {
+    this.lastEvent = `Sorted by ${event.field} (${event.order === 1 ? 'ascending' : 'descending'})`;
+  }
+
+  onPageChange(event: { page: number; rows: number }): void {
+    this.lastEvent = `Page changed to ${event.page} (${event.rows} rows per page)`;
+  }
+
+  exportCsv(): void {
+    this.toolbarMessage = `Exported ${this.users.length} rows to CSV (demo)`;
+  }
+
+  newInvite(): void {
+    this.toolbarMessage = 'New invite created (demo)';
+  }
+
+  bulkActions(): void {
+    this.toolbarMessage = `Bulk action applied to ${this.selectedRows.length} selected row(s) (demo)`;
+  }
 
   basicCode = `<tw-datatables
   [data]="users"

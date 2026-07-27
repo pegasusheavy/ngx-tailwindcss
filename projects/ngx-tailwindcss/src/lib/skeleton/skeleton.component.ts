@@ -1,12 +1,28 @@
-import { Component, computed, Input, signal } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  Input,
+  numberAttribute,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type SkeletonVariant = 'text' | 'circular' | 'rectangular' | 'rounded';
+
+const VARIANT_CLASSES: Record<SkeletonVariant, string> = {
+  text: 'rounded',
+  circular: 'rounded-full aspect-square',
+  rectangular: 'rounded-none',
+  rounded: 'rounded-lg',
+};
 
 @Component({
   selector: 'tw-skeleton',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './skeleton.component.html',
   styles: [
     `
@@ -26,7 +42,7 @@ export class TwSkeletonComponent {
   @Input() set height(value: string | number) {
     this._height.set(value);
   }
-  @Input() set animated(value: boolean) {
+  @Input({ transform: booleanAttribute }) set animated(value: boolean) {
     this._animated.set(value);
   }
 
@@ -39,14 +55,7 @@ export class TwSkeletonComponent {
     const variant = this._variant();
     const animated = this._animated();
 
-    const variantClasses: Record<SkeletonVariant, string> = {
-      text: 'rounded',
-      circular: 'rounded-full aspect-square',
-      rectangular: 'rounded-none',
-      rounded: 'rounded-lg',
-    };
-
-    const classes = ['bg-slate-200 dark:bg-slate-700', 'block', variantClasses[variant]];
+    const classes = ['bg-slate-200 dark:bg-slate-700', 'block', VARIANT_CLASSES[variant]];
 
     if (animated) {
       classes.push('animate-pulse');
@@ -78,10 +87,17 @@ export class TwSkeletonComponent {
 
 export type SkeletonGap = 'sm' | 'md' | 'lg';
 
+const GAP_PX: Record<SkeletonGap, number> = {
+  sm: 12,
+  md: 16,
+  lg: 20,
+};
+
 @Component({
   selector: 'tw-skeleton-text',
   standalone: true,
   imports: [CommonModule, TwSkeletonComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './skeleton-text.component.html',
   styles: [
     `
@@ -92,10 +108,10 @@ export type SkeletonGap = 'sm' | 'md' | 'lg';
   ],
 })
 export class TwSkeletonTextComponent {
-  @Input() set lineCount(value: number) {
+  @Input({ transform: numberAttribute }) set lineCount(value: number) {
     this._lineCount.set(value);
   }
-  @Input() set animated(value: boolean) {
+  @Input({ transform: booleanAttribute }) set animated(value: boolean) {
     this._animated.set(value);
   }
   @Input() set lastLineWidth(value: string) {
@@ -112,14 +128,7 @@ export class TwSkeletonTextComponent {
 
   protected animatedValue = computed(() => this._animated());
 
-  protected gapPx = computed(() => {
-    const gapMap: Record<SkeletonGap, number> = {
-      sm: 12,
-      md: 16,
-      lg: 20,
-    };
-    return gapMap[this._gap()];
-  });
+  protected gapPx = computed(() => GAP_PX[this._gap()]);
 
   protected lines = computed(() => {
     const count = this._lineCount();
@@ -135,6 +144,7 @@ export class TwSkeletonTextComponent {
   selector: 'tw-skeleton-card',
   standalone: true,
   imports: [CommonModule, TwSkeletonComponent, TwSkeletonTextComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './skeleton-card.component.html',
   styles: [
     `
@@ -145,16 +155,16 @@ export class TwSkeletonTextComponent {
   ],
 })
 export class TwSkeletonCardComponent {
-  @Input() set showMedia(value: boolean) {
+  @Input({ transform: booleanAttribute }) set showMedia(value: boolean) {
     this._showMedia.set(value);
   }
-  @Input() set showAvatar(value: boolean) {
+  @Input({ transform: booleanAttribute }) set showAvatar(value: boolean) {
     this._showAvatar.set(value);
   }
-  @Input() set mediaHeight(value: number) {
+  @Input({ transform: numberAttribute }) set mediaHeight(value: number) {
     this._mediaHeight.set(value);
   }
-  @Input() set lineCount(value: number) {
+  @Input({ transform: numberAttribute }) set lineCount(value: number) {
     this._lineCount.set(value);
   }
 
@@ -173,6 +183,7 @@ export class TwSkeletonCardComponent {
   selector: 'tw-skeleton-table',
   standalone: true,
   imports: [CommonModule, TwSkeletonComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './skeleton-table.component.html',
   styles: [
     `
@@ -183,10 +194,10 @@ export class TwSkeletonCardComponent {
   ],
 })
 export class TwSkeletonTableComponent {
-  @Input() set rowCount(value: number) {
+  @Input({ transform: numberAttribute }) set rowCount(value: number) {
     this._rowCount.set(value);
   }
-  @Input() set columnCount(value: number) {
+  @Input({ transform: numberAttribute }) set columnCount(value: number) {
     this._columnCount.set(value);
   }
 

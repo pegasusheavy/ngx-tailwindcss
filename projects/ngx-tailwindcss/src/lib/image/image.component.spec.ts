@@ -217,6 +217,51 @@ describe('TwImageComponent', () => {
       fixture.detectChanges();
       expect(component.onHideSpy).toHaveBeenCalled();
     });
+
+    it('should expose the thumbnail as a keyboard-operable button', () => {
+      const container = imageEl.query(By.css('div')).nativeElement;
+      expect(container.getAttribute('role')).toBe('button');
+      expect(container.getAttribute('tabindex')).toBe('0');
+    });
+
+    it('should open preview on Enter keydown', () => {
+      const container = imageEl.query(By.css('div')).nativeElement;
+      container.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', bubbles: true }));
+      fixture.detectChanges();
+
+      expect(component.onShowSpy).toHaveBeenCalled();
+      const dialog = fixture.debugElement.query(By.css('[role="dialog"]'));
+      expect(dialog).toBeTruthy();
+      expect(dialog.nativeElement.getAttribute('aria-modal')).toBe('true');
+    });
+
+    it('should save and restore body overflow around preview', () => {
+      document.body.style.overflow = 'scroll';
+
+      component.image.openPreview();
+      fixture.detectChanges();
+      expect(document.body.style.overflow).toBe('hidden');
+
+      component.image.closePreview();
+      fixture.detectChanges();
+      expect(document.body.style.overflow).toBe('scroll');
+
+      document.body.style.overflow = '';
+    });
+  });
+
+  describe('loading state', () => {
+    it('should reset loading when src changes', () => {
+      const img = imageEl.query(By.css('img'));
+      img.nativeElement.dispatchEvent(new Event('load'));
+      fixture.detectChanges();
+      expect(imageEl.query(By.css('.animate-pulse'))).toBeNull();
+
+      component.src.set('https://example.com/other.jpg');
+      fixture.detectChanges();
+
+      expect(imageEl.query(By.css('.animate-pulse'))).toBeTruthy();
+    });
   });
 
   describe('zoom', () => {

@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
-import { ClefType, KeySignature, StaffTimeSignature, TwStaffComponent } from './staff.component';
+import { KeySignature, StaffTimeSignature } from './staff.component';
 import { ChordDefinition, COMMON_CHORDS, TwChordDiagramComponent } from './chord-diagram.component';
 
 export type LeadSheetVariant = 'default' | 'minimal' | 'printed' | 'dark' | 'fakebook';
@@ -102,7 +102,7 @@ const SLASH_PATTERNS: Record<string, SlashPattern> = {
 @Component({
   selector: 'tw-lead-sheet',
   standalone: true,
-  imports: [CommonModule, TwStaffComponent, TwChordDiagramComponent],
+  imports: [CommonModule, TwChordDiagramComponent],
   templateUrl: './lead-sheet.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -120,16 +120,10 @@ export class TwLeadSheetComponent {
   readonly showMeasureNumbers = input(false);
   readonly showSlashes = input(true); // Show rhythm slashes
   readonly showChordDiagrams = input(false); // Show chord diagrams inline
-  readonly showMelodyLine = input(false); // Show melody notes on staff
   readonly showRehearsalMarks = input(true); // Show A, B, C rehearsal marks
   readonly diagramSize = input<'sm' | 'md' | 'lg'>('sm');
   readonly interactive = input(false);
   readonly classOverride = input('');
-
-  // Staff configuration (when displaying with staff)
-  readonly staffClef = input<ClefType>('treble');
-  readonly staffWidth = input(800, { transform: numberAttribute });
-  readonly staffHeight = input(80, { transform: numberAttribute });
 
   readonly chordClick = output<{ section: number; measure: number; chord: LeadSheetChord }>();
   readonly measureClick = output<{ section: number; measure: number }>();

@@ -86,6 +86,7 @@
     "@tauri-apps/plugin-dialog": "^2.0.0",
     "@tauri-apps/plugin-notification": "^2.0.0",
     "@tauri-apps/plugin-process": "^2.0.0",
+    "@tauri-apps/plugin-store": "^2.0.0",
     "@tauri-apps/plugin-updater": "^2.0.0",
     "electron": "^28.0.0 || ^29.0.0 || ^30.0.0 || ^31.0.0 || ^32.0.0 || ^33.0.0 || ^34.0.0 || ^35.0.0 || ^36.0.0 || ^37.0.0 || ^38.0.0 || ^39.0.0"
   },
@@ -100,6 +101,9 @@
       "optional": true
     },
     "@tauri-apps/plugin-process": {
+      "optional": true
+    },
+    "@tauri-apps/plugin-store": {
       "optional": true
     },
     "@tauri-apps/plugin-updater": {

@@ -3,7 +3,13 @@
     @for (step of steps(); track step.id ?? $index; let i = $index; let last = $last) {
       <li [class]="itemClasses(last)">
         <!-- Step content (indicator + label) -->
-        <div [class]="stepContentClasses(i)" (click)="onStepClick(i)">
+        <button
+          type="button"
+          [class]="stepContentClasses(i)"
+          [disabled]="!isStepClickable(i)"
+          [attr.aria-current]="i === activeIndex() ? 'step' : null"
+          (click)="onStepClick(i)"
+        >
           <!-- Step indicator -->
           <div [class]="indicatorClasses(i)">
             @if (getStepStatus(i) === 'complete') {
@@ -30,7 +36,7 @@
               }
             </div>
           }
-        </div>
+        </button>
 
         <!-- Label (for vertical, shown next to indicator) -->
         @if (showLabels() && orientation() === 'vertical') {

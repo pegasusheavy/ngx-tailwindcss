@@ -95,6 +95,12 @@ export class AudioContextService implements OnDestroy {
   private readonly _workletModules = signal<Map<string, AudioWorkletModuleInfo>>(new Map());
   private sourceIdCounter = 0;
 
+  // MediaElementAudioSourceNode doesn't expose its element, so connected
+  // elements are tracked here (populated by connectMediaElement, cleared by
+  // disconnectSource) to make double-connect detection possible.
+  private readonly elementSourceIds = new WeakMap<HTMLMediaElement, string>();
+  private readonly sourceElements = new Map<string, HTMLMediaElement>();
+
   /** Current audio context state */
   readonly state = this._state.asReadonly();
 
@@ -236,6 +242,9 @@ export class AudioContextService implements OnDestroy {
       return newSources;
     });
 
+    this.elementSourceIds.set(element, id);
+    this.sourceElements.set(id, element);
+
     return connectedSource;
   }
 
@@ -247,9 +256,8 @@ export class AudioContextService implements OnDestroy {
   }
 
   private findSourceByElement(element: HTMLMediaElement): string | null {
-    // MediaElementAudioSourceNode doesn't expose the element, so we track by node reference
-    // This is a limitation - in practice, we rely on the caller not double-connecting
-    return null;
+    const id = this.elementSourceIds.get(element);
+    return id !== undefined && this._sources().has(id) ? id : null;
   }
 
   // =========================================================================
@@ -340,8 +348,12 @@ export class AudioContextService implements OnDestroy {
         node: source,
         analyser,
         gain,
-        start: (when?: number) => { source.start(when); },
-        stop: () => { source.stop(); },
+        start: (when?: number) => {
+          source.start(when);
+        },
+        stop: () => {
+          source.stop();
+        },
       };
 
     this._sources.update(sources => {
@@ -408,7 +420,9 @@ export class AudioContextService implements OnDestroy {
       node: oscillator,
       analyser,
       gain,
-      start: () => { oscillator.start(); },
+      start: () => {
+        oscillator.start();
+      },
       stop: () => {
         oscillator.stop();
         this.disconnectSource(id);
@@ -672,6 +686,12 @@ export class AudioContextService implements OnDestroy {
       newSources.delete(id);
       return newSources;
     });
+
+    const element = this.sourceElements.get(id);
+    if (element) {
+      this.elementSourceIds.delete(element);
+      this.sourceElements.delete(id);
+    }
   }
 
   /**
@@ -707,27 +727,60 @@ export class AudioContextService implements OnDestroy {
 
   /**
    * Get frequency data from an analyser
+   * @param out Optional pre-allocated buffer to fill (length must equal
+   *   `analyser.frequencyBinCount`). Without `out` a fresh array is allocated
+   *   on every call, so this is only allocation-free (per-frame safe) when a
+   *   reused buffer is provided.
    */
-  getFrequencyData(analyser: AnalyserNode): Uint8Array {
-    const data = new Uint8Array(analyser.frequencyBinCount);
+  getFrequencyData(analyser: AnalyserNode, out?: Uint8Array<ArrayBuffer>): Uint8Array<ArrayBuffer> {
+    if (out && out.length !== analyser.frequencyBinCount) {
+      throw new Error(
+        `getFrequencyData: out buffer length ${out.length} does not match frequencyBinCount ${analyser.frequencyBinCount}`
+      );
+    }
+    const data = out ?? new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(data);
     return data;
   }
 
   /**
    * Get time domain data from an analyser
+   * @param out Optional pre-allocated buffer to fill (length must equal
+   *   `analyser.fftSize`). Without `out` a fresh array is allocated on every
+   *   call, so this is only allocation-free (per-frame safe) when a reused
+   *   buffer is provided.
    */
-  getTimeDomainData(analyser: AnalyserNode): Uint8Array {
-    const data = new Uint8Array(analyser.fftSize);
+  getTimeDomainData(
+    analyser: AnalyserNode,
+    out?: Uint8Array<ArrayBuffer>
+  ): Uint8Array<ArrayBuffer> {
+    if (out && out.length !== analyser.fftSize) {
+      throw new Error(
+        `getTimeDomainData: out buffer length ${out.length} does not match fftSize ${analyser.fftSize}`
+      );
+    }
+    const data = out ?? new Uint8Array(analyser.fftSize);
     analyser.getByteTimeDomainData(data);
     return data;
   }
 
   /**
    * Get float frequency data from an analyser
+   * @param out Optional pre-allocated buffer to fill (length must equal
+   *   `analyser.frequencyBinCount`). Without `out` a fresh array is allocated
+   *   on every call, so this is only allocation-free (per-frame safe) when a
+   *   reused buffer is provided.
    */
-  getFloatFrequencyData(analyser: AnalyserNode): Float32Array {
-    const data = new Float32Array(analyser.frequencyBinCount);
+  getFloatFrequencyData(
+    analyser: AnalyserNode,
+    out?: Float32Array<ArrayBuffer>
+  ): Float32Array<ArrayBuffer> {
+    if (out && out.length !== analyser.frequencyBinCount) {
+      throw new Error(
+        `getFloatFrequencyData: out buffer length ${out.length} does not match frequencyBinCount ${analyser.frequencyBinCount}`
+      );
+    }
+    const data = out ?? new Float32Array(analyser.frequencyBinCount);
     analyser.getFloatFrequencyData(data);
     return data;
   }

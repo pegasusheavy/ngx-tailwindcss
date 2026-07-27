@@ -1,13 +1,34 @@
-import { Component, computed, EventEmitter, Input, Output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  EventEmitter,
+  Input,
+  Output,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type PaginationSize = 'sm' | 'md' | 'lg';
 export type PaginationVariant = 'default' | 'outlined' | 'simple';
 
+const NAV_SIZE_CLASSES: Record<PaginationSize, string> = {
+  sm: 'p-1',
+  md: 'p-2',
+  lg: 'p-2.5',
+};
+
+const PAGE_SIZE_CLASSES: Record<PaginationSize, string> = {
+  sm: 'w-7 h-7 text-xs',
+  md: 'w-9 h-9 text-sm',
+  lg: 'w-11 h-11 text-base',
+};
+
 @Component({
   selector: 'tw-pagination',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './pagination.component.html',
 })
 export class TwPaginationComponent {
@@ -109,15 +130,9 @@ export class TwPaginationComponent {
     const size = this._size();
     const variant = this._variant();
 
-    const sizeClasses: Record<PaginationSize, string> = {
-      sm: 'p-1',
-      md: 'p-2',
-      lg: 'p-2.5',
-    };
-
     const baseClasses = [
       'flex items-center justify-center rounded-lg transition-colors',
-      sizeClasses[size],
+      NAV_SIZE_CLASSES[size],
     ];
 
     if (disabled) {
@@ -139,15 +154,9 @@ export class TwPaginationComponent {
     const size = this._size();
     const variant = this._variant();
 
-    const sizeClasses: Record<PaginationSize, string> = {
-      sm: 'w-7 h-7 text-xs',
-      md: 'w-9 h-9 text-sm',
-      lg: 'w-11 h-11 text-base',
-    };
-
     const baseClasses = [
       'flex items-center justify-center rounded-lg font-medium transition-colors',
-      sizeClasses[size],
+      PAGE_SIZE_CLASSES[size],
     ];
 
     if (isActive) {
@@ -168,13 +177,7 @@ export class TwPaginationComponent {
   protected ellipsisClasses(): string {
     const size = this._size();
 
-    const sizeClasses: Record<PaginationSize, string> = {
-      sm: 'w-7 h-7 text-xs',
-      md: 'w-9 h-9 text-sm',
-      lg: 'w-11 h-11 text-base',
-    };
-
-    return `flex items-center justify-center text-slate-400 dark:text-slate-500 ${sizeClasses[size]}`;
+    return `flex items-center justify-center text-slate-400 dark:text-slate-500 ${PAGE_SIZE_CLASSES[size]}`;
   }
 
   protected simpleButtonClasses(disabled: boolean): string {

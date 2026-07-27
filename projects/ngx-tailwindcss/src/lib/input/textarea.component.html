@@ -1,10 +1,10 @@
-@if (label) {
+@if (label()) {
   <label
-    [for]="inputId"
+    [for]="inputId()"
     class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5"
   >
-    {{ label }}
-    @if (required) {
+    {{ label() }}
+    @if (required()) {
       <span class="text-rose-500 ml-0.5">*</span>
     }
   </label>
@@ -12,31 +12,35 @@
 
 <textarea
   #textareaElement
-  [id]="inputId"
+  [id]="inputId()"
   [class]="computedClasses()"
-  [placeholder]="placeholder"
-  [disabled]="disabled"
-  [readonly]="readonly"
-  [required]="required"
-  [rows]="rows"
-  [attr.aria-invalid]="hasError"
-  [attr.minlength]="minlength"
-  [attr.maxlength]="maxlength"
-  [value]="value"
+  [placeholder]="placeholder()"
+  [disabled]="_disabled()"
+  [readonly]="readonly()"
+  [required]="required()"
+  [rows]="rows()"
+  [attr.aria-invalid]="hasError()"
+  [attr.minlength]="minlength()"
+  [attr.maxlength]="maxlength()"
+  [value]="value()"
   (input)="onInput($event)"
   (blur)="onBlur()"
 ></textarea>
 
-@if (hint && !error) {
-  <span class="block text-xs text-slate-500 dark:text-slate-400 mt-1.5">{{ hint }}</span>
+@if (hint() && !error()) {
+  <span class="block text-xs text-slate-500 dark:text-slate-400 mt-1.5">{{ hint() }}</span>
 }
 
-@if (error) {
-  <span class="block text-xs text-rose-600 mt-1.5" role="alert">{{ error }}</span>
+@if (error()) {
+  <span class="block text-xs text-rose-600 mt-1.5" role="alert">{{ error() }}</span>
 }
 
-@if (maxlength && showCount) {
+@if (showCount()) {
   <span class="block text-xs text-slate-400 mt-1 text-right">
-    {{ value.length }} / {{ maxlength }}
+    @if (maxlength()) {
+      {{ value().length }} / {{ maxlength() }}
+    } @else {
+      {{ value().length }}
+    }
   </span>
 }

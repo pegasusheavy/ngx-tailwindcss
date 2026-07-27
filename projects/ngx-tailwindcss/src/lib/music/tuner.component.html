@@ -18,14 +18,22 @@
   @if (showMeter()) {
     <div class="w-full max-w-xs">
       <!-- Meter labels -->
-      <div class="flex justify-between text-xs text-slate-500 mb-1">
+      <div class="flex justify-between text-xs text-slate-500 mb-1" aria-hidden="true">
         <span>♭</span>
         <span>●</span>
         <span>♯</span>
       </div>
 
       <!-- Meter bar -->
-      <div class="relative h-4 bg-slate-800 rounded-full overflow-hidden">
+      <div
+        class="relative h-4 bg-slate-800 rounded-full overflow-hidden"
+        role="img"
+        [attr.aria-label]="
+          currentNote() === '--'
+            ? 'Tuning meter: no signal'
+            : 'Tuning meter: ' + currentNote() + currentOctave() + ', ' + currentCents() + ' cents'
+        "
+      >
         <!-- Center marker -->
         <div
           class="absolute left-1/2 top-0 bottom-0 w-0.5 bg-slate-600 -translate-x-1/2 z-10"
@@ -133,8 +141,15 @@
     }
   </button>
 
+  <!-- Error Message -->
+  @if (errorState()) {
+    <p class="text-xs text-red-400 text-center max-w-xs" role="alert">
+      {{ errorState() }}
+    </p>
+  }
+
   <!-- Microphone Permission Notice -->
-  @if (!isListening()) {
+  @if (!isListening() && !errorState()) {
     <p class="text-xs text-slate-500 text-center max-w-xs">
       Click Start to enable microphone access and begin tuning
     </p>

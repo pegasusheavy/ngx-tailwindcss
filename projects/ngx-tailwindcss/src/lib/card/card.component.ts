@@ -4,9 +4,9 @@ import {
   Component,
   computed,
   Directive,
-  HostBinding,
+  ElementRef,
   inject,
-  Input,
+  input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -42,19 +42,21 @@ const CARD_VARIANTS: Record<CardVariant, string> = {
 @Directive({
   selector: 'tw-card-header, [twCardHeader]',
   standalone: true,
+  host: {
+    '[class]': 'hostClass()',
+  },
 })
 export class TwCardHeaderDirective {
   private readonly twClass = inject(TwClassService);
 
-  @Input() class = '';
+  readonly class = input('');
 
-  @HostBinding('class')
-  get hostClass(): string {
-    return this.twClass.merge(
+  protected readonly hostClass = computed(() =>
+    this.twClass.merge(
       'block px-6 py-4 border-b border-slate-100 dark:border-slate-700',
-      this.class
-    );
-  }
+      this.class()
+    )
+  );
 }
 
 /**
@@ -63,19 +65,18 @@ export class TwCardHeaderDirective {
 @Directive({
   selector: 'tw-card-title, [twCardTitle]',
   standalone: true,
+  host: {
+    '[class]': 'hostClass()',
+  },
 })
 export class TwCardTitleDirective {
   private readonly twClass = inject(TwClassService);
 
-  @Input() class = '';
+  readonly class = input('');
 
-  @HostBinding('class')
-  get hostClass(): string {
-    return this.twClass.merge(
-      'block text-lg font-semibold text-slate-900 dark:text-white',
-      this.class
-    );
-  }
+  protected readonly hostClass = computed(() =>
+    this.twClass.merge('block text-lg font-semibold text-slate-900 dark:text-white', this.class())
+  );
 }
 
 /**
@@ -84,16 +85,18 @@ export class TwCardTitleDirective {
 @Directive({
   selector: 'tw-card-subtitle, [twCardSubtitle]',
   standalone: true,
+  host: {
+    '[class]': 'hostClass()',
+  },
 })
 export class TwCardSubtitleDirective {
   private readonly twClass = inject(TwClassService);
 
-  @Input() class = '';
+  readonly class = input('');
 
-  @HostBinding('class')
-  get hostClass(): string {
-    return this.twClass.merge('block text-sm text-slate-500 dark:text-slate-400 mt-1', this.class);
-  }
+  protected readonly hostClass = computed(() =>
+    this.twClass.merge('block text-sm text-slate-500 dark:text-slate-400 mt-1', this.class())
+  );
 }
 
 /**
@@ -102,16 +105,16 @@ export class TwCardSubtitleDirective {
 @Directive({
   selector: 'tw-card-body, [twCardBody]',
   standalone: true,
+  host: {
+    '[class]': 'hostClass()',
+  },
 })
 export class TwCardBodyDirective {
   private readonly twClass = inject(TwClassService);
 
-  @Input() class = '';
+  readonly class = input('');
 
-  @HostBinding('class')
-  get hostClass(): string {
-    return this.twClass.merge('block p-6', this.class);
-  }
+  protected readonly hostClass = computed(() => this.twClass.merge('block p-6', this.class()));
 }
 
 /**
@@ -120,20 +123,28 @@ export class TwCardBodyDirective {
 @Directive({
   selector: 'tw-card-footer, [twCardFooter]',
   standalone: true,
+  host: {
+    '[class]': 'hostClass()',
+  },
 })
 export class TwCardFooterDirective {
   private readonly twClass = inject(TwClassService);
 
-  @Input() class = '';
+  readonly class = input('');
 
-  @HostBinding('class')
-  get hostClass(): string {
-    return this.twClass.merge(
+  protected readonly hostClass = computed(() =>
+    this.twClass.merge(
       'block px-6 py-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-700/50 rounded-b-xl',
-      this.class
-    );
-  }
+      this.class()
+    )
+  );
 }
+
+const CARD_MEDIA_POSITIONS: Record<string, string> = {
+  top: 'block -mx-0 -mt-0 mb-0 rounded-t-xl overflow-hidden',
+  bottom: 'block -mx-0 -mb-0 mt-0 rounded-b-xl overflow-hidden',
+  full: 'block absolute inset-0 rounded-xl overflow-hidden',
+};
 
 /**
  * Card media/image container directive
@@ -141,29 +152,25 @@ export class TwCardFooterDirective {
 @Directive({
   selector: 'tw-card-media, [twCardMedia]',
   standalone: true,
+  host: {
+    '[class]': 'hostClass()',
+  },
 })
 export class TwCardMediaDirective {
   private readonly twClass = inject(TwClassService);
 
-  @Input() class = '';
+  readonly class = input('');
 
   /** Position of the media (top for header image, full for background) */
-  @Input() position: 'top' | 'bottom' | 'full' = 'top';
+  readonly position = input<'top' | 'bottom' | 'full'>('top');
 
-  @HostBinding('class')
-  get hostClass(): string {
-    const positionClasses: Record<string, string> = {
-      top: 'block -mx-0 -mt-0 mb-0 rounded-t-xl overflow-hidden',
-      bottom: 'block -mx-0 -mb-0 mt-0 rounded-b-xl overflow-hidden',
-      full: 'block absolute inset-0 rounded-xl overflow-hidden',
-    };
-
-    return this.twClass.merge(
-      positionClasses[this.position],
+  protected readonly hostClass = computed(() =>
+    this.twClass.merge(
+      CARD_MEDIA_POSITIONS[this.position()],
       '[&>img]:w-full [&>img]:h-full [&>img]:object-cover',
-      this.class
-    );
-  }
+      this.class()
+    )
+  );
 }
 
 /**
@@ -201,53 +208,55 @@ export class TwCardMediaDirective {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class]': 'computedClasses()',
-    '[attr.tabindex]': 'clickable ? 0 : null',
-    role: 'article',
+    '[attr.tabindex]': 'clickable() ? 0 : null',
+    '[attr.role]': 'clickable() ? "button" : "article"',
+    '(keydown)': 'onKeydown($event)',
   },
-  template: `<ng-content></ng-content>`,
+  templateUrl: './card.component.html',
 })
 export class TwCardComponent {
   private readonly twClass = inject(TwClassService);
+  private readonly elementRef = inject(ElementRef);
 
   /** Visual variant of the card */
-  @Input() variant: CardVariant = 'elevated';
+  readonly variant = input<CardVariant>('elevated');
 
   /** Whether the card should have hover effects */
-  @Input({ transform: booleanAttribute }) hoverable = false;
+  readonly hoverable = input(false, { transform: booleanAttribute });
 
   /** Whether the card is clickable (adds cursor and focus styles) */
-  @Input({ transform: booleanAttribute }) clickable = false;
+  readonly clickable = input(false, { transform: booleanAttribute });
 
   /** Whether to add padding to the card (use false when using card-body) */
-  @Input({ transform: booleanAttribute }) padded = false;
+  readonly padded = input(false, { transform: booleanAttribute });
 
   /** Additional classes to merge with base styles */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /** Complete class override (replaces all default classes) */
-  @Input() classReplace = '';
+  readonly classReplace = input('');
 
   protected computedClasses = computed(() => {
-    if (this.classReplace) {
-      return this.classReplace;
+    if (this.classReplace()) {
+      return this.classReplace();
     }
 
     const baseClasses = CARD_BASE_CLASSES;
-    const variantClasses = CARD_VARIANTS[this.variant];
+    const variantClasses = CARD_VARIANTS[this.variant()];
 
     const conditionalClasses: string[] = [];
 
-    if (this.hoverable) {
+    if (this.hoverable()) {
       conditionalClasses.push('hover:-translate-y-0.5');
     }
 
-    if (this.clickable) {
+    if (this.clickable()) {
       conditionalClasses.push(
         'cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900'
       );
     }
 
-    if (this.padded) {
+    if (this.padded()) {
       conditionalClasses.push('p-6');
     }
 
@@ -255,9 +264,17 @@ export class TwCardComponent {
       baseClasses,
       variantClasses,
       conditionalClasses.join(' '),
-      this.classOverride
+      this.classOverride()
     );
   });
+
+  protected onKeydown(event: KeyboardEvent): void {
+    if (!this.clickable()) return;
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+
+    event.preventDefault();
+    (this.elementRef.nativeElement as HTMLElement).click();
+  }
 }
 
 /**
@@ -277,14 +294,14 @@ export class TwCardComponent {
 export class TwCardHorizontalComponent {
   private readonly twClass = inject(TwClassService);
 
-  @Input() variant: CardVariant = 'elevated';
-  @Input() classOverride = '';
+  readonly variant = input<CardVariant>('elevated');
+  readonly classOverride = input('');
 
   protected computedClasses = computed(() => {
     return this.twClass.merge(
       'flex rounded-xl overflow-hidden',
-      CARD_VARIANTS[this.variant],
-      this.classOverride
+      CARD_VARIANTS[this.variant()],
+      this.classOverride()
     );
   });
 }

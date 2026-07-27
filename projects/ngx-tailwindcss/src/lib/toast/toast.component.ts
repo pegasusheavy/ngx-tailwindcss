@@ -1,14 +1,16 @@
-import { Component, computed, Injectable, Input, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  Injectable,
+  Input,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export type ToastVariant = 'info' | 'success' | 'warning' | 'danger' | 'neutral';
 export type ToastPosition =
-  | 'top-left'
-  | 'top-center'
-  | 'top-right'
-  | 'bottom-left'
-  | 'bottom-center'
-  | 'bottom-right';
+  'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right';
 
 export interface ToastOptions {
   variant?: ToastVariant;
@@ -27,12 +29,20 @@ interface Toast extends ToastOptions {
 export class TwToastService {
   private readonly _toasts = signal<Toast[]>([]);
   private readonly _position = signal<ToastPosition>('top-right');
+  /** Pending auto-dismiss timers, keyed by toast id, so dismissal can cancel them. */
+  private readonly timers = new Map<string, ReturnType<typeof setTimeout>>();
+  private _maxToasts = 10;
 
   readonly toasts = this._toasts.asReadonly();
   readonly position = this._position.asReadonly();
 
   setPosition(position: ToastPosition): void {
     this._position.set(position);
+  }
+
+  /** Cap the number of simultaneously shown toasts; the oldest are evicted. */
+  setMaxToasts(max: number): void {
+    this._maxToasts = Math.max(1, max);
   }
 
   show(options: ToastOptions): string {
@@ -47,12 +57,23 @@ export class TwToastService {
       action: options.action,
     };
 
-    this._toasts.update(toasts => [...toasts, toast]);
+    this._toasts.update(toasts => {
+      const next = [...toasts, toast];
+      // Evict oldest toasts beyond the cap and cancel their timers
+      while (next.length > this._maxToasts) {
+        const evicted = next.shift()!;
+        this.clearTimer(evicted.id);
+      }
+      return next;
+    });
 
     if (toast.duration && toast.duration > 0) {
-      setTimeout(() => {
-        this.dismiss(id);
-      }, toast.duration);
+      this.timers.set(
+        id,
+        setTimeout(() => {
+          this.dismiss(id);
+        }, toast.duration)
+      );
     }
 
     return id;
@@ -75,11 +96,24 @@ export class TwToastService {
   }
 
   dismiss(id: string): void {
+    this.clearTimer(id);
     this._toasts.update(toasts => toasts.filter(t => t.id !== id));
   }
 
   dismissAll(): void {
+    this.timers.forEach(timer => {
+      clearTimeout(timer);
+    });
+    this.timers.clear();
     this._toasts.set([]);
+  }
+
+  private clearTimer(id: string): void {
+    const timer = this.timers.get(id);
+    if (timer !== undefined) {
+      clearTimeout(timer);
+      this.timers.delete(id);
+    }
   }
 }
 
@@ -87,6 +121,7 @@ export class TwToastService {
   selector: 'tw-toast',
   standalone: true,
   imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './toast.component.html',
 })
 export class TwToastComponent {
@@ -119,6 +154,11 @@ export class TwToastComponent {
   protected dismissibleValue = computed(() => this._dismissible());
   protected actionValue = computed(() => this._action());
 
+  /** Only urgent variants interrupt as alerts; the rest are polite status messages. */
+  protected roleValue = computed(() =>
+    this._variant() === 'danger' || this._variant() === 'warning' ? 'alert' : 'status'
+  );
+
   protected toastClasses = computed(() => {
     return [
       'w-full max-w-sm bg-white dark:bg-slate-800 rounded-xl shadow-lg dark:shadow-slate-900/50 border border-slate-200 dark:border-slate-700 p-4',
@@ -149,6 +189,7 @@ export class TwToastComponent {
   selector: 'tw-toast-container',
   standalone: true,
   imports: [CommonModule, TwToastComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './toast-container.component.html',
   styles: [
     `
@@ -195,9 +236,24 @@ export class TwToastContainerComponent {
     ].join(' ');
   });
 
+  /** Cached per-id dismiss closures so bindings stay referentially stable across CD runs. */
+  private readonly dismissFns = new Map<string, () => void>();
+
   getDismissFunction(id: string): () => void {
-    return () => {
-      this.toastService.dismiss(id);
-    };
+    let fn = this.dismissFns.get(id);
+    if (!fn) {
+      // Prune closures for toasts that no longer exist before caching a new one
+      const activeIds = new Set(this.toasts().map(t => t.id));
+      for (const cachedId of this.dismissFns.keys()) {
+        if (!activeIds.has(cachedId)) {
+          this.dismissFns.delete(cachedId);
+        }
+      }
+      fn = () => {
+        this.toastService.dismiss(id);
+      };
+      this.dismissFns.set(id, fn);
+    }
+    return fn;
   }
 }

@@ -17,13 +17,15 @@ import {
   TwBadgeComponent,
   TwAvatarComponent,
   TwModalComponent,
+  TwModalHeaderComponent,
+  TwModalTitleComponent,
   TwToastService,
   TwDividerComponent,
   TwAlertComponent,
   TwPaginationComponent,
   TwSelectComponent,
   SelectOption,
-} from '@pegasusheavy/ngx-tailwindcss';
+} from '@quinnjr/ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface User {
@@ -88,6 +90,8 @@ interface Category {
     TwBadgeComponent,
     TwAvatarComponent,
     TwModalComponent,
+    TwModalHeaderComponent,
+    TwModalTitleComponent,
     TwDividerComponent,
     TwAlertComponent,
     TwPaginationComponent,

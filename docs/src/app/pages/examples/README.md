@@ -4,7 +4,7 @@ This directory contains real-world example implementations using the ngx-tailwin
 
 ## Available Examples
 
-### 1. [SaaS Landing Page](./saas-landing.component.ts) ✅ WORKING
+### 1. [SaaS Landing Page](./saas-landing.component.ts)
 **Route:** `/examples/saas-landing`
 
 A complete Silicon Valley-style SaaS startup landing page with modern design and conversion-focused features.
@@ -17,7 +17,7 @@ A complete Silicon Valley-style SaaS startup landing page with modern design and
 
 ---
 
-### 2. [Forum/Community](./forum.component.ts) ✅ WORKING
+### 2. [Forum/Community](./forum.component.ts)
 **Route:** `/examples/forum`
 
 A complete community discussion forum with categories, threads, posts, and user interactions.
@@ -30,7 +30,7 @@ A complete community discussion forum with categories, threads, posts, and user 
 
 ---
 
-### 3. [Social Network](./social-network.component.ts) ⭐ NEW! ✅ WORKING
+### 3. [Social Network](./social-network.component.ts)
 **Route:** `/examples/social-network`
 
 A full-featured social media platform with feed, stories, posts, comments, and notifications.
@@ -43,7 +43,7 @@ A full-featured social media platform with feed, stories, posts, comments, and n
 
 ---
 
-### 4. [Admin Dashboard](./admin-dashboard.component.ts) ⚠️ IN PROGRESS
+### 4. [Admin Dashboard](./admin-dashboard.component.ts)
 **Route:** `/examples/admin-dashboard`
 
 A comprehensive admin panel for SaaS applications, CRMs, and analytics platforms.
@@ -54,11 +54,9 @@ A comprehensive admin panel for SaaS applications, CRMs, and analytics platforms
 
 **Best For:** Business applications, data management, analytics dashboards
 
-**Status:** Has import errors for non-existent components, needs API fixes
-
 ---
 
-### 5. [E-Commerce Store](./ecommerce.component.ts) ⚠️ IN PROGRESS
+### 5. [E-Commerce Store](./ecommerce.component.ts)
 **Route:** `/examples/ecommerce`
 
 A fully-featured online store with shopping cart, product catalog, and checkout flow.
@@ -69,11 +67,9 @@ A fully-featured online store with shopping cart, product catalog, and checkout 
 
 **Best For:** Online retail, product catalogs, B2B marketplaces, digital stores
 
-**Status:** Has import errors for non-existent components, needs API fixes
-
 ---
 
-### 6. [Photographer Portfolio](./portfolio.component.ts) ⚠️ IN PROGRESS
+### 6. [Photographer Portfolio](./portfolio.component.ts)
 **Route:** `/examples/portfolio`
 
 A stunning professional photographer portfolio with gallery, services, and contact form.
@@ -84,30 +80,29 @@ A stunning professional photographer portfolio with gallery, services, and conta
 
 **Best For:** Photographers, visual artists, creative portfolios, freelance professionals
 
-**Status:** Has import errors for TwTabComponent (should be TwTabPanelComponent)
+---
+
+### 7. [File Explorer](./desktop-app.component.ts)
+**Route:** `/examples/desktop-app`
+
+A desktop-style file manager window with a simulated OS chrome, sidebar navigation, and file grid/list views.
+
+**Features:** Window controls, breadcrumb navigation, grid/list toggle, context dropdowns, new-folder and properties modals
+
+**Note:** This is a hand-styled showcase — most of the UI is bespoke Tailwind markup, with only a few library components (dropdown, modal) in use. It demonstrates visual polish more than library coverage.
+
+**Best For:** Desktop-style web apps, file managers, admin utilities
 
 ---
 
-## Working Examples
+### 8. [DAW Studio](./daw.component.ts)
+**Route:** `/examples/daw`
 
-**All 6 examples are now fully functional and ready to use!** ✅
+A digital audio workstation mock-up with a transport bar, track lanes, mixer channels, and a piano-roll style layout.
 
-- ✅ **SaaS Landing Page** - Complete startup landing page
-- ✅ **Forum/Community** - Full discussion board platform
-- ✅ **Social Network** - Complete social media platform
-- ✅ **Admin Dashboard** - User management dashboard
-- ✅ **E-Commerce** - Online store with shopping cart
-- ✅ **Portfolio** - Photographer portfolio site
+**Note:** This is a hand-styled showcase built entirely from bespoke Tailwind markup — it uses no `tw-*` library components. It demonstrates visual polish more than library coverage.
 
-### Fixed Issues:
-- ✅ Fixed: All import errors (`TwDropdownItemComponent`, `TwTabComponent`, `TwChartData`)
-- ✅ Fixed: All avatar binding errors (`[text]` → `[initials]`)
-- ✅ Fixed: All accordion binding errors (`[expanded]`/`title` → `[open]`/`itemTitle`)
-- ✅ Fixed: All badge variant errors (`"default"` → `"primary"`)
-- ✅ Fixed: All rating binding errors (`[value]` → `[(ngModel)]`)
-- ✅ Fixed: All sidebar binding errors (proper signal usage)
-- ✅ Fixed: All tab-panel component references
-- ✅ **Docs app builds successfully!**
+**Best For:** Audio/media tooling UIs, dense professional interfaces
 
 ---
 
@@ -115,7 +110,6 @@ A stunning professional photographer portfolio with gallery, services, and conta
 
 | Feature | SaaS Landing | Forum | Social Network | Admin Dashboard | E-Commerce | Portfolio |
 |---------|-------------|-------|----------------|----------------|------------|-----------|
-| **Status** | ✅ Working | ✅ Working | ✅ Working | ⚠️ In Progress | ⚠️ In Progress | ⚠️ In Progress |
 | **Primary Use** | Marketing | Community | Social Media | Business/SaaS | Retail/Sales | Creative/Visual |
 | **Components** | 10+ | 12+ | 12+ | 15+ | 20+ | 15+ |
 | **Key Feature** | Conversion | Discussions | Social Feed | Data tables | Shopping cart | Photo gallery |
@@ -127,7 +121,7 @@ A stunning professional photographer portfolio with gallery, services, and conta
 
 ## Unique Component Demonstrations
 
-### SaaS Landing Page ✅
+### SaaS Landing Page
 - Hero section with CTAs
 - Feature showcase grids
 - Pricing tier cards
@@ -135,7 +129,7 @@ A stunning professional photographer portfolio with gallery, services, and conta
 - FAQ accordions
 - Team member profiles
 
-### Forum/Community ✅
+### Forum/Community
 - Category browsing
 - Thread pagination
 - Reply system
@@ -143,7 +137,7 @@ A stunning professional photographer portfolio with gallery, services, and conta
 - Moderation indicators
 - Tag-based filtering
 
-### Social Network ✅
+### Social Network
 - Story viewer
 - News feed with posts
 - Likes and comments
@@ -152,26 +146,37 @@ A stunning professional photographer portfolio with gallery, services, and conta
 - User suggestions
 - Bookmark system
 
-### Admin Dashboard ⚠️
+### Admin Dashboard
 - Multi-select with grouped options
 - Data tables with sorting/filtering
 - Bulk action patterns
 - Status indicators
 - User role management
 
-### E-Commerce ⚠️
+### E-Commerce
 - Shopping cart state management
 - Price range slider
 - Product variants (color, size)
 - Discount badges
 - Review system
 
-### Portfolio ⚠️
+### Portfolio
 - Photo gallery with aspect ratios
 - EXIF metadata display
 - Category filtering
 - Testimonials with ratings
 - Service pricing cards
+
+### File Explorer (hand-styled showcase)
+- Simulated OS window chrome
+- Grid/list view toggle
+- Context dropdown menus
+- Uses only a handful of library components
+
+### DAW Studio (hand-styled showcase)
+- Transport bar and track lanes
+- Mixer channel strips
+- Built entirely from bespoke Tailwind markup (no `tw-*` components)
 
 ---
 

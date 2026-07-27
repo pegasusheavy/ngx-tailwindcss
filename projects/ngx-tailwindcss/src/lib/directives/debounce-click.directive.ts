@@ -9,10 +9,11 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { debounceTime, Subject, Subscription } from 'rxjs';
+import { Subject, Subscription, throttle, timer } from 'rxjs';
 
 /**
- * Directive to debounce click events, preventing accidental double-clicks
+ * Directive to prevent accidental double-clicks: the first click emits
+ * immediately and any further clicks within the interval are ignored
  *
  * @example
  * ```html
@@ -28,7 +29,7 @@ export class TwDebounceClickDirective implements OnInit, OnDestroy {
   private readonly clicks = new Subject<MouseEvent>();
   private subscription: Subscription | null = null;
 
-  /** Debounce time in milliseconds (default: 300ms) */
+  /** Interval in milliseconds during which repeat clicks are ignored (default: 300ms) */
   @Input({ transform: numberAttribute })
   debounceTime = 300;
 
@@ -50,9 +51,13 @@ export class TwDebounceClickDirective implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.subscription = this.clicks.pipe(debounceTime(this.debounceTime)).subscribe(event => {
-      this.debounceClick.emit(event);
-    });
+    // The duration selector reads `debounceTime` per click, so runtime input
+    // changes apply; leading emission lets the first click through immediately
+    this.subscription = this.clicks
+      .pipe(throttle(() => timer(this.debounceTime), { leading: true, trailing: false }))
+      .subscribe(event => {
+        this.debounceClick.emit(event);
+      });
   }
 
   ngOnDestroy(): void {

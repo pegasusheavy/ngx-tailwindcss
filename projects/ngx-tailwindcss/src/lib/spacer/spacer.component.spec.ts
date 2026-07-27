@@ -150,6 +150,15 @@ describe('TwSpacerComponent', () => {
       const inner = spacerEl.querySelector('div');
       expect(inner?.className).toContain('w-6');
     });
+
+    it('should reflect a bound axis onto the host attribute', () => {
+      // `:host([axis='horizontal'])` keys off this attribute, so property
+      // bindings must reflect it just like static attribute usage does.
+      expect(spacerEl.getAttribute('axis')).toBe('horizontal');
+      component.axis.set('vertical');
+      fixture.detectChanges();
+      expect(spacerEl.getAttribute('axis')).toBe('vertical');
+    });
   });
 
   describe('custom class', () => {

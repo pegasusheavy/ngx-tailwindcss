@@ -4,7 +4,9 @@ import {
   Component,
   computed,
   ElementRef,
+  inject,
   input,
+  NgZone,
   numberAttribute,
   OnDestroy,
   output,
@@ -51,14 +53,21 @@ export interface BeatEvent {
 export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;
 
+  private readonly zone = inject(NgZone);
+
   readonly analyserNode = input<AnalyserNode | undefined>(undefined);
+  /** Render animated mock data when no analyser node is connected (for demos). */
+  readonly demoMode = input(false);
   readonly width = input(400, { transform: numberAttribute });
   readonly height = input(400, { transform: numberAttribute });
   readonly variant = input<VisualizerVariant>('circular');
   readonly colorScheme = input<VisualizerColorScheme>('rainbow');
   readonly customColors = input<string[]>(['#FF0000', '#00FF00', '#0000FF']);
   readonly sensitivity = input(1.5, { transform: numberAttribute });
-  readonly smoothing = input(0.8, { transform: numberAttribute });
+  /** Smoothing factor applied to the analyser. When omitted, the node's existing smoothing is used untouched. */
+  readonly smoothing = input<number | undefined, unknown>(undefined, {
+    transform: v => (v == null ? undefined : numberAttribute(v)),
+  });
   readonly backgroundColor = input('#000000');
   readonly showBackground = input(true);
   readonly reactive = input(true); // React to audio amplitude
@@ -91,6 +100,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
   private timeDomainData: Uint8Array | null = null;
   private particles: Array<Particle | BeatParticle> = [];
   private rotation = 0;
+  private idleFrameDrawn = false;
 
   // Beat detection state
   private readonly energyHistory: number[] = [];
@@ -111,22 +121,52 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
 
     const analyser = this.analyserNode();
     if (analyser) {
-      analyser.smoothingTimeConstant = this.smoothing();
-      this.frequencyData = new Uint8Array(analyser.frequencyBinCount);
-      this.timeDomainData = new Uint8Array(analyser.fftSize);
-    } else {
-      // Mock data for demo
-      this.frequencyData = new Uint8Array(128);
-      this.timeDomainData = new Uint8Array(256);
+      // Only configure the analyser when smoothing was explicitly provided;
+      // otherwise adapt to the node's existing configuration.
+      const smoothing = this.smoothing();
+      if (smoothing !== undefined) {
+        analyser.smoothingTimeConstant = smoothing;
+      }
     }
 
-    this.draw();
+    // Draw loop never writes template state directly, so keep it out of the zone
+    this.zone.runOutsideAngular(() => {
+      this.draw();
+    });
   }
 
   ngOnDestroy(): void {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
+  }
+
+  private scheduleNextFrame(): void {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+    this.animationFrameId = requestAnimationFrame(() => {
+      this.draw();
+    });
+  }
+
+  private drawIdleFrame(width: number, height: number): void {
+    if (!this.ctx) return;
+
+    if (this.showBackground()) {
+      this.ctx.fillStyle = this.backgroundColor();
+      this.ctx.fillRect(0, 0, width, height);
+    } else {
+      this.ctx.clearRect(0, 0, width, height);
+    }
+
+    // Subtle center line indicating an idle visualizer
+    this.ctx.strokeStyle = 'rgba(148, 163, 184, 0.25)'; // slate-400/25
+    this.ctx.lineWidth = 1;
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, height / 2);
+    this.ctx.lineTo(width, height / 2);
+    this.ctx.stroke();
   }
 
   private draw(): void {
@@ -136,23 +176,49 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
     const width = this.width();
     const height = this.height();
 
-    canvas.width = width;
-    canvas.height = height;
+    // Only resize the canvas when dimensions actually change (resizing resets context state)
+    if (canvas.width !== width) {
+      canvas.width = width;
+    }
+    if (canvas.height !== height) {
+      canvas.height = height;
+    }
 
     const analyser = this.analyserNode();
-    if (analyser && this.frequencyData && this.timeDomainData) {
+
+    // No data source and no demo mode: render a static idle frame and wait
+    if (!analyser && !this.demoMode()) {
+      if (!this.idleFrameDrawn) {
+        this.drawIdleFrame(width, height);
+        this.idleFrameDrawn = true;
+      }
+      this.scheduleNextFrame();
+      return;
+    }
+    this.idleFrameDrawn = false;
+
+    if (analyser) {
+      // (Re)create buffers to match the analyser (supports late-bound nodes)
+      if (this.frequencyData?.length !== analyser.frequencyBinCount) {
+        this.frequencyData = new Uint8Array(analyser.frequencyBinCount);
+      }
+      if (this.timeDomainData?.length !== analyser.fftSize) {
+        this.timeDomainData = new Uint8Array(analyser.fftSize);
+      }
       analyser.getByteFrequencyData(this.frequencyData as Uint8Array<ArrayBuffer>);
       analyser.getByteTimeDomainData(this.timeDomainData as Uint8Array<ArrayBuffer>);
-    } else if (this.frequencyData) {
-      // Generate mock data for demo visualization
+    } else {
+      // Demo mode: generate mock data for the visuals only
+      this.frequencyData ??= new Uint8Array(128);
+      this.timeDomainData ??= new Uint8Array(256);
       for (let i = 0; i < this.frequencyData.length; i++) {
         this.frequencyData[i] =
           Math.random() * 100 + Math.sin(Date.now() / 500 + i * 0.1) * 50 + 50;
       }
     }
 
-    // Beat detection
-    if (this.enableBeatDetection() && this.frequencyData) {
+    // Beat detection only runs on real analyser data — never on mock data
+    if (this.enableBeatDetection() && analyser && this.frequencyData) {
       this.detectBeat();
     }
 
@@ -206,10 +272,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
     this.beatRingRadius += 5;
 
     // Request next frame
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-    this.animationFrameId = requestAnimationFrame(() => { this.draw(); });
+    this.scheduleNextFrame();
   }
 
   private detectBeat(): void {
@@ -258,7 +321,7 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
 
     // Calculate variance for dynamic threshold
     const variance =
-      this.energyHistory.reduce((sum, e) => sum + (e - averageEnergy)**2, 0) /
+      this.energyHistory.reduce((sum, e) => sum + (e - averageEnergy) ** 2, 0) /
       this.energyHistory.length;
     const stdDev = Math.sqrt(variance);
 
@@ -281,23 +344,6 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
       const bpmWindow = 4000; // 4 seconds
       this.beatTimestamps = this.beatTimestamps.filter(t => now - t < bpmWindow);
 
-      // Update signals
-      this.isBeatActive.set(true);
-      this.beatIntensity.set(intensity);
-
-      // Calculate BPM
-      if (this.beatTimestamps.length > 1) {
-        const intervals: number[] = [];
-        for (let i = 1; i < this.beatTimestamps.length; i++) {
-          intervals.push(this.beatTimestamps[i] - this.beatTimestamps[i - 1]);
-        }
-        const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-        const bpm = Math.round(60_000 / avgInterval);
-        if (bpm > 40 && bpm < 240) {
-          this.currentBpm.set(bpm);
-        }
-      }
-
       // Trigger visual effects
       this.beatFlashIntensity = intensity;
       this.beatPulseScale = 1 + intensity * 0.3;
@@ -308,7 +354,6 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
         this.spawnBeatParticles(intensity);
       }
 
-      // Emit event
       const frequency: 'low' | 'mid' | 'high' | 'all' =
         this.detectLowBeat() && this.detectMidBeat() && this.detectHighBeat()
           ? 'all'
@@ -318,14 +363,35 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
               ? 'mid'
               : 'high';
 
-      this.beatDetected.emit({
-        timestamp: now,
-        intensity,
-        frequency,
-      });
+      // Re-enter the zone for template-feeding signal writes and outputs
+      this.zone.run(() => {
+        this.isBeatActive.set(true);
+        this.beatIntensity.set(intensity);
 
-      // Reset beat active after short delay
-      setTimeout(() => { this.isBeatActive.set(false); }, 100);
+        // Calculate BPM
+        if (this.beatTimestamps.length > 1) {
+          const intervals: number[] = [];
+          for (let i = 1; i < this.beatTimestamps.length; i++) {
+            intervals.push(this.beatTimestamps[i] - this.beatTimestamps[i - 1]);
+          }
+          const avgInterval = intervals.reduce((a, b) => a + b, 0) / intervals.length;
+          const bpm = Math.round(60_000 / avgInterval);
+          if (bpm > 40 && bpm < 240) {
+            this.currentBpm.set(bpm);
+          }
+        }
+
+        this.beatDetected.emit({
+          timestamp: now,
+          intensity,
+          frequency,
+        });
+
+        // Reset beat active after short delay
+        setTimeout(() => {
+          this.isBeatActive.set(false);
+        }, 100);
+      });
     }
   }
 
@@ -406,12 +472,12 @@ export class TwVisualizerComponent implements AfterViewInit, OnDestroy {
     }
 
     // Already handled by scaling in individual draw methods
-      // Add border pulse effect
-      if (mode === 'pulse' && this.beatFlashIntensity > 0.01) {
-        this.ctx.strokeStyle = this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity);
-        this.ctx.lineWidth = 4 + this.beatFlashIntensity * 8;
-        this.ctx.strokeRect(2, 2, width - 4, height - 4);
-      }
+    // Add border pulse effect
+    if (mode === 'pulse' && this.beatFlashIntensity > 0.01) {
+      this.ctx.strokeStyle = this.hexToRgba(this.beatFlashColor(), this.beatFlashIntensity);
+      this.ctx.lineWidth = 4 + this.beatFlashIntensity * 8;
+      this.ctx.strokeRect(2, 2, width - 4, height - 4);
+    }
 
     // Draw beat particles
     this.drawBeatParticles();

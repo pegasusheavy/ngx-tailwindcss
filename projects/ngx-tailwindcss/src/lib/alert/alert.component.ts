@@ -6,6 +6,7 @@ import {
   EventEmitter,
   inject,
   Input,
+  input,
   Output,
   signal,
 } from '@angular/core';
@@ -112,7 +113,8 @@ const ICON_COLORS: Record<AlertVariant, Record<AlertStyle, string>> = {
  *   Your changes have been saved successfully.
  * </tw-alert>
  *
- * <tw-alert variant="danger" alertStyle="accent" [icon]="customIcon">
+ * <tw-alert variant="danger" alertStyle="accent" [hasCustomIcon]="true">
+ *   <svg twAlertIcon class="w-5 h-5" viewBox="0 0 24 24">...</svg>
  *   An error occurred while processing your request.
  * </tw-alert>
  * ```
@@ -125,18 +127,18 @@ const ICON_COLORS: Record<AlertVariant, Record<AlertStyle, string>> = {
   templateUrl: './alert.component.html',
   host: {
     '[class]': 'computedClasses()',
-    role: 'alert',
-    '[attr.aria-live]': 'ariaLive',
+    '[attr.role]': 'alertRole()',
+    '[attr.aria-live]': 'ariaLiveAttr()',
   },
 })
 export class TwAlertComponent {
   private readonly twClass = inject(TwClassService);
 
   /** Color variant */
-  @Input() variant: AlertVariant = 'info';
+  readonly variant = input<AlertVariant>('info');
 
   /** Style variant */
-  @Input() alertStyle: AlertStyle = 'soft';
+  readonly alertStyle = input<AlertStyle>('soft');
 
   /** Whether the alert can be dismissed */
   @Input({ transform: booleanAttribute }) dismissible = false;
@@ -148,15 +150,36 @@ export class TwAlertComponent {
   @Input({ transform: booleanAttribute }) hasCustomIcon = false;
 
   /** ARIA live region setting */
-  @Input() ariaLive: 'polite' | 'assertive' | 'off' = 'polite';
+  readonly ariaLive = input<'polite' | 'assertive' | 'off'>('polite');
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /** Dismiss event */
   @Output() dismiss = new EventEmitter<void>();
 
   protected dismissed = signal(false);
+
+  /**
+   * Role derived from the ariaLive setting: assertive maps to role="alert",
+   * polite maps to role="status", off sets no role.
+   */
+  protected readonly alertRole = computed(() => {
+    switch (this.ariaLive()) {
+      case 'assertive': {
+        return 'alert';
+      }
+      case 'polite': {
+        return 'status';
+      }
+      default: {
+        return null;
+      }
+    }
+  });
+
+  /** aria-live attribute, omitted when the role already conveys the live semantics */
+  protected readonly ariaLiveAttr = computed(() => (this.alertRole() ? null : this.ariaLive()));
 
   protected computedClasses = computed(() => {
     if (this.dismissed()) return 'hidden';
@@ -170,13 +193,13 @@ export class TwAlertComponent {
 
     return this.twClass.merge(
       ALERT_BASE_CLASSES,
-      styleVariants[this.alertStyle][this.variant],
-      this.classOverride
+      styleVariants[this.alertStyle()][this.variant()],
+      this.classOverride()
     );
   });
 
   protected iconClasses = computed(() => {
-    return this.twClass.merge('flex-shrink-0', ICON_COLORS[this.variant][this.alertStyle]);
+    return this.twClass.merge('flex-shrink-0', ICON_COLORS[this.variant()][this.alertStyle()]);
   });
 
   protected dismissButtonClasses = computed(() => {
@@ -190,7 +213,7 @@ export class TwAlertComponent {
       accent: 'hover:bg-black/5 focus-visible:ring-current',
     };
 
-    return this.twClass.merge(baseClasses, hoverClasses[this.alertStyle]);
+    return this.twClass.merge(baseClasses, hoverClasses[this.alertStyle()]);
   });
 
   protected onDismiss(): void {
@@ -218,7 +241,7 @@ export class TwAlertComponent {
   host: {
     class: 'block font-semibold mb-1',
   },
-  template: `<ng-content></ng-content>`,
+  templateUrl: './alert-title.component.html',
 })
 export class TwAlertTitleComponent {}
 
@@ -231,6 +254,6 @@ export class TwAlertTitleComponent {}
   host: {
     class: 'block text-sm opacity-90',
   },
-  template: `<ng-content></ng-content>`,
+  templateUrl: './alert-description.component.html',
 })
 export class TwAlertDescriptionComponent {}

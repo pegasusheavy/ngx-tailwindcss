@@ -140,6 +140,41 @@ describe('TwSliderComponent', () => {
       fixture.detectChanges();
       expect(sliderEl.textContent).toContain('Volume');
     });
+
+    it('should associate the label with the range input', () => {
+      component.label.set('Volume');
+      fixture.detectChanges();
+      const label = sliderEl.querySelector('label')!;
+      const input = sliderEl.querySelector('input[type="range"]')!;
+      expect(input.id).toBeTruthy();
+      expect(label.getAttribute('for')).toBe(input.id);
+      expect(input.getAttribute('aria-label')).toBe('Volume');
+    });
+
+    it('should leave the range input unnamed when no label is provided', () => {
+      const input = sliderEl.querySelector('input[type="range"]')!;
+      expect(input.getAttribute('aria-label')).toBeNull();
+    });
+  });
+
+  describe('ticks', () => {
+    it('should render tickCount tick marks', () => {
+      component.showTicks.set(true);
+      fixture.detectChanges();
+      const ticks = sliderEl.querySelectorAll('.tabular-nums.text-slate-400');
+      expect(ticks.length).toBe(5);
+      expect(ticks[0].textContent).toContain('0');
+      expect(ticks[4].textContent).toContain('100');
+    });
+
+    it('should render a single min tick when tickCount is 1', () => {
+      component.showTicks.set(true);
+      component.tickCount.set(1);
+      fixture.detectChanges();
+      const ticks = sliderEl.querySelectorAll('.tabular-nums.text-slate-400');
+      expect(ticks.length).toBe(1);
+      expect(ticks[0].textContent?.trim()).toBe('0');
+    });
   });
 
   describe('variants', () => {

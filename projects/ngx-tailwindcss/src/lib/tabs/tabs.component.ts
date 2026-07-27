@@ -5,18 +5,16 @@ import {
   Component,
   computed,
   ContentChildren,
-  Directive,
+  effect,
   ElementRef,
   EventEmitter,
-  HostBinding,
-  HostListener,
   inject,
   Input,
+  input,
   Output,
   QueryList,
   signal,
-  TemplateRef,
-  ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -67,43 +65,73 @@ const TABS_SIZES: Record<TabsSize, string> = {
   host: {
     '[class]': 'computedClasses()',
     role: 'tabpanel',
-    '[attr.aria-labelledby]': 'labelledBy',
+    '[attr.id]': '"panel-" + value()',
+    '[attr.aria-labelledby]': 'labelledBy()',
     '[attr.tabindex]': '0',
-    '[attr.hidden]': '!active ? true : null',
+    '[attr.hidden]': '!active() ? true : null',
   },
+  styles: [
+    `
+      @keyframes tw-tab-panel-fade {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      :host(.tw-tab-panel-animated) {
+        animation: tw-tab-panel-fade 150ms ease-in;
+      }
+    `,
+  ],
 })
 export class TwTabPanelComponent {
   private readonly twClass = inject(TwClassService);
 
   /** Unique identifier for this tab */
-  @Input() value = '';
+  readonly value = input('');
 
   /** Label for the tab (if not using template) */
-  @Input() label = '';
+  readonly label = input('');
 
   /** Whether the tab is disabled */
-  @Input({ transform: booleanAttribute }) disabled = false;
+  readonly disabled = input(false, { transform: booleanAttribute });
 
   /** Icon to show before the label */
-  @Input() icon = '';
+  readonly icon = input('');
 
-  /** Whether to lazy load the content */
-  @Input({ transform: booleanAttribute }) lazy = false;
+  /** Whether to lazy load the content (rendered on first activation, then kept) */
+  readonly lazy = input(false, { transform: booleanAttribute });
 
   /** Additional panel classes */
-  @Input() panelClass = '';
+  readonly panelClass = input('');
 
-  /** Whether this panel is active */
-  active = false;
+  /** Whether this panel is active (managed by the parent tabs component) */
+  readonly active = signal(false);
 
-  /** ID of the tab that labels this panel */
-  labelledBy = '';
+  /** ID of the tab that labels this panel (managed by the parent tabs component) */
+  readonly labelledBy = signal('');
+
+  /** Whether activation should animate (synced from the parent tabs component) */
+  readonly animated = signal(true);
+
+  /** Once a lazy panel has been activated its content stays rendered (hidden via [hidden]) */
+  protected readonly hasBeenActive = signal(false);
+
+  private readonly trackActivation = effect(() => {
+    if (this.active()) {
+      this.hasBeenActive.set(true);
+    }
+  });
 
   protected computedClasses = computed(() => {
     return this.twClass.merge(
       'focus:outline-none',
-      this.active ? 'block' : 'hidden',
-      this.panelClass
+      this.active() ? 'block' : 'hidden',
+      this.active() && this.animated() ? 'tw-tab-panel-animated' : '',
+      this.panelClass()
     );
   });
 }
@@ -141,29 +169,32 @@ export class TwTabsComponent implements AfterContentInit {
 
   @ContentChildren(TwTabPanelComponent) tabPanels!: QueryList<TwTabPanelComponent>;
 
+  @ViewChildren('tabButton', { read: ElementRef })
+  private readonly tabButtons!: QueryList<ElementRef<HTMLButtonElement>>;
+
   /** Currently active tab value */
   @Input() value = '';
 
   /** Visual variant */
-  @Input() variant: TabsVariant = 'line';
+  readonly variant = input<TabsVariant>('line');
 
   /** Size of the tabs */
-  @Input() size: TabsSize = 'md';
+  readonly size = input<TabsSize>('md');
 
   /** Orientation of the tabs */
-  @Input() orientation: TabsOrientation = 'horizontal';
+  readonly orientation = input<TabsOrientation>('horizontal');
 
   /** Whether the tab list should be full width */
-  @Input({ transform: booleanAttribute }) fullWidth = false;
+  readonly fullWidth = input(false, { transform: booleanAttribute });
 
   /** Whether to animate panel transitions */
-  @Input({ transform: booleanAttribute }) animated = true;
+  readonly animated = input(true, { transform: booleanAttribute });
 
   /** Additional tab list classes */
-  @Input() tabListClass = '';
+  readonly tabListClass = input('');
 
   /** Additional panels container classes */
-  @Input() panelsClass = '';
+  readonly panelsClass = input('');
 
   /** Value change event */
   @Output() valueChange = new EventEmitter<string>();
@@ -181,9 +212,9 @@ export class TwTabsComponent implements AfterContentInit {
       this.selectTab(this.value, false);
     } else if (this.panels.length > 0) {
       // Select first non-disabled tab
-      const firstEnabled = this.panels.find(p => !p.disabled);
+      const firstEnabled = this.panels.find(p => !p.disabled());
       if (firstEnabled) {
-        this.selectTab(firstEnabled.value, false);
+        this.selectTab(firstEnabled.value(), false);
       }
     }
 
@@ -194,38 +225,37 @@ export class TwTabsComponent implements AfterContentInit {
   }
 
   protected containerClasses = computed(() => {
-    return this.twClass.merge(this.orientation === 'vertical' ? 'flex gap-4' : 'block');
+    return this.twClass.merge(this.orientation() === 'vertical' ? 'flex gap-4' : 'block');
   });
 
   protected tabListClasses = computed(() => {
-    const variantClasses = TABS_VARIANTS[this.variant].list;
+    const variantClasses = TABS_VARIANTS[this.variant()].list;
 
     return this.twClass.merge(
       'flex',
-      this.orientation === 'vertical' ? 'flex-col' : 'flex-row',
-      this.fullWidth ? '[&>button]:flex-1' : '',
+      this.orientation() === 'vertical' ? 'flex-col' : 'flex-row',
+      this.fullWidth() ? '[&>button]:flex-1' : '',
       variantClasses,
-      this.tabListClass
+      this.tabListClass()
     );
   });
 
   protected panelsContainerClasses = computed(() => {
     return this.twClass.merge(
       'mt-4',
-      this.orientation === 'vertical' ? 'flex-1 mt-0' : '',
-      this.animated ? 'transition-opacity duration-150' : '',
-      this.panelsClass
+      this.orientation() === 'vertical' ? 'flex-1 mt-0' : '',
+      this.panelsClass()
     );
   });
 
   protected getTabClasses(panel: TwTabPanelComponent): string {
-    const variantConfig = TABS_VARIANTS[this.variant];
+    const variantConfig = TABS_VARIANTS[this.variant()];
 
     return this.twClass.merge(
       'font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed',
-      TABS_SIZES[this.size],
+      TABS_SIZES[this.size()],
       variantConfig.tab,
-      panel.active ? variantConfig.activeTab : ''
+      panel.active() ? variantConfig.activeTab : ''
     );
   }
 
@@ -233,8 +263,9 @@ export class TwTabsComponent implements AfterContentInit {
     const previousValue = this.value;
 
     this.panels.forEach(panel => {
-      panel.active = panel.value === value;
-      panel.labelledBy = `tab-${panel.value}`;
+      panel.active.set(panel.value() === value);
+      panel.labelledBy.set(`tab-${panel.value()}`);
+      panel.animated.set(this.animated());
     });
 
     this.value = value;
@@ -246,12 +277,12 @@ export class TwTabsComponent implements AfterContentInit {
   }
 
   protected onKeydown(event: KeyboardEvent, currentValue: string): void {
-    const enabledPanels = this.panels.filter(p => !p.disabled);
-    const currentIndex = enabledPanels.findIndex(p => p.value === currentValue);
+    const enabledPanels = this.panels.filter(p => !p.disabled());
+    const currentIndex = enabledPanels.findIndex(p => p.value() === currentValue);
 
     let newIndex = currentIndex;
 
-    if (this.orientation === 'horizontal') {
+    if (this.orientation() === 'horizontal') {
       if (event.key === 'ArrowRight') {
         newIndex = (currentIndex + 1) % enabledPanels.length;
       } else if (event.key === 'ArrowLeft') {
@@ -272,11 +303,12 @@ export class TwTabsComponent implements AfterContentInit {
     if (newIndex !== currentIndex) {
       event.preventDefault();
       const newTab = enabledPanels[newIndex];
-      this.selectTab(newTab.value);
+      this.selectTab(newTab.value());
 
-      // Focus the new tab
-      const tabElement = document.querySelector(`#tab-${newTab.value}`);
-      (tabElement as HTMLElement)?.focus();
+      // Focus the new tab via the view query (avoids document-wide lookups and
+      // handles values that are not valid CSS identifiers)
+      const panelIndex = this.panels.indexOf(newTab);
+      this.tabButtons?.get(panelIndex)?.nativeElement.focus();
     }
   }
 
@@ -287,6 +319,6 @@ export class TwTabsComponent implements AfterContentInit {
 
   /** Get the currently active panel */
   getActivePanel(): TwTabPanelComponent | undefined {
-    return this.panels.find(p => p.active);
+    return this.panels.find(p => p.active());
   }
 }

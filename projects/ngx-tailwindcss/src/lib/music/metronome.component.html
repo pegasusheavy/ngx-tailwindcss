@@ -23,6 +23,7 @@
         [disabled]="disabled()"
         (click)="incrementBpm(-1)"
         title="Decrease BPM"
+        aria-label="Decrease BPM"
       >
         −
       </button>
@@ -40,6 +41,7 @@
         [disabled]="disabled()"
         (click)="incrementBpm(1)"
         title="Increase BPM"
+        aria-label="Increase BPM"
       >
         +
       </button>
@@ -57,6 +59,7 @@
       step="1"
       class="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
       [disabled]="disabled()"
+      aria-label="Tempo in beats per minute"
     />
   }
 
@@ -187,6 +190,13 @@
   @if (tapTimes().length > 0) {
     <div class="text-xs text-slate-500">
       Tap {{ 3 - Math.min(tapTimes().length, 2) }} more times to set tempo
+    </div>
+  }
+
+  <!-- Needs-gesture notice (audio blocked until user interaction) -->
+  @if (needsGesture()) {
+    <div class="text-xs text-amber-400 text-center" role="alert">
+      Audio is blocked by the browser — press Start to enable sound
     </div>
   }
 </div>

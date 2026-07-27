@@ -7,9 +7,12 @@ import {
   numberAttribute,
   OnChanges,
   OnDestroy,
+  PLATFORM_ID,
   Renderer2,
   SimpleChanges,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { AriaUtils } from '../core/aria.service';
 
 export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 
@@ -36,6 +39,8 @@ export type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
 export class TwTooltipDirective implements OnDestroy, OnChanges {
   private readonly el = inject(ElementRef);
   private readonly renderer = inject(Renderer2);
+  private readonly platformId = inject(PLATFORM_ID);
+  private readonly tooltipId = AriaUtils.generateId('tw-tooltip');
 
   /** The tooltip text content */
   @Input('twTooltip') content = '';
@@ -70,7 +75,18 @@ export class TwTooltipDirective implements OnDestroy, OnChanges {
     }
   }
 
+  private readonly escapeHandler = (event: KeyboardEvent): void => {
+    if (event.key === 'Escape') {
+      this.hide();
+    }
+  };
+
+  private readonly repositionHandler = (): void => {
+    this.updatePosition();
+  };
+
   show(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
     if (this.tooltipDisabled || !this.content) return;
 
     this.clearTimeouts();
@@ -95,6 +111,9 @@ export class TwTooltipDirective implements OnDestroy, OnChanges {
 
     this.tooltipElement = this.renderer.createElement('div');
     this.tooltipElement!.textContent = this.content;
+    this.renderer.setAttribute(this.tooltipElement, 'id', this.tooltipId);
+    this.renderer.setAttribute(this.tooltipElement, 'role', 'tooltip');
+    this.renderer.setAttribute(this.el.nativeElement, 'aria-describedby', this.tooltipId);
 
     // Base tooltip styles using Tailwind classes
     const baseClasses = [
@@ -137,6 +156,11 @@ export class TwTooltipDirective implements OnDestroy, OnChanges {
 
     // Position and show
     this.updatePosition();
+
+    // Dismiss on Escape and keep the tooltip anchored while visible
+    document.addEventListener('keydown', this.escapeHandler);
+    window.addEventListener('scroll', this.repositionHandler, true);
+    window.addEventListener('resize', this.repositionHandler);
 
     requestAnimationFrame(() => {
       if (this.tooltipElement) {
@@ -219,6 +243,10 @@ export class TwTooltipDirective implements OnDestroy, OnChanges {
 
   private destroyTooltip(): void {
     if (this.tooltipElement) {
+      document.removeEventListener('keydown', this.escapeHandler);
+      window.removeEventListener('scroll', this.repositionHandler, true);
+      window.removeEventListener('resize', this.repositionHandler);
+      this.renderer.removeAttribute(this.el.nativeElement, 'aria-describedby');
       this.renderer.removeChild(document.body, this.tooltipElement);
       this.tooltipElement = null;
     }

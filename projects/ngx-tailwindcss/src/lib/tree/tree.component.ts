@@ -2,13 +2,16 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  ElementRef,
   EventEmitter,
   inject,
-  Input,
+  input,
   numberAttribute,
   Output,
+  QueryList,
   signal,
   TemplateRef,
+  ViewChildren,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
@@ -29,6 +32,13 @@ export interface TreeNode {
 
 export type TreeSelectionMode = 'none' | 'single' | 'multiple' | 'checkbox';
 
+interface TreeNodeViewState {
+  selected: boolean;
+  indeterminate: boolean;
+  nodeClass: string;
+  labelClass: string;
+}
+
 /**
  * Tree component with Tailwind CSS styling
  *
@@ -48,23 +58,25 @@ export type TreeSelectionMode = 'none' | 'single' | 'multiple' | 'checkbox';
 export class TwTreeComponent {
   private readonly twClass = inject(TwClassService);
 
+  @ViewChildren('treeNodeRow') private readonly nodeRows!: QueryList<ElementRef<HTMLElement>>;
+
   /** Tree nodes */
-  @Input() nodes: TreeNode[] = [];
+  readonly nodes = input<TreeNode[]>([]);
 
   /** Selection mode */
-  @Input() selectionMode: TreeSelectionMode = 'none';
+  readonly selectionMode = input<TreeSelectionMode>('none');
 
   /** Indent size in pixels */
-  @Input({ transform: numberAttribute }) indentSize = 24;
+  readonly indentSize = input(24, { transform: numberAttribute });
 
   /** Whether to propagate selection to children */
-  @Input() propagateSelectionDown = true;
+  readonly propagateSelectionDown = input(true);
 
   /** Whether to propagate selection to parent */
-  @Input() propagateSelectionUp = true;
+  readonly propagateSelectionUp = input(true);
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   /** Node select event */
   @Output() onNodeSelect = new EventEmitter<TreeNode>();
@@ -81,40 +93,85 @@ export class TwTreeComponent {
   /** Selection change event */
   @Output() selectionChange = new EventEmitter<TreeNode[]>();
 
-  protected selection = signal<TreeNode[]>([]);
+  /** Selection is held as a Set internally for O(1) lookups; emitted as an array. */
+  protected selection = signal<ReadonlySet<TreeNode>>(new Set());
+
+  /** Node currently owning the roving tabindex. */
+  protected readonly focusedNode = signal<TreeNode | null>(null);
 
   protected containerClasses = computed(() => {
-    return this.twClass.merge('py-2', this.classOverride);
+    return this.twClass.merge('py-2', this.classOverride());
   });
 
-  protected nodeClasses(node: TreeNode, level: number) {
-    return this.twClass.merge(
-      'flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors cursor-pointer',
-      'hover:bg-slate-100',
-      node.selected ? 'bg-blue-50' : '',
-      node.disabled ? 'opacity-50 cursor-not-allowed' : '',
-      node.styleClass || ''
-    );
+  /**
+   * Per-node view state (selected/indeterminate flags and classes), computed in a
+   * single pass over the tree whenever the nodes input or the selection changes.
+   */
+  private readonly nodeViewState = computed(() => {
+    const selection = this.selection();
+    const states = new Map<TreeNode, TreeNodeViewState>();
+
+    const visit = (node: TreeNode): { total: number; selectedCount: number } => {
+      let total = 0;
+      let selectedCount = 0;
+      for (const child of node.children ?? []) {
+        const childResult = visit(child);
+        total += childResult.total + 1;
+        selectedCount += childResult.selectedCount + (selection.has(child) ? 1 : 0);
+      }
+
+      const selected = selection.has(node);
+      states.set(node, {
+        selected,
+        indeterminate: total > 0 && selectedCount > 0 && selectedCount < total,
+        nodeClass: this.twClass.merge(
+          'flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors cursor-pointer',
+          'hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
+          selected ? 'bg-blue-50' : '',
+          node.disabled ? 'opacity-50 cursor-not-allowed' : '',
+          node.styleClass || ''
+        ),
+        labelClass: this.twClass.merge(
+          'text-sm select-none',
+          node.disabled ? 'text-slate-400' : 'text-slate-700'
+        ),
+      });
+      return { total, selectedCount };
+    };
+
+    this.nodes().forEach(visit);
+    return states;
+  });
+
+  /** Child-to-parent lookup used for upward selection propagation. */
+  private readonly parentMap = computed(() => {
+    const map = new Map<TreeNode, TreeNode | null>();
+    const visit = (node: TreeNode, parent: TreeNode | null) => {
+      map.set(node, parent);
+      node.children?.forEach(child => {
+        visit(child, node);
+      });
+    };
+    this.nodes().forEach(node => {
+      visit(node, null);
+    });
+    return map;
+  });
+
+  protected nodeClasses(node: TreeNode, level: number): string {
+    return this.nodeViewState().get(node)?.nodeClass ?? '';
   }
 
-  protected labelClasses(node: TreeNode) {
-    return this.twClass.merge(
-      'text-sm select-none',
-      node.disabled ? 'text-slate-400' : 'text-slate-700'
-    );
+  protected labelClasses(node: TreeNode): string {
+    return this.nodeViewState().get(node)?.labelClass ?? '';
   }
 
   isSelected(node: TreeNode): boolean {
-    return this.selection().includes(node);
+    return this.selection().has(node);
   }
 
   isIndeterminate(node: TreeNode): boolean {
-    if (!node.children || node.children.length === 0) return false;
-
-    const selectedChildren = this.getSelectedDescendants(node);
-    const allChildren = this.getAllDescendants(node);
-
-    return selectedChildren.length > 0 && selectedChildren.length < allChildren.length;
+    return this.nodeViewState().get(node)?.indeterminate ?? false;
   }
 
   onNodeClick(node: TreeNode): void {
@@ -126,20 +183,21 @@ export class TwTreeComponent {
     }
 
     // Handle selection
-    if (this.selectionMode === 'single') {
-      this.selection.set([node]);
+    if (this.selectionMode() === 'single') {
+      this.selection.set(new Set([node]));
       this.onNodeSelect.emit(node);
-      this.selectionChange.emit(this.selection());
-    } else if (this.selectionMode === 'multiple') {
-      const current = this.selection();
-      if (current.includes(node)) {
-        this.selection.set(current.filter(n => n !== node));
+      this.selectionChange.emit(this.getSelection());
+    } else if (this.selectionMode() === 'multiple') {
+      const next = new Set(this.selection());
+      if (next.has(node)) {
+        next.delete(node);
         this.onNodeUnselect.emit(node);
       } else {
-        this.selection.set([...current, node]);
+        next.add(node);
         this.onNodeSelect.emit(node);
       }
-      this.selectionChange.emit(this.selection());
+      this.selection.set(next);
+      this.selectionChange.emit([...next]);
     }
   }
 
@@ -147,14 +205,20 @@ export class TwTreeComponent {
     if (node.disabled) return;
 
     const { checked } = event.target as HTMLInputElement;
+    const next = new Set(this.selection());
 
     if (checked) {
-      this.selectNode(node);
+      this.selectNodeInto(next, node);
     } else {
-      this.unselectNode(node);
+      this.unselectNodeFrom(next, node);
     }
 
-    this.selectionChange.emit(this.selection());
+    if (this.propagateSelectionUp()) {
+      this.updateAncestors(next, node);
+    }
+
+    this.selection.set(next);
+    this.selectionChange.emit([...next]);
   }
 
   toggleNode(node: TreeNode): void {
@@ -167,65 +231,125 @@ export class TwTreeComponent {
     }
   }
 
-  private selectNode(node: TreeNode): void {
-    const current = this.selection();
-    if (!current.includes(node)) {
-      this.selection.set([...current, node]);
+  protected nodeTabIndex(node: TreeNode): number {
+    const focused = this.focusedNode();
+    if (focused) {
+      return node === focused ? 0 : -1;
+    }
+    const firstRoot = this.nodes().find(n => n.visible !== false);
+    return node === firstRoot ? 0 : -1;
+  }
+
+  protected onNodeKeydown(event: KeyboardEvent, node: TreeNode): void {
+    switch (event.key) {
+      case 'ArrowDown': {
+        event.preventDefault();
+        const visible = this.getVisibleNodes();
+        this.focusNodeAt(visible, Math.min(visible.indexOf(node) + 1, visible.length - 1));
+        break;
+      }
+      case 'ArrowUp': {
+        event.preventDefault();
+        const visible = this.getVisibleNodes();
+        this.focusNodeAt(visible, Math.max(visible.indexOf(node) - 1, 0));
+        break;
+      }
+      case 'ArrowRight': {
+        event.preventDefault();
+        if (node.children?.length && !node.expanded) {
+          this.toggleNode(node);
+        }
+        break;
+      }
+      case 'ArrowLeft': {
+        event.preventDefault();
+        if (node.children?.length && node.expanded) {
+          this.toggleNode(node);
+        }
+        break;
+      }
+      case 'Enter':
+      case ' ': {
+        event.preventDefault();
+        this.onNodeClick(node);
+        break;
+      }
+    }
+  }
+
+  private focusNodeAt(visible: TreeNode[], index: number): void {
+    const target = visible[index];
+    if (!target) return;
+    this.focusedNode.set(target);
+    this.nodeRows?.get(index)?.nativeElement.focus();
+  }
+
+  /** Nodes currently rendered, in DOM order (visible and all ancestors expanded). */
+  private getVisibleNodes(): TreeNode[] {
+    const visible: TreeNode[] = [];
+    const visit = (nodes: TreeNode[]) => {
+      for (const node of nodes) {
+        if (node.visible === false) continue;
+        visible.push(node);
+        if (node.children && node.children.length > 0 && node.expanded) {
+          visit(node.children);
+        }
+      }
+    };
+    visit(this.nodes());
+    return visible;
+  }
+
+  private selectNodeInto(selection: Set<TreeNode>, node: TreeNode): void {
+    if (!selection.has(node)) {
+      selection.add(node);
       this.onNodeSelect.emit(node);
     }
 
-    if (this.propagateSelectionDown && node.children) {
+    if (this.propagateSelectionDown() && node.children) {
       node.children.forEach(child => {
-        this.selectNode(child);
+        this.selectNodeInto(selection, child);
       });
     }
   }
 
-  private unselectNode(node: TreeNode): void {
-    this.selection.set(this.selection().filter(n => n !== node));
-    this.onNodeUnselect.emit(node);
+  private unselectNodeFrom(selection: Set<TreeNode>, node: TreeNode): void {
+    if (selection.has(node)) {
+      selection.delete(node);
+      this.onNodeUnselect.emit(node);
+    }
 
-    if (this.propagateSelectionDown && node.children) {
+    if (this.propagateSelectionDown() && node.children) {
       node.children.forEach(child => {
-        this.unselectNode(child);
+        this.unselectNodeFrom(selection, child);
       });
     }
   }
 
-  private getSelectedDescendants(node: TreeNode): TreeNode[] {
-    const selected: TreeNode[] = [];
+  /**
+   * Walks up from the given node: a parent becomes selected when all of its
+   * direct children are selected, and is deselected otherwise.
+   */
+  private updateAncestors(selection: Set<TreeNode>, node: TreeNode): void {
+    const parents = this.parentMap();
+    let parent = parents.get(node) ?? null;
 
-    const traverse = (n: TreeNode) => {
-      if (this.selection().includes(n)) {
-        selected.push(n);
-      }
-      if (n.children) {
-        n.children.forEach(traverse);
-      }
-    };
+    while (parent) {
+      const children = parent.children ?? [];
+      const allSelected = children.length > 0 && children.every(child => selection.has(child));
 
-    if (node.children) {
-      node.children.forEach(traverse);
+      if (allSelected) {
+        if (!selection.has(parent)) {
+          selection.add(parent);
+          this.onNodeSelect.emit(parent);
+        }
+      } else if (selection.has(parent)) {
+        selection.delete(parent);
+        this.onNodeUnselect.emit(parent);
+      }
+
+      parent = parents.get(parent) ?? null;
     }
-
-    return selected;
-  }
-
-  private getAllDescendants(node: TreeNode): TreeNode[] {
-    const descendants: TreeNode[] = [];
-
-    const traverse = (n: TreeNode) => {
-      descendants.push(n);
-      if (n.children) {
-        n.children.forEach(traverse);
-      }
-    };
-
-    if (node.children) {
-      node.children.forEach(traverse);
-    }
-
-    return descendants;
   }
 
   /** Expand all nodes */
@@ -238,7 +362,7 @@ export class TwTreeComponent {
         }
       });
     };
-    expandNodes(this.nodes);
+    expandNodes(this.nodes());
   }
 
   /** Collapse all nodes */
@@ -251,17 +375,17 @@ export class TwTreeComponent {
         }
       });
     };
-    collapseNodes(this.nodes);
+    collapseNodes(this.nodes());
   }
 
   /** Get selected nodes */
   getSelection(): TreeNode[] {
-    return this.selection();
+    return [...this.selection()];
   }
 
   /** Clear selection */
   clearSelection(): void {
-    this.selection.set([]);
+    this.selection.set(new Set());
     this.selectionChange.emit([]);
   }
 }

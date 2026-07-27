@@ -5,6 +5,7 @@ import {
   ElementRef,
   inject,
   input,
+  OnDestroy,
   output,
   signal,
   viewChild,
@@ -58,9 +59,16 @@ export interface ThumbnailSpriteConfig {
     class: 'block',
   },
 })
-export class TwScrubberComponent {
+export class TwScrubberComponent implements OnDestroy {
   private readonly twClass = inject(TwClassService);
   private readonly trackContainer = viewChild<ElementRef<HTMLDivElement>>('trackContainer');
+
+  private dragController: AbortController | null = null;
+
+  ngOnDestroy(): void {
+    this.dragController?.abort();
+    this.dragController = null;
+  }
 
   // Time inputs
   readonly currentTime = input(0);
@@ -277,12 +285,15 @@ export class TwScrubberComponent {
     const onMouseUp = (): void => {
       this.isDragging.set(false);
       this.seekEnd.emit();
-      document.removeEventListener('mousemove', onMouseMove);
-      document.removeEventListener('mouseup', onMouseUp);
+      this.dragController?.abort();
+      this.dragController = null;
     };
 
-    document.addEventListener('mousemove', onMouseMove);
-    document.addEventListener('mouseup', onMouseUp);
+    this.dragController?.abort();
+    this.dragController = new AbortController();
+    const { signal: abortSignal } = this.dragController;
+    document.addEventListener('mousemove', onMouseMove, { signal: abortSignal });
+    document.addEventListener('mouseup', onMouseUp, { signal: abortSignal });
   }
 
   onMouseMove(event: MouseEvent): void {
@@ -313,12 +324,15 @@ export class TwScrubberComponent {
     const onTouchEnd = (): void => {
       this.isDragging.set(false);
       this.seekEnd.emit();
-      document.removeEventListener('touchmove', onTouchMove);
-      document.removeEventListener('touchend', onTouchEnd);
+      this.dragController?.abort();
+      this.dragController = null;
     };
 
-    document.addEventListener('touchmove', onTouchMove, { passive: false });
-    document.addEventListener('touchend', onTouchEnd);
+    this.dragController?.abort();
+    this.dragController = new AbortController();
+    const { signal: abortSignal } = this.dragController;
+    document.addEventListener('touchmove', onTouchMove, { passive: false, signal: abortSignal });
+    document.addEventListener('touchend', onTouchEnd, { signal: abortSignal });
   }
 
   onKeyDown(event: KeyboardEvent): void {
@@ -449,7 +463,7 @@ export class TwScrubberComponent {
       canvas.height = this.thumbnailHeight();
 
       // Save current time and seek
-      const {currentTime} = video;
+      const { currentTime } = video;
 
       // Note: For live thumbnails, you'd need to handle this differently
       // as seeking causes video to pause/buffer

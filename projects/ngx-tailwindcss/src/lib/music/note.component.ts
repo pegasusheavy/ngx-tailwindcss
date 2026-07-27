@@ -329,9 +329,8 @@ export class TwNoteComponent {
 
     if (direction === 'up') {
       return Math.min(stemY2, y) - size * 1.2;
-    } 
-      return Math.max(stemY2, y) + size * 1.2;
-    
+    }
+    return Math.max(stemY2, y) + size * 1.2;
   });
 
   // Beam computed values
@@ -392,7 +391,7 @@ export class TwNoteComponent {
     const size = this.size();
     const levels = this.beamLevels();
     const direction = this.computedStemDirection();
-    const {position} = config;
+    const { position } = config;
 
     // Beam thickness and spacing
     const beamThickness = size * 0.25;

@@ -226,7 +226,67 @@ describe('TwSelectComponent', () => {
       const event = new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true });
       triggerButton.nativeElement.dispatchEvent(event);
       fixture.detectChanges();
-      // Should open the dropdown
+      const options = selectEl.queryAll(By.css('[role="option"]'));
+      expect(options.length).toBe(4);
+    });
+
+    it('should select the second option with ArrowDown twice and Enter', () => {
+      const triggerButton = selectEl.query(By.css('button'));
+      const press = (key: string) => {
+        triggerButton.nativeElement.dispatchEvent(
+          new KeyboardEvent('keydown', { key, bubbles: true })
+        );
+        fixture.detectChanges();
+      };
+      press('ArrowDown'); // opens, first option active
+      press('ArrowDown'); // moves to second option
+      press('Enter');
+      expect(component.onChangeSpy).toHaveBeenCalledWith({ label: 'Option 2', value: '2' });
+    });
+
+    it('should skip disabled options when traversing with ArrowUp', () => {
+      const triggerButton = selectEl.query(By.css('button'));
+      const press = (key: string) => {
+        triggerButton.nativeElement.dispatchEvent(
+          new KeyboardEvent('keydown', { key, bubbles: true })
+        );
+        fixture.detectChanges();
+      };
+      press('ArrowDown'); // opens, first option active
+      press('ArrowUp'); // wraps backwards, skipping the disabled fourth option
+      press('Enter');
+      expect(component.onChangeSpy).toHaveBeenCalledWith({ label: 'Option 3', value: '3' });
+    });
+
+    it('should close the dropdown on Escape', () => {
+      const triggerButton = selectEl.query(By.css('button'));
+      triggerButton.nativeElement.click();
+      fixture.detectChanges();
+      triggerButton.nativeElement.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'Escape', bubbles: true })
+      );
+      fixture.detectChanges();
+      expect(selectEl.queryAll(By.css('[role="option"]')).length).toBe(0);
+    });
+
+    it('should expose listbox semantics and aria-activedescendant', () => {
+      const triggerButton = selectEl.query(By.css('button'));
+      expect(triggerButton.nativeElement.getAttribute('aria-haspopup')).toBe('listbox');
+
+      triggerButton.nativeElement.dispatchEvent(
+        new KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true })
+      );
+      fixture.detectChanges();
+
+      const listbox = selectEl.query(By.css('[role="listbox"]'));
+      expect(triggerButton.nativeElement.getAttribute('aria-controls')).toBe(
+        listbox.nativeElement.id
+      );
+
+      const activeId = triggerButton.nativeElement.getAttribute('aria-activedescendant');
+      expect(activeId).toBeTruthy();
+      const activeOption = listbox.nativeElement.querySelector(`#${activeId}`);
+      expect(activeOption?.textContent).toContain('Option 1');
     });
   });
 

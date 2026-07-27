@@ -15,13 +15,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { interval } from 'rxjs';
 
 export type PitchDisplayVariant =
-  | 'default'
-  | 'minimal'
-  | 'digital'
-  | 'wheel'
-  | 'dj'
-  | 'light'
-  | 'highContrast';
+  'default' | 'minimal' | 'digital' | 'wheel' | 'dj' | 'light' | 'highContrast';
 export type PitchDisplaySize = 'sm' | 'md' | 'lg';
 export type PitchBendStyle = 'vertical' | 'horizontal' | 'arc';
 
@@ -201,7 +195,7 @@ export class TwPitchDisplayComponent implements OnInit {
   protected readonly frequencyRatio = computed(() => {
     const totalCents = this.totalCents();
     // Ratio = 2^(cents/1200)
-    return 2**(totalCents / 1200);
+    return 2 ** (totalCents / 1200);
   });
 
   protected readonly frequencyRatioDisplay = computed(() => {
@@ -236,7 +230,7 @@ export class TwPitchDisplayComponent implements OnInit {
     if (st > 12) {
       const octaves = Math.floor(st / 12);
       const remaining = st % 12;
-      return `${octaves} Oct + ${names[remaining] || `${remaining  } st`}`;
+      return `${octaves} Oct + ${names[remaining] || `${remaining} st`}`;
     }
     return names[st] || `${st} semitones`;
   });
@@ -295,10 +289,20 @@ export class TwPitchDisplayComponent implements OnInit {
   private readonly onPitchWheelDrag = (event: MouseEvent | TouchEvent): void => {
     const currentY = 'touches' in event ? event.touches[0].clientY : event.clientY;
     const delta = (this.dragStartY - currentY) / 100; // Normalize
-    const newValue = Math.max(-1, Math.min(1, this.dragStartValue + delta));
+    const newValue = this.applyBendSnap(Math.max(-1, Math.min(1, this.dragStartValue + delta)));
+    if (newValue === this.internalPitchBend()) return;
     this.internalPitchBend.set(newValue);
     this.pitchBendChange.emit(newValue);
   };
+
+  // Snap the bend so the effective pitch offset lands on whole semitones
+  private applyBendSnap(value: number): number {
+    if (!this.snapToSemitone()) return value;
+    const range = this.pitchBendRange();
+    if (range <= 0) return value;
+    const semitones = Math.round(value * range);
+    return Math.max(-1, Math.min(1, semitones / range));
+  }
 
   private readonly onPitchWheelDragEnd = (): void => {
     this.isDragging.set(false);
@@ -353,7 +357,7 @@ export class TwPitchDisplayComponent implements OnInit {
   }
 
   setPitchBend(value: number): void {
-    const clamped = Math.max(-1, Math.min(1, value));
+    const clamped = this.applyBendSnap(Math.max(-1, Math.min(1, value)));
     this.internalPitchBend.set(clamped);
     this.pitchBendChange.emit(clamped);
   }

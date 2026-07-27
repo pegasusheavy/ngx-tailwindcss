@@ -11,14 +11,7 @@ import { NoteDuration, NoteName } from './note.component';
 
 export type TablatureVariant = 'default' | 'minimal' | 'printed' | 'dark';
 export type TablatureTechnique =
-  | 'hammer'
-  | 'pull'
-  | 'slide'
-  | 'bend'
-  | 'vibrato'
-  | 'tap'
-  | 'harmonic'
-  | 'mute';
+  'hammer' | 'pull' | 'slide' | 'bend' | 'vibrato' | 'tap' | 'harmonic' | 'mute';
 
 export interface TabNote {
   string: number; // 1-6 (1 = high E)

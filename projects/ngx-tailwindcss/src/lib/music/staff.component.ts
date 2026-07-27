@@ -10,32 +10,9 @@ import { CommonModule } from '@angular/common';
 export type ClefType = 'treble' | 'bass' | 'alto' | 'tenor' | 'percussion';
 export type StaffVariant = 'default' | 'printed' | 'handwritten' | 'minimal';
 export type KeySignature =
-  | 'C'
-  | 'G'
-  | 'D'
-  | 'A'
-  | 'E'
-  | 'B'
-  | 'F#'
-  | 'C#'
-  | 'F'
-  | 'Bb'
-  | 'Eb'
-  | 'Ab'
-  | 'Db'
-  | 'Gb'
-  | 'Cb';
+  'C' | 'G' | 'D' | 'A' | 'E' | 'B' | 'F#' | 'C#' | 'F' | 'Bb' | 'Eb' | 'Ab' | 'Db' | 'Gb' | 'Cb';
 export type StaffTimeSignature =
-  | '2/4'
-  | '3/4'
-  | '4/4'
-  | '5/4'
-  | '6/8'
-  | '7/8'
-  | '9/8'
-  | '12/8'
-  | 'C'
-  | 'C|';
+  '2/4' | '3/4' | '4/4' | '5/4' | '6/8' | '7/8' | '9/8' | '12/8' | 'C' | 'C|';
 
 interface KeySignatureInfo {
   sharps: number;
@@ -234,7 +211,7 @@ export class TwStaffComponent {
     const info = KEY_SIGNATURES[key];
     const isSharp = info.sharps > 0;
     const count = info.sharps || info.flats;
-    const {positions} = info;
+    const { positions } = info;
     const startX = this.showClef() ? 55 : 15;
     const spacing = this.lineSpacing();
     const top = this.staffTop();

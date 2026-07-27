@@ -3,9 +3,9 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   inject,
   input,
+  NgZone,
   numberAttribute,
   OnDestroy,
   output,
@@ -44,7 +44,7 @@ const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 
   },
 })
 export class TwTunerComponent implements AfterViewInit, OnDestroy {
-  private readonly destroyRef = inject(DestroyRef);
+  private readonly zone = inject(NgZone);
 
   readonly variant = input<TunerVariant>('default');
   readonly mode = input<TunerMode>('chromatic');
@@ -60,8 +60,11 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
 
   readonly tuningChange = output<TuningData>();
   readonly inTune = output<boolean>();
+  /** Emits when microphone access or audio setup fails */
+  readonly error = output<string>();
 
   protected readonly isListening = signal(false);
+  protected readonly errorState = signal<string | null>(null);
   protected readonly currentFrequency = signal(0);
   protected readonly currentNote = signal('--');
   protected readonly currentOctave = signal(4);
@@ -166,6 +169,8 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
   async startListening(): Promise<void> {
     if (this.isListening()) return;
 
+    this.errorState.set(null);
+
     try {
       this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
       this.audioContext = new AudioContext();
@@ -178,9 +183,16 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
       this.dataArray = new Float32Array(this.analyser.fftSize);
       this.isListening.set(true);
 
-      this.detectPitch();
+      // Pitch detection loop runs outside the zone; signal writes re-enter it
+      this.zone.runOutsideAngular(() => {
+        this.detectPitch();
+      });
     } catch (error) {
-      console.error('Error accessing microphone:', error);
+      const message =
+        error instanceof Error && error.message ? error.message : 'Microphone access denied';
+      this.stopListening();
+      this.errorState.set(message);
+      this.error.emit(message);
     }
   }
 
@@ -193,7 +205,9 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
     }
 
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach(track => { track.stop(); });
+      this.mediaStream.getTracks().forEach(track => {
+        track.stop();
+      });
       this.mediaStream = null;
     }
 
@@ -221,26 +235,31 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
     const frequency = this.autoCorrelate(this.dataArray, this.audioContext!.sampleRate);
 
     if (frequency > 0) {
-      this.currentFrequency.set(Math.round(frequency * 10) / 10);
+      // Re-enter the zone only for template-feeding signal writes and outputs
+      this.zone.run(() => {
+        this.currentFrequency.set(Math.round(frequency * 10) / 10);
 
-      const noteData = this.frequencyToNote(frequency);
-      this.currentNote.set(noteData.note);
-      this.currentOctave.set(noteData.octave);
-      this.currentCents.set(noteData.cents);
+        const noteData = this.frequencyToNote(frequency);
+        this.currentNote.set(noteData.note);
+        this.currentOctave.set(noteData.octave);
+        this.currentCents.set(noteData.cents);
 
-      const tuningData: TuningData = {
-        frequency,
-        note: noteData.note,
-        octave: noteData.octave,
-        cents: noteData.cents,
-        inTune: Math.abs(noteData.cents) <= this.tolerance(),
-      };
+        const tuningData: TuningData = {
+          frequency,
+          note: noteData.note,
+          octave: noteData.octave,
+          cents: noteData.cents,
+          inTune: Math.abs(noteData.cents) <= this.tolerance(),
+        };
 
-      this.tuningChange.emit(tuningData);
-      this.inTune.emit(tuningData.inTune);
+        this.tuningChange.emit(tuningData);
+        this.inTune.emit(tuningData.inTune);
+      });
     }
 
-    this.animationFrameId = requestAnimationFrame(() => { this.detectPitch(); });
+    this.animationFrameId = requestAnimationFrame(() => {
+      this.detectPitch();
+    });
   }
 
   private autoCorrelate(buffer: Float32Array, sampleRate: number): number {
@@ -261,8 +280,13 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
     // Not enough signal
     if (rms < 0.01) return -1;
 
+    // Restrict the offset search to the musical range (~60 Hz to ~2 kHz):
+    // cuts ~90% of the O(n^2) work versus scanning every offset.
+    const minOffset = Math.max(1, Math.floor(sampleRate / 2000));
+    const maxOffset = Math.min(maxSamples, Math.ceil(sampleRate / 60));
+
     let lastCorrelation = 1;
-    for (let offset = 0; offset < maxSamples; offset++) {
+    for (let offset = minOffset; offset < maxOffset; offset++) {
       let correlation = 0;
 
       for (let i = 0; i < maxSamples; i++) {
@@ -325,6 +349,6 @@ export class TwTunerComponent implements AfterViewInit, OnDestroy {
 
     // Calculate semitones from A4
     const semitonesFromA4 = (octave - 4) * 12 + (noteIndex - 9);
-    return this.referenceFrequency() * 2**(semitonesFromA4 / 12);
+    return this.referenceFrequency() * 2 ** (semitonesFromA4 / 12);
   }
 }

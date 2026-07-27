@@ -691,9 +691,11 @@
   <!-- Add User Modal -->
   <tw-modal
     [(open)]="userModalOpen"
-    title="Add New User"
     [showCloseButton]="true"
     size="md">
+    <tw-modal-header>
+      <tw-modal-title>Add New User</tw-modal-title>
+    </tw-modal-header>
     <div class="space-y-4">
       <tw-input label="Full Name" placeholder="Enter full name"></tw-input>
       <tw-input label="Email" type="email" placeholder="Enter email address"></tw-input>

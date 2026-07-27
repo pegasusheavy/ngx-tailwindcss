@@ -114,14 +114,7 @@
       title="Breadcrumbs"
       description="Path-based navigation trail."
       [code]="codeExamples.breadcrumbs">
-      <tw-breadcrumbs-nav
-        [items]="[
-          { id: 'home', label: 'Home', path: '/' },
-          { id: 'projects', label: 'Projects', path: '/projects' },
-          { id: 'app', label: 'My App', path: '/projects/my-app' },
-          { id: 'src', label: 'src', path: '/projects/my-app/src' }
-        ]">
-      </tw-breadcrumbs-nav>
+      <tw-breadcrumbs-nav [items]="breadcrumbItems"></tw-breadcrumbs-nav>
     </app-demo-section>
   </section>
 
@@ -263,8 +256,7 @@
         title="Enter Name"
         message="Please enter your project name:"
         placeholder="my-project"
-        (confirmed)="onPromptConfirmed($event)"
-        (cancelled)="showPromptDialog.set(false)">
+        (confirmed)="onPromptConfirmed($event)">
       </tw-prompt-dialog>
 
       <tw-about-dialog
@@ -272,7 +264,7 @@
         appName="ngx-tailwindcss"
         version="0.2.0"
         description="A comprehensive Angular component library with Tailwind CSS styling."
-        copyright="© 2024 Pegasus Heavy Industries"
+        copyright="© 2026 Joseph R Quinn"
         (close)="showAboutDialog.set(false)"
         (openChange)="showAboutDialog.set($event)">
       </tw-about-dialog>
@@ -393,11 +385,11 @@
       [code]="codeExamples.resizablePanels">
       <div class="h-64 bg-slate-100 dark:bg-slate-800 rounded-lg overflow-hidden">
         <tw-resizable-panels direction="horizontal">
-          <div class="p-4 bg-slate-200 dark:bg-slate-700 h-full">
+          <div panel1 class="p-4 bg-slate-200 dark:bg-slate-700 h-full">
             <h4 class="font-semibold text-slate-700 dark:text-slate-300">Left Panel</h4>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Drag the handle to resize</p>
           </div>
-          <div class="p-4 bg-slate-100 dark:bg-slate-800 h-full">
+          <div panel2 class="p-4 bg-slate-100 dark:bg-slate-800 h-full">
             <h4 class="font-semibold text-slate-700 dark:text-slate-300">Right Panel</h4>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-2">Content area</p>
           </div>

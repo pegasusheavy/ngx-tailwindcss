@@ -92,6 +92,9 @@ export class TwPopoverComponent implements OnDestroy {
   // Portal elements
   private portalHost: HTMLElement | null = null;
   private portalElement: HTMLElement | null = null;
+  // Projected elements moved into the portal (with their original parents) so
+  // they can be restored on destroy
+  private movedElements: Array<{ element: HTMLElement; parent: HTMLElement | null }> = [];
   private clickOutsideListener: (() => void) | null = null;
   private scrollListener: (() => void) | null = null;
   private resizeListener: (() => void) | null = null;
@@ -147,6 +150,20 @@ export class TwPopoverComponent implements OnDestroy {
       this.hoverTimeout = setTimeout(() => {
         this.hide();
       }, this.hoverDelay);
+    }
+  }
+
+  onTriggerFocusIn(): void {
+    // Keyboard equivalence: focus opens for both focus and hover triggers
+    if (this.trigger === 'focus' || this.trigger === 'hover') {
+      this.clearHoverTimeout();
+      this.show();
+    }
+  }
+
+  onTriggerFocusOut(): void {
+    if (this.trigger === 'focus') {
+      this.hide();
     }
   }
 
@@ -311,22 +328,30 @@ export class TwPopoverComponent implements OnDestroy {
       this.renderer.appendChild(this.portalElement, headerEl);
     }
 
+    // Footer element is captured before the content source moves, since it is
+    // projected inside it
+    const footerSource = this.elementRef.nativeElement.querySelector(
+      '[twPopoverFooter]'
+    ) as HTMLElement | null;
+
     // Content
     const contentWrapper = this.renderer.createElement('div');
     this.renderer.addClass(contentWrapper, 'px-4');
     this.renderer.addClass(contentWrapper, 'py-3');
 
-    // Clone content from the component
-    const contentSource = this.elementRef.nativeElement.querySelector('.popover-content-source');
+    // Move (not clone) the live projected content into the portal so Angular
+    // bindings and event handlers keep working
+    const contentSource = this.elementRef.nativeElement.querySelector(
+      '.popover-content-source'
+    ) as HTMLElement | null;
     if (contentSource) {
-      const clone = contentSource.cloneNode(true) as HTMLElement;
-      clone.style.display = 'block';
-      this.renderer.appendChild(contentWrapper, clone);
+      this.movedElements.push({ element: contentSource, parent: contentSource.parentElement });
+      this.renderer.setStyle(contentSource, 'display', 'block');
+      this.renderer.appendChild(contentWrapper, contentSource);
     }
     this.renderer.appendChild(this.portalElement, contentWrapper);
 
     // Footer
-    const footerSource = this.elementRef.nativeElement.querySelector('[twPopoverFooter]');
     if (footerSource) {
       const footerWrapper = this.renderer.createElement('div');
       this.renderer.addClass(footerWrapper, 'px-4');
@@ -336,8 +361,8 @@ export class TwPopoverComponent implements OnDestroy {
       this.renderer.addClass(footerWrapper, 'dark:border-slate-700');
       this.renderer.addClass(footerWrapper, 'bg-slate-50');
       this.renderer.addClass(footerWrapper, 'dark:bg-slate-900');
-      const footerClone = footerSource.cloneNode(true) as HTMLElement;
-      this.renderer.appendChild(footerWrapper, footerClone);
+      this.movedElements.push({ element: footerSource, parent: footerSource.parentElement });
+      this.renderer.appendChild(footerWrapper, footerSource);
       this.renderer.appendChild(this.portalElement, footerWrapper);
     }
   }
@@ -356,6 +381,22 @@ export class TwPopoverComponent implements OnDestroy {
   }
 
   private destroyPortal(): void {
+    // Restore moved projected content to its original location (content source
+    // first, then the footer back inside it)
+    for (const { element, parent } of this.movedElements) {
+      if (parent) {
+        this.renderer.appendChild(parent, element);
+      }
+    }
+    this.movedElements = [];
+
+    const contentSource = this.elementRef.nativeElement.querySelector(
+      '.popover-content-source'
+    ) as HTMLElement | null;
+    if (contentSource) {
+      this.renderer.setStyle(contentSource, 'display', 'none');
+    }
+
     if (this.portalHost && this.document.body.contains(this.portalHost)) {
       this.renderer.removeChild(this.document.body, this.portalHost);
     }

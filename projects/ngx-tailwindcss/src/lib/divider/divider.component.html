@@ -1,6 +1,6 @@
 @if (orientationValue() === 'horizontal') {
   @if (labelValue()) {
-    <div [class]="containerClasses()">
+    <div [class]="containerClasses()" role="separator" aria-orientation="horizontal">
       <div [class]="firstLineClasses()"></div>
       <span [class]="labelClasses()">{{ labelValue() }}</span>
       <div [class]="lastLineClasses()"></div>
@@ -9,5 +9,5 @@
     <hr [class]="hrClasses()" />
   }
 } @else {
-  <div [class]="verticalClasses()"></div>
+  <div [class]="verticalClasses()" role="separator" aria-orientation="vertical"></div>
 }

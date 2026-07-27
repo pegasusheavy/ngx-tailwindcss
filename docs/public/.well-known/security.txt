@@ -1,13 +1,9 @@
 # Security Policy for ngx-tailwindcss
 
-Contact: mailto:security@pegasusheavy.com
-Contact: https://github.com/PegasusHeavyIndustries/ngx-tailwindcss/security/advisories/new
+Contact: https://github.com/quinnjr/ngx-tailwindcss/security/advisories/new
 Expires: 2026-12-31T23:59:59.000Z
-Encryption: https://ngx-tailwindcss.dev/.well-known/pgp-key.txt
 Preferred-Languages: en
-Canonical: https://ngx-tailwindcss.dev/.well-known/security.txt
-Policy: https://github.com/PegasusHeavyIndustries/ngx-tailwindcss/blob/main/SECURITY.md
+Canonical: https://quinnjr.github.io/ngx-tailwindcss/.well-known/security.txt
 
 # We appreciate responsible disclosure of security vulnerabilities.
-# Please report any security issues to the contacts above.
-
+# Please report any security issues to the contact above.

@@ -1,20 +1,23 @@
 <div [class]="containerClasses()">
   <!-- Header with title and actions -->
-  @if (title || hasHeaderActions) {
+  @if (title() || hasHeaderActions()) {
     <div
       class="px-6 py-4 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between"
     >
-      @if (title) {
-        <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ title }}</h3>
+      @if (title()) {
+        <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100">{{ title() }}</h3>
       }
       <div class="flex items-center gap-2">
         <ng-content select="[twTableActions]"></ng-content>
+        @if (headerActionsTemplate(); as actionsTemplate) {
+          <ng-container *ngTemplateOutlet="actionsTemplate"></ng-container>
+        }
       </div>
     </div>
   }
 
   <!-- Search/Filter bar -->
-  @if (showGlobalFilter) {
+  @if (showGlobalFilter()) {
     <div
       class="px-6 py-3 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900"
     >
@@ -34,7 +37,7 @@
         </svg>
         <input
           type="text"
-          [placeholder]="filterPlaceholder"
+          [placeholder]="filterPlaceholder()"
           class="w-full pl-10 pr-4 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           [value]="globalFilter()"
           (input)="onGlobalFilterChange($event)"
@@ -48,10 +51,11 @@
     <table [class]="tableClasses()">
       <thead [class]="theadClasses()">
         <tr>
-          @if (selectable) {
-            <th class="w-12 px-4 py-3">
+          @if (selectable()) {
+            <th scope="col" class="w-12 px-4 py-3">
               <input
                 type="checkbox"
+                aria-label="Select all rows"
                 class="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 bg-white dark:bg-slate-700"
                 [checked]="allSelected()"
                 [indeterminate]="someSelected()"
@@ -59,45 +63,59 @@
               />
             </th>
           }
-          @for (col of columns; track col.field) {
+          @for (col of columns(); track col.field) {
             <th
+              scope="col"
               [class]="thClasses(col)"
               [style.width]="col.width"
-              (click)="col.sortable !== false ? onSort(col) : null"
+              [attr.aria-sort]="ariaSort(col)"
             >
-              <div class="flex items-center gap-2">
-                <span>{{ col.header }}</span>
-                @if (col.sortable !== false && sortField() === col.field) {
-                  <svg
-                    class="w-4 h-4"
-                    [class.rotate-180]="sortOrder() === -1"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 15l7-7 7 7"
-                    />
-                  </svg>
-                }
-              </div>
+              @if (col.sortable !== false) {
+                <button
+                  type="button"
+                  class="flex items-center gap-2 w-full font-semibold focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+                  (click)="onSort(col)"
+                >
+                  <span>{{ col.header }}</span>
+                  @if (sortField() === col.field) {
+                    <svg
+                      class="w-4 h-4"
+                      [class.rotate-180]="sortOrder() === -1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 15l7-7 7 7"
+                      />
+                    </svg>
+                  }
+                </button>
+              } @else {
+                <div class="flex items-center gap-2">
+                  <span>{{ col.header }}</span>
+                </div>
+              }
             </th>
           }
-          @if (hasRowActions) {
-            <th class="w-20 px-4 py-3 text-right text-slate-700 dark:text-slate-300">Actions</th>
+          @if (hasRowActions()) {
+            <th scope="col" class="w-20 px-4 py-3 text-right text-slate-700 dark:text-slate-300">
+              Actions
+            </th>
           }
         </tr>
       </thead>
       <tbody [class]="tbodyClasses()">
-        @for (row of displayedData(); track trackByFn(row); let i = $index; let odd = $odd) {
+        @for (row of displayedData(); track trackByFn()(row); let i = $index; let odd = $odd) {
           <tr [class]="trClasses(row, odd)" (click)="onRowClick(row)">
-            @if (selectable) {
+            @if (selectable()) {
               <td class="px-4 py-3">
                 <input
                   type="checkbox"
+                  aria-label="Select row"
                   class="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-blue-600 focus:ring-blue-500 bg-white dark:bg-slate-700"
                   [checked]="isSelected(row)"
                   (change)="toggleSelection(row)"
@@ -105,7 +123,7 @@
                 />
               </td>
             }
-            @for (col of columns; track col.field) {
+            @for (col of columns(); track col.field) {
               <td [class]="tdClasses(col)">
                 @if (col.template) {
                   <ng-container
@@ -119,19 +137,21 @@
                 }
               </td>
             }
-            @if (hasRowActions) {
+            @if (rowActionsTemplate(); as actionsTemplate) {
               <td class="px-4 py-3 text-right">
-                <ng-content select="[twRowActions]"></ng-content>
+                <ng-container
+                  *ngTemplateOutlet="actionsTemplate; context: { $implicit: row, rowData: row }"
+                ></ng-container>
               </td>
             }
           </tr>
         } @empty {
           <tr>
             <td
-              [attr.colspan]="totalColumns"
+              [attr.colspan]="totalColumns()"
               class="px-6 py-12 text-center text-slate-500 dark:text-slate-400"
             >
-              {{ emptyMessage }}
+              {{ emptyMessage() }}
             </td>
           </tr>
         }
@@ -140,12 +160,23 @@
   </div>
 
   <!-- Pagination -->
-  @if (paginator && totalRecords() > 0) {
+  @if (paginator() && totalRecords() > 0) {
     <div
       class="px-6 py-4 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between bg-slate-50 dark:bg-slate-900"
     >
-      <div class="text-sm text-slate-600 dark:text-slate-400">
-        Showing {{ paginationStart() }} to {{ paginationEnd() }} of {{ totalRecords() }} entries
+      <div class="flex items-center gap-3">
+        <div class="text-sm text-slate-600 dark:text-slate-400">
+          Showing {{ paginationStart() }} to {{ paginationEnd() }} of {{ totalRecords() }} entries
+        </div>
+        <select
+          aria-label="Rows per page"
+          class="text-sm px-2 py-1.5 border border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          (change)="onRowsPerPageChange($event)"
+        >
+          @for (option of rowsPerPageOptions(); track option) {
+            <option [value]="option" [selected]="option === pageSize()">{{ option }}</option>
+          }
+        </select>
       </div>
       <div class="flex items-center gap-2">
         <button

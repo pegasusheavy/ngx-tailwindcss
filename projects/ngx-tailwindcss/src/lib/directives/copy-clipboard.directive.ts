@@ -49,8 +49,12 @@ export class TwCopyClipboardDirective {
         this.copied.emit({ success: true, text: this.twCopyClipboard });
       } else {
         // Fallback for older browsers
-        this.fallbackCopy(this.twCopyClipboard);
-        this.copied.emit({ success: true, text: this.twCopyClipboard });
+        const ok = this.fallbackCopy(this.twCopyClipboard);
+        this.copied.emit({
+          success: ok,
+          text: this.twCopyClipboard,
+          error: ok ? undefined : new Error('execCommand copy failed'),
+        });
       }
     } catch (error) {
       this.copied.emit({
@@ -61,7 +65,7 @@ export class TwCopyClipboardDirective {
     }
   }
 
-  private fallbackCopy(text: string): void {
+  private fallbackCopy(text: string): boolean {
     const textarea = document.createElement('textarea');
     textarea.value = text;
     textarea.style.position = 'fixed';
@@ -72,7 +76,7 @@ export class TwCopyClipboardDirective {
     textarea.select();
 
     try {
-      document.execCommand('copy');
+      return document.execCommand('copy');
     } finally {
       textarea.remove();
     }

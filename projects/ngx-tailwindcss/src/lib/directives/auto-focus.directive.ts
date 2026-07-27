@@ -6,6 +6,8 @@ import {
   inject,
   Input,
   numberAttribute,
+  OnChanges,
+  SimpleChanges,
 } from '@angular/core';
 
 /**
@@ -22,8 +24,9 @@ import {
   selector: '[twAutoFocus]',
   standalone: true,
 })
-export class TwAutoFocusDirective implements AfterViewInit {
+export class TwAutoFocusDirective implements AfterViewInit, OnChanges {
   private readonly el: ElementRef<HTMLElement>;
+  private viewInitialized = false;
 
   constructor() {
     this.el = inject(ElementRef);
@@ -46,8 +49,23 @@ export class TwAutoFocusDirective implements AfterViewInit {
   autoFocusScroll = false;
 
   ngAfterViewInit(): void {
+    this.viewInitialized = true;
     if (!this.autoFocusEnabled) return;
 
+    this.scheduleFocus();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    const enabledChange = changes['autoFocusEnabled'];
+    if (!this.viewInitialized || !enabledChange) return;
+
+    // Focus when the input flips from false to true after initialization
+    if (enabledChange.currentValue && !enabledChange.previousValue) {
+      this.scheduleFocus();
+    }
+  }
+
+  private scheduleFocus(): void {
     const focus = () => {
       const element = this.el.nativeElement;
 

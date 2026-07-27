@@ -1,4 +1,12 @@
-import { Component, Input } from '@angular/core';
+import {
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  numberAttribute,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TwClassService } from '../core/tw-class.service';
 
@@ -6,6 +14,11 @@ export type ColumnsCount = 1 | 2 | 3 | 4 | 5 | 6 | 'auto';
 export type ColumnsGap = 'none' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 export type ColumnsRule = 'none' | 'solid' | 'dashed' | 'dotted';
 
+/**
+ * Column classes per breakpoint.
+ * IMPORTANT: Keep these as full static strings for Tailwind JIT detection —
+ * runtime-built prefixes (`md:${...}`) would never be generated.
+ */
 const COLUMNS_CLASSES: Record<string, string> = {
   1: 'columns-1',
   2: 'columns-2',
@@ -16,6 +29,46 @@ const COLUMNS_CLASSES: Record<string, string> = {
   auto: 'columns-auto',
 };
 
+const SM_COLUMNS_CLASSES: Record<string, string> = {
+  1: 'sm:columns-1',
+  2: 'sm:columns-2',
+  3: 'sm:columns-3',
+  4: 'sm:columns-4',
+  5: 'sm:columns-5',
+  6: 'sm:columns-6',
+  auto: 'sm:columns-auto',
+};
+
+const MD_COLUMNS_CLASSES: Record<string, string> = {
+  1: 'md:columns-1',
+  2: 'md:columns-2',
+  3: 'md:columns-3',
+  4: 'md:columns-4',
+  5: 'md:columns-5',
+  6: 'md:columns-6',
+  auto: 'md:columns-auto',
+};
+
+const LG_COLUMNS_CLASSES: Record<string, string> = {
+  1: 'lg:columns-1',
+  2: 'lg:columns-2',
+  3: 'lg:columns-3',
+  4: 'lg:columns-4',
+  5: 'lg:columns-5',
+  6: 'lg:columns-6',
+  auto: 'lg:columns-auto',
+};
+
+const XL_COLUMNS_CLASSES: Record<string, string> = {
+  1: 'xl:columns-1',
+  2: 'xl:columns-2',
+  3: 'xl:columns-3',
+  4: 'xl:columns-4',
+  5: 'xl:columns-5',
+  6: 'xl:columns-6',
+  auto: 'xl:columns-auto',
+};
+
 const GAP_CLASSES: Record<ColumnsGap, string> = {
   none: 'gap-0',
   xs: 'gap-2',
@@ -24,6 +77,9 @@ const GAP_CLASSES: Record<ColumnsGap, string> = {
   lg: 'gap-8',
   xl: 'gap-12',
 };
+
+/** Matches Tailwind palette tokens such as 'slate-300' */
+const TAILWIND_COLOR_TOKEN = /^[a-z]+-\d{2,3}$/;
 
 /**
  * Columns component for creating multi-column text layouts.
@@ -52,11 +108,8 @@ const GAP_CLASSES: Record<ColumnsGap, string> = {
   selector: 'tw-columns',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div [class]="columnsClasses()" [style]="columnsStyles()">
-      <ng-content></ng-content>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './columns.component.html',
   styles: [
     `
       :host {
@@ -66,87 +119,83 @@ const GAP_CLASSES: Record<ColumnsGap, string> = {
   ],
 })
 export class TwColumnsComponent {
+  private readonly twClass = inject(TwClassService);
+
   /** Number of columns (base) */
-  @Input() count: ColumnsCount = 2;
+  readonly count = input<ColumnsCount>(2);
 
   /** Number of columns at sm breakpoint */
-  @Input() countSm?: ColumnsCount;
+  readonly countSm = input<ColumnsCount | undefined>(undefined);
 
   /** Number of columns at md breakpoint */
-  @Input() countMd?: ColumnsCount;
+  readonly countMd = input<ColumnsCount | undefined>(undefined);
 
   /** Number of columns at lg breakpoint */
-  @Input() countLg?: ColumnsCount;
+  readonly countLg = input<ColumnsCount | undefined>(undefined);
 
   /** Number of columns at xl breakpoint */
-  @Input() countXl?: ColumnsCount;
+  readonly countXl = input<ColumnsCount | undefined>(undefined);
 
   /** Gap between columns */
-  @Input() gap: ColumnsGap = 'md';
+  readonly gap = input<ColumnsGap>('md');
 
   /** Column rule style */
-  @Input() rule: ColumnsRule = 'none';
+  readonly rule = input<ColumnsRule>('none');
 
-  /** Column rule color (Tailwind color, e.g., 'slate-300') */
-  @Input() ruleColor = 'slate-200';
+  /** Column rule color (Tailwind color token, e.g. 'slate-300', or any CSS color) */
+  readonly ruleColor = input('slate-200');
 
   /** Column rule width in pixels */
-  @Input() ruleWidth = 1;
+  readonly ruleWidth = input(1, { transform: numberAttribute });
 
   /** Whether children should not break across columns */
-  @Input() avoidBreak = false;
+  readonly avoidBreak = input(false, { transform: booleanAttribute });
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
-  constructor(private readonly twClass: TwClassService) {}
-
-  protected columnsClasses(): string {
-    const classes = [COLUMNS_CLASSES[this.count.toString()], GAP_CLASSES[this.gap]];
+  protected readonly columnsClasses = computed(() => {
+    const classes = [COLUMNS_CLASSES[String(this.count())], GAP_CLASSES[this.gap()]];
 
     // Responsive columns
-    if (this.countSm) {
-      classes.push(`sm:${COLUMNS_CLASSES[this.countSm.toString()]}`);
+    const countSm = this.countSm();
+    if (countSm) {
+      classes.push(SM_COLUMNS_CLASSES[String(countSm)]);
     }
-    if (this.countMd) {
-      classes.push(`md:${COLUMNS_CLASSES[this.countMd.toString()]}`);
+    const countMd = this.countMd();
+    if (countMd) {
+      classes.push(MD_COLUMNS_CLASSES[String(countMd)]);
     }
-    if (this.countLg) {
-      classes.push(`lg:${COLUMNS_CLASSES[this.countLg.toString()]}`);
+    const countLg = this.countLg();
+    if (countLg) {
+      classes.push(LG_COLUMNS_CLASSES[String(countLg)]);
     }
-    if (this.countXl) {
-      classes.push(`xl:${COLUMNS_CLASSES[this.countXl.toString()]}`);
+    const countXl = this.countXl();
+    if (countXl) {
+      classes.push(XL_COLUMNS_CLASSES[String(countXl)]);
     }
 
     // Avoid break styling
-    if (this.avoidBreak) {
+    if (this.avoidBreak()) {
       classes.push('[&>*]:break-inside-avoid');
     }
 
-    return this.twClass.merge(...classes, this.class);
-  }
+    return this.twClass.merge(...classes, this.class());
+  });
 
-  protected columnsStyles(): Record<string, string> {
-    if (this.rule === 'none') {
+  protected readonly columnsStyles = computed<Record<string, string>>(() => {
+    if (this.rule() === 'none') {
       return {};
     }
 
-    // Convert Tailwind color to CSS variable or fallback
-    const colorMap: Record<string, string> = {
-      'slate-200': '#e2e8f0',
-      'slate-300': '#cbd5e1',
-      'slate-400': '#94a3b8',
-      'gray-200': '#e5e7eb',
-      'gray-300': '#d1d5db',
-      'gray-400': '#9ca3af',
-      'zinc-200': '#e4e4e7',
-      'zinc-300': '#d4d4d8',
-    };
+    // Tailwind v4 exposes the palette as CSS variables (e.g. --color-slate-300);
+    // anything else is passed through as a raw CSS color.
+    const ruleColor = this.ruleColor();
+    const color = TAILWIND_COLOR_TOKEN.test(ruleColor) ? `var(--color-${ruleColor})` : ruleColor;
 
-    const color = colorMap[this.ruleColor] || this.ruleColor;
-
-    return {
-      columnRule: `${this.ruleWidth}px ${this.rule} ${color}`,
+    const styles: Record<string, string> = {
+      columnRule: `${this.ruleWidth()}px ${this.rule()} ${color}`,
     };
-  }
+    return styles;
+  });
 }

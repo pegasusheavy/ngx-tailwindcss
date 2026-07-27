@@ -2,21 +2,20 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
-  DestroyRef,
   ElementRef,
   inject,
   input,
+  NgZone,
   numberAttribute,
   OnDestroy,
-  OnInit,
   output,
   signal,
   viewChild,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { interval } from 'rxjs';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { EMPTY, interval, switchMap } from 'rxjs';
 
 export type LooperVariant = 'default' | 'minimal' | 'compact' | 'studio';
 export type LooperSize = 'sm' | 'md' | 'lg';
@@ -64,8 +63,8 @@ export interface LooperEvent {
     class: 'inline-block',
   },
 })
-export class TwLooperComponent implements OnInit, OnDestroy {
-  private readonly destroyRef = inject(DestroyRef);
+export class TwLooperComponent implements OnDestroy {
+  private readonly zone = inject(NgZone);
 
   // Canvas reference
   readonly waveformCanvas = viewChild<ElementRef<HTMLCanvasElement>>('waveformCanvas');
@@ -98,6 +97,8 @@ export class TwLooperComponent implements OnInit, OnDestroy {
   readonly loopEvent = output<LooperEvent>();
   readonly layerChange = output<LoopLayer[]>();
   readonly durationChange = output<number>();
+  /** Emits when microphone access or audio setup fails */
+  readonly error = output<string>();
 
   // Internal state
   protected readonly state = signal<LooperState>('idle');
@@ -127,15 +128,18 @@ export class TwLooperComponent implements OnInit, OnDestroy {
   private animationFrame: number | null = null;
   private ctx: CanvasRenderingContext2D | null = null;
   private layerIdCounter = 0;
+  private micErrorMessage: string | null = null;
+  private clickTrackTimer: ReturnType<typeof setInterval> | null = null;
 
-  ngOnInit(): void {
-    // Update position during playback
-    interval(50)
-      .pipe(takeUntilDestroyed(this.destroyRef))
+  constructor() {
+    // Position ticker only runs while playing/overdubbing (idle otherwise)
+    toObservable(this.state)
+      .pipe(
+        switchMap(s => (s === 'playing' || s === 'overdubbing' ? interval(50) : EMPTY)),
+        takeUntilDestroyed()
+      )
       .subscribe(() => {
-        if (this.state() === 'playing' || this.state() === 'overdubbing') {
-          this.updatePosition();
-        }
+        this.updatePosition();
       });
   }
 
@@ -156,21 +160,28 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     if (!this.audioSource()) {
       try {
         this.mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      } catch {
-        console.error('Failed to get microphone access');
+        this.micErrorMessage = null;
+      } catch (error) {
+        this.micErrorMessage =
+          error instanceof Error && error.message
+            ? error.message
+            : 'Failed to get microphone access';
       }
     }
   }
 
   private cleanup(): void {
     this.stopAllPlayback();
+    this.stopClickTrack();
 
     if (this.animationFrame) {
       cancelAnimationFrame(this.animationFrame);
     }
 
     if (this.mediaStream) {
-      this.mediaStream.getTracks().forEach(track => { track.stop(); });
+      this.mediaStream.getTracks().forEach(track => {
+        track.stop();
+      });
     }
 
     if (this.audioContext) {
@@ -186,6 +197,12 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     await this.initAudio();
     if (!this.audioContext) return;
 
+    // Microphone unavailable: surface the error and do NOT enter recording state
+    if (!this.mediaStream) {
+      this.error.emit(this.micErrorMessage ?? 'No microphone available for recording');
+      return;
+    }
+
     // Count-in if enabled
     if (this.countIn() && this.state() === 'idle') {
       await this.performCountIn();
@@ -196,17 +213,16 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     this.recordingStartTime = this.audioContext.currentTime;
 
     // Start recording
-    if (this.mediaStream) {
-      this.mediaRecorder = new MediaRecorder(this.mediaStream);
-      this.mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) {
-          this.recordedChunks.push(e.data);
-        }
-      };
-      this.mediaRecorder.onstop = () => this.processRecording();
-      this.mediaRecorder.start(100); // Collect data every 100ms
-    }
+    this.mediaRecorder = new MediaRecorder(this.mediaStream);
+    this.mediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) {
+        this.recordedChunks.push(e.data);
+      }
+    };
+    this.mediaRecorder.onstop = () => this.processRecording();
+    this.mediaRecorder.start(100); // Collect data every 100ms
 
+    this.startClickTrack();
     this.emitEvent('record-start');
     this.startWaveformAnimation();
   }
@@ -215,6 +231,8 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     if (this.state() !== 'recording' && this.state() !== 'overdubbing') return Promise.resolve();
 
     const wasOverdubbing = this.state() === 'overdubbing';
+
+    this.stopClickTrack();
 
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       this.mediaRecorder.stop();
@@ -253,6 +271,12 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     await this.initAudio();
     if (!this.audioContext) return;
 
+    // Microphone unavailable: surface the error and do NOT enter overdub state
+    if (!this.mediaStream) {
+      this.error.emit(this.micErrorMessage ?? 'No microphone available for recording');
+      return;
+    }
+
     // Start playing existing layers
     this.playAllLayers();
 
@@ -261,17 +285,16 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     this.recordedChunks = [];
     this.recordingStartTime = this.audioContext.currentTime;
 
-    if (this.mediaStream) {
-      this.mediaRecorder = new MediaRecorder(this.mediaStream);
-      this.mediaRecorder.ondataavailable = e => {
-        if (e.data.size > 0) {
-          this.recordedChunks.push(e.data);
-        }
-      };
-      this.mediaRecorder.onstop = () => this.processRecording();
-      this.mediaRecorder.start(100);
-    }
+    this.mediaRecorder = new MediaRecorder(this.mediaStream);
+    this.mediaRecorder.ondataavailable = e => {
+      if (e.data.size > 0) {
+        this.recordedChunks.push(e.data);
+      }
+    };
+    this.mediaRecorder.onstop = () => this.processRecording();
+    this.mediaRecorder.start(100);
 
+    this.startClickTrack();
     this.emitEvent('overdub-start');
   }
 
@@ -434,6 +457,31 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Click track (metronome) heard while recording/overdubbing
+  private startClickTrack(): void {
+    if (!this.clickTrack() || !this.audioContext) return;
+
+    this.stopClickTrack();
+    const beatMs = (60 / this.clickBpm()) * 1000;
+    let beat = 0;
+
+    // No template state is touched here, so keep the timer out of the zone
+    this.zone.runOutsideAngular(() => {
+      this.playClickSound(true);
+      this.clickTrackTimer = setInterval(() => {
+        beat = (beat + 1) % 4;
+        this.playClickSound(beat === 0);
+      }, beatMs);
+    });
+  }
+
+  private stopClickTrack(): void {
+    if (this.clickTrackTimer) {
+      clearInterval(this.clickTrackTimer);
+      this.clickTrackTimer = null;
+    }
+  }
+
   private async processRecording(): Promise<void> {
     if (!this.audioContext || this.recordedChunks.length === 0) return;
 
@@ -531,7 +579,10 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     this.ctx = canvas.getContext('2d');
     if (!this.ctx) return;
 
-    this.drawWaveformFrame();
+    // Draw loop never writes template state, so keep it out of the zone
+    this.zone.runOutsideAngular(() => {
+      this.drawWaveformFrame();
+    });
   }
 
   private drawWaveformFrame(): void {
@@ -543,7 +594,9 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     }
 
     this.drawWaveform();
-    this.animationFrame = requestAnimationFrame(() => { this.drawWaveformFrame(); });
+    this.animationFrame = requestAnimationFrame(() => {
+      this.drawWaveformFrame();
+    });
   }
 
   private drawWaveform(): void {
@@ -553,8 +606,8 @@ export class TwLooperComponent implements OnInit, OnDestroy {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const {width} = canvas;
-    const {height} = canvas;
+    const { width } = canvas;
+    const { height } = canvas;
 
     // Clear canvas
     ctx.fillStyle = 'rgb(30, 41, 59)'; // slate-800

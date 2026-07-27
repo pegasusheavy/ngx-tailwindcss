@@ -4,6 +4,10 @@ import { CommonModule } from '@angular/common';
 export interface BreadcrumbItem {
   label: string;
   href?: string;
+  /**
+   * Optional icon rendered before the label. Treated as an HTML string
+   * (e.g. an inline SVG) and sanitized by Angular's built-in HTML sanitizer.
+   */
   icon?: string;
 }
 

@@ -2,11 +2,10 @@ import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  effect,
   inject,
-  Input,
+  input,
   numberAttribute,
-  OnDestroy,
-  OnInit,
   PLATFORM_ID,
   signal,
   TemplateRef,
@@ -46,38 +45,36 @@ const VARIANT_CLASSES: Record<ScrollTopVariant, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './scroll-top.component.html',
 })
-export class TwScrollTopComponent implements OnInit, OnDestroy {
+export class TwScrollTopComponent {
   private readonly twClass = inject(TwClassService);
   private readonly platformId = inject(PLATFORM_ID);
 
   /** Scroll threshold to show button (in pixels) */
-  @Input({ transform: numberAttribute }) threshold = 400;
+  readonly threshold = input(400, { transform: numberAttribute });
 
   /** Position of the button */
-  @Input() position: ScrollTopPosition = 'bottom-right';
+  readonly position = input<ScrollTopPosition>('bottom-right');
 
   /** Visual variant */
-  @Input() variant: ScrollTopVariant = 'primary';
+  readonly variant = input<ScrollTopVariant>('primary');
 
   /** Scroll behavior */
-  @Input() behavior: ScrollBehavior = 'smooth';
+  readonly behavior = input<ScrollBehavior>('smooth');
 
   /** Target element to scroll (defaults to window) */
-  @Input() target: HTMLElement | Window | null = null;
+  readonly target = input<HTMLElement | Window | null>(null);
 
   /** Custom icon template */
-  @Input() icon: TemplateRef<any> | null = null;
+  readonly icon = input<TemplateRef<any> | null>(null);
 
   /** Additional classes */
-  @Input() classOverride = '';
+  readonly classOverride = input('');
 
   protected visible = signal(false);
 
-  private scrollListener: (() => void) | null = null;
-
   protected buttonClasses = computed(() => {
-    const positionClasses = POSITION_CLASSES[this.position];
-    const variantClasses = VARIANT_CLASSES[this.variant];
+    const positionClasses = POSITION_CLASSES[this.position()];
+    const variantClasses = VARIANT_CLASSES[this.variant()];
 
     return this.twClass.merge(
       'fixed z-50 p-3 rounded-full transition-all duration-300',
@@ -85,52 +82,46 @@ export class TwScrollTopComponent implements OnInit, OnDestroy {
       'animate-in fade-in-0 zoom-in-95',
       positionClasses,
       variantClasses,
-      this.classOverride
+      this.classOverride()
     );
   });
 
-  ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      this.setupScrollListener();
-    }
-  }
+  constructor() {
+    // Rebinds the scroll listener whenever the target (or threshold) changes
+    // and removes it from the same node it was attached to.
+    effect(onCleanup => {
+      if (!isPlatformBrowser(this.platformId)) return;
 
-  ngOnDestroy(): void {
-    this.removeScrollListener();
-  }
+      const scrollTarget = this.target() || window;
+      const threshold = this.threshold();
+      const listener = () => {
+        this.visible.set(this.getScrollTop() > threshold);
+      };
 
-  private setupScrollListener(): void {
-    const scrollTarget = this.target || window;
+      scrollTarget.addEventListener('scroll', listener, { passive: true });
+      // Check initial scroll position
+      listener();
 
-    this.scrollListener = () => {
-      const scrollTop = this.getScrollTop();
-      this.visible.set(scrollTop > this.threshold);
-    };
-
-    scrollTarget.addEventListener('scroll', this.scrollListener, { passive: true });
-    // Check initial scroll position
-    this.scrollListener();
-  }
-
-  private removeScrollListener(): void {
-    if (this.scrollListener) {
-      const scrollTarget = this.target || window;
-      scrollTarget.removeEventListener('scroll', this.scrollListener);
-    }
+      onCleanup(() => {
+        scrollTarget.removeEventListener('scroll', listener);
+      });
+    });
   }
 
   private getScrollTop(): number {
-    if (this.target instanceof HTMLElement) {
-      return this.target.scrollTop;
+    const target = this.target();
+    if (target instanceof HTMLElement) {
+      return target.scrollTop;
     }
     return window.scrollY || document.documentElement.scrollTop;
   }
 
   scrollToTop(): void {
-    if (this.target instanceof HTMLElement) {
-      this.target.scrollTo({ top: 0, behavior: this.behavior });
+    const target = this.target();
+    if (target instanceof HTMLElement) {
+      target.scrollTo({ top: 0, behavior: this.behavior() });
     } else {
-      window.scrollTo({ top: 0, behavior: this.behavior });
+      window.scrollTo({ top: 0, behavior: this.behavior() });
     }
   }
 }

@@ -9,7 +9,9 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  PLATFORM_ID,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 
 /**
  * Emits an event when a click occurs outside the host element
@@ -36,6 +38,7 @@ import {
 export class TwClickOutsideDirective implements OnInit, OnDestroy {
   private readonly el = inject(ElementRef);
   private readonly ngZone = inject(NgZone);
+  private readonly platformId = inject(PLATFORM_ID);
 
   /** Event emitted when a click occurs outside the element */
   @Output('twClickOutside') clickOutside = new EventEmitter<MouseEvent>();
@@ -54,6 +57,8 @@ export class TwClickOutsideDirective implements OnInit, OnDestroy {
   private delayTimeout: ReturnType<typeof setTimeout> | null = null;
 
   ngOnInit(): void {
+    if (!isPlatformBrowser(this.platformId)) return;
+
     this.setupListener();
   }
 
@@ -100,17 +105,8 @@ export class TwClickOutsideDirective implements OnInit, OnDestroy {
   }
 
   private isExcluded(target: HTMLElement): boolean {
-    for (const selector of this.clickOutsideExclude) {
-      // Check if the target matches the selector or is a descendant
-      // eslint-disable-next-line unicorn/prefer-spread -- NodeListOf<Element> doesn't support spread in this TS config
-      const excludedElements = Array.from(document.querySelectorAll(selector));
-      for (const excluded of excludedElements) {
-        if (excluded.contains(target)) {
-          return true;
-        }
-      }
-    }
-    return false;
+    // Check if the target matches an excluded selector or is a descendant of one
+    return this.clickOutsideExclude.some(selector => target.closest(selector) !== null);
   }
 
   private detachListener(): void {

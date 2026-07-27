@@ -26,14 +26,7 @@ export type DynamicType =
   | 'fz';
 
 export type ArticulationType =
-  | 'staccato'
-  | 'staccatissimo'
-  | 'accent'
-  | 'marcato'
-  | 'tenuto'
-  | 'fermata'
-  | 'breath'
-  | 'caesura';
+  'staccato' | 'staccatissimo' | 'accent' | 'marcato' | 'tenuto' | 'fermata' | 'breath' | 'caesura';
 
 export type OrnamentType =
   | 'trill'
@@ -298,10 +291,9 @@ export class TwMusicalSymbolComponent {
     if (type === 'crescendo') {
       // Opens to the right: < shape
       return `M ${x} ${y} L ${x + w} ${y - h / 2} M ${x} ${y} L ${x + w} ${y + h / 2}`;
-    } 
-      // Diminuendo/decrescendo: opens to the left > shape
-      return `M ${x} ${y - h / 2} L ${x + w} ${y} M ${x} ${y + h / 2} L ${x + w} ${y}`;
-    
+    }
+    // Diminuendo/decrescendo: opens to the left > shape
+    return `M ${x} ${y - h / 2} L ${x + w} ${y} M ${x} ${y + h / 2} L ${x + w} ${y}`;
   });
 
   protected readonly slurPath = computed(() => {

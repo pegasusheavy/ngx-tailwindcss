@@ -17,6 +17,10 @@
     (touchstart)="onTouchStart($event)"
     (touchmove)="onTouchMove($event)"
     (touchend)="onTouchEnd()"
+    role="img"
+    [attr.aria-label]="
+      'Audio waveform' + (duration() > 0 ? ', duration ' + formatTime(duration()) : '')
+    "
   ></canvas>
 
   <!-- Progress overlay (hidden in mini mode) -->
@@ -108,6 +112,7 @@
         [disabled]="!canZoomOut()"
         (click)="zoomOut()"
         title="Zoom Out"
+        aria-label="Zoom out"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
           <path
@@ -130,6 +135,7 @@
         [disabled]="!canZoomIn()"
         (click)="zoomIn()"
         title="Zoom In"
+        aria-label="Zoom in"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
           <path
@@ -147,6 +153,7 @@
           class="w-6 h-6 rounded flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
           (click)="resetZoom()"
           title="Reset Zoom"
+          aria-label="Reset zoom"
         >
           <svg
             class="w-4 h-4"

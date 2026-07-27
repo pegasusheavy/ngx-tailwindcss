@@ -116,6 +116,137 @@ describe('TwRatingComponent', () => {
     });
   });
 
+  describe('half stars', () => {
+    const fullStars = () => ratingEl.queryAll(By.css('button svg[fill="currentColor"]'));
+    const halfStars = () => ratingEl.queryAll(By.css('button svg defs'));
+
+    beforeEach(() => {
+      component.allowHalf.set(true);
+      fixture.detectChanges();
+    });
+
+    it('should render 4 full stars and 1 half star for value 4.5', () => {
+      component.rating.writeValue(4.5);
+      fixture.detectChanges();
+      expect(fullStars().length).toBe(4);
+      expect(halfStars().length).toBe(1);
+    });
+
+    it('should render exactly 4 full stars for value 4', () => {
+      component.rating.writeValue(4);
+      fixture.detectChanges();
+      expect(fullStars().length).toBe(4);
+      expect(halfStars().length).toBe(0);
+    });
+
+    it('should select a half step when clicking the left half of a star', () => {
+      const event = {
+        offsetX: 4,
+        currentTarget: { getBoundingClientRect: () => ({ width: 24 }) },
+      } as unknown as MouseEvent;
+      component.rating.onStarClick(2, event);
+      expect(component.onChangeSpy).toHaveBeenCalledWith(2.5);
+    });
+
+    it('should select a full step when clicking the right half of a star', () => {
+      const event = {
+        offsetX: 20,
+        currentTarget: { getBoundingClientRect: () => ({ width: 24 }) },
+      } as unknown as MouseEvent;
+      component.rating.onStarClick(2, event);
+      expect(component.onChangeSpy).toHaveBeenCalledWith(3);
+    });
+  });
+
+  describe('keyboard interaction', () => {
+    const keydown = (index: number, key: string) => {
+      const stars = ratingEl.queryAll(By.css('button'));
+      stars[index].nativeElement.dispatchEvent(
+        new KeyboardEvent('keydown', { key, bubbles: true })
+      );
+      fixture.detectChanges();
+    };
+
+    it('should increment value on ArrowRight', () => {
+      component.rating.writeValue(2);
+      fixture.detectChanges();
+      keydown(1, 'ArrowRight');
+      expect(component.onChangeSpy).toHaveBeenCalledWith(3);
+    });
+
+    it('should decrement value on ArrowLeft', () => {
+      component.rating.writeValue(2);
+      fixture.detectChanges();
+      keydown(1, 'ArrowLeft');
+      expect(component.onChangeSpy).toHaveBeenCalledWith(1);
+    });
+
+    it('should use half steps when allowHalf is enabled', () => {
+      component.allowHalf.set(true);
+      component.rating.writeValue(2);
+      fixture.detectChanges();
+      keydown(1, 'ArrowRight');
+      expect(component.onChangeSpy).toHaveBeenCalledWith(2.5);
+    });
+
+    it('should jump to the maximum on End', () => {
+      component.rating.writeValue(2);
+      fixture.detectChanges();
+      keydown(1, 'End');
+      expect(component.onChangeSpy).toHaveBeenCalledWith(5);
+    });
+
+    it('should jump to the minimum on Home', () => {
+      component.rating.writeValue(4);
+      fixture.detectChanges();
+      keydown(3, 'Home');
+      expect(component.onChangeSpy).toHaveBeenCalledWith(1);
+    });
+
+    it('should not change value when readonly', () => {
+      component.readonlyVal.set(true);
+      component.rating.writeValue(2);
+      fixture.detectChanges();
+      keydown(1, 'ArrowRight');
+      expect(component.onChangeSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('accessibility', () => {
+    it('should mark each star as a radio with a label', () => {
+      const stars = ratingEl.queryAll(By.css('button'));
+      expect(stars[0].nativeElement.getAttribute('role')).toBe('radio');
+      expect(stars[2].nativeElement.getAttribute('aria-label')).toBe('3 stars');
+    });
+
+    it('should mark only the current value star as checked', () => {
+      component.rating.writeValue(3);
+      fixture.detectChanges();
+      const stars = ratingEl.queryAll(By.css('button'));
+      const checked = stars.filter(s => s.nativeElement.getAttribute('aria-checked') === 'true');
+      expect(checked.length).toBe(1);
+      expect(stars[2].nativeElement.getAttribute('aria-checked')).toBe('true');
+    });
+
+    it('should apply a roving tabindex', () => {
+      component.rating.writeValue(3);
+      fixture.detectChanges();
+      const stars = ratingEl.queryAll(By.css('button'));
+      expect(stars[2].nativeElement.getAttribute('tabindex')).toBe('0');
+      expect(stars[0].nativeElement.getAttribute('tabindex')).toBe('-1');
+      expect(stars[4].nativeElement.getAttribute('tabindex')).toBe('-1');
+    });
+
+    it('should keep stars focusable but inert when readonly', () => {
+      component.readonlyVal.set(true);
+      fixture.detectChanges();
+      const group = ratingEl.query(By.css('[role="radiogroup"]'));
+      expect(group.nativeElement.getAttribute('aria-readonly')).toBe('true');
+      const stars = ratingEl.queryAll(By.css('button'));
+      expect((stars[0].nativeElement as HTMLButtonElement).disabled).toBe(false);
+    });
+  });
+
   describe('variants', () => {
     it('should apply warning variant by default', () => {
       component.rating.writeValue(3);

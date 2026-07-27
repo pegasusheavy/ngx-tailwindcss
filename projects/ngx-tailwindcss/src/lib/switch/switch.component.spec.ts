@@ -288,4 +288,32 @@ describe('TwSwitchComponent with FormControl', () => {
     const label = switchEl.querySelector('label');
     expect(label?.className).toContain('opacity-50');
   });
+
+  it('should disable the underlying button when FormControl is disabled', () => {
+    component.control.disable();
+    fixture.detectChanges();
+
+    const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
+    expect(button.disabled).toBe(true);
+    expect(button.getAttribute('aria-disabled')).toBe('true');
+  });
+
+  it('should not toggle while FormControl is disabled', () => {
+    component.control.disable();
+    fixture.detectChanges();
+
+    const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
+    button.click();
+    fixture.detectChanges();
+
+    expect(component.control.value).toBe(false);
+  });
+
+  it('should coerce null form values to false for aria-checked', () => {
+    component.control.setValue(null);
+    fixture.detectChanges();
+
+    const button = fixture.debugElement.query(By.css('button')).nativeElement as HTMLButtonElement;
+    expect(button.getAttribute('aria-checked')).toBe('false');
+  });
 });

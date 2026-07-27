@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config';
 import angular from '@analogjs/vite-plugin-angular';
 
 /**
- * Vitest configuration for @pegasus-heavy/ngx-tailwindcss
+ * Vitest configuration for @quinnjr/ngx-tailwindcss
  *
  * Note: Using standalone Vitest for library testing as the official
  * @angular/build:unit-test builder is designed for application projects.

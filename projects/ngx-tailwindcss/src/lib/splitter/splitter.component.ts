@@ -1,10 +1,12 @@
 import {
   AfterViewInit,
+  ChangeDetectionStrategy,
   Component,
   computed,
   ElementRef,
   EventEmitter,
-  Input,
+  inject,
+  input,
   OnDestroy,
   Output,
   signal,
@@ -16,27 +18,42 @@ import { TwClassService } from '../core/tw-class.service';
 export type SplitterDirection = 'horizontal' | 'vertical';
 export type SplitterGutterSize = 'sm' | 'md' | 'lg';
 
+/** Gutter thickness in pixels, kept in sync with GUTTER_CLASSES (w-1/w-2/w-3 = 4/8/12px). */
 const GUTTER_SIZES: Record<SplitterGutterSize, number> = {
   sm: 4,
   md: 8,
   lg: 12,
 };
 
+/** Static Tailwind classes per gutter size/orientation (no runtime-generated class names). */
+const GUTTER_CLASSES: Record<SplitterGutterSize, { horizontal: string; vertical: string }> = {
+  sm: { horizontal: 'w-1 h-full cursor-col-resize', vertical: 'h-1 w-full cursor-row-resize' },
+  md: { horizontal: 'w-2 h-full cursor-col-resize', vertical: 'h-2 w-full cursor-row-resize' },
+  lg: { horizontal: 'w-3 h-full cursor-col-resize', vertical: 'h-3 w-full cursor-row-resize' },
+};
+
+/** Percentage step used when resizing with the keyboard. */
+const KEYBOARD_RESIZE_STEP = 2;
+
 /**
  * Splitter component for creating resizable split pane layouts.
+ *
+ * Mark the two panes with the `twSplitterPaneStart` and `twSplitterPaneEnd`
+ * attributes. Content marked with the plain `twSplitterPane` attribute (or a
+ * `tw-splitter-pane` element) is projected into the first pane.
  *
  * @example
  * ```html
  * <!-- Horizontal split -->
  * <tw-splitter direction="horizontal" [initialSizes]="[30, 70]">
- *   <div twSplitterPane>Left Panel</div>
- *   <div twSplitterPane>Right Panel</div>
+ *   <div twSplitterPaneStart>Left Panel</div>
+ *   <div twSplitterPaneEnd>Right Panel</div>
  * </tw-splitter>
  *
  * <!-- Vertical split with min sizes -->
  * <tw-splitter direction="vertical" [minSizes]="[100, 200]">
- *   <div twSplitterPane>Top Panel</div>
- *   <div twSplitterPane>Bottom Panel</div>
+ *   <div twSplitterPaneStart>Top Panel</div>
+ *   <div twSplitterPaneEnd>Bottom Panel</div>
  * </tw-splitter>
  * ```
  */
@@ -44,40 +61,8 @@ const GUTTER_SIZES: Record<SplitterGutterSize, number> = {
   selector: 'tw-splitter',
   standalone: true,
   imports: [CommonModule],
-  template: `
-    <div #container [class]="containerClasses()">
-      <div
-        [class]="paneClasses(0)"
-        [style.flexBasis.%]="sizes()[0]"
-        [style.minWidth.px]="direction === 'horizontal' ? minSizes[0] : undefined"
-        [style.minHeight.px]="direction === 'vertical' ? minSizes[0] : undefined"
-      >
-        <ng-content
-          select="[twSplitterPane]:first-of-type, tw-splitter-pane:first-of-type"
-        ></ng-content>
-      </div>
-
-      <div
-        #gutter
-        [class]="gutterClasses()"
-        (mousedown)="onGutterMouseDown($event)"
-        (touchstart)="onGutterTouchStart($event)"
-      >
-        <div [class]="gutterHandleClasses()"></div>
-      </div>
-
-      <div
-        [class]="paneClasses(1)"
-        [style.flexBasis.%]="sizes()[1]"
-        [style.minWidth.px]="direction === 'horizontal' ? minSizes[1] : undefined"
-        [style.minHeight.px]="direction === 'vertical' ? minSizes[1] : undefined"
-      >
-        <ng-content
-          select="[twSplitterPane]:last-of-type, tw-splitter-pane:last-of-type"
-        ></ng-content>
-      </div>
-    </div>
-  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './splitter.component.html',
   styles: [
     `
       :host {
@@ -88,29 +73,31 @@ const GUTTER_SIZES: Record<SplitterGutterSize, number> = {
   ],
 })
 export class TwSplitterComponent implements AfterViewInit, OnDestroy {
+  private readonly twClass = inject(TwClassService);
+
   @ViewChild('container') containerRef!: ElementRef<HTMLElement>;
   @ViewChild('gutter') gutterRef!: ElementRef<HTMLElement>;
 
   /** Direction of the split */
-  @Input() direction: SplitterDirection = 'horizontal';
+  readonly direction = input<SplitterDirection>('horizontal');
 
   /** Initial sizes as percentages (should sum to 100) */
-  @Input() initialSizes: [number, number] = [50, 50];
+  readonly initialSizes = input<[number, number]>([50, 50]);
 
   /** Minimum sizes in pixels for each pane */
-  @Input() minSizes: [number, number] = [50, 50];
+  readonly minSizes = input<[number, number]>([50, 50]);
 
   /** Size of the gutter */
-  @Input() gutterSize: SplitterGutterSize = 'md';
+  readonly gutterSize = input<SplitterGutterSize>('md');
 
   /** Whether the splitter is disabled */
-  @Input() disabled = false;
+  readonly disabled = input(false);
 
   /** Whether to show visual gutter */
-  @Input() showGutter = true;
+  readonly showGutter = input(true);
 
   /** Additional CSS classes */
-  @Input() class = '';
+  readonly class = input('');
 
   /** Emits when sizes change */
   @Output() sizesChange = new EventEmitter<[number, number]>();
@@ -133,71 +120,123 @@ export class TwSplitterComponent implements AfterViewInit, OnDestroy {
   private readonly touchMoveHandler = this.onTouchMove.bind(this);
   private readonly touchEndHandler = this.onTouchEnd.bind(this);
 
-  constructor(private readonly twClass: TwClassService) {}
-
   ngAfterViewInit(): void {
-    this.sizes.set([...this.initialSizes] as [number, number]);
+    this.sizes.set([...this.initialSizes()] as [number, number]);
   }
 
   ngOnDestroy(): void {
     this.removeListeners();
   }
 
-  protected containerClasses(): string {
+  protected readonly containerClasses = computed(() => {
     return this.twClass.merge(
       'flex h-full w-full overflow-hidden',
-      this.direction === 'horizontal' ? 'flex-row' : 'flex-col',
-      this.class
+      this.direction() === 'horizontal' ? 'flex-row' : 'flex-col',
+      this.class()
     );
-  }
+  });
 
-  protected paneClasses(index: number): string {
+  protected readonly paneClasses = computed(() => {
     return this.twClass.merge(
       'overflow-auto',
-      this.direction === 'horizontal' ? 'h-full' : 'w-full'
+      this.direction() === 'horizontal' ? 'h-full' : 'w-full'
     );
-  }
+  });
 
-  protected gutterClasses(): string {
-    const size = GUTTER_SIZES[this.gutterSize];
-    const isHorizontal = this.direction === 'horizontal';
+  protected readonly gutterClasses = computed(() => {
+    const orientationClasses =
+      GUTTER_CLASSES[this.gutterSize()][
+        this.direction() === 'horizontal' ? 'horizontal' : 'vertical'
+      ];
 
     return this.twClass.merge(
       'flex items-center justify-center flex-shrink-0 transition-colors',
-      isHorizontal
-        ? `w-[${size}px] h-full cursor-col-resize`
-        : `h-[${size}px] w-full cursor-row-resize`,
-      this.showGutter ? 'bg-slate-200 hover:bg-slate-300' : 'bg-transparent hover:bg-slate-200',
+      'focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500',
+      orientationClasses,
+      this.showGutter() ? 'bg-slate-200 hover:bg-slate-300' : 'bg-transparent hover:bg-slate-200',
       this.isDragging() ? 'bg-blue-400' : '',
-      this.disabled ? 'cursor-default pointer-events-none opacity-50' : ''
+      this.disabled() ? 'cursor-default pointer-events-none opacity-50' : ''
     );
-  }
+  });
 
-  protected gutterHandleClasses(): string {
-    const isHorizontal = this.direction === 'horizontal';
-
+  protected readonly gutterHandleClasses = computed(() => {
     return this.twClass.merge(
       'rounded-full bg-slate-400 transition-all',
-      isHorizontal ? 'w-1 h-8' : 'h-1 w-8',
+      this.direction() === 'horizontal' ? 'w-1 h-8' : 'h-1 w-8',
       this.isDragging() ? 'bg-blue-600 scale-125' : ''
     );
-  }
+  });
+
+  protected readonly gutterAriaValueNow = computed(() => Math.round(this.sizes()[0]));
 
   protected onGutterMouseDown(event: MouseEvent): void {
-    if (this.disabled) return;
+    if (this.disabled()) return;
     event.preventDefault();
-    this.startDrag(this.direction === 'horizontal' ? event.clientX : event.clientY);
+    this.startDrag(this.direction() === 'horizontal' ? event.clientX : event.clientY);
     document.addEventListener('mousemove', this.mouseMoveHandler);
     document.addEventListener('mouseup', this.mouseUpHandler);
   }
 
   protected onGutterTouchStart(event: TouchEvent): void {
-    if (this.disabled) return;
+    if (this.disabled()) return;
     event.preventDefault();
     const touch = event.touches[0];
-    this.startDrag(this.direction === 'horizontal' ? touch.clientX : touch.clientY);
+    this.startDrag(this.direction() === 'horizontal' ? touch.clientX : touch.clientY);
     document.addEventListener('touchmove', this.touchMoveHandler, { passive: false });
     document.addEventListener('touchend', this.touchEndHandler);
+  }
+
+  protected onGutterKeydown(event: KeyboardEvent): void {
+    if (this.disabled()) return;
+    const isHorizontal = this.direction() === 'horizontal';
+    const decreaseKey = isHorizontal ? 'ArrowLeft' : 'ArrowUp';
+    const increaseKey = isHorizontal ? 'ArrowRight' : 'ArrowDown';
+
+    let delta: number;
+    if (event.key === decreaseKey) {
+      delta = -KEYBOARD_RESIZE_STEP;
+    } else if (event.key === increaseKey) {
+      delta = KEYBOARD_RESIZE_STEP;
+    } else {
+      return;
+    }
+
+    event.preventDefault();
+    this.resizeByPercent(delta);
+  }
+
+  private resizeByPercent(deltaPercent: number): void {
+    const [size0, size1] = this.sizes();
+    let newSize0 = size0 + deltaPercent;
+    let newSize1 = size1 - deltaPercent;
+
+    const containerEl = this.containerRef?.nativeElement;
+    const containerSize = containerEl
+      ? this.direction() === 'horizontal'
+        ? containerEl.offsetWidth
+        : containerEl.offsetHeight
+      : 0;
+    const availableSize = containerSize - GUTTER_SIZES[this.gutterSize()];
+
+    if (availableSize > 0) {
+      const minPercent0 = (this.minSizes()[0] / availableSize) * 100;
+      const minPercent1 = (this.minSizes()[1] / availableSize) * 100;
+
+      if (newSize0 < minPercent0) {
+        newSize0 = minPercent0;
+        newSize1 = 100 - minPercent0;
+      }
+      if (newSize1 < minPercent1) {
+        newSize1 = minPercent1;
+        newSize0 = 100 - minPercent1;
+      }
+    } else {
+      newSize0 = Math.min(Math.max(newSize0, 0), 100);
+      newSize1 = 100 - newSize0;
+    }
+
+    this.sizes.set([newSize0, newSize1]);
+    this.sizesChange.emit([newSize0, newSize1]);
   }
 
   private startDrag(pos: number): void {
@@ -205,26 +244,26 @@ export class TwSplitterComponent implements AfterViewInit, OnDestroy {
     this.startPos = pos;
     this.startSizes = [...this.sizes()] as [number, number];
     this.containerSize =
-      this.direction === 'horizontal'
+      this.direction() === 'horizontal'
         ? this.containerRef.nativeElement.offsetWidth
         : this.containerRef.nativeElement.offsetHeight;
     this.dragStart.emit();
   }
 
   private onMouseMove(event: MouseEvent): void {
-    const pos = this.direction === 'horizontal' ? event.clientX : event.clientY;
+    const pos = this.direction() === 'horizontal' ? event.clientX : event.clientY;
     this.updateSizes(pos);
   }
 
   private onTouchMove(event: TouchEvent): void {
     event.preventDefault();
     const touch = event.touches[0];
-    const pos = this.direction === 'horizontal' ? touch.clientX : touch.clientY;
+    const pos = this.direction() === 'horizontal' ? touch.clientX : touch.clientY;
     this.updateSizes(pos);
   }
 
   private updateSizes(currentPos: number): void {
-    const gutterSize = GUTTER_SIZES[this.gutterSize];
+    const gutterSize = GUTTER_SIZES[this.gutterSize()];
     const availableSize = this.containerSize - gutterSize;
     const delta = currentPos - this.startPos;
     const deltaPercent = (delta / availableSize) * 100;
@@ -233,8 +272,8 @@ export class TwSplitterComponent implements AfterViewInit, OnDestroy {
     let newSize1 = this.startSizes[1] - deltaPercent;
 
     // Apply minimum sizes
-    const minPercent0 = (this.minSizes[0] / availableSize) * 100;
-    const minPercent1 = (this.minSizes[1] / availableSize) * 100;
+    const minPercent0 = (this.minSizes()[0] / availableSize) * 100;
+    const minPercent1 = (this.minSizes()[1] / availableSize) * 100;
 
     if (newSize0 < minPercent0) {
       newSize0 = minPercent0;
@@ -279,7 +318,7 @@ export class TwSplitterComponent implements AfterViewInit, OnDestroy {
 
   /** Reset to initial sizes */
   reset(): void {
-    this.sizes.set([...this.initialSizes] as [number, number]);
+    this.sizes.set([...this.initialSizes()] as [number, number]);
     this.sizesChange.emit(this.sizes());
   }
 }
@@ -288,9 +327,10 @@ export class TwSplitterComponent implements AfterViewInit, OnDestroy {
  * Directive to mark elements as splitter panes
  */
 @Component({
-  selector: 'tw-splitter-pane, [twSplitterPane]',
+  selector: 'tw-splitter-pane, [twSplitterPane], [twSplitterPaneStart], [twSplitterPaneEnd]',
   standalone: true,
-  template: '<ng-content></ng-content>',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  templateUrl: './splitter-pane.component.html',
   styles: [
     `
       :host {

@@ -15,63 +15,158 @@
 
   <!-- Variants -->
   <app-demo-section title="Variants" [code]="variantsCode">
-    <div class="flex flex-wrap gap-4">
-      <div class="text-center">
-        <div class="w-12 h-12 rounded-full bg-blue-600 flex items-center justify-center text-white shadow-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-          </svg>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <p class="mb-2 text-sm text-slate-600">Primary</p>
+        <div class="relative">
+          <div #variantPrimary class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="variantPrimary" [threshold]="60" variant="primary" classOverride="absolute bottom-3 right-3"></tw-scroll-top>
         </div>
-        <p class="mt-2 text-sm text-slate-600">Primary</p>
       </div>
-      <div class="text-center">
-        <div class="w-12 h-12 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-700 shadow-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-          </svg>
+      <div>
+        <p class="mb-2 text-sm text-slate-600">Secondary</p>
+        <div class="relative">
+          <div #variantSecondary class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="variantSecondary" [threshold]="60" variant="secondary" classOverride="absolute bottom-3 right-3"></tw-scroll-top>
         </div>
-        <p class="mt-2 text-sm text-slate-600">Secondary</p>
       </div>
-      <div class="text-center">
-        <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-white shadow-lg">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z" clip-rule="evenodd" />
-          </svg>
+      <div>
+        <p class="mb-2 text-sm text-slate-600">Dark</p>
+        <div class="relative">
+          <div #variantDark class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="variantDark" [threshold]="60" variant="dark" classOverride="absolute bottom-3 right-3"></tw-scroll-top>
         </div>
-        <p class="mt-2 text-sm text-slate-600">Dark</p>
       </div>
     </div>
+    <p class="mt-4 text-sm text-slate-500">Scroll a container to reveal its button.</p>
   </app-demo-section>
 
   <!-- Positions -->
   <app-demo-section title="Positions" [code]="positionsCode">
-    <div class="grid grid-cols-3 gap-4 text-center text-sm text-slate-600">
-      <div>bottom-left</div>
-      <div>bottom-center</div>
-      <div>bottom-right (default)</div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div>
+        <p class="mb-2 text-sm text-slate-600">bottom-left</p>
+        <div class="relative">
+          <div #posLeft class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="posLeft" [threshold]="60" position="bottom-left" classOverride="absolute"></tw-scroll-top>
+        </div>
+      </div>
+      <div>
+        <p class="mb-2 text-sm text-slate-600">bottom-center</p>
+        <div class="relative">
+          <div #posCenter class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="posCenter" [threshold]="60" position="bottom-center" classOverride="absolute"></tw-scroll-top>
+        </div>
+      </div>
+      <div>
+        <p class="mb-2 text-sm text-slate-600">bottom-right (default)</p>
+        <div class="relative">
+          <div #posRight class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="posRight" [threshold]="60" position="bottom-right" classOverride="absolute"></tw-scroll-top>
+        </div>
+      </div>
     </div>
   </app-demo-section>
 
   <!-- Threshold -->
   <app-demo-section title="Custom Threshold" [code]="thresholdCode">
-    <p class="text-slate-600">
+    <p class="mb-4 text-slate-600">
       Control when the button appears by setting a custom scroll threshold in pixels.
     </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <p class="mb-2 text-sm text-slate-600">Low threshold (50px) — appears quickly</p>
+        <div class="relative">
+          <div #thresholdLow class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="thresholdLow" [threshold]="50" classOverride="absolute bottom-3 right-3"></tw-scroll-top>
+        </div>
+      </div>
+      <div>
+        <p class="mb-2 text-sm text-slate-600">High threshold (300px) — appears later</p>
+        <div class="relative">
+          <div #thresholdHigh class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="thresholdHigh" [threshold]="300" classOverride="absolute bottom-3 right-3"></tw-scroll-top>
+        </div>
+      </div>
+    </div>
   </app-demo-section>
 
   <!-- Scroll Behavior -->
   <app-demo-section title="Scroll Behavior" [code]="behaviorCode">
-    <p class="text-slate-600">
+    <p class="mb-4 text-slate-600">
       Choose between <code class="bg-slate-100 px-1 rounded">smooth</code> (animated) or
       <code class="bg-slate-100 px-1 rounded">instant</code> scrolling.
     </p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div>
+        <p class="mb-2 text-sm text-slate-600">Smooth</p>
+        <div class="relative">
+          <div #behaviorSmooth class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="behaviorSmooth" [threshold]="60" behavior="smooth" classOverride="absolute bottom-3 right-3"></tw-scroll-top>
+        </div>
+      </div>
+      <div>
+        <p class="mb-2 text-sm text-slate-600">Instant</p>
+        <div class="relative">
+          <div #behaviorInstant class="h-48 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+            @for (line of fillerLines; track line) {
+              <p class="text-sm text-slate-500">Scrollable content line {{ line }}</p>
+            }
+          </div>
+          <tw-scroll-top [target]="behaviorInstant" [threshold]="60" behavior="instant" classOverride="absolute bottom-3 right-3"></tw-scroll-top>
+        </div>
+      </div>
+    </div>
   </app-demo-section>
 
   <!-- Custom Target -->
   <app-demo-section title="Custom Scroll Target" [code]="customTargetCode">
-    <p class="text-slate-600">
+    <p class="mb-4 text-slate-600">
       Target a specific scrollable container instead of the window.
     </p>
+    <div class="relative max-w-md">
+      <div #scrollContainer class="h-64 overflow-y-auto rounded-lg border border-slate-200 p-4 space-y-2">
+        @for (line of fillerLines; track line) {
+          <p class="text-sm text-slate-500">Container content line {{ line }}</p>
+        }
+      </div>
+      <tw-scroll-top [target]="scrollContainer" [threshold]="80" classOverride="absolute bottom-3 right-3"></tw-scroll-top>
+    </div>
   </app-demo-section>
 </div>
-

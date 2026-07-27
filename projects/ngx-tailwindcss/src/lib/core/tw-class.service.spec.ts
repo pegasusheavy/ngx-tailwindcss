@@ -256,6 +256,63 @@ describe('TwClassService', () => {
         expect(result).toContain('custom-class');
         expect(result).toContain('another-custom');
       });
+
+      it('should resolve conflicts with negative values', () => {
+        const result = service.merge('mt-4', '-mt-4');
+        expect(result).toBe('-mt-4');
+      });
+
+      it('should resolve conflicts with important prefix', () => {
+        const result = service.merge('px-2', '!px-4');
+        expect(result).toBe('!px-4');
+      });
+
+      it('should let later padding shorthand subsume longhands', () => {
+        const result = service.merge('px-2', 'p-4');
+        expect(result).toBe('p-4');
+      });
+
+      it('should let later margin shorthand subsume longhands', () => {
+        const result = service.merge('mx-2', 'my-1', 'm-4');
+        expect(result).toBe('m-4');
+      });
+
+      it('should keep longhand applied after shorthand', () => {
+        const result = service.merge('p-4', 'px-2');
+        expect(result).toBe('p-4 px-2');
+      });
+
+      it('should subsume prefixed longhands with prefixed shorthand', () => {
+        const result = service.merge('md:px-2', 'md:p-4');
+        expect(result).toBe('md:p-4');
+      });
+
+      it('should handle arbitrary values containing colons', () => {
+        const result = service.merge(
+          'bg-[url(https://example.com/a.png)]',
+          'bg-[url(https://example.com/b.png)]'
+        );
+        expect(result).toBe('bg-[url(https://example.com/b.png)]');
+      });
+
+      it('should handle variants on arbitrary values containing colons', () => {
+        const result = service.merge('hover:bg-[url(https://a.io/x.png)]', 'hover:bg-red-500');
+        expect(result).toBe('hover:bg-red-500');
+      });
+
+      it('should treat border-x and border-y as border-width', () => {
+        const result = service.merge('border-x', 'border-x-2');
+        expect(result).toBe('border-x-2');
+
+        const resultY = service.merge('border-y', 'border-y-4');
+        expect(resultY).toBe('border-y-4');
+      });
+
+      it('should keep border width and border color separate', () => {
+        const result = service.merge('border-2', 'border-blue-500');
+        expect(result).toContain('border-2');
+        expect(result).toContain('border-blue-500');
+      });
     });
 
     describe('conditional()', () => {
@@ -367,6 +424,50 @@ describe('TwClassService', () => {
     it('should return empty string for unconfigured variant', () => {
       const result = service.getVariantClasses('tertiary');
       expect(result).toBe('');
+    });
+  });
+
+  describe('axis and property group separation', () => {
+    let service: TwClassService;
+
+    beforeEach(() => {
+      TestBed.configureTestingModule({ providers: [TwClassService] });
+      service = TestBed.inject(TwClassService);
+    });
+
+    it('should keep overflow-x and overflow-y independent', () => {
+      expect(service.merge('overflow-y-auto overflow-x-hidden')).toBe(
+        'overflow-y-auto overflow-x-hidden'
+      );
+    });
+
+    it('should let the overflow shorthand subsume axis variants', () => {
+      expect(service.merge('overflow-x-auto', 'overflow-hidden')).toBe('overflow-hidden');
+    });
+
+    it('should keep translate-x and translate-y independent', () => {
+      expect(service.merge('translate-x-0 translate-y-0')).toBe('translate-x-0 translate-y-0');
+      expect(service.merge('-translate-x-full', 'translate-x-0')).toBe('translate-x-0');
+    });
+
+    it('should keep flex direction, wrap, and grow independent', () => {
+      expect(service.merge('flex flex-row flex-wrap flex-1')).toBe(
+        'flex flex-row flex-wrap flex-1'
+      );
+      expect(service.merge('flex-row', 'flex-col')).toBe('flex-col');
+    });
+
+    it('should keep scroll-behavior separate from non-Tailwind scroll-prefixed classes', () => {
+      expect(service.merge('scroll-area-styled scroll-smooth')).toBe(
+        'scroll-area-styled scroll-smooth'
+      );
+      expect(service.merge('scroll-auto', 'scroll-smooth')).toBe('scroll-smooth');
+    });
+
+    it('should keep pointer-events, select, and resize independent', () => {
+      expect(service.merge('pointer-events-none select-none resize-none')).toBe(
+        'pointer-events-none select-none resize-none'
+      );
     });
   });
 });
