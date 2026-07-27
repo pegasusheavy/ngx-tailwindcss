@@ -5,6 +5,111 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-07-27
+
+A full-project conformance and efficiency audit found 255 gaps between what
+the library documented and what it actually did. This release closes all of
+them. Most fixes make previously inert APIs start working, so components may
+begin reacting to inputs that silently did nothing before.
+
+### 🎯 Behavior Changes
+
+- Inputs that were silently ignored now take effect. Roughly 20 components
+  built their class strings in a `computed()` that read plain `@Input()`
+  fields, so the value was frozen after first render — `variant`, `size`,
+  `error`, `classOverride`, `data`, and `options` now update on every change
+  (card, alert, accordion, input, textarea, multiselect, datatable, table,
+  tabs, sidebar, scroll-top, tree, and others)
+- `tw-button` now blocks activation while `disabled`; consumer `(click)`
+  handlers previously still fired because the host is a custom element
+- Removed inputs that were never read: `tw-score-editor`'s `musicXml` and
+  `abcNotation` (no importer existed) and `tw-lead-sheet`'s `showMelodyLine`,
+  `staffClef`, `staffWidth`, and `staffHeight`
+- `NativePlatformService.saveFile()` and `fileExists()` now throw
+  `UnsupportedOnPlatformError` in the browser instead of returning a
+  fabricated path or a bare `false`
+- `twMidiLearn`'s `enableContextMenuLearn` now defaults to `false`; applying
+  the directive no longer suppresses the browser context menu by default
+- `MobileSupportService.shouldAllowAction()` is now a pure check; call the new
+  `consumeAction()` to start the cooldown
+- `tw-splitter` panes project through `twSplitterPaneStart` and
+  `twSplitterPaneEnd`; the previous `:first-of-type` selectors silently
+  dropped both panes
+- `tw-steps`' `activeIndex` is now a `model()` and no longer coerces string
+  attribute values
+
+### ✨ Added
+
+- Angular 22 is now declared in the published peer ranges. The library was
+  already built and tested against it, so Angular 22 consumers no longer get
+  a spurious peer-dependency warning
+- `tw-visualizer` gained a `demoMode` input. Without it the component no
+  longer fabricates data or emits synthetic `beatDetected` events
+- `tw-sidebar` supports the documented `[(visible)]` two-way binding;
+  `visibleInput` remains as a deprecated alias
+- `tw-table` renders header and row action templates and a rows-per-page
+  selector; `tw-pagination` renders first/last controls
+- `TwAccordionHeaderDirective` for projecting custom accordion headers
+- Test suite grew from 223 to 1,517 tests, covering the previously untested
+  core services and the native, music, table, and multiselect modules
+
+### 🐛 Fixed
+
+- `provideTwConfig()` deep-merges partial themes; overriding one variant no
+  longer deletes the other defaults
+- `provideTwLocale()` is now consumed by `TwI18nService` instead of being a
+  no-op token
+- Class merging resolves negative values, `!important`, shorthand/longhand
+  conflicts, and arbitrary values containing `:`, with axis-aware groups for
+  `overflow`, `translate`, `gap`, `flex`, and `scroll`
+- `ControlValueAccessor` contracts now reflect `writeValue`/`setDisabledState`
+  under OnPush (checkbox, switch, input, textarea, multiselect, fader), and
+  `tw-radio-group` reports `touched`
+- Modal backdrop clicks reach the close handler; popover moves projected
+  content into its portal instead of cloning it, preserving bindings and
+  event handlers
+- Implemented previously hollow APIs: `tw-overlay`'s `lockScroll`, dropdown
+  trigger `aria-expanded`, popover's `focus` trigger, breadcrumb `icon`,
+  vu-meter `value`/`leftValue`/`rightValue`, and tree selection rendering
+- Native platform integration works: Tauri is actually detected, the file
+  picker, updater, tray, notification, and dock services gate on the real
+  runtime, `NativeIpcService.off()` unsubscribes, and the custom title bar
+  is draggable
+- Fixed memory leaks from animation frames, intervals, MIDI handlers, and
+  document drag listeners that outlived component destruction
+- Replaced runtime-interpolated Tailwind classes that the scanner could never
+  emit (responsive grid and columns, overlay `z-index`, splitter gutter,
+  spinner colors) and the `max-w-screen-*` utilities removed in Tailwind v4
+- `tw-rating` renders and selects half stars correctly
+- `TwMetronomeComponent` schedules clicks on the audio clock with lookahead
+  instead of drifting `setInterval` timing
+
+### ♿ Accessibility
+
+- Keyboard support for buttons, menus, dropdowns, listboxes, selects, trees,
+  tables, steps, ratings, sliders, splitters, and music controls
+- Dialog semantics and focus traps for modal-style overlays, correct
+  `aria-expanded`/`aria-sort`/`aria-current`/`aria-checked` states, accessible
+  names for icon-only controls, and live-region fixes for toasts and alerts
+
+### 🛠 CI/CD & Tooling
+
+- Node 22.13+ is now required for development; pnpm 11.17.0 is pinned via
+  `packageManager` and the CI matrix runs 22.x and 24.x
+- Release workflow publishes the correct version, fails loudly when npm
+  publish fails, and uses the generated changelog; GitHub Pages deploys
+  through a single path
+- `prepare` no longer runs a full library build on every install
+- Lint is enforced in CI again after clearing all outstanding errors
+
+### 📚 Documentation
+
+- Package identity unified to `@quinnjr/ngx-tailwindcss` across the README,
+  docs, and examples; authorship rebranded to Joseph R Quinn
+- Corrected demo pages and code snippets that referenced inputs and outputs
+  the library never had
+- Removed fabricated `.well-known` API descriptors and stale codemod scripts
+
 ## [0.4.0] - 2026-01-13
 
 ### 🎯 Breaking Changes
