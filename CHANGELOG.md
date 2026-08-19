@@ -104,7 +104,7 @@ begin reacting to inputs that silently did nothing before.
 
 ### 📚 Documentation
 
-- Package identity unified to `@quinnjr/ngx-tailwindcss` across the README,
+- Package identity unified to `ngx-tailwindcss` across the README,
   docs, and examples; authorship rebranded to Joseph R Quinn
 - Corrected demo pages and code snippets that referenced inputs and outputs
   the library never had
@@ -317,7 +317,7 @@ Professional DAW-style audio components for music applications:
 
 ### 🎉 Initial Release
 
-First public release of `@pegasus-heavy/ngx-tailwindcss` - A highly customizable Angular component library for Tailwind CSS 4+.
+First public release of `ngx-tailwindcss` - A highly customizable Angular component library for Tailwind CSS 4+.
 
 ### ✨ Features
 
@@ -447,15 +447,15 @@ First public release of `@pegasus-heavy/ngx-tailwindcss` - A highly customizable
 - Zero bundled CSS - works with your Tailwind config
 - Signals-based reactive state management
 
-[0.4.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.4.0
-[0.3.4]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.4
-[0.3.3]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.3
-[0.3.2]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.2
-[0.3.1]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.1
-[0.3.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.3.0
-[0.2.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.2.0
-[0.1.2]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.2
-[0.1.1]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.1
-[0.1.0]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.0
-[0.1.0-beta.1]: https://github.com/pegasusheavy/ngx-tailwindcss/releases/tag/v0.1.0-beta.1
+[0.4.0]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.4.0
+[0.3.4]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.3.4
+[0.3.3]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.3.3
+[0.3.2]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.3.2
+[0.3.1]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.3.1
+[0.3.0]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.3.0
+[0.2.0]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.2.0
+[0.1.2]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.1.2
+[0.1.1]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.1.1
+[0.1.0]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.1.0
+[0.1.0-beta.1]: https://github.com/quinnjr/ngx-tailwindcss/releases/tag/v0.1.0-beta.1
 

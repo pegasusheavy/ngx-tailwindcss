@@ -37,7 +37,7 @@ import {
   TwDropdownMenuComponent,
   TwDropdownItemDirective,
   TwDropdownDividerComponent,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface User {

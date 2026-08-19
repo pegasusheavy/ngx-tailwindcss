@@ -7,7 +7,7 @@
  * @example
  * ```typescript
  * // In app.config.ts
- * import { provideTwTheme, createTheme } from '@quinnjr/ngx-tailwindcss';
+ * import { provideTwTheme, createTheme } from 'ngx-tailwindcss';
  *
  * const customTheme = createTheme({
  *   colors: {

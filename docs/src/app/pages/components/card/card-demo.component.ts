@@ -10,7 +10,7 @@ import {
   TwCardMediaDirective,
   TwButtonComponent,
   TwBadgeComponent,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

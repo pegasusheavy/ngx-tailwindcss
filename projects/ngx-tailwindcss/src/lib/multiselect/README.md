@@ -19,7 +19,7 @@ A multi-select dropdown component with support for grouped options, filtering, a
 ### Flat Options List
 
 ```typescript
-import { TwMultiSelectComponent, MultiSelectOption } from '@quinnjr/ngx-tailwindcss';
+import { TwMultiSelectComponent, MultiSelectOption } from 'ngx-tailwindcss';
 
 @Component({
   imports: [TwMultiSelectComponent],
@@ -48,7 +48,7 @@ export class MyComponent {
 ### Grouped Options
 
 ```typescript
-import { TwMultiSelectComponent, MultiSelectGroup } from '@quinnjr/ngx-tailwindcss';
+import { TwMultiSelectComponent, MultiSelectGroup } from 'ngx-tailwindcss';
 
 @Component({
   imports: [TwMultiSelectComponent],
@@ -99,7 +99,7 @@ export class MyComponent {
 
 ```typescript
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
-import { TwMultiSelectComponent } from '@quinnjr/ngx-tailwindcss';
+import { TwMultiSelectComponent } from 'ngx-tailwindcss';
 
 @Component({
   imports: [ReactiveFormsModule, TwMultiSelectComponent],

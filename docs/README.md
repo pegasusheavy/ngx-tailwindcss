@@ -7,7 +7,7 @@ pages, theming guide, and full example applications.
 ## Prerequisites
 
 The docs app consumes the built library via
-`"@quinnjr/ngx-tailwindcss": "file:../dist/ngx-tailwindcss"`, so the library
+`"ngx-tailwindcss": "file:../dist/ngx-tailwindcss"`, so the library
 must be built first. From the repository root:
 
 ```bash

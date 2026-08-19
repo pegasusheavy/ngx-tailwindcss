@@ -8,7 +8,7 @@ import {
   TwCardHeaderDirective,
   TwCardTitleDirective,
   TwCardBodyDirective,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../shared/demo-section.component';
 
 type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> };
@@ -170,7 +170,7 @@ export class I18nDemoComponent {
   // Code examples
   setupCode = `// app.config.ts
 import { ApplicationConfig } from '@angular/core';
-import { provideTwTranslations, provideTwLocale } from '@quinnjr/ngx-tailwindcss';
+import { provideTwTranslations, provideTwLocale } from 'ngx-tailwindcss';
 
 // Spanish translations
 const spanishTranslations = {
@@ -204,7 +204,7 @@ export const appConfig: ApplicationConfig = {
   ],
 };`;
 
-  serviceCode = `import { TwI18nService } from '@quinnjr/ngx-tailwindcss';
+  serviceCode = `import { TwI18nService } from 'ngx-tailwindcss';
 
 @Component({...})
 export class MyComponent {

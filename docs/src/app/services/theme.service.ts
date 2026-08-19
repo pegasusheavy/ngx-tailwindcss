@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { ColorMode, TwThemeService } from '@quinnjr/ngx-tailwindcss';
+import { ColorMode, TwThemeService } from 'ngx-tailwindcss';
 
 export type Theme = ColorMode;
 

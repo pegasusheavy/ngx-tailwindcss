@@ -23,7 +23,7 @@
  * ======
  * 1. Import this file in your application's global styles:
  *
- *    @import '@quinnjr/ngx-tailwindcss/styles/theme.css';
+ *    @import 'ngx-tailwindcss/styles/theme.css';
  *
  * 2. Override any variables in your own CSS to customize colors:
  *
@@ -47,7 +47,7 @@
  *
  * Or use the provided service:
  *
- *    import { TwThemeService } from '@quinnjr/ngx-tailwindcss';
+ *    import { TwThemeService } from 'ngx-tailwindcss';
  *    themeService.setColorMode('dark');
  *
  * CUSTOMIZATION LEVELS:

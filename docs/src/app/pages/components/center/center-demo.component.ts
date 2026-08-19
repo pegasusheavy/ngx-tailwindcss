@@ -4,7 +4,7 @@ import {
   TwCenterComponent,
   TwSquareComponent,
   TwCircleComponent,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

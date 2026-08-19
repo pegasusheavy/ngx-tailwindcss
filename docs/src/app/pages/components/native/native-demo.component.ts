@@ -45,7 +45,7 @@ import {
   LogEntry,
   StatusBarItem,
   ToolbarItem,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({
@@ -212,7 +212,7 @@ export class NativeDemoComponent {
 
   // Terminal lines
   terminalLines: TerminalLine[] = [
-    { id: '1', content: '$ npm install @quinnjr/ngx-tailwindcss', type: 'input', timestamp: new Date() },
+    { id: '1', content: '$ npm install ngx-tailwindcss', type: 'input', timestamp: new Date() },
     { id: '2', content: 'added 127 packages in 4.2s', type: 'success', timestamp: new Date() },
     { id: '3', content: '$ ng serve', type: 'input', timestamp: new Date() },
     { id: '4', content: 'Compiling @angular/core : es2022 as esm2022', type: 'output', timestamp: new Date() },
@@ -599,7 +599,7 @@ toolbarItems: ToolbarItem[] = [
   <div panel2>Bottom Panel</div>
 </tw-resizable-panels>`,
 
-    platformService: `import { NativeAppPlatformService } from '@quinnjr/ngx-tailwindcss';
+    platformService: `import { NativeAppPlatformService } from 'ngx-tailwindcss';
 
 export class AppComponent {
   private platform = inject(NativeAppPlatformService);
@@ -616,7 +616,7 @@ export class AppComponent {
   }
 }`,
 
-    filePickerService: `import { FilePickerService } from '@quinnjr/ngx-tailwindcss';
+    filePickerService: `import { FilePickerService } from 'ngx-tailwindcss';
 
 export class FileComponent {
   private filePicker = inject(FilePickerService);
@@ -640,7 +640,7 @@ export class FileComponent {
   }
 }`,
 
-    notificationsService: `import { NativeNotificationsService } from '@quinnjr/ngx-tailwindcss';
+    notificationsService: `import { NativeNotificationsService } from 'ngx-tailwindcss';
 
 export class NotifyComponent {
   private notifications = inject(NativeNotificationsService);
@@ -658,7 +658,7 @@ export class NotifyComponent {
   }
 }`,
 
-    updateService: `import { UpdateService } from '@quinnjr/ngx-tailwindcss';
+    updateService: `import { UpdateService } from 'ngx-tailwindcss';
 
 export class UpdateComponent {
   private updateService = inject(UpdateService);

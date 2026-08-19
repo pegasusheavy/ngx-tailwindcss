@@ -1,4 +1,4 @@
-# @quinnjr/ngx-tailwindcss
+# ngx-tailwindcss
 
 A highly customizable Angular component library designed for **Tailwind CSS 4+**. This library provides beautiful, accessible UI components that leverage Tailwind's utility-first approach while giving you complete control over styling.
 
@@ -14,9 +14,9 @@ A highly customizable Angular component library designed for **Tailwind CSS 4+**
 ## Installation
 
 ```bash
-pnpm add @quinnjr/ngx-tailwindcss
+pnpm add ngx-tailwindcss
 # or
-npm install @quinnjr/ngx-tailwindcss
+npm install ngx-tailwindcss
 ```
 
 ### Peer Dependencies
@@ -39,7 +39,7 @@ Add the library's component templates to your Tailwind content configuration so 
 /* app.css or styles.css */
 @import "tailwindcss";
 
-@source "../node_modules/@quinnjr/ngx-tailwindcss/**/*.{js,mjs}";
+@source "../node_modules/ngx-tailwindcss/**/*.{js,mjs}";
 ```
 
 **For Tailwind CSS 3.x (tailwind.config.js):**
@@ -49,7 +49,7 @@ Add the library's component templates to your Tailwind content configuration so 
 module.exports = {
   content: [
     "./src/**/*.{html,ts}",
-    "./node_modules/@quinnjr/ngx-tailwindcss/**/*.{js,mjs}",
+    "./node_modules/ngx-tailwindcss/**/*.{js,mjs}",
   ],
   // ... rest of your config
 };
@@ -65,7 +65,7 @@ import {
   TwButtonComponent,
   TwCardComponent,
   TwCardBodyDirective
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 
 @Component({
   selector: 'app-example',
@@ -85,7 +85,7 @@ export class ExampleComponent {}
 Or import everything at once:
 
 ```typescript
-import { TW_ALL } from '@quinnjr/ngx-tailwindcss';
+import { TW_ALL } from 'ngx-tailwindcss';
 
 @Component({
   imports: [...TW_ALL],
@@ -100,7 +100,7 @@ Customize default styles and behavior globally:
 ```typescript
 // app.config.ts
 import { ApplicationConfig } from '@angular/core';
-import { provideTwConfig } from '@quinnjr/ngx-tailwindcss';
+import { provideTwConfig } from 'ngx-tailwindcss';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -324,7 +324,7 @@ Conflict resolution is a lightweight, tailwind-merge-style approximation: it han
 ### Using the Class Service
 
 ```typescript
-import { TwClassService } from '@quinnjr/ngx-tailwindcss';
+import { TwClassService } from 'ngx-tailwindcss';
 
 @Component({...})
 export class MyComponent {

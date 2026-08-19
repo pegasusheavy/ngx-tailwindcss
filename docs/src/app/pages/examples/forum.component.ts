@@ -25,7 +25,7 @@ import {
   TwPaginationComponent,
   TwSelectComponent,
   SelectOption,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface User {

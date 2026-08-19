@@ -84,7 +84,7 @@ jobs:
           {
             echo 'text<<INSTALL_EOF'
             if [ "${{ steps.npm-token.outputs.present }}" = 'true' ]; then
-              printf '### Installation\n\n```bash\nnpm install @quinnjr/ngx-tailwindcss@%s\n```\n' \
+              printf '### Installation\n\n```bash\nnpm install ngx-tailwindcss@%s\n```\n' \
                 '${{ steps.version.outputs.version }}'
             else
               echo '> Not published to npm from CI (no NPM_TOKEN configured); published manually.'

@@ -1,5 +1,5 @@
 /*
- * Public API Surface of @quinnjr/ngx-tailwindcss
+ * Public API Surface of ngx-tailwindcss
  *
  * This library provides highly customizable Angular components designed
  * for Tailwind CSS 4+. Components use Tailwind utility classes and are
@@ -260,7 +260,7 @@ export const TW_OVERLAY_COMPONENTS = [TwOverlayComponent] as const;
  *
  * @example
  * ```typescript
- * import { TW_ALL } from '@quinnjr/ngx-tailwindcss';
+ * import { TW_ALL } from 'ngx-tailwindcss';
  *
  * @Component({
  *   imports: [...TW_ALL],

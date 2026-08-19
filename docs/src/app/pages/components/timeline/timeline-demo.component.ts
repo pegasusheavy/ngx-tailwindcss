@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwTimelineComponent, TimelineEvent } from '@quinnjr/ngx-tailwindcss';
+import { TwTimelineComponent, TimelineEvent } from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

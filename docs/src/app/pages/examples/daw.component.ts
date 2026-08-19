@@ -34,7 +34,7 @@ import {
   faExpand,
   faCompress,
 } from '@fortawesome/free-solid-svg-icons';
-import { TwToastService } from '@quinnjr/ngx-tailwindcss';
+import { TwToastService } from 'ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface Track {

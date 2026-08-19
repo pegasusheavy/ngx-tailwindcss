@@ -1,5 +1,5 @@
 {
-  "name": "@quinnjr/ngx-tailwindcss",
+  "name": "ngx-tailwindcss",
   "version": "1.1.0",
   "description": "A highly customizable Angular component library for Tailwind CSS 4+. Build beautiful, accessible UI components with full theming support, intelligent class merging, and zero bundled CSS. Features 30+ components including buttons, cards, modals, forms, tables, and more.",
   "license": "MIT",
@@ -19,7 +19,6 @@
     "url": "https://github.com/quinnjr/ngx-tailwindcss/issues"
   },
   "publishConfig": {
-    "access": "public",
     "registry": "https://registry.npmjs.org/"
   },
   "engines": {
@@ -115,3 +114,4 @@
   },
   "sideEffects": false
 }
+

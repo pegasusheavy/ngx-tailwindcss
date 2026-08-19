@@ -40,7 +40,7 @@ export default tseslint.config(
     plugins: {
       unicorn: eslintPluginUnicorn,
       jsdoc: eslintPluginJsdoc,
-      '@pegasusheavy/typescript-access': eslintPluginAccess,
+      'typescript-access': eslintPluginAccess,
     },
     processor: angular.processInlineTemplates,
     rules: {
@@ -115,7 +115,7 @@ export default tseslint.config(
           allowDirectConstAssertionInArrowFunctions: true,
         },
       ],
-      // Disabled in favor of @pegasusheavy/typescript-access/explicit-member-accessibility
+      // Disabled in favor of typescript-access/explicit-member-accessibility
       '@typescript-eslint/explicit-member-accessibility': 'off',
       // TODO: Re-enable after codebase cleanup
       '@typescript-eslint/member-ordering': 'off',
@@ -205,7 +205,7 @@ export default tseslint.config(
       // ============================================
       // TypeScript Access Modifier Rules
       // ============================================
-      '@pegasusheavy/typescript-access/explicit-member-accessibility': [
+      'typescript-access/explicit-member-accessibility': [
         'warn',
         {
           accessibility: 'explicit',
@@ -219,7 +219,7 @@ export default tseslint.config(
         },
       ],
       // TODO: Re-enable after codebase cleanup
-      '@pegasusheavy/typescript-access/member-accessibility-order': 'off',
+      'typescript-access/member-accessibility-order': 'off',
 
       // ============================================
       // Unicorn Rules (Best Practices)
@@ -513,7 +513,7 @@ export default tseslint.config(
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@angular-eslint/use-component-selector': 'off',
       '@angular-eslint/prefer-on-push-component-change-detection': 'off',
-      '@pegasusheavy/typescript-access/explicit-member-accessibility': 'off',
+      'typescript-access/explicit-member-accessibility': 'off',
       'max-lines-per-function': 'off',
       'max-nested-callbacks': 'off',
     },

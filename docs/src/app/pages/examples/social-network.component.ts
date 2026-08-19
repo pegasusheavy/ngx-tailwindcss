@@ -32,7 +32,7 @@ import {
   TwDividerComponent,
   TwAlertComponent,
   TwChipComponent,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface User {

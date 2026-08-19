@@ -176,7 +176,7 @@ importers:
       '@fortawesome/free-solid-svg-icons':
         specifier: ^7.3.0
         version: 7.3.0
-      '@quinnjr/ngx-tailwindcss':
+      ngx-tailwindcss:
         specifier: file:../dist/ngx-tailwindcss
         version: file:dist/ngx-tailwindcss(b491b17999f139d431f2590173024167)
       rxjs:
@@ -2618,38 +2618,6 @@ packages:
     peerDependencies:
       '@typescript-eslint/utils': 8.62.0
       eslint: ^9.0.0
-
-  '@quinnjr/ngx-tailwindcss@file:dist/ngx-tailwindcss':
-    resolution: {directory: dist/ngx-tailwindcss, type: directory}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      '@angular/animations': ^19.0.0 || ^20.0.0 || ^21.0.0
-      '@angular/cdk': ^19.0.0 || ^20.0.0 || ^21.0.0
-      '@angular/common': ^19.0.0 || ^20.0.0 || ^21.0.0
-      '@angular/core': ^19.0.0 || ^20.0.0 || ^21.0.0
-      '@angular/forms': ^19.0.0 || ^20.0.0 || ^21.0.0
-      '@tauri-apps/api': ^2.0.0
-      '@tauri-apps/plugin-dialog': ^2.0.0
-      '@tauri-apps/plugin-notification': ^2.0.0
-      '@tauri-apps/plugin-process': ^2.0.0
-      '@tauri-apps/plugin-store': ^2.0.0
-      '@tauri-apps/plugin-updater': ^2.0.0
-      electron: ^28.0.0 || ^29.0.0 || ^30.0.0 || ^31.0.0 || ^32.0.0 || ^33.0.0 || ^34.0.0 || ^35.0.0 || ^36.0.0 || ^37.0.0 || ^38.0.0 || ^39.0.0
-    peerDependenciesMeta:
-      '@tauri-apps/api':
-        optional: true
-      '@tauri-apps/plugin-dialog':
-        optional: true
-      '@tauri-apps/plugin-notification':
-        optional: true
-      '@tauri-apps/plugin-process':
-        optional: true
-      '@tauri-apps/plugin-store':
-        optional: true
-      '@tauri-apps/plugin-updater':
-        optional: true
-      electron:
-        optional: true
 
   '@rollup/plugin-json@6.1.0':
     resolution: {integrity: sha512-EGI2te5ENk1coGeADSIwZ7G2Q8CJS2sF120T7jLw4xFw9n7wIOXHo+kIYRAoVpJAN+kmqZSoO3Fp4JtoNF4ReA==}
@@ -5366,6 +5334,38 @@ packages:
       typescript: '>=6.0 <6.1'
     peerDependenciesMeta:
       tailwindcss:
+        optional: true
+
+  ngx-tailwindcss@file:dist/ngx-tailwindcss:
+    resolution: {directory: dist/ngx-tailwindcss, type: directory}
+    engines: {node: '>=18.0.0'}
+    peerDependencies:
+      '@angular/animations': ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
+      '@angular/cdk': ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
+      '@angular/common': ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
+      '@angular/core': ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
+      '@angular/forms': ^19.0.0 || ^20.0.0 || ^21.0.0 || ^22.0.0
+      '@tauri-apps/api': ^2.0.0
+      '@tauri-apps/plugin-dialog': ^2.0.0
+      '@tauri-apps/plugin-notification': ^2.0.0
+      '@tauri-apps/plugin-process': ^2.0.0
+      '@tauri-apps/plugin-store': ^2.0.0
+      '@tauri-apps/plugin-updater': ^2.0.0
+      electron: ^28.0.0 || ^29.0.0 || ^30.0.0 || ^31.0.0 || ^32.0.0 || ^33.0.0 || ^34.0.0 || ^35.0.0 || ^36.0.0 || ^37.0.0 || ^38.0.0 || ^39.0.0
+    peerDependenciesMeta:
+      '@tauri-apps/api':
+        optional: true
+      '@tauri-apps/plugin-dialog':
+        optional: true
+      '@tauri-apps/plugin-notification':
+        optional: true
+      '@tauri-apps/plugin-process':
+        optional: true
+      '@tauri-apps/plugin-store':
+        optional: true
+      '@tauri-apps/plugin-updater':
+        optional: true
+      electron:
         optional: true
 
   node-addon-api@6.1.0:
@@ -9427,15 +9427,6 @@ snapshots:
       '@typescript-eslint/utils': 8.62.0(eslint@10.6.0(jiti@2.7.0)(supports-color@10.2.2))(supports-color@10.2.2)(typescript@6.0.3)
       eslint: 10.6.0(jiti@2.7.0)(supports-color@10.2.2)
 
-  '@quinnjr/ngx-tailwindcss@file:dist/ngx-tailwindcss(b491b17999f139d431f2590173024167)':
-    dependencies:
-      '@angular/animations': 22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))
-      '@angular/cdk': 22.0.2(@angular/common@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.0.4(@angular/animations@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2)
-      '@angular/common': 22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
-      '@angular/core': 22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)
-      '@angular/forms': 22.0.4(@angular/common@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.0.4(@angular/animations@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2)
-      tslib: 2.8.1
-
   '@rollup/plugin-json@6.1.0(rollup@4.53.5)':
     dependencies:
       '@rollup/pluginutils': 5.3.0(rollup@4.53.5)
@@ -12314,6 +12305,15 @@ snapshots:
     optionalDependencies:
       rollup: 4.53.5
       tailwindcss: 4.3.1
+
+  ngx-tailwindcss@file:dist/ngx-tailwindcss(b491b17999f139d431f2590173024167):
+    dependencies:
+      '@angular/animations': 22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))
+      '@angular/cdk': 22.0.2(@angular/common@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.0.4(@angular/animations@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2)
+      '@angular/common': 22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2)
+      '@angular/core': 22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)
+      '@angular/forms': 22.0.4(@angular/common@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(@angular/platform-browser@22.0.4(@angular/animations@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)))(@angular/common@22.0.4(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2))(rxjs@7.8.2))(@angular/core@22.0.4(@angular/compiler@22.0.4)(rxjs@7.8.2)(zone.js@0.16.2)))(rxjs@7.8.2)
+      tslib: 2.8.1
 
   node-addon-api@6.1.0:
     optional: true

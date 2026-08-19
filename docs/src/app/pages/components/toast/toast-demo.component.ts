@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwToastService, TwButtonComponent, ToastPosition } from '@quinnjr/ngx-tailwindcss';
+import { TwToastService, TwButtonComponent, ToastPosition } from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

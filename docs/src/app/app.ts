@@ -6,7 +6,7 @@ import {
   TwDropdownComponent,
   TwDropdownMenuComponent,
   TwDropdownItemDirective,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { filter } from 'rxjs/operators';
 import { ThemeService } from './services/theme.service';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';

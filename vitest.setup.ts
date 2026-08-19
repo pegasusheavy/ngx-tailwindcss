@@ -1,5 +1,5 @@
 /**
- * Vitest setup file for @quinnjr/ngx-tailwindcss
+ * Vitest setup file for ngx-tailwindcss
  *
  * Initializes Angular testing environment and provides browser API mocks.
  */

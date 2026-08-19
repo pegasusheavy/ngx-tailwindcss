@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwSkeletonComponent, TwSkeletonTextComponent } from '@quinnjr/ngx-tailwindcss';
+import { TwSkeletonComponent, TwSkeletonTextComponent } from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

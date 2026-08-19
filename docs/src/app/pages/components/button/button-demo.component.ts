@@ -2,7 +2,7 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faPlus, faCheck, faTrash, faHeart, faGear } from '@fortawesome/free-solid-svg-icons';
-import { TwButtonComponent } from '@quinnjr/ngx-tailwindcss';
+import { TwButtonComponent } from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

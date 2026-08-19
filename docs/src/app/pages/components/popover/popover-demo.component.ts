@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwPopoverComponent, TwButtonComponent } from '@quinnjr/ngx-tailwindcss';
+import { TwPopoverComponent, TwButtonComponent } from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

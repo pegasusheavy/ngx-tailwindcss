@@ -38,13 +38,13 @@ ngx-tailwindcss is an open-source Angular UI component library that provides 30+
 
 ```bash
 # Using pnpm (recommended)
-pnpm add @quinnjr/ngx-tailwindcss
+pnpm add ngx-tailwindcss
 
 # Using npm
-npm install @quinnjr/ngx-tailwindcss
+npm install ngx-tailwindcss
 
 # Using yarn
-yarn add @quinnjr/ngx-tailwindcss
+yarn add ngx-tailwindcss
 ```
 
 ### Step 2: Configure Tailwind CSS
@@ -55,13 +55,13 @@ In your `styles.css` or `styles.scss`:
 @import "tailwindcss";
 
 /* IMPORTANT: Add this line to scan the library for Tailwind classes */
-@source "../node_modules/@quinnjr/ngx-tailwindcss/**/*.mjs";
+@source "../node_modules/ngx-tailwindcss/**/*.mjs";
 ```
 
 ### Step 3: Import Components
 
 ```typescript
-import { TwButtonComponent, TwCardComponent } from '@quinnjr/ngx-tailwindcss';
+import { TwButtonComponent, TwCardComponent } from 'ngx-tailwindcss';
 
 @Component({
   standalone: true,
@@ -79,7 +79,7 @@ export class MyComponent {}
 
 ```typescript
 import { ApplicationConfig } from '@angular/core';
-import { provideTwConfig } from '@quinnjr/ngx-tailwindcss';
+import { provideTwConfig } from 'ngx-tailwindcss';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -355,7 +355,7 @@ Tabbed navigation with multiple style variants.
 Programmatic toast notifications.
 
 ```typescript
-import { TwToastService } from '@quinnjr/ngx-tailwindcss';
+import { TwToastService } from 'ngx-tailwindcss';
 
 @Component({...})
 export class MyComponent {
@@ -725,10 +725,10 @@ Override using CSS custom properties in your styles:
 
 ```typescript
 // Good - tree-shakeable
-import { TwButtonComponent, TwCardComponent } from '@quinnjr/ngx-tailwindcss';
+import { TwButtonComponent, TwCardComponent } from 'ngx-tailwindcss';
 
 // Avoid - imports everything
-import * as Tw from '@quinnjr/ngx-tailwindcss';
+import * as Tw from 'ngx-tailwindcss';
 ```
 
 ### 2. Use Semantic Variants
@@ -830,7 +830,7 @@ All components include proper ARIA attributes, but always add context:
 **Solution:** Ensure you've added the @source directive in your CSS:
 
 ```css
-@source "../node_modules/@quinnjr/ngx-tailwindcss/**/*.mjs";
+@source "../node_modules/ngx-tailwindcss/**/*.mjs";
 ```
 
 ### Class Conflicts
@@ -865,6 +865,6 @@ MIT License - Copyright (c) 2025 Joseph R Quinn
 
 - **Documentation**: https://ngx-tailwindcss.dev
 - **GitHub**: https://github.com/quinnjr/ngx-tailwindcss
-- **npm**: https://www.npmjs.com/package/@quinnjr/ngx-tailwindcss
+- **npm**: https://www.npmjs.com/package/ngx-tailwindcss
 - **Issues**: https://github.com/quinnjr/ngx-tailwindcss/issues
 

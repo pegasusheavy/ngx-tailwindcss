@@ -18,8 +18,8 @@
     "module": "ES2022",
     "lib": ["ES2022", "dom"],
     "paths": {
-      "@quinnjr/ngx-tailwindcss": ["./dist/ngx-tailwindcss"],
-      "@quinnjr/ngx-tailwindcss/*": ["./dist/ngx-tailwindcss/*"]
+      "ngx-tailwindcss": ["./dist/ngx-tailwindcss"],
+      "ngx-tailwindcss/*": ["./dist/ngx-tailwindcss/*"]
     }
   },
   "angularCompilerOptions": {

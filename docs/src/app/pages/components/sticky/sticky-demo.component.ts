@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TwStickyComponent, TwCardComponent } from '@quinnjr/ngx-tailwindcss';
+import { TwStickyComponent, TwCardComponent } from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../../shared/demo-section.component';
 
 @Component({

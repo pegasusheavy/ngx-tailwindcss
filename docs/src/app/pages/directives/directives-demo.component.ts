@@ -18,7 +18,7 @@ import {
   TwScrollSectionDirective,
   TwHoverClassDirective,
   TwTrapScrollDirective,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { DemoSectionComponent, PageHeaderComponent } from '../../shared/demo-section.component';
 
 @Component({

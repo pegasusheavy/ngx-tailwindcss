@@ -42,7 +42,7 @@ import {
   TwAccordionComponent,
   TwAccordionItemComponent,
   TwRatingComponent,
-} from '@quinnjr/ngx-tailwindcss';
+} from 'ngx-tailwindcss';
 import { ThemeToggleComponent } from '../../components/theme-toggle.component';
 
 interface Photo {
